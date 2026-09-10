@@ -13,6 +13,7 @@
 | `accessibility-audit` | L3 | — | — | — | — | — |
 | `agent-lifecycle-manager` | L3 | — | — | skill-lifecycle-manager (composes_with) | — | — |
 | `api-documentation` | L3 | — | — | — | — | — |
+| `ci-triage` | L3 | — | — | — | — | — |
 | `decision-record` | L3 | — | — | — | — | — |
 | `desktop-app-fallback` | L3 | — | — | — | — | — |
 | `documentation-writing` | L3 | — | — | — | — | — |

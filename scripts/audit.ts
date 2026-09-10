@@ -1,4 +1,17 @@
-// @version 2.29.2
+// @version 2.32.0
+// v2.32.0: Adds skipped-file counting for scan walkers and warns on live context placeholders.
+// v2.31.0: Stray-artifact check fails loud (T-20260909-006/021) — a missing
+//           docs/workspace-schema.json or a schema without a valid rootAllowlist
+//           ({files: [], dirs: []}) now FAILs the audit instead of silently scanning
+//           with an empty allowlist (which flagged every tracked root item as stray)
+//           or warn-skipping the check entirely.
+// v2.30.0: Auto-activating skill-graph drift gate (ADR-0060) — when
+//           scripts/verify-skill-graph.ts exists in the audited context, the audit
+//           spawns it and FAILs on drift between the committed docs/skill-graph.json
+//           projection and the agents/skills/procedures SSOTs. Any project that has
+//           the graph feature therefore gets the gate enforced on every audit without
+//           per-project wiring; contexts that also wire it into their variant audit
+//           simply run the check twice (harmless).
 // v2.28.0: nul-redirect lint no longer scans .bat/.cmd — cmd.exe `>nul` targets the NUL device and
 //           is the idiomatic, safe Windows batch redirect; the literal-file hazard is POSIX-only.
 // v2.26.0: New checkProjectDocMarkerDrift() (WARN-only, local-only) — detects when a
@@ -92,6 +105,12 @@ const CYAN = '\x1b[36m';
 const RESET = '\x1b[0m';
 
 let errors = 0;
+let skippedFileCount = 0;
+const skippedFileSamples: string[] = [];
+function recordSkippedFile(filePath: string, reason: string) {
+    skippedFileCount++;
+    if (skippedFileSamples.length < 10) skippedFileSamples.push(`${filePath} (${reason})`);
+}
 
 function Pass(msg: string) {
     console.log(`${GREEN}[PASS] ${msg}${RESET}`);
@@ -302,8 +321,8 @@ function walkDir(dir: string, callback: (fPath: string) => void) {
             } else {
                 callback(dirPath);
             }
-        } catch {
-            // Ignore transient files deleted during concurrent test runs
+        } catch (e: any) {
+            recordSkippedFile(dirPath, e?.code || e?.message || "stat/read error");
         }
     }
 }
@@ -504,6 +523,29 @@ if (!LIFECYCLE_ONLY) {
         Fail(`Non-standard .md files found at project root: ${rootMdFiles.join(', ')} — move to docs/ or memory/ per File Organization Policy`);
     } else {
         Pass('Project root: no non-standard .md files (File Organization Policy compliant)');
+    }
+
+    // Check: live context files should not retain scaffold placeholders
+    {
+        const files: string[] = [];
+        if (fs.existsSync(projectCtxPath)) files.push(projectCtxPath);
+        if (fs.existsSync('docs')) {
+            for (const f of fs.readdirSync('docs')) {
+                if (f.endsWith('.context.md')) files.push(path.join('docs', f));
+            }
+        }
+        const placeholderRe = /\[(Project Name|One-sentence description[^\]]*|TODO|TBD)\]|<variant-name>|<project-name>/i;
+        const hits: string[] = [];
+        for (const file of files) {
+            try {
+                const content = readUTF8File(file);
+                if (placeholderRe.test(content)) hits.push(file);
+            } catch (e: any) {
+                recordSkippedFile(file, e?.code || e?.message || 'read error');
+            }
+        }
+        if (hits.length > 0) Warn(`Live context placeholder check: ${hits.length} file(s) still contain scaffold placeholders: ${hits.join(', ')}`);
+        else Pass('Live context placeholder check: no unfilled scaffold placeholders found');
     }
 
     // Check: docs/research/*.md files should have a ## References section (Research Standards)
@@ -1837,8 +1879,18 @@ if (IS_WORKSPACE_ROOT) {
     try {
         const schemaRaw = readUTF8File(path.join('docs', 'workspace-schema.json'));
         const schema = JSON.parse(schemaRaw);
-        const allowedFiles: string[] = schema?.rootAllowlist?.files ?? [];
-        const allowedDirs: string[] = schema?.rootAllowlist?.dirs ?? [];
+        // Fail-loud guard (T-20260909-006 / T-20260909-021): an empty-allowlist fallback
+        // here would flag every tracked root item as stray, burying the real problem
+        // (schema drift) under misleading per-file errors. Missing schema or a missing
+        // rootAllowlist block is a governance-file defect and must fail the audit.
+        const rootAllowlist = schema?.rootAllowlist;
+        if (!rootAllowlist || !Array.isArray(rootAllowlist.files) || !Array.isArray(rootAllowlist.dirs)) {
+            Fail("docs/workspace-schema.json does not define a valid rootAllowlist ({files: [], dirs: []}) — add it to the schema; refusing to scan with an empty allowlist");
+            strayFound++;
+            throw new Error('rootAllowlist missing — stray-artifact check aborted');
+        }
+        const allowedFiles: string[] = rootAllowlist.files;
+        const allowedDirs: string[] = rootAllowlist.dirs;
 
         // Only scan git-tracked top-level items — ignore untracked local directories (e.g. test projects)
         const gitLsResult = spawnSync('git', ['ls-files', '--cached'], { encoding: 'utf-8' });
@@ -1957,7 +2009,15 @@ if (IS_WORKSPACE_ROOT) {
             Pass('Workspace root is clean from stray test artifacts');
         }
     } catch (_e) {
-        Warn('Could not read docs/workspace-schema.json for stray-artifact check — skipping');
+        // Fail-loud (T-20260909-006): a missing/unparseable schema silently disabled the
+        // stray-artifact check. The schema is a required governance file at the workspace
+        // root — skipping the check quietly is how drift ships.
+        if (_e instanceof Error && _e.message === 'rootAllowlist missing — stray-artifact check aborted') {
+            // Fail already recorded where the invalid allowlist was detected.
+        } else {
+            Fail(`Could not read/parse docs/workspace-schema.json for stray-artifact check: ${_e instanceof Error ? _e.message : String(_e)}`);
+            strayFound++;
+        }
     }
 }
 
@@ -2498,6 +2558,32 @@ if (GOVERNANCE_CHECK) {
     if (status !== 0) {
         Fail('ADR governance linkage check failed with operational error — script exited non-zero');
     }
+}
+
+// ── Skill-graph drift gate (ADR-0060) — auto-activating ──────────────────────
+// Any context that ships a committed skill graph (L0 root or an L3 project with
+// docs/skill-graph.json) gets its drift gate enforced here automatically: when
+// scripts/verify-skill-graph.ts exists, it re-derives the graph from the
+// agents/skills/procedures SSOTs and exits non-zero on drift, so a project
+// cannot silently audit green while its committed projection is stale.
+// Contexts that additionally wire the gate into their variant audit run the
+// check twice — harmless. Remedy on failure: bun scripts/generate-skill-graph.ts
+// (review + commit the regenerated projection).
+if (fs.existsSync(path.join('scripts', 'verify-skill-graph.ts'))) {
+    const { status, stdout, stderr } = spawnSync('bun', ['scripts/verify-skill-graph.ts'], {
+        encoding: 'utf-8',
+    });
+    if (status !== 0) {
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+        Fail('Skill-graph drift detected: docs/skill-graph.json is stale — run bun scripts/generate-skill-graph.ts, review, and commit');
+    } else {
+        Pass('Skill-graph drift gate: committed projection matches SSOTs');
+    }
+}
+
+if (skippedFileCount > 0) {
+    Warn(`Skipped/unreadable files during scan: ${skippedFileCount}${skippedFileSamples.length ? ` (samples: ${skippedFileSamples.join('; ')})` : ''}`);
 }
 
 console.log("");

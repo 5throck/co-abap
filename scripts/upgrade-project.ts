@@ -1,5 +1,32 @@
 #!/usr/bin/env bun
-// @version 1.18.0
+// @version 1.20.0
+// v1.20.0: New CONTEXT_COMMONIZATION pass (after VARIANT_DOCS_SYNC) — near-duplicate
+//           sections of docs/<variant>.context.md are pruned once the refreshed
+//           docs/context.md supersedes them: token-overlap >= 0.65 → REMOVE (logged),
+//           >= 0.30 → REVIEW (manual Context Commonization Review, ADR-0050 Part 3 —
+//           never auto-removed), below → silent. COMMON-*/VARIANT-INJECT zones and the
+//           version footer are excluded; sections containing managed-zone content are
+//           never auto-removed. Honors --dry-run; opt-out via
+//           --skip-context-commonization. Comparison reads the template source so
+//           dry-run verdicts match apply. Thresholds tuned on the real fleet
+//           (docs/designs/2026-09-10-context-purification-design.md D2).
+// v1.19.2: --prune-removed preserves project-declared variant-owned agents/skills
+//           from variant.json in common-only sync mode (identity-separated forks
+//           such as co-architect have no templates/<variant>/ source directory).
+// v1.19.0: Registry-row reconciliation fixes in reconcileScriptRegistry() — (1) fall back to the
+//           templates/common/scripts/SCRIPTS.md registry when the L0 row misses (scripts shipped
+//           from common under variant-prefixed upstream names, e.g. the handbook/ suite, were
+//           silently never registered — verify-scripts "Unregistered script" ×26 on
+//           co-abap-plugin/co-architect/co-price during the 2026-09-06 fleet resync); (2) rewrite
+//           an appended row's layer cell from L0/L0-only → L3, since layer-L0 rows are skipped by
+//           verify-scripts at project context while the file ships on disk (upgrade-project.ts
+//           itself hit this); (3) drop stale duplicate rows for the same script during version
+//           update instead of first-match-only replace (lifecycle-sync-audit Check A failures on
+//           co-export dispatch* rows); (4) the row version written is the delivered template
+//           file's own @version (L0's row can be newer than the L1 snapshot — writing L0's
+//           number tripped lifecycle-sync-audit Check A).
+// v1.19.1: VARIANT_DOCS_SYNC gains the co-develop privacy-design-checklist pair (EN+KO) —
+//           generalized template-grade residue of the harness-assessment privacy ADRs.
 // v1.17.0: Identity-separated fork support — a project whose variant.json self-declares a variant
 //           with no templates/<variant>/ dir (e.g. co-architect from co-work) is accepted in
 //           "common-only" sync mode: templates/common + project-owned files only, no readiness
@@ -94,6 +121,15 @@ import { resolve, join, dirname, basename, isAbsolute, relative } from 'node:pat
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { extractScriptVersion, preserveLifecycleFrontmatter } from './helpers/upgrade-versions.ts';
+import {
+  splitIntoSections,
+  splitContextFileSections,
+  splitOffVersionFooter,
+  stripVersionFooter,
+  classifyCommonizationSection,
+  W2_REMOVE_THRESHOLD,
+  W2_REVIEW_FLOOR,
+} from './helpers/context-sections.ts';
 
 // ── Argument parsing ───────────────────────────────────────────────────────────
 let projectPath = '';
@@ -103,6 +139,7 @@ let dryRun = false;
 let pruneRemoved = false;
 let rollback = false;
 let yesFlag = false;
+let skipContextCommonization = false;
 
 const args = process.argv.slice(2);
 for (let i = 0; i < args.length; i++) {
@@ -112,11 +149,12 @@ for (let i = 0; i < args.length; i++) {
   if (args[i] === '--prune-removed') { pruneRemoved = true; continue; }
   if (args[i] === '--rollback') { rollback = true; continue; }
   if (args[i] === '--yes' || args[i] === '-y') { yesFlag = true; continue; }
+  if (args[i] === '--skip-context-commonization') { skipContextCommonization = true; continue; }
   if (!projectPath && !args[i].startsWith('--')) { projectPath = args[i]; continue; }
 }
 
 if (!projectPath) {
-  console.error('Usage: bun scripts/upgrade-project.ts <project-path> [--variant <variant>] [--platform claude|antigravity|both] [--dry-run] [--prune-removed] [--rollback] [--yes]');
+  console.error('Usage: bun scripts/upgrade-project.ts <project-path> [--variant <variant>] [--platform claude|antigravity|both] [--dry-run] [--prune-removed] [--rollback] [--yes] [--skip-context-commonization]');
   if (import.meta.main) {
     process.exit(1);
   }
@@ -395,31 +433,71 @@ function fileHash(filePath: string): string {
  */
 function reconcileScriptRegistry(scriptRelPath: string): void {
   const registryPath = join(projectDir, 'scripts', 'SCRIPTS.md');
-  if (!existsSync(registryPath) || !existsSync(scriptsMd)) return;
+  if (!existsSync(registryPath)) return;
   // Registry rows key scripts by path relative to scripts/ (no "scripts/" prefix).
   const name = scriptRelPath.replace(/^scripts\//, '');
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const rowLookupRe = new RegExp(`^\\| \`${escaped}\` \\| [^|]*\\| ([^|]+) \\|.*\\r?$`, 'm');
 
-  const l0Content = readFileSync(scriptsMd, 'utf8');
-  const l0RowMatch = l0Content.match(new RegExp(`^\\| \`${escaped}\` \\| [^|]*\\| ([^|]+) \\|.*$`, 'm'));
-  if (!l0RowMatch) return; // not in L0 registry (e.g. a variant-local script) — nothing to reconcile
-  const l0Version = l0RowMatch[1].trim();
-  const l0FullRow = l0RowMatch[0];
+  // Row source: L0 (workspace root) registry first, then the L1 common-template
+  // registry. Scripts delivered from templates/common but registered upstream
+  // under a variant-prefixed name (e.g. `co-deck/handbook/check-links.ts` at L0
+  // vs plain `handbook/check-links.ts` in the project) only match the common
+  // registry, so the fallback is what makes the handbook/ suite reconcile.
+  let sourceRow: string | null = null;
+  let sourceVersion = '';
+  for (const registryFile of [scriptsMd, join(commonDir, 'scripts', 'SCRIPTS.md')]) {
+    if (!existsSync(registryFile)) continue;
+    const match = readFileSync(registryFile, 'utf8').match(rowLookupRe);
+    if (match) {
+      sourceRow = match[0];
+      sourceVersion = match[1].trim();
+      break;
+    }
+  }
+  if (!sourceRow) return; // not in any upstream registry (e.g. a variant-local script) — nothing to reconcile
+
+  // Prefer the version of the file actually being delivered (the resolved
+  // template copy) over the registry-lookup version: L0's row can be newer
+  // than the L1 snapshot the project receives, and writing L0's number would
+  // trip lifecycle-sync-audit Check A (@version vs registry row).
+  const tplFile = resolveTemplate(scriptRelPath);
+  const fileVersion = (tplFile && existsSync(tplFile)) ? extractScriptVersion(tplFile) : '';
+  const targetVersion = fileVersion || sourceVersion;
 
   const content = readFileSync(registryPath, 'utf8');
-  const rowRe = new RegExp(`^(\\| \`${escaped}\` \\| [^|]*\\| )[^|]+( \\|.*)$`, 'm');
-  if (rowRe.test(content)) {
-    const updated = content.replace(rowRe, `$1${l0Version}$2`);
-    if (updated !== content) {
-      writeFileSync(registryPath, updated, 'utf8');
-      console.log(`    📝 scripts/SCRIPTS.md: ${name} → v${l0Version}`);
+  // Consume the trailing newline on removal matches so dropped duplicate rows
+  // don't leave blank lines inside the markdown table.
+  const rowRe = new RegExp(`^\\| \`${escaped}\` \\| [^|]*\\| ([^|]+) \\|.*\\r?(?:\\n|$)`, 'gm');
+  let seen = 0;
+  let removed = 0;
+  const deduped = content.replace(rowRe, (matched, ver) => {
+    seen++;
+    if (seen > 1) { removed++; return ''; }
+    // Replace the version cell textually. Deliberately NOT a `$1`-template
+    // replacement string: under Bun/JSC a `$<digit>` sequence in the
+    // replacement is resolved against capture groups (or emitted literally
+    // when out of range), so `$1` + `1.19.0` corrupted rows into `$11.19.0…`.
+    return matched.replace(`| ${ver.trim()} |`, `| ${targetVersion} |`);
+  });
+  if (seen > 0) {
+    if (deduped !== content) {
+      writeFileSync(registryPath, deduped, 'utf8');
+      console.log(`    📝 scripts/SCRIPTS.md: ${name} → v${targetVersion}${removed > 0 ? ` (removed ${removed} stale duplicate row(s))` : ''}`);
     }
     return;
   }
 
-  // No row at all — append the L0 row verbatim after the last `| \`*.ts\` |` row
+  // No row at all — append the upstream row after the last `| \`*.ts\` |` row
   // INSIDE the registry table (stop at the first `#### \`` detail-section header,
   // whose flag tables also contain `| \`*.ts\` |`-shaped rows).
+  // Rows marked layer `L0`/`L0-only` are invisible to verify-scripts at project
+  // context (L0_ONLY_LAYERS skip) while the file itself ships on disk, which
+  // reads as "Unregistered script" — rewrite the layer cell to `L3` on append.
+  const appendedRow = sourceRow.replace(
+    /^(\| `[^`]+` \| [^|]*\| [^|]*\| [^|]*\| [^|]*\| [^|]*\| )([^|]+)(\|)/,
+    (_m, head, layer, tail) => /^L0(-only)?$/.test(layer.trim()) ? `${head}L3${tail}` : _m,
+  );
   const lines = content.split('\n');
   let lastRowIdx = -1;
   for (let i = 0; i < lines.length; i++) {
@@ -427,9 +505,9 @@ function reconcileScriptRegistry(scriptRelPath: string): void {
     if (/^\|\s*`[^`]+\.ts`\s*\|/.test(lines[i])) lastRowIdx = i;
   }
   if (lastRowIdx >= 0) {
-    lines.splice(lastRowIdx + 1, 0, l0FullRow);
+    lines.splice(lastRowIdx + 1, 0, appendedRow);
     writeFileSync(registryPath, lines.join('\n'), 'utf8');
-    console.log(`    📝 scripts/SCRIPTS.md: registered ${name} (v${l0Version})`);
+    console.log(`    📝 scripts/SCRIPTS.md: registered ${name} (v${targetVersion})`);
   }
 }
 
@@ -799,6 +877,10 @@ const VARIANT_DOCS_SYNC: string[] = [
   'docs/context.md',
   'docs/engagement-orchestration.md',
   'docs/team-configuration-guide.md',
+  // v1.19.1: co-develop privacy design checklist (generalized from the
+  // harness-assessment privacy ADRs; EN + KO mirrors version-bump together)
+  'docs/privacy-design-checklist.md',
+  'docs/privacy-design-checklist_ko.md',
 ];
 for (const rel of VARIANT_DOCS_SYNC) {
   const src = resolveTemplate(rel);
@@ -845,6 +927,80 @@ for (const rel of VARIANT_DOCS_SYNC) {
       syncChanged++;
     } else {
       console.log(`  OK     ${rel}  (hash match)`);
+    }
+  }
+}
+console.log('');
+
+// ── CONTEXT_COMMONIZATION: variant-context boilerplate prune (v1.20.0) ─────────
+// docs/designs/2026-09-10-context-purification-design.md D2. After VARIANT_DOCS_SYNC
+// refreshes docs/context.md, near-duplicate sections in docs/<variant>.context.md
+// become redundant. For each top-level section (COMMON-* zones, VARIANT-INJECT
+// blocks, and the version footer excluded), token-overlap similarity vs the common
+// template decides: >= W2_REMOVE_THRESHOLD → REMOVE; >= W2_REVIEW_FLOOR → REVIEW
+// (manual Context Commonization Review per ADR-0050 Part 3 — NEVER auto-removed);
+// below → untouched, silent. Comparison reads the TEMPLATE source so --dry-run
+// sees the same verdicts the apply run would produce.
+console.log('--- CONTEXT_COMMONIZATION: variant context commonization (boilerplate prune) ---');
+if (skipContextCommonization) {
+  console.log('  SKIP   (--skip-context-commonization)');
+} else {
+  const variantContextPath = join(projectDir, 'docs', `${variant}.context.md`);
+  const commonContextSrc = resolveTemplate('docs/context.md');
+  if (!existsSync(variantContextPath)) {
+    console.log(`  SKIP   (no variant context file): docs/${variant}.context.md`);
+  } else if (!commonContextSrc) {
+    console.log('  SKIP   (no common docs/context.md template)');
+  } else {
+    const commonSections = splitIntoSections(stripVersionFooter(readFileSync(commonContextSrc, 'utf8')));
+    const originalContent = readFileSync(variantContextPath, 'utf8');
+    const { body: originalBody, footer: originalFooter } = splitOffVersionFooter(originalContent);
+    const originalLines = originalBody.split('\n');
+    const sections = splitContextFileSections(originalBody, { includeVariantInject: true });
+
+    // Collect removal ranges (original line coordinates). Sections whose body
+    // contains managed-zone content are never auto-removed — deleting them would
+    // eat engine-managed blocks; they downgrade to REVIEW.
+    const removalRanges: Array<{ start: number; end: number; heading: string; similarity: number; matched: string | null }> = [];
+    for (const { section, headingInManagedZone, bodyContainedManagedZone, startLine, endLineExclusive } of sections) {
+      if (headingInManagedZone) continue;
+      const verdict = classifyCommonizationSection(section, commonSections, {
+        removeThreshold: W2_REMOVE_THRESHOLD,
+        reviewFloor: W2_REVIEW_FLOOR,
+      });
+      if (verdict.verdict === 'remove') {
+        if (bodyContainedManagedZone) {
+          console.log(`  REVIEW (manual commonization): ${section.heading} (overlap ${verdict.maxSimilarity.toFixed(2)} — kept: section contains managed COMMON-*/VARIANT-INJECT content)`);
+        } else {
+          removalRanges.push({ start: startLine, end: endLineExclusive, heading: section.heading, similarity: verdict.maxSimilarity, matched: verdict.matchedCommonHeading });
+        }
+      } else if (verdict.verdict === 'review') {
+        console.log(`  REVIEW (manual commonization): ${section.heading} (overlap ${verdict.maxSimilarity.toFixed(2)})`);
+      }
+      // verdict 'keep': below report floor — untouched, silent
+    }
+
+    if (removalRanges.length === 0) {
+      console.log('  OK     no near-duplicate sections to remove');
+    } else {
+      // Splice removal ranges out, then restore blank-line hygiene (collapse any
+      // 2+ consecutive blank lines left behind down to one).
+      const removed = new Set<number>();
+      for (const range of removalRanges) {
+        for (let i = range.start; i < range.end; i++) removed.add(i);
+        console.log(`  ${dryTag}REMOVE docs/${variant}.context.md ## ${range.heading} (overlap ${range.similarity.toFixed(2)} vs common ## ${range.matched})`);
+      }
+      const keptLines = originalLines.filter((_, i) => !removed.has(i))
+        .join('\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .split('\n');
+      const cleaned = keptLines.join('\n').replace(/^\n+|\n+$/g, '');
+      let mergedContent = cleaned + originalFooter;
+      // preserve EOF newline hygiene so the write doesn't churn the final line
+      if (originalContent.endsWith('\n') && !mergedContent.endsWith('\n')) mergedContent += '\n';
+      if (!dryRun) writeFileSync(variantContextPath, mergedContent);
+      console.log(`  ${dryTag}WROTE: docs/${variant}.context.md (commonization)`);
+      syncChanged++;
     }
   }
 }
@@ -1002,7 +1158,7 @@ for (const subDir of scriptSubDirs) {
       // template copy wins, unconditionally (the integrity rule "core scripts
       // must not be modified" already forbids the local fork).
       console.log(`  ⚠️  DRIFT  ${rel}  ${projVer} (content differs from L1 at same version) — restored to canonical`);
-      if (!dryRun) copyFileSync(tplFile, projFile);
+      if (!dryRun) { copyFileSync(tplFile, projFile); reconcileScriptRegistry(rel); }
       console.log(`  ${dryTag}COPIED: ${rel}`);
       syncChanged++;
     } else {
@@ -1120,10 +1276,17 @@ function loadProjectAssetGate(): { skills: Set<string>; agents: Set<string> } | 
   try {
     const v = JSON.parse(readFileSync(gatePath, 'utf8'));
     const allow = Array.isArray(v?.skill_manifest?.allowlist) ? v.skill_manifest.allowlist as string[] : [];
+    const skills = Array.isArray(v?.skills) ? (v.skills as Array<{ name?: string; file?: string }>) : [];
     const agents = Array.isArray(v?.agents) ? (v.agents as Array<{ file?: string }>) : [];
-    if (allow.length === 0 && agents.length === 0) return null;
+    if (allow.length === 0 && skills.length === 0 && agents.length === 0) return null;
+    const skillNames = new Set(allow);
+    for (const skill of skills) {
+      if (skill.name) skillNames.add(skill.name);
+      const fileName = (skill.file ?? '').replace(/^skills\//, '').replace(/\/SKILL\.md$/, '');
+      if (fileName) skillNames.add(fileName);
+    }
     return {
-      skills: new Set(allow),
+      skills: skillNames,
       agents: new Set(agents.map((a) => (a.file ?? '').replace(/^agents\//, '')).filter(Boolean)),
     };
   } catch {
@@ -1650,7 +1813,10 @@ if (pruneRemoved) {
   ];
   for (const cat of pruneCategories) {
     if (!existsSync(cat.projDir)) continue;
-    // Collect all template file basenames
+    // Collect all template file basenames. For identity-separated/common-only
+    // projects, templates/<variant>/ may not exist; in that case the project's
+    // own variant.json is the authority for variant-owned agents/skills that
+    // must survive --prune-removed.
     const tplBasenames = new Set<string>();
     for (const td of cat.tplDirs) {
       if (!existsSync(td)) continue;
@@ -1663,6 +1829,15 @@ if (pruneRemoved) {
           if (f.endsWith(cat.ext)) tplBasenames.add(f);
         }
       }
+    }
+    if (cat.label === 'agents/' && assetGate) {
+      for (const agentFile of assetGate.agents) tplBasenames.add(agentFile);
+    }
+    if (cat.label === 'skills/') {
+      if (assetGate) {
+        for (const skill of assetGate.skills) tplBasenames.add(skill);
+      }
+      for (const skill of projectManifestSkills) tplBasenames.add(skill);
     }
     // Walk project dir recursively (for scripts/) or shallowly
     if (cat.isSkill) {
