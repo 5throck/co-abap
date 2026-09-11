@@ -2,12 +2,13 @@
 /**
  * pre-commit.ts — TS-based pre-commit hook.
  * Replaces the legacy bash/ps1 hooks.
- * @version 1.5.10
+ * @version 1.7.0
  */
 
 import { $ } from "bun";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { hasNonEnglish } from "../lib/language-guard.ts";
+import { localDateISO } from "../lib/local-date.ts";
 
 async function main() {
   const stagedOutput = await $`git diff --cached --name-only`.text();
@@ -38,7 +39,8 @@ async function main() {
   // 1. Auto-update Markdown "Last Updated" dates
   const mdStaged = staged.filter(f => f.toLowerCase().endsWith('.md'));
   if (mdStaged.length > 0) {
-    const today = new Date().toISOString().slice(0, 10);
+    // Local calendar day, not toISOString() (UTC) — see lib/local-date.ts (T-20260910-030).
+    const today = localDateISO();
     for (const file of mdStaged) {
       try {
         let content = readFileSync(file, 'utf-8');
@@ -53,7 +55,8 @@ async function main() {
 
   // 1-A. Auto-date CHANGELOG.md [Unreleased]
   if (staged.includes('CHANGELOG.md')) {
-    const today = new Date().toISOString().slice(0, 10);
+    // Local calendar day, not toISOString() (UTC) — see lib/local-date.ts (T-20260910-030).
+    const today = localDateISO();
     let content = readFileSync('CHANGELOG.md', 'utf-8');
     let lines = content.split('\n');
     let inUnreleased = false;
@@ -69,10 +72,25 @@ async function main() {
     await $`git add CHANGELOG.md`;
   }
 
-  // 2. Block .env files
-  const envStaged = staged.filter(f => /^\.env$|^\.env\.[^s]|(\/|\\)\.env$|(\/|\\)\.env\.[^s]/.test(f));
+  // 2. Block .env files (".env.example" / ".env.sample" templates are allowed)
+  const envStaged = staged.filter(f => /^\.env$|^\.env\.(?!example$|sample$)[^s]|(\/|\\)\.env$|(\/|\\)\.env\.(?!example$|sample$)[^s]/.test(f));
   if (envStaged.length > 0) {
     console.error("\x1b[31m[FAIL]\x1b[0m Attempt to commit .env file detected.");
+    process.exit(1);
+  }
+
+  // Tracked .env cleanup gate (T-20260910-015): staging a new .env is blocked
+  // above, but a .env committed before this hook existed stays tracked — and
+  // gitleaks' git-mode scans skip it via the .gitleaks.toml path allowlist, so
+  // nothing else would ever flag it. Block every commit until it is untracked.
+  const trackedEnv = (await $`git ls-files -- '*.env' '**/.env'`.nothrow().text())
+    .split('\n')
+    .map((l: string) => l.trim())
+    .filter((l: string) => /(^|\/)\.env$/.test(l));
+  if (trackedEnv.length > 0) {
+    console.error("\x1b[31m[FAIL]\x1b[0m Tracked .env file detected — commit blocked:");
+    for (const f of trackedEnv) console.error(`  - ${f}`);
+    console.error("\x1b[33m[INFO]\x1b[0m Untrack it with 'git rm --cached <file>' (keep the file on disk), then commit the removal.");
     process.exit(1);
   }
 

@@ -56,14 +56,17 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 
 | script | source | version | status | removal-date | security-advisory | layer | pair |
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
+| `helpers/upgrade-versions.ts` | L0+L1 | 1.0.1 | active | —| —| L0+L1 | —|
+| `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.22.0 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `agent-lifecycle-audit.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
+| `agent-lifecycle-audit.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `agent-list.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `archive-memory.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `audit.ts` | L0 | 2.32.0 | active | —| —| L0+L1 | —|
+| `audit.ts` | L0 | 2.34.1 | active | —| —| L0+L1 | —|
 | `cleanup-completed-md.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `clear-pm-approval.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `compile-tokens.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -71,46 +74,17 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `retry-handler.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `setup-github-branch-protection.ts` | L0 | 1.0.1 | active | `--repo`, `--branch`, `--check` (repeatable), `--dry-run` | —| L0+L1 | —|
 | `sync-md.ts` | L0 | 1.3.1 | active | —| —| L0+L1 | —|
-| `sync-skills-to-l2.ts` | L0 | 1.0.1 | active | — | — | L0 | — |
-| `sync-skills.ts` | L0 | 1.4.1 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
+| `sync-skills.ts` | L0 | 1.5.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `audit-variant.ts` | L2 | 1.1.0 | active | — | — | variant | co-abap integrity checks (gitleaks allowlist, MCP SAP guard, AGENTS.md markers, wrapper import paths) |
-| `git-sync.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `install-bun.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `install-vsp.ts` | L0 | 1.1.0 | active | — | — | common | — |
-| `new-requirement.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `new-requirement.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `retry-handler.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `scratch-cleanup.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `scratch-cleanup.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `setup.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `sync-mcp.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `sync-mcp.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `sync-md.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `sync-skills.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `verify-skills.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `vsp-audit.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `vsp-publish.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `vsp-publish.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `vsp-task.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `create-l3-scaffold.ts` | L0 | 1.12.5 | active | —| —| L0 | —|
-| `dev-sync.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
+| `dev-sync.ts` | L0 | 1.10.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch-serial.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
-| `fix-script-versions.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `generate-l3-readme.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
-| `generate-scripts-readme.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
-| `generate-skill-graph.ts` | L0 | 1.8.5 | active | —| —| L0+L1 | —|
-| `generate-version-manifest.ts` | L0 | 1.3.0 | active | —| —| L0 | —|
-| `fix-script-versions.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
+| `generate-skill-graph.ts` | L0 | 1.10.0 | active | —| —| L0+L1 | —|
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `generate-l3-readme.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
-| `generate-scripts-readme.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
-| `generate-version-manifest.ts` | L0 | 1.3.0 | active | —| —| L0 | —|
 | `handbook/apply-handbook-theme.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/build-search-index.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/check-a11y.ts` | L0 | 1.0.0 | active | — | — | common | — |
@@ -134,137 +108,60 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `handbook/update-footers.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/validate-handbook.ts` | L0 | 1.1.0 | active | — | — | common | — |
 | `handbook/validate-nav.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `helpers/beta-lifecycle.ts` | L0 | 1.2.0 | active | —| —| L0 | —|
-| `helpers/generate-variant.ts` | L0 | 1.13.2 | active | —| —| L0 | —|
-| `helpers/agent-promote.ts` | L0 | 0.1.1 | experimental | —| —| L0 | —|
-| `helpers/agent-similarity-analyzer.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
-| `helpers/golden-reference-loader.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/inject-skills.ts` | L0 | 1.0.2 | active | —| —| L0 | —|
-| `helpers/integration-helpers.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
-| `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0 | —|
-| `helpers/lifecycle-governance.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
 | `helpers/extends-validator.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `helpers/upgrade-versions.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
 | `helpers/merge-frontmatter.ts` | L0 | 1.8.6 | active | —| —| L0+L1 | —|
 | `helpers/security-validator.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
-| `helpers/context-sections.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `helpers/markers.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
+| `helpers/context-sections.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `helpers/pm-md-parser.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `helpers/variant-governance-rules.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
-| `helpers/registries/variant-type-registry.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/registries/capability-registry.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/registries/promotion-policy.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/registries/validation-policy.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/registries/index.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/variant-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/game-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/security-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/development-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/design-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/consulting-plugin.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/plugins/collaboration-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/lecture-plugin.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/plugins/index.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/workspace-integration.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/reconcile-with-l0-l1.ts` | L0 | 1.3.1 | active | —| —| L0 | —|
-| `helpers/normalize-agent-skills.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/prune-country-scoped-assets.ts` | L0 | 0.3.0 | active | —| —| L0 | —|
-| `helpers/scan-l3-project.ts` | L0 | 1.3.0 | active | —| —| L0 | —|
-| `helpers/substitute-placeholders.ts` | L0 | 1.2.0 | active | —| —| L0 | —|
 | `helpers/template-utils.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
-| `helpers/rollback-partial-project.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/template-validation.ts` | L0 | 1.0.2 | active | —| —| L0 | —|
-| `helpers/update-variant-lifecycle.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
-| `helpers/validate-output.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
-| `helpers/validate-platform-parity.ts` | L0 | 1.1.1 | active | —| —| L0 | —|
-| `helpers/ticket-schema.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `helpers/ticket-store.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
 | `tests/apply-handbook-theme.test.ts` | L0 | 1.0.1 | active | — | — | common | — |
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
-| `validators/types.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/variant-json-validator.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/extends-validator-wrapper.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/capability-validator.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/schema-validator.ts` | L0 | 1.3.0 | active | —| —| L0 | —|
-| `validators/orphan-reference-validator.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/duplicate-validator.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/platform-parity-validator.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `validators/index.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `helpers/write-scripts-snapshot.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
-| `hooks/_test-consumer.ts` | L0 | 1.0.0 | active | —| —| L0-only | —|
-| `hooks/_test-module.ts` | L0 | 1.0.0 | active | —| —| L0-only | —|
-| `hooks/agent-model-gate.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `hooks/pre-commit.ts` | L0 | 1.5.10 | active | —| —| L0+L1 | —|
-| `hooks/pre-push.ts` | L0 | 1.2.9 | active | —| —| L0+L1 | —|
-| `ingest-external-skills.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `ingest-security-frameworks.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `l3-to-variant-pipeline.ts` | L0 | 1.15.0 | active | —| —| L0 | —|
-| `regenerate-agents-md.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
-| `lib/agent-override-merge.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
+| `hooks/pre-commit.ts` | L0 | 1.7.0 | active | —| —| L0+L1 | —|
+| `hooks/pre-push.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `lib/error-handling.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
+| `lib/error-handling.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `lib/language-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/pipeline-state.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `lib/pipeline-state.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/propagation-map-schema.ts` | L0 | 1.2.0 | active | —| —| L0 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `lifecycle-sync-audit.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
-| `list-template-versions.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
+| `lifecycle-sync-audit.ts` | L0 | 1.7.1 | active | —| —| L0+L1 | —|
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `new-project.ts` | L0 | 1.9.0 | active | —| —| L0 | —|
-| `remove-project.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
-| `project-to-variant.ts` | L0 | 1.3.0 | active | `--source`, `--target`, `--dry-run`, `--force`, `--design-doc`, `--threshold-files`, `--threshold-dirs` | —| L0 | —|
-| `promote-context-section.ts` | L0 | 1.0.0 | active | `--heading`, `--variants`, `--source`, `--after-heading`, `--dry-run` | —| L0 | —|
-| `propagate-to-templates.ts` | L0 | 2.6.0 | active | `--apply`, `--prune`, `--dry-run`, `--check-drift`, `--governance-l1`, `--docs`, `--include-disabled`, `--marker-rewrite` | —| L0 | —|
 | `qa-gate.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.0.4 | active | —| —| L0+L1 | —|
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `skill-dependency-analysis.ts` | L0 | 1.0.2 | active | —| —| L0 | —|
-| `spec-backfill.ts` | L0 | 1.0.0 | active | `--dry-run`, `--check` | —| L0 | —|
-| `spec-register.ts` | L0 | 1.1.0 | active | `--file`, `--source`, `--update`, `--status`, `--list`, `--ref`, `--id` | —| L0 | —|
-| `skill-lifecycle-audit.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `skill-lifecycle-audit.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.0.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
 | `sync-agent-status.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.0.1 | active | — | — | L0+L1 | — |
-| `sync-template-deps.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `tag-template.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
-| `team-builder.ts` | L0 | 1.2.2 | active | —| —| L0+L1 | —|
-| `test-platform-parity.ts` | L0 | 0.2.4 | active | —| —| L0+L1 | —|
-| `test-new-project.ts` | L0 | 1.0.4 | active | —| —| L0 | —|
-| `test-extends-validator.ts` | L0 | 1.0.1 | active | —| —| L0 | —|
-| `test-l3-to-variant-promotion.ts` | L0 | 1.1.0 | active | —| —| L0 | —|
+| `team-builder.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `test-runner.ts` | L0 | 1.1.1 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `ticket.ts` | L0 | 1.1.0 | active | `create --not-before`, `list --kind`, `list --ready` | —| L0 | —|
-| `upgrade-project.ts` | L0 | 1.20.0 | active | `--variant`, `--platform`, `--dry-run`, `--prune-removed`, `--rollback`, `--yes` | —| L3 | —|
-| `variant-feature.ts` | L0 | 1.0.0 | active | `--variant`, `--feature`, `--type` | —| L0 | —|
-| `validate-agents.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `validate-agents.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `validate-docs-links.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `validate-md-language.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
+| `validate-docs-links.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `validate-md-language.ts` | L0 | 1.10.0 | active | —| —| L0+L1 | —|
 | `validate-model-registry.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `validate-skills.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `validate-skills.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
 | `validate-decisions.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.21.3 | active | —| —| L0 | —|
-| `verify-country-prune.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
-| `verify-adr-governance.ts` | L0 | 1.4.0 | active | —| —| L0 | —|
+| `validate-templates.ts` | L0 | 1.22.0 | active | —| —| L0 | —|
 | `verify-agent-deliverables.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `verify-skill-graph.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
+| `verify-skill-graph.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `verify-memory.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `verify-new-project-tests.ts` | L0 | 1.0.3 | active | —| —| L0 | —|
 | `verify-platform-lifecycle.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
 | `verify-readme-sync.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `verify-scripts.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
-| `verify-template-integrity.ts` | L0 | 1.0.0 | active | —| —| L0 | —|
 | `validate-pm-extends.ts` | L0 | 0.3.1 | active | —| —| L0+L1 | —|
 | `validate-variant-readiness.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `typecheck.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `lib/local-date.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 
 ---
 
