@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * pre-push.ts — TS-based pre-push hook.
- * @version 1.2.9
+ * @version 1.3.0
  */
 
 import { $ } from "bun";
@@ -33,6 +33,62 @@ async function readPushRefUpdates(): Promise<PushRefUpdate[]> {
   } catch {
     return [];
   }
+}
+
+// Collect the file paths changed by the commits being pushed, so only the
+// touched test files are re-run (T-20260910-025). Scoping mirrors the
+// gitleaks scan: existing remote refs diff as a range, new branches diff
+// each commit not reachable from any remote ref.
+async function collectPushedChangedFiles(refUpdates: PushRefUpdate[]): Promise<string[]> {
+  const files = new Set<string>();
+  for (const ref of refUpdates) {
+    if (ref.localOid === ZERO_OID) continue; // deletion pushes no commits
+    if (!/^[0-9a-f]{40}$/.test(ref.localOid)) continue; // validate before shell interpolation
+    if (ref.remoteOid !== ZERO_OID && /^[0-9a-f]{40}$/.test(ref.remoteOid)) {
+      // Existing remote ref — net diff of the pushed range
+      const range = `${ref.remoteOid}..${ref.localOid}`;
+      const out = await $`git diff --name-only ${range}`.nothrow().text();
+      for (const line of out.split('\n')) {
+        const f = line.trim();
+        if (f) files.add(f);
+      }
+    } else {
+      // New branch with no remote counterpart — list each pushed commit
+      // and diff it individually (same scope the gitleaks scan uses here).
+      const shas = (await $`git rev-list ${ref.localOid} --not --remotes`.nothrow().text())
+        .split('\n').map((s: string) => s.trim()).filter(Boolean);
+      for (const sha of shas) {
+        if (!/^[0-9a-f]{40}$/.test(sha)) continue;
+        const out = await $`git diff-tree --no-commit-id --name-only -r ${sha}`.nothrow().text();
+        for (const line of out.split('\n')) {
+          const f = line.trim();
+          if (f) files.add(f);
+        }
+      }
+    }
+  }
+  return [...files];
+}
+
+// Prepare the computed rev-list arguments for the gitleaks shell template.
+// Every token must be a git object name by construction — a 40-hex SHA, a
+// `^sha` exclusion, a `sha..sha` range, or HEAD — so allowlist-validate each
+// one and return them joined for the single `--log-opts` value. Throws on any
+// foreign token; the caller's catch block then blocks the push.
+//
+// Bun Shell note: interpolations reach the command verbatim as a single argv
+// element (no word-splitting, no re-parsing), so — unlike POSIX shells —
+// escaping here means validating the value, not adding quote characters
+// (literal quotes would become part of the flag value and corrupt it). This
+// wrapper also satisfies the audit's bun-shell-compound-interpolation
+// allowlist (shellEscape*/shellQuote*/escapeShellArg*).
+function shellEscapeRevListArgs(args: string[]): string {
+  for (const arg of args) {
+    if (!/^(?:[0-9a-f]{40}(?:\.\.[0-9a-f]{40})?|\^[0-9a-f]{40}|HEAD)$/.test(arg)) {
+      throw new Error(`unexpected rev-list argument: ${arg}`);
+    }
+  }
+  return args.join(" ");
 }
 
 async function main() {
@@ -79,8 +135,11 @@ async function main() {
         // Deduplicate and run gitleaks against the commit list
         const commitShas = (await $`git rev-list ${revListArgs}`.text()).trim();
         if (commitShas) {
-          const uniqueShas = [...new Set(commitShas.split('\n'))].join(' ');
-          await $`gitleaks detect --redact --log-opts -- ${uniqueShas}`;
+          // gitleaks forwards --log-opts verbatim to `git log`, so pass the exact
+          // rev-list arguments (ranges + `^sha` exclusions) as ONE flag value.
+          // The previous form (`--log-opts -- ${uniqueShas}`) made the literal `--`
+          // the flag value, so the computed SHAs never reached gitleaks.
+          await $`gitleaks detect --redact --log-opts=${shellEscapeRevListArgs(revListArgs)}`;
         }
       }
       // Tag-only or deletion pushes: nothing to scan, pass through
@@ -102,11 +161,15 @@ async function main() {
     console.log("  ✅ Regex secret scan passed (install gitleaks for full coverage)");
   }
 
-  // When running via /sync (SYNC_ACTIVE=1), dev-sync.ts already ran full audit before commit — skip here to avoid duplicate execution.
+  // Lifecycle audit only (T-20260910-025): --lifecycle-only is the fastest
+  // sanctioned audit mode (the same gate the pre-commit hook runs). When
+  // running via /sync (SYNC_ACTIVE=1), dev-sync.ts already ran the full audit
+  // before commit — skip here to avoid duplicate execution. The full
+  // workspace audit runs in CI (test.yml "Workspace audit").
   const auditAlreadyRan = process.env.SYNC_ACTIVE === "1";
   if (!auditAlreadyRan) {
     try {
-      await $`bun scripts/audit.ts`;
+      await $`bun scripts/audit.ts --lifecycle-only`;
     } catch {
       console.error("\n\x1b[31m❌ Audit failed — push blocked. Fix issues above before pushing.\x1b[0m");
       process.exit(1);
@@ -115,13 +178,24 @@ async function main() {
     console.log("  [audit skipped — already ran in dev-sync pipeline]");
   }
 
-  console.log("=== pre-push integration tests ===");
-  try {
-    console.log("Running integration tests...");
-    await $`bun scripts/test-runner.ts integration`;
-  } catch {
-    console.error("\n\x1b[31m❌ Integration tests failed — push blocked. Fix test failures before pushing.\x1b[0m");
-    process.exit(1);
+  // Changed-path tests (T-20260910-025): the full integration suite moved to
+  // CI (test.yml "Run integration tests" runs `bun run test` on every
+  // push/PR). Locally, only re-run the test files touched by the pushed
+  // commits; when the push touches no test files, skip tests entirely.
+  console.log("=== pre-push changed-path tests ===");
+  const changedTestFiles = (await collectPushedChangedFiles(refUpdates))
+    .map(f => f.replace(/\\/g, '/'))
+    .filter(f => f.startsWith('tests/') && f.endsWith('.test.ts'));
+  if (changedTestFiles.length > 0) {
+    try {
+      console.log(`Running ${changedTestFiles.length} changed test file(s)...`);
+      await $`bun test ${changedTestFiles}`;
+    } catch {
+      console.error("\n\x1b[31m❌ Changed-path tests failed — push blocked. Fix test failures before pushing.\x1b[0m");
+      process.exit(1);
+    }
+  } else {
+    console.log("  [no test files changed — tests skipped; full integration suite runs in CI]");
   }
 
   // Tag-only pushes bypass the branch protection check — tags are not commits to main.

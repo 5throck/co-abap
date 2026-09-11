@@ -172,11 +172,6 @@
       "layer": "L3"
     },
     {
-      "id": "meeting",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
       "id": "meeting-facilitation",
       "type": "skill",
       "layer": "L3"
@@ -1016,12 +1011,6 @@
       "type": "references",
       "from": "i18n-specialist",
       "to": "translate",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "meeting",
-      "to": "meeting-facilitation",
       "source": "prose"
     },
     {
