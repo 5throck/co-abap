@@ -1340,6 +1340,12 @@
       "source": "procedure_schema"
     },
     {
+      "type": "references",
+      "from": "project-review",
+      "to": "validate-docs-links",
+      "source": "prose"
+    },
+    {
       "type": "enables",
       "from": "research-analysis",
       "to": "documentation-writing",
