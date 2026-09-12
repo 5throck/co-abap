@@ -110,10 +110,18 @@ Interact with spawned agents via their unique `conversationID`.
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Gemini/Antigravity's model-ID mapping (overridden per subagent invocation when appropriate):
 - **High-tier** (Design/Planning) → `gemini-3.1-pro` (Parameter: `thinking_level="medium"`)
-- **Medium-tier** (Review/QA) → `gemini-3.7-flash` (no thinking parameter)
-- **Low-tier** (Execution/Coding) → `gemini-3.7-flash` (no thinking parameter)
+- **Medium-tier** (Review/QA) → `gemini-3.8-flash` (no thinking parameter)
+- **Low-tier** (Execution/Coding) → `gemini-3.8-flash` (no thinking parameter)
 
 ---
+
+<!-- COMMON-GEMINI:START -->
+#### Cost Optimization (3-Tier Model Strategy)
+The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Gemini/Antigravity's model-ID mapping (overridden per subagent invocation when appropriate):
+- **High-tier** → `gemini-3.1-pro` (Parameter: `thinking_level="medium"`)
+- **Medium-tier** → `gemini-3.8-flash` (no thinking parameter)
+- **Low-tier** → `gemini-3.8-flash` (no thinking parameter)
+<!-- COMMON-GEMINI:END -->
 
 <!-- COMMON-GEMINI:START -->
 ### 4. Language Policy for Documentation
@@ -183,6 +191,8 @@ Before editing any file for the **FIRST time in a session**, the agent MUST:
 |----------|:-----------:|---------|
 | Gemini CLI | ✅ Hook (automatic) | BeforeTool `deny` mode — blocked until agent investigates |
 | Antigravity | ✅ Prompt (manual) | Hooks do not fire — agent self-enforces |
+| Codex CLI | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0075) |
+| Codex Desktop App | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0075) |
 
 If the hook is not active (Antigravity), agents must still follow the 4-step process before making first edits.
 <!-- COMMON-GEMINI:END -->
@@ -286,7 +296,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-08-28 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-09-12 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,

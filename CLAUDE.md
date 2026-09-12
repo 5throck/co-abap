@@ -95,30 +95,6 @@ Config file: `.mcp.json` (project root) - auto-loaded by both the CLI and the De
 **Relationship to execution plan table**: teammateMode controls parallel execution mode. The execution plan table defines the multi-agent task dispatch.
 <!-- COMMON-CLAUDE:END -->
 
-### 4.5 Skill Resolution Priority
-
-When a user request matches a skill trigger, apply this priority order — **enforced every session, regardless of platform**:
-
-| Priority | Source | Location |
-|----------|--------|----------|
-| **1 (highest)** | Local project skills | `skills/<name>/SKILL.md` in the current working directory |
-| **2** | Platform config skills | `.gemini/skills/` or `.claude/skills/` in the project root |
-| **3 (lowest)** | Global plugin skills | e.g., `superpowers/brainstorming`, `superpowers/writing-plans` |
-
-**Rule**: If a local skill's `metadata.triggers` matches the user request, use it — do **not** fall through to a global plugin with overlapping intent.
-
-When ambiguous, prefer the local skill and confirm intent with the user.
-
-### 5. Agent Dispatch Rules
-
-**MANDATORY PM GATEWAY**: All specialist agent dispatch MUST go through PM.
-
-For the **4-level enforcement model**, **mandatory criteria**, **execution plan format**, and **phase determination**, see [AGENTS.md §3 and §5](AGENTS.md).
-
-#### Claude Code-Specific Dispatch
-
-Before any multi-agent dispatch (2+ agents), PM **must** output an execution plan table prior to invoking the `Agent` tool.
-
 <!-- COMMON-CLAUDE:START -->
 ### 4. Language Policy for Documentation
 
@@ -142,33 +118,6 @@ lang_reason: legal # legal | source-material | proper-noun
 When writing Korean documentation or Korean translation output, prefer native Korean words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`. Loanwords effectively settled in Korean (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established technical terms remain permitted; clarity takes precedence over forced nativization. New Korean content applies this immediately; existing Korean documents are nativized incrementally (touched sections only, no bulk rewrites).
 <!-- COMMON-CLAUDE:END -->
 
-### 6. Native Sub-agents (`Agent` Tool)
-Use the native `Agent` tool to spawn sub-agents for parallel or isolated tasks. Sub-agents load their role-based configurations from `agents/<name>.md`.
-
-> **Agent Architecture**: See [docs/context.md](docs/context.md) for governance rules.
-> **Agent Roster**: See [AGENTS.md](AGENTS.md) for the canonical index of all available agents (e.g. `agents/co-analyst.md`).
-
-**Agent Dispatch** - use the `Agent` tool (not a bash CLI command):
-```
-Agent(
-  model = "haiku", // Use short alias: opus, sonnet, or haiku
-  description = "Code-writer for serial implementation",
-  prompt = "You are [agent]. [paste agents/<name>.md content here]\n\nTask: ..."
-)
-```
-
-> **Registry name → `model` parameter mapping**: `docs/workspace-schema.json` names models by full registry ID (e.g. `claude-opus-5-0`) for cross-platform documentation. The native `Agent` tool's `model` parameter only accepts the short aliases `sonnet | opus | haiku | fable`. When dispatching, translate the agent's tier to its registry model, then to the matching alias: High → `claude-opus-5-0` → `model = "opus"`; Medium → `claude-sonnet-5-0` → `model = "sonnet"`; Low → `claude-haiku-4-5` → `model = "haiku"`. Omitting `model` lets the subagent fall back to its frontmatter (`model: inherit`), which inherits the parent session's model instead of the tier-appropriate one — always set `model` explicitly to actually get the cost-tier benefit.
-
-When dispatching subagents defined in `agents/*.md`, translate their configured tier into the corresponding short alias above.
-
-> Loop and correct if review errors are flagged - maximum **3 iterations** before escalating to the user.
-
-#### Cost Optimization (3-Tier Model Strategy)
-The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Claude Code's model-ID mapping (overridden per agent invocation when appropriate):
-- **High-tier** (Design/Planning) → `claude-opus-5-0` → `model = "opus"`
-- **Medium-tier** (Review/QA) → `claude-sonnet-5-0` → `model = "sonnet"`
-- **Low-tier** (Execution/Coding) → `claude-haiku-4-5` → `model = "haiku"`
-
 <!-- COMMON-CLAUDE:START -->
 ## Execution Plan Boilerplate
 
@@ -178,6 +127,43 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- Note: `fable` is a forward-looking alias not yet registered in docs/workspace-schema.json; do not use until added to the schema -->
 
 **Claude Code execution**: Use the native `Agent` tool for specialist dispatch. See §6 (Native Sub-agents) and §7 (Native Plan Mode) in this file.
+<!-- COMMON-CLAUDE:END -->
+
+<!-- COMMON-CLAUDE:START -->
+Use the native `Agent` tool to spawn sub-agents for parallel or isolated tasks. Sub-agents load their role-based configurations from `agents/<name>.md`.
+
+> **Agent Architecture**: See [docs/context.md](docs/context.md) for governance rules.
+> **Agent Roster**: See [AGENTS.md](AGENTS.md) for the canonical index of all available agents.
+> **docs-writer tier**: Medium (claude-sonnet-5-0) — upgraded from Low per 2026-05-28 team restructuring.
+
+**Agent Dispatch** - use the `Agent` tool (not a bash CLI command):
+```
+Agent(
+  description   = "Implement automation script",
+  prompt        = "You are an automation engineer. [paste agents/automation-engineer.md content here]\n\nTask: Implement the script per the approved plan.",
+  subagent_type = "claude",  // platform agent type; embed the agents/<name>.md role definition in the prompt
+  model         = "haiku"    // automation-engineer is Low-tier (registry: claude-haiku-4-5) — see registry→model mapping below
+)
+```
+
+> **Registry name → `model` parameter mapping**: `docs/workspace-schema.json` and the tables above name models by full registry ID (e.g. `claude-opus-5-0`) for cross-platform documentation. The native `Agent` tool's `model` parameter only accepts the short aliases `sonnet | opus | haiku | fable`. <!-- Note: `fable` is a forward-looking alias not yet registered in workspace-schema.json --> When dispatching, translate the agent's tier to its registry model, then to the matching alias: High → `claude-opus-5-0` → `model = "opus"`; Medium → `claude-sonnet-5-0` → `model = "sonnet"`; Low → `claude-haiku-4-5` → `model = "haiku"`. Omitting `model` lets the subagent fall back to its frontmatter (`model: inherit`), which inherits the parent session's model instead of the tier-appropriate one — always set `model` explicitly to actually get the cost-tier benefit.
+>
+> **Automated enforcement (Claude Code CLI only)**: `scripts/hooks/agent-model-gate.ts` runs as a `PreToolUse` hook (matcher: `Agent`) and asks for confirmation whenever an `Agent()` call dispatches one of the 8 workspace-root agents (`pm`, `architect`, `auditor`, `lifecycle-manager`, `automation-engineer`, `docs-writer`, `scaffolding-expert`, `security-expert`) without a valid `model` alias — this is the check that catches the High/Low-tier (`opus`/`haiku`) silent-fallback bug described above before it happens. L0-only; not propagated to `templates/common/` since variant projects have their own agent rosters without a workspace-wide tier registry.
+
+Each implementation task follows the **Phase 4 execution loop** (see [AGENTS.md - Subagent Roster](AGENTS.md#subagent-roster)):
+1. **automation-engineer** implements the changes (or code-writer for project-specific agents).
+2. **PM** verifies against acceptance criteria by running `bun scripts/audit.ts` directly.
+3. **Quality gate (audit script)** validates compliance.
+
+> Loop and correct if review errors are flagged - maximum **3 iterations** before escalating to the user.
+<!-- COMMON-CLAUDE:END -->
+
+<!-- COMMON-CLAUDE:START -->
+#### Cost Optimization (3-Tier Model Strategy)
+The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Claude Code's model-ID mapping (overridden per agent invocation when appropriate):
+- **High-tier** → `claude-opus-5-0`
+- **Medium-tier** → `claude-sonnet-5-0`
+- **Low-tier** → `claude-haiku-4-5`
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
@@ -232,8 +218,6 @@ If a custom slash command or background script returns a non-zero exit code:
 - All `scripts/` operational scripts are TypeScript (`.ts`) — run via `bun scripts/<name>.ts`. No `.sh/.ps1` counterparts (ADR-0036).
 - If a hook fails on Windows with "command not found", run it via Git Bash: `"C:\Program Files\Git\bin\bash.exe" .githooks/pre-commit`
 <!-- COMMON-CLAUDE:END -->
-
----
 
 <!-- COMMON-CLAUDE:START -->
 ## Git & PR Additions (Claude Code)
