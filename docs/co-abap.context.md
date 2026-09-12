@@ -274,7 +274,7 @@ MANDT = '001'                    -- never hardcode client
 
 ### Developer Quick Start (Task Lifecycle)
 
-For full project governance and role-based orchestration, refer to [AGENTS.md — Collaborative Workflow](../AGENTS.md).
+For full project governance and role-based orchestration, refer to [AGENTS.md — Collaborative Workflow](../AGENTS.md#agent-coordination-workflow-harness-advanced).
 
 ```powershell
 # 1. Initialize Task

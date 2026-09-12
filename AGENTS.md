@@ -6,7 +6,6 @@
 > Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI), or `.codex/config.toml` (Codex).
 
 > **Scope**: Agent role definitions live in [`agents/*.md`](agents/) — this file is the registry index and orchestration contract only.
-> Non-runtime reference documents also live in `agents/` ([handoff-spec.md](agents/handoff-spec.md), [handoff-spec_ko.md](agents/handoff-spec_ko.md)) — they are inter-agent handoff specifications, not dispatchable agents.
 > Shared engineering rules (memory logging, language, file isolation, post-write chain, git) live in [docs/context.md](docs/context.md).
 > Tool-specific overrides live in [CLAUDE.md](CLAUDE.md), [GEMINI.md](GEMINI.md), and [.codex/](.codex/).
 
@@ -165,7 +164,7 @@ Full behavioral rules, tool contracts, and output formats live in the linked `ag
 
 ## Agent Coordination & Orchestration Rules
 
-### 🔄 Agent Coordination Workflow (Harness Advanced)
+### Agent Coordination Workflow (Harness Advanced)
 
 1.  **Triage & Initial Research (PM & Subagents)**:
     *   The **Global PM** receives and classifies the request.
@@ -380,7 +379,7 @@ If the cross-module analysis reveals conflicting ACs (e.g., SD wants field X, FI
 
 ---
 
-*Last Updated: 2026-08-23 (rev 3)*
+*Last Updated: 2026-09-12 (rev 3)*
 
 
 ## Universal Baseline Behaviors
@@ -538,7 +537,7 @@ lang_reason: legal   # legal | source-material | proper-noun
 - `source-material`: Primary source quotations where English translation would compromise academic accuracy or meaning.
 - `proper-noun`: Files dominated by Korean proper nouns (institution/place/person names).
 
-*Note: Exception is NOT available for: agents/*.md, skills/*.md, context.md, CLAUDE.md, GEMINI.md, AGENTS.md, or any variant context.md file.*
+*Note: Exception is NOT available for: context.md, CLAUDE.md, GEMINI.md, AGENTS.md, or any variant context.md file. It IS available for `agents/*.md` and `skills/*.md` (with `lang_reason` declared).*
 
 ### Korean Plain-Language Preference (`순우리말`-First)
 When writing Korean documentation or Korean translation output, prefer native Korean words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`, `모음` over `컬렉션` in general prose.
@@ -562,4 +561,8 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 - **Core Script Standardization**: The core synchronization and validation scripts (`scripts/dev-sync.ts` and `scripts/audit.ts`) must remain standardized and identical across all templates and variants. Direct modification of these core scripts in L2 projects is strictly forbidden.
 - **Variant-Specific Audit Hook**: Variant projects requiring custom verification checks must implement them in a pluggable hook script located at `scripts/audit-variant.ts`.
 - **Integrity Enforcement**: During template reconciliation (`l3-to-variant-pipeline.ts`), any modified core scripts will be automatically detected and will fail the reconciliation.
+
+### Universal Design Gate (ADR-0074)
+
+Every code change at any tier (L0–L3) must carry spec activity: create/update a design doc at `docs/designs/<spec-id>-design.md` and register it (`bun scripts/spec-register.ts --file <design-doc> --source manual --status implemented`) before `/sync`. The sync-time spec-check (`audit.ts --spec-check`, dev-sync step 3.9) blocks commits without it; trivial changes use `--spec-exempt=E1..E5` (AGENTS.md §5.1.1). Project registries (`docs/specs/registry.json`) are add-if-missing seeds — upgrades never overwrite or prune project entries.
 <!-- COMMON-AGENTS:END -->

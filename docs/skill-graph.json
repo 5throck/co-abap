@@ -132,11 +132,6 @@
       "layer": "L3"
     },
     {
-      "id": "handoff-spec_ko",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
       "id": "i18n-audit",
       "type": "skill",
       "layer": "L3"
