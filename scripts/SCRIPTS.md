@@ -74,9 +74,9 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `retry-handler.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `setup-github-branch-protection.ts` | L0 | 1.0.1 | active | `--repo`, `--branch`, `--check` (repeatable), `--dry-run` | —| L0+L1 | —|
 | `sync-md.ts` | L0 | 1.3.1 | active | —| —| L0+L1 | —|
-| `sync-skills.ts` | L0 | 1.5.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
+| `sync-skills.ts` | L0 | 1.6.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `dev-sync.ts` | L0 | 1.10.0 | active | —| —| L0+L1 | —|
+| `dev-sync.ts` | L0 | 1.12.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch-serial.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
@@ -157,11 +157,13 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `verify-memory.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `verify-platform-lifecycle.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
 | `verify-readme-sync.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `verify-scripts.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
+| `verify-scripts.ts` | L0 | 1.6.1 | active | —| —| L0+L1 | —|
 | `validate-pm-extends.ts` | L0 | 0.3.1 | active | —| —| L0+L1 | —|
 | `validate-variant-readiness.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `typecheck.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `lib/local-date.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `spec-register.ts` | L0 | 1.1.0 | active | `--file`, `--source`, `--update`, `--status`, `--list`, `--ref`, `--id` | —| L0+L1 | —|
+| `lib/git-status.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 
 ---
 
