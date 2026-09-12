@@ -452,11 +452,6 @@
       "layer": "L3"
     },
     {
-      "id": "validate-docs-links",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
       "id": "zod-contract-gate",
       "type": "skill",
       "layer": "L3"
@@ -854,12 +849,6 @@
       "type": "references",
       "from": "handbook-sync-audit",
       "to": "project-review",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "handbook-sync-audit",
-      "to": "validate-docs-links",
       "source": "prose"
     },
     {
@@ -1391,12 +1380,6 @@
       "from": "procedure.co-abap.transport-release",
       "to": "test-runner",
       "source": "procedure_schema"
-    },
-    {
-      "type": "references",
-      "from": "project-review",
-      "to": "validate-docs-links",
-      "source": "prose"
     },
     {
       "type": "enables",

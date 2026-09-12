@@ -1,4 +1,15 @@
-// @version 2.36.0
+// @version 2.37.1
+// v2.37.0: L0 Leakage check exemption is now occurrence-scoped (T-20260912-006) — an
+//           intentional-duplicate marker exempts only the line carrying it, not the
+//           whole file, so a real CONSTITUTION reference can no longer hide in a file
+//           that also carries a marker (found masking the templates/common
+//           docs/context.md version footer leak). Scan moved to shared
+//           helpers/l0-ref-policy.ts (findL0LeakLines) alongside new-project.ts's
+//           sanitizer; Fail lines now carry :<lineNo>.
+// v2.36.1 (merged from PR #904): variant audit hook priority comparison
+//           normalizes path separators (path.join backslash vs JSON forward
+//           slash) — a same-path mismatch on Windows is a false positive, not
+//           a regression.
 // v2.33.0: Validator-hardening batch (T-20260910-013/016/017/026). New standing
 //           regression check checkVariantAuditHookRegression() — every variant.json
 //           that declares an audit-variant hook (script_manifest) must resolve to a
@@ -69,6 +80,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { parsePmMd, extractVariantOverrides } from './helpers/pm-md-parser.ts';
 import { sourceShellInjectionPatterns } from './helpers/security-validator.ts';
 import { splitIntoSections, getContentLines } from './helpers/context-sections.ts';
+import { findL0LeakLines } from './helpers/l0-ref-policy.ts';
 import * as url from 'node:url';
 import { safeFetch } from './lib/ssrf.ts';
 import { detectEncoding, detectHomoglyphs, detectZeroWidthChars, readUTF8File } from './lib/encoding-utils.ts';
@@ -829,9 +841,9 @@ if (hasBun) {
     }
     // Platform lifecycle verification (Check E/F/G/H)
     if (fs.existsSync(path.join('scripts', 'verify-platform-lifecycle.ts'))) {
-        try {
-            await $`bun ${path.join('scripts', 'verify-platform-lifecycle.ts')}`.nothrow();
-        } catch { /* non-blocking */ }
+        const out = await $`bun ${path.join('scripts', 'verify-platform-lifecycle.ts')}`.nothrow();
+        if (out.exitCode !== 0)
+            Fail("Platform lifecycle verification failed (run 'bun scripts/verify-platform-lifecycle.ts' to see details)");
     }
 
     // Script lifecycle verification: version headers
@@ -1706,7 +1718,12 @@ function checkVariantAuditHookRegression(): void {
         }
         candidates.push(declared[0], path.join('scripts', 'audit-variant.ts'), path.join('scripts', (manifest.name ?? variant), 'audit-variant.ts'));
         const selected = candidates.find(c => fs.existsSync(path.join(variantDir, c)));
-        if (selected !== declared[0]) {
+        // Compare with separators normalized: path.join emits the OS separator
+        // (backslash on Windows) while declared[0] comes verbatim from JSON
+        // (forward slashes) — a same-path mismatch here is a false positive,
+        // not a real priority regression.
+        const norm = (p: string | undefined) => p?.replace(/\\/g, '/');
+        if (norm(selected) !== norm(declared[0])) {
             Fail(`Variant audit-hook regression [${variant}]: §27 candidate simulation selects '${selected}' instead of declared '${declared[0]}' — declared hooks must keep candidate priority`);
             continue;
         }
@@ -2307,8 +2324,8 @@ if (!LIFECYCLE_ONLY) {
 // Check: L0 Leakage (context.md references in templates)
 if (!LIFECYCLE_ONLY && fs.existsSync('templates')) {
     let leakageErrors = 0;
-    // Matches: context.md (literal), docs/constitution/ or docs\constitution\ path patterns
-    const L0_LEAK_PATTERN = /CONSTITUTION\.md|docs[\/\\]constitution[\/\\]/i;
+    // Pattern + occurrence-scoped scan shared with new-project.ts's scaffold
+    // sanitizer (helpers/l0-ref-policy.ts).
     const SKIP_DIRS = new Set(['node_modules', '.git', '.bun']);
     const checkLeakage = (dir: string) => {
         for (const item of fs.readdirSync(dir)) {
@@ -2321,8 +2338,14 @@ if (!LIFECYCLE_ONLY && fs.existsSync('templates')) {
                 checkLeakage(itemPath);
             } else if (stat.isFile() && itemPath.endsWith('.md')) {
                 const content = readUTF8File(itemPath);
-                if (L0_LEAK_PATTERN.test(content) && !content.includes('intentional-duplicate')) {
-                    Fail(`L0 Leakage: ${itemPath} contains unauthorized reference to CONSTITUTION`);
+                // Occurrence-scoped exemption (T-20260912-006): an intentional-duplicate
+                // marker exempts only the line carrying it (its `source:` attribution
+                // legitimately names docs/constitution/) — the rest of the file is still
+                // scanned. The previous whole-file exemption let real leaks hide in any
+                // file that also happened to carry a marker (e.g. the templates/common
+                // docs/context.md version footer leaking context.md §8.15).
+                for (const { lineNo } of findL0LeakLines(content)) {
+                    Fail(`L0 Leakage: ${itemPath}:${lineNo} contains unauthorized reference to CONSTITUTION`);
                     leakageErrors++;
                 }
             }

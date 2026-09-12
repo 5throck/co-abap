@@ -53,7 +53,6 @@
 | `translate` | L3 | — | — | documentation-writing (composes_with) | — | — |
 | `ui-ux-design-intelligence` | L3 | — | — | documentation-writing (follows) | — | — |
 | `update-bun-packages` | L3 | — | — | — | — | — |
-| `validate-docs-links` | L3 | — | — | — | — | — |
 | `zod-contract-gate` | L3 | — | — | — | — | — |
 
 ## Lifecycle Phase Grouping
