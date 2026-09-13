@@ -129,7 +129,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/pipeline-state.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `lifecycle-sync-audit.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
+| `lifecycle-sync-audit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.0.4 | active | —| —| L0+L1 | —|
@@ -163,6 +163,9 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/git-status.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `helpers/l0-ref-policy.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `lib/constitution-scrub.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/propagation-map-schema.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
+| `helpers/markers.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
+| `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
 
 ---
 
