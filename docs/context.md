@@ -38,6 +38,14 @@ The mapping is immutable per generation:
 
 Tier layering: the workspace-root PM stays High (workspace governance and design adjudication); template PMs are Medium (project orchestration). A variant whose PM must own design adjudication re-declares `tier: high` in its own `agents/pm.md` frontmatter.
 
+### LLM Work Routing Policy (ADR-0078)
+
+Substantive LLM-assisted development work — generation or modification of code, documents, designs, tests, or scripts — MUST be routed through this project's agent team, orchestrated by the PM agent as the single entry point: `user → PM triage → Design Gate (unless exempt) → specialist dispatch → QA gate → /sync PR`. Querying an external LLM directly (e.g. a web chat) and landing its output in this repository is a policy violation.
+
+- **Exempt**: IDE inline completions and one-off Q&A that never land in the repository. Repository-landing work uses the E1–E5 exemption codes only.
+- **Runtime LLM integration**: an application calling LLM APIs at runtime is an architecture concern covered by the Design Gate.
+- **Enforcement**: structural, via the existing hard gates (Design Gate spec-check, pre-commit audit, QA gate). Full decision: ADR-0078 in the workspace root `docs/adr/`.
+
 Standard directory layout for all projects in this workspace:
 
 ```
@@ -241,7 +249,7 @@ declare `lang: ko` + a valid `lang_reason` in frontmatter.
 
 `bun scripts/validate-md-language.ts` also scans `*.yaml`/`*.yml` files under
 the same official paths (`agents/`, `skills/`, `templates/`,
-`docs/constitution/`, `docs/governance/`, `.claude/skills`, `.claude/commands`,
+`docs/governance/`, `.claude/skills`, `.claude/commands`,
 `.gemini/skills`, `.gemini/commands`). Plain YAML files (e.g. `schema.yaml`)
 rarely have a `---` frontmatter fence, so the exception is declared as a
 top-level (unindented) key instead:
@@ -250,6 +258,22 @@ top-level (unindented) key instead:
 lang: ko
 lang_reason: legal   # legal | source-material | proper-noun
 ```
+
+#### Korean Plain-Language Preference (`순우리말`-First)
+
+When writing Korean documentation or Korean translation output, prefer native Korean
+words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native
+equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`,
+`모음` over `컬렉션` in general prose. Loanwords that are effectively settled in Korean
+(`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established international technical terms
+remain permitted — clarity and standard terminology always take precedence over forced
+nativization.
+
+- Applies immediately to all **new** Korean-language content (including `ko/`,
+  `locales/ko/`, `*_ko.md` files, and `lang: ko` exception files).
+- **Existing** Korean documents are nativized incrementally: whenever a document is
+  edited for other reasons, apply the plain-language preference to the touched sections.
+  No bulk rewrites.
 
 #### Non-English Reference Material in Skills
 
@@ -384,7 +408,7 @@ Use an external computation tool when the task involves ANY of the following:
 
 ## Git / PR Workflow
 
-<!-- intentional-duplicate: workspace standards §3 — maintained locally for AI context proximity; source: docs/constitution/03-pr-workflow.md; hash: e43638d6 -->
+<!-- intentional-duplicate: workspace standards §3 — maintained locally for AI context proximity; source: docs/constitution/03-pr-workflow.md; hash: 18ad2842 -->
 
 ```
 /sync "feat: description"
@@ -398,6 +422,8 @@ Use an external computation tool when the task involves ANY of the following:
 ```
 
 > All PR titles, bodies, and review comments must be in **English**.
+
+> Universal Design Gate (ADR-0074): every code change at any tier must carry spec activity — a design doc under docs/designs/ registered via scripts/spec-register.ts — enforced by the /sync spec-check (audit.ts --spec-check, FATAL). Trivial changes: --spec-exempt=E1..E5.
 
 ---
 
@@ -428,18 +454,18 @@ This workspace follows explicit lifecycle management practices for Agents, Skill
 
 ### Procedure Graph
 
-Each template layer owns structured procedures in `procedures/<name>/schema.yaml` (authoring skeleton: `templates/common/procedures/_template/`). Procedures are the canonical source for the workflow graph — validate with `bun scripts/validate-procedures.ts --all`, check coverage with `bun scripts/procedure-coverage.ts` (gaps become governance tickets via `--tickets`). Never hand-edit procedure-derived graph nodes. See `docs/procedure-schema-spec.md` and constitution §6.7.
+Each template layer owns structured procedures in `procedures/<name>/schema.yaml` (authoring skeleton: `templates/common/procedures/_template/`). Procedures are the canonical source for the workflow graph — validate with `bun scripts/validate-procedures.ts --all`, check coverage with `bun scripts/procedure-coverage.ts` (workspace root — L1 tool, not synced to projects) (gaps become governance tickets via `--tickets`). Never hand-edit procedure-derived graph nodes. See `docs/procedure-schema-spec.md` and constitution §6.7.
 
 ### Common Principles
 
 - **Agent / Skill / Script** each have explicit lifecycle states (active, deprecated, retired/archived)
-- Full lifecycle rules are defined in [AGENTS.md Lifecycle Management](../AGENTS.md)
+- Full lifecycle rules are defined in [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
 - Audit commands exist for each domain: `agent-lifecycle-audit.ts`, `skill-lifecycle-audit.ts`, `verify-scripts.ts`
 
 For full lifecycle procedures:
-- **Agent Lifecycle**: See [AGENTS.md Lifecycle Management](../AGENTS.md)
-- **Skill Lifecycle**: See [AGENTS.md Lifecycle Management](../AGENTS.md)
-- **Script Lifecycle**: See [AGENTS.md Lifecycle Management](../AGENTS.md)
+- **Agent Lifecycle**: See [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
+- **Skill Lifecycle**: See [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
+- **Script Lifecycle**: See [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
 
 ### Context Commonization Review
 
@@ -512,4 +538,4 @@ See the workspace governance documentation (Governance Enforcement Layers) and A
 
 ---
 
-*context.md version: 2.6 — Schema Governance zone added (DB schema changes require an ADR before merge; CONSTITUTION.md §8.15)*
+*context.md version: 2.7 — LLM Work Routing Policy (ADR-0078) section added under Architecture*
