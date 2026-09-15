@@ -14,8 +14,8 @@ description: >
   phase schema changes, workspace-schema.json modified, new variant added);
   QA escalation from auditor (audit.ts ERROR >= 3 or security Critical finding).
 owner: pm
-version: 1.2.0
-last_reviewed: 2026-09-08
+version: 1.3.0
+last_reviewed: 2026-09-14
 prerequisites: []
 metadata:
   type: process
@@ -25,7 +25,6 @@ metadata:
     - audit project
     - quality review
   related_skills:
-    - audit-workspace
     - project-resync
     - meeting-facilitation
 ---
@@ -47,12 +46,16 @@ catches that class mechanically, not by agent effort.
 
 ## Documentation/link ownership
 
-`project-review` owns routine documentation link-check evidence. Use `baseline-only` mode for weekly or pre-closeout docs/link validation instead of invoking the deprecated `validate-docs-links` skill.
+`project-review` owns routine documentation link-check evidence. Use `baseline-only` mode for weekly or pre-closeout docs/link validation.
 
 ## Step 0 — Machine Baseline (run BEFORE any agent dispatch)
 
 Run the validator battery and record results — this is (a) the report's Baseline
 section and (b) the reference for classifying findings as `script-gap` later.
+
+One-shot consolidated runner (T-20260912-030): `bun scripts/review-baseline.ts` —
+runs the six validators below in read-only mode with a PASS/FAIL summary
+(`--quiet` for summary only). Individual commands:
 
 ```bash
 bun scripts/audit.ts                              # workspace standards
@@ -243,6 +246,5 @@ ticket was not landed.
 
 ## Related Skills
 
-- **audit-workspace**: machine battery wrapper — project-review Step 0 is its superset
 - **project-resync**: fleet-level close-out after fixes land (commit/PR pipeline)
 - **meeting-facilitation**: Antigravity/Gemini dispatch path for Step 3
