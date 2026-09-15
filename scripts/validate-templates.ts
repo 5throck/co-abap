@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.25.1
+ * @version 1.27.0
  *
  * Validates template variants for structural integrity.
  * Follows the same pattern as agent-lifecycle-audit.ts
@@ -10,6 +10,12 @@
  *   bun scripts/validate-templates.ts
  *   bun scripts/validate-templates.ts --variant co-develop
  *   bun scripts/validate-templates.ts --json
+ *
+ * v1.27.0 (2026-09-15-agent-metadata-drift-check-design.md): new C-CM-03a —
+ *          contract common_agents versions must match templates/common/agents/
+ *          frontmatter (agent counterpart of the C-CM-03 skills version check),
+ *          so an agent version bump can no longer leave common-contract.json
+ *          silently stale.
  *
  * v1.25.0 (T-20260912-014 / T-20260912-019): manifest reverse reconciliation —
  *          exists→declared direction added for script_manifest.local (files under
@@ -2271,6 +2277,22 @@ function checkCommonContract(): void {
     }
   }
 
+  // C-CM-03a (ERROR): contract common_agents versions must match templates/common/agents/
+  // frontmatter — the agent counterpart of C-CM-03 (skills). Without this, a tier/metadata
+  // change that bumps an agent's version leaves the contract entry silently stale
+  // (2026-09-15-agent-metadata-drift-check-design.md).
+  for (const [agentName, entry] of Object.entries(contract.common_agents as Record<string, { version?: string; source?: string }>)) {
+    const agentPath = join(TEMPLATES_DIR, 'common', 'agents', `${agentName}.md`);
+    if (!existsSync(agentPath)) continue; // C-CM-02 already flagged this
+    const fmVersion = readFileSync(agentPath, 'utf-8').match(/^version:\s*"?([0-9][0-9.]*)"?/m)?.[1];
+    const contractVersion = entry.version;
+    if (!contractVersion) {
+      fail('common', 'C-CM-03a', `common-contract.json entry '${agentName}' has no version`, `Set "version" to the agent frontmatter version (${fmVersion ?? 'X.Y.Z'})`);
+    } else if (fmVersion && contractVersion !== fmVersion) {
+      fail('common', 'C-CM-03a', `common-contract.json version mismatch for '${agentName}': contract=${contractVersion}, agent frontmatter=${fmVersion}`, `Update common-contract.json "version" to ${fmVersion}`);
+    }
+  }
+
   // C-CM-04 (ERROR): reverse exists-to-listed coverage for common_commands
   // (T-20260910-019). The forward direction (listed → file exists) is covered by
   // verify-platform-lifecycle Check G; this catches the drift direction the
@@ -3609,7 +3631,7 @@ function checkMarkerZoneParity(): void {
   const mapPath = join(ROOT, 'scripts', 'propagation-map.json');
   if (!existsSync(mapPath)) return; // PM-01 already reported the missing map
 
-  let map: { domains?: Record<string, { mode?: string; source_file?: string; target_file?: string; marker?: string; target_variants?: string[] }> };
+  let map: { domains?: Record<string, { mode?: string; source_file?: string; target_file?: string; marker?: string; target_variants?: string[]; excluded_variants?: Array<string | { variant: string; reason?: string }> }> };
   try {
     map = JSON.parse(readFileSync(mapPath, 'utf-8'));
   } catch {
@@ -3633,6 +3655,14 @@ function checkMarkerZoneParity(): void {
       continue;
     }
     const listed = new Set(domain.target_variants ?? []);
+    // T-20260912-031: explicitly excluded variants carry a documented,
+    // adjudicated fork of the zone (e.g. co-safety COMMON-AGENTS). They are
+    // skipped by parity checks instead of emitting FAIL/WARN.
+    const excluded = new Map<string, string>();
+    for (const e of domain.excluded_variants ?? []) {
+      if (typeof e === 'string') excluded.set(e, '');
+      else if (e && typeof e.variant === 'string') excluded.set(e.variant, e.reason ?? '');
+    }
 
     for (const entry of readdirSync(TEMPLATES_DIR, { withFileTypes: true })) {
       if (!entry.isDirectory() || !entry.name.startsWith('co-')) continue;
@@ -3646,6 +3676,10 @@ function checkMarkerZoneParity(): void {
 
       checkedZones++;
       if (listed.has(variant)) continue; // managed — publishDocs() drift checks own content sync
+      if (excluded.has(variant)) {
+        if (!JSON_MODE) console.log(`  ℹ️  marker-zone-parity: ${variant}/${targetFile} is an adjudicated variant-owned fork (documented exclusion)`);
+        continue;
+      }
 
       if (variantZone === sourceZone) {
         fail('root', 'marker-zone-parity', `marker-inject domain [${domainName}]: ${variant}/${targetFile} carries a ${domain.marker} zone identical to the source but is not in target_variants — unmanaged coverage, the zone silently stops propagating on the next source change`, `Add "${variant}" to propagation-map.json domain [${domainName}].target_variants`);
