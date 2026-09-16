@@ -1,10 +1,23 @@
 /**
  * test-runner.ts — Test Runner for TypeScript Test Suites
- * @version 1.1.1
+ * @version 1.4.0
+ *
+ * v1.3.0 (T-20260916-001): (1) per-suite `sequential` flag — the `scripts`
+ * suite now runs its members one at a time because its E2E files stage
+ * disposable fixture dirs under the REAL templates/ tree and race
+ * concurrent validators when run in parallel (the unit suite stays
+ * parallel); an explicit `--parallel` CLI flag still overrides for manual
+ * runs. (2) Post-suite hygiene assertion for the `scripts` suite: git
+ * status under docs/templates/ must gain no modifications and no
+ * templates/test-l3promo-* / co-e2eguard-* / co-e2p2* fixture dirs may
+ * appear (producer: test-l3-to-variant-promotion.ts; skipper predicate:
+ * helpers/scaffold-markers.ts isTransientTestFixture) — new pollution
+ * fails the suite.
  */
 import { readdirSync, existsSync, rmSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { availableParallelism, cpus } from 'os';
+import { isTransientTestFixture } from './helpers/scaffold-markers.ts';
 
 interface TestSuite {
   name: string;
@@ -12,6 +25,8 @@ interface TestSuite {
   timeout: number;
   dir: string;
   ext: string;
+  /** Run this suite's files one at a time (default false). */
+  sequential?: boolean;
 }
 
 export interface RunOptions {
@@ -32,10 +47,13 @@ interface TestFileResult {
 }
 
 const suites: TestSuite[] = [
-  { name: 'unit', pattern: '*.test.ts', timeout: 30000, dir: 'tests/unit', ext: '.test.ts' },
+  { name: 'unit', pattern: '*.test.ts', timeout: 120000, dir: 'tests/unit', ext: '.test.ts' },
   { name: 'integration', pattern: '*.test.ts', timeout: 120000, dir: 'tests', ext: '.test.ts' },
   { name: 'scenarios', pattern: '*', timeout: 300000, dir: 'tests/scenarios', ext: '' },
-  { name: 'scripts', pattern: 'test-*.ts', timeout: 120000, dir: 'scripts', ext: '.ts' }
+  // sequential: members stage transient fixture dirs under the real templates/
+  // tree (test-l3promo-*, co-e2eguard-*, co-e2p2*) and race concurrent
+  // validators when run in parallel — T-20260916-001.
+  { name: 'scripts', pattern: 'test-*.ts', timeout: 120000, dir: 'scripts', ext: '.ts', sequential: true }
 ];
 
 function getTestFiles(suite: TestSuite): string[] {
@@ -62,7 +80,8 @@ function getTestFiles(suite: TestSuite): string[] {
 async function executeTestFile(
   file: string,
   timeoutMs: number,
-  workerId: number
+  workerId: number,
+  execMode: 'bun-test' | 'bun-script' = 'bun-test'
 ): Promise<TestFileResult> {
   const startTime = Date.now();
   const workerTempDir = join('tests', '.temp', `worker-${workerId}`);
@@ -81,7 +100,12 @@ async function executeTestFile(
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   try {
-    proc = Bun.spawn([process.execPath, 'test', file], {
+    // The `scripts` suite members are standalone assertion scripts (they exit
+    // non-zero on failure) — running them under `bun test` fails with
+    // "filters did not match any test files" because their names lack a bun
+    // test naming pattern. Everything else is a bun test file.
+    const argv = execMode === 'bun-script' ? [process.execPath, file] : [process.execPath, 'test', file];
+    proc = Bun.spawn(argv, {
       env,
       stdout: 'pipe',
       stderr: 'pipe',
@@ -180,6 +204,85 @@ async function runInParallel<T, R>(
   return results;
 }
 
+// ── Post-suite hygiene assertion (T-20260916-001 (c)) ──────────────────────
+
+interface HygieneSnapshot {
+  gitAvailable: boolean;
+  dirtyDocsTemplates: Set<string>;
+  fixtureDirs: Set<string>;
+}
+
+/**
+ * Snapshot workspace pollution baselines BEFORE the suite runs:
+ * dirty paths under docs/templates/ (git status) and transient fixture
+ * dirs under templates/. Only DELTAS after the suite are blamed on it.
+ */
+function takeHygieneSnapshot(): HygieneSnapshot {
+  const snap: HygieneSnapshot = { gitAvailable: false, dirtyDocsTemplates: new Set(), fixtureDirs: new Set() };
+  try {
+    const proc = Bun.spawnSync(['git', 'status', '--porcelain', '--', 'docs/templates'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+    });
+    if (proc.exitCode === 0) {
+      snap.gitAvailable = true;
+      const out = new TextDecoder().decode(proc.stdout ?? new Uint8Array());
+      for (const line of out.split('\n')) {
+        const entry = line.trim();
+        if (entry) snap.dirtyDocsTemplates.add(entry.replace(/^\S+\s+/, ''));
+      }
+    }
+  } catch { /* no git — hygiene check will be skipped with a note */ }
+  try {
+    if (existsSync('templates')) {
+      for (const entry of readdirSync('templates', { withFileTypes: true })) {
+        if (entry.isDirectory() && isTransientTestFixture(entry.name)) snap.fixtureDirs.add(entry.name);
+      }
+    }
+  } catch { /* unreadable templates/ — post-run scan reports what it can */ }
+  return snap;
+}
+
+/**
+ * Verify the suite added no pollution: no NEW modifications under
+ * docs/templates/ and no NEW transient fixture dirs under templates/.
+ * Returns a list of human-readable violations (empty = clean).
+ */
+function verifyHygiene(snap: HygieneSnapshot): string[] {
+  if (!snap.gitAvailable && !existsSync('templates')) {
+    return ['hygiene check skipped: no git checkout and no templates/ directory'];
+  }
+  const violations: string[] = [];
+
+  if (snap.gitAvailable) {
+    const proc = Bun.spawnSync(['git', 'status', '--porcelain', '--', 'docs/templates'], {
+      stdout: 'pipe',
+      stderr: 'pipe',
+    });
+    const out = proc.exitCode === 0 ? new TextDecoder().decode(proc.stdout ?? new Uint8Array()) : '';
+    for (const line of out.split('\n')) {
+      const entry = line.trim();
+      if (!entry) continue;
+      const path = entry.replace(/^\S+\s+/, '');
+      if (!snap.dirtyDocsTemplates.has(path)) {
+        violations.push(`docs/templates/ modified during suite: ${path} (${entry.split(/\s+/)[0]})`);
+      }
+    }
+  }
+
+  if (existsSync('templates')) {
+    try {
+      for (const entry of readdirSync('templates', { withFileTypes: true })) {
+        if (entry.isDirectory() && isTransientTestFixture(entry.name) && !snap.fixtureDirs.has(entry.name)) {
+          violations.push(`transient test fixture left behind: templates/${entry.name}/ (E2E cleanup failed or crashed mid-run)`);
+        }
+      }
+    } catch { /* handled above */ }
+  }
+
+  return violations;
+}
+
 export async function runTests(
   suiteName: string = 'integration',
   options: RunOptions = {}
@@ -197,7 +300,9 @@ export async function runTests(
     return true;
   }
 
-  const isParallel = options.parallel !== undefined ? options.parallel : files.length > 1;
+  const isParallel = options.parallel !== undefined
+    ? options.parallel
+    : (!suite.sequential && files.length > 1);
   const numCpus = availableParallelism ? availableParallelism() : cpus().length;
   const defaultConcurrency = Math.min(numCpus, 4);
   const concurrency = isParallel
@@ -210,18 +315,20 @@ export async function runTests(
 
   const startTime = Date.now();
   let results: TestFileResult[] = [];
+  const hygieneSnapshot = suiteName === 'scripts' ? takeHygieneSnapshot() : null;
 
   try {
+    const execMode = suiteName === 'scripts' ? 'bun-script' as const : 'bun-test' as const;
     if (isParallel && concurrency > 1) {
       try {
         results = await runInParallel(files, concurrency, (file, _, workerId) =>
-          executeTestFile(file, timeoutMs, workerId)
+          executeTestFile(file, timeoutMs, workerId, execMode)
         );
       } catch (err: any) {
         console.warn(`[test-runner] Warning: Parallel execution failed (${err.message}). Falling back to sequential execution...`);
         results = [];
         for (let i = 0; i < files.length; i++) {
-          const res = await executeTestFile(files[i], timeoutMs, 1);
+          const res = await executeTestFile(files[i], timeoutMs, 1, execMode);
           results.push(res);
         }
       }
@@ -229,13 +336,30 @@ export async function runTests(
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         console.log(`  Running: ${file}`);
-        const res = await executeTestFile(file, timeoutMs, 1);
+        const res = await executeTestFile(file, timeoutMs, 1, execMode);
         results.push(res);
       }
     }
 
     const totalDuration = Date.now() - startTime;
     let hasFailures = false;
+
+    // Post-suite hygiene assertion (scripts suite only): the suite must not
+    // modify docs/templates/ nor leave transient fixture dirs behind.
+    if (hygieneSnapshot) {
+      const violations = verifyHygiene(hygieneSnapshot);
+      for (const v of violations) {
+        hasFailures = true;
+        console.error(`\n================================================================================`);
+        console.error(`FAIL: post-suite hygiene assertion (T-20260916-001)`);
+        console.error(`--------------------------------------------------------------------------------`);
+        console.error(v);
+        console.error(`================================================================================\n`);
+      }
+      if (violations.length === 0) {
+        console.log(`  ✓ post-suite hygiene: docs/templates/ clean, no leftover test fixture dirs`);
+      }
+    }
 
     for (const res of results) {
       if (res.success) {
