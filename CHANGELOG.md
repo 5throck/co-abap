@@ -8,6 +8,8 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+- **[2026-09-16]**: chore(upgrade): synced template infrastructure via `upgrade-project.ts` (workspace common v0.6.0 content sync, 2026-09-16 fleet resync) — delivered the managed-block merge fix (AGENTS.md graft block and .gitignore secret patterns verified intact), platform skill mirror catch-up (`upgrade-project` 1.5.0 + 4 uniform skills), validator fleet refresh (`audit.ts` 2.39.0 with the VERSION_MANIFEST gate, `validate-templates.ts` 1.33.0, `lifecycle-sync-audit.ts` 1.14.0), full manifest regeneration, and retirement of the inert `sync-agent-status.ts` copy + its ghost SCRIPTS.md rows.
+
 
 - **[2026-09-15]**: chore(upgrade): synced template infrastructure via `upgrade-project.ts` (workspace common v0.6.0) — refreshed scripts, agent/skill mirrors (`.claude/`, `.gemini/`, `.codex/`, `.agents/`), `docs/context.md`, `AGENTS.md`, `.githooks/`, and `docs/workspace-schema.json` to pick up governance and lifecycle fixes landed upstream since the last upgrade at the same recorded template version.
 
