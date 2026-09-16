@@ -120,7 +120,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.7.0 | active | —| —| L0+L1 | —|
-| `hooks/pre-push.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
+| `hooks/pre-push.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -138,7 +138,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `skill-session-review.ts` | L0 | 1.0.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.0.1 | active | — | — | L0+L1 | — |
 | `team-builder.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `test-runner.ts` | L0 | 1.3.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
+| `test-runner.ts` | L0 | 1.4.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `validate-agents.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -165,14 +165,14 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/propagation-map-schema.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/markers.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
-| `generate-version-manifest.ts` | L0 | 1.5.0 | active | emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
-| `lib/platform-delivery.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/managed-block-parity.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/variant-overlay-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/platform-mirror-freshness.ts` | L0 | 1.0.0 | active | Pure platform-skill-mirror vs skills/ SSOT version comparison for the platform-mirror-freshness check (T-20260916-008) | —| L0+L1 | —|
+| `generate-version-manifest.ts` | L0 | 1.6.0 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
+| `helpers/generate-variant.ts` | L0 | 1.15.0 | active | —| —| L0+L1 | —|
 | `helpers/rollback-partial-project.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/scaffold-markers.ts` | L0 | 1.3.0 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
-| `helpers/generate-variant.ts` | L0 | 1.15.0 | active | —| —| L0+L1 | —|
+| `lib/managed-block-parity.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/platform-delivery.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/platform-mirror-freshness.ts` | L0 | 1.0.0 | active | Pure platform-skill-mirror vs skills/ SSOT version comparison for the platform-mirror-freshness check (T-20260916-008) | —| L0+L1 | —|
+| `lib/variant-overlay-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 
 ---
 
@@ -312,8 +312,6 @@ section presence (VARIANT-INJECT: guidelines [REQUIRED] marker enforcement).
 deprecated agent references, missing fields.
 **Usage**: `bun scripts/agent-lifecycle-audit.ts`
 **Runs automatically**: pre-commit hook when `agents/*.md` files are staged.
-
-**Purpose**: Synchronizes agent status between agent files and AGENTS.md.
 
 ---
 

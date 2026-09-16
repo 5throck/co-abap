@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-16T11:16:46.935Z
+**Generated**: 2026-09-16T15:10:33.039Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -32,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-08-23 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-08-23 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-08-23 |
-| pm | agents/pm.md | N/A | N/A | 2026-09-13 |
+| pm | agents/pm.md | N/A | N/A | 2026-09-16 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-08-23 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-08-23 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-08-23 |
@@ -137,17 +137,17 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 1.0.0 | scripts/design-lint.ts | N/A |
 | dev-sync.ts | 1.14.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
-| dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
+| dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
+| dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
 | dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
 | generate-skill-graph.ts | 1.10.0 | scripts/generate-skill-graph.ts | js-yaml |
-| generate-version-manifest.ts | 1.5.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
+| generate-version-manifest.ts | 1.6.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
@@ -160,8 +160,8 @@
 | readme-lifecycle-audit.ts | 1.0.4 | scripts/readme-lifecycle-audit.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
-| retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
+| retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.0.1 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
@@ -173,7 +173,7 @@
 | sync-skill-status.ts | 1.0.1 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.8.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.4.0 | scripts/team-builder.ts | N/A |
-| test-runner.ts | 1.3.0 | scripts/test-runner.ts | fs, os, path |
+| test-runner.ts | 1.4.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.1.1 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
