@@ -58,7 +58,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
 | `helpers/upgrade-versions.ts` | L0+L1 | 1.0.1 | active | —| —| L0+L1 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.27.0 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.33.0 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-lifecycle-audit.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
@@ -66,7 +66,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `archive-memory.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `audit.ts` | L0 | 2.38.1 | active | —| —| L0+L1 | —|
+| `audit.ts` | L0 | 2.39.0 | active | —| —| L0+L1 | —|
 | `cleanup-completed-md.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `clear-pm-approval.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `compile-tokens.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -113,7 +113,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/security-validator.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `helpers/context-sections.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/pm-md-parser.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `helpers/template-utils.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `helpers/template-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `tests/apply-handbook-theme.test.ts` | L0 | 1.0.1 | active | — | — | common | — |
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
@@ -129,23 +129,22 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/pipeline-state.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `lifecycle-sync-audit.ts` | L0 | 1.12.0 | active | —| —| L0+L1 | —|
+| `lifecycle-sync-audit.ts` | L0 | 1.14.0 | active | —| —| L0+L1 | —|
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.0.4 | active | —| —| L0+L1 | —|
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `skill-lifecycle-audit.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.0.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
-| `sync-agent-status.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.0.1 | active | — | — | L0+L1 | — |
 | `team-builder.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `test-runner.ts` | L0 | 1.1.1 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
+| `test-runner.ts` | L0 | 1.3.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `validate-agents.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-docs-links.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.11.0 | active | —| —| L0+L1 | —|
-| `validate-model-registry.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
+| `validate-model-registry.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-skills.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
 | `validate-decisions.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
@@ -163,9 +162,17 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/git-status.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `helpers/l0-ref-policy.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `lib/constitution-scrub.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/propagation-map-schema.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
+| `lib/propagation-map-schema.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/markers.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
+| `generate-version-manifest.ts` | L0 | 1.5.0 | active | emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
+| `lib/platform-delivery.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/managed-block-parity.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/variant-overlay-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/platform-mirror-freshness.ts` | L0 | 1.0.0 | active | Pure platform-skill-mirror vs skills/ SSOT version comparison for the platform-mirror-freshness check (T-20260916-008) | —| L0+L1 | —|
+| `helpers/rollback-partial-project.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `helpers/scaffold-markers.ts` | L0 | 1.3.0 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
+| `helpers/generate-variant.ts` | L0 | 1.15.0 | active | —| —| L0+L1 | —|
 
 ---
 
@@ -306,9 +313,7 @@ deprecated agent references, missing fields.
 **Usage**: `bun scripts/agent-lifecycle-audit.ts`
 **Runs automatically**: pre-commit hook when `agents/*.md` files are staged.
 
-#### `sync-agent-status.ts`
 **Purpose**: Synchronizes agent status between agent files and AGENTS.md.
-**Usage**: `bun scripts/sync-agent-status.ts`
 
 ---
 
