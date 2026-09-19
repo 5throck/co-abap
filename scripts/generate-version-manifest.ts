@@ -1,5 +1,20 @@
-// @version 1.6.0
+// @version 1.7.0
+// v1.7.0 (ADR-0081 / T-20260918-001): --check masks the "Last Modified" columns
+//           on BOTH comparison sides unconditionally — the shallow-only gating
+//           is gone. Rationale: the cells derive from committed `git log`, but
+//           dev-sync generates the manifest (step 4.7) before committing
+//           (step 6), so the committed manifest always records the PRE-PR date
+//           for every file the PR touches; a full-history CI merge preview then
+//           regenerates with the PR commit as last toucher and the date cells
+//           drift by one commit whenever the previous toucher predates the PR's
+//           day (observed: PR #954 first CI run failed on "1 differing line";
+//           recovery needed the eb6901ab convergence commit). Structural rows
+//           (name/file/tier/model/version/location/triggers) are still compared
+//           literally; published dates remain as informational content.
+//           isShallowRepository() is retained (exported, unit-pinned) for
+//           potential date-source work but is no longer consulted by --check.
 // v1.6.0 (T-20260916-013): shallow-tolerant --check. In a shallow checkout
+// v1.6.1 (T-20260917-review): parseAgentFrontmatter normalizes CRLF before tier/model regexes; on Windows working trees the nested `tier:` block parsed as tier=N/A and regenerated a drifting manifest. parseAgentFrontmatter is now exported for CRLF unit coverage.
 //           (actions/checkout default depth=1) `git log` has no history, so the
 //           per-file "Last Modified" dates fall back to checkout-time values and
 //           the committed manifest (generated locally with full history) then
@@ -115,9 +130,13 @@ function scalarValue(raw: string): string {
     return (hash === -1 ? raw : raw.slice(0, hash)).trim().replace(/\s+/g, ' ');
 }
 
-function parseAgentFrontmatter(content: string): { tier?: string; model?: string } {
-    const tierMatch = /^tier:[ \t]*\n[ \t]+claude:[ \t]+(.+)$/m.exec(content);
-    const modelMatch = /^model:[ \t]+(.+)$/m.exec(content);
+export function parseAgentFrontmatter(content: string): { tier?: string; model?: string } {
+    // Normalize CRLF first (T-20260917-review): on Windows working trees the
+    // nested `tier:` block is `tier:\r\n  claude: ...` and a bare `\n` in the
+    // regex silently parsed tier as 'N/A', regenerating a drifting manifest.
+    const normalized = content.replace(/\r\n/g, '\n');
+    const tierMatch = /^tier:[ \t]*\n[ \t]+claude:[ \t]+(.+)$/m.exec(normalized);
+    const modelMatch = /^model:[ \t]+(.+)$/m.exec(normalized);
     return {
         tier: tierMatch ? scalarValue(tierMatch[1]) : 'N/A',
         model: modelMatch ? scalarValue(modelMatch[1]) : 'N/A',
@@ -194,7 +213,10 @@ function extractScriptDependencies(content: string): string[] {
 
 // Simple, single-action commands with no orchestration logic — intentionally
 // have no dedicated SKILL.md. See detectDrift() for rationale.
-const COMMAND_SKILL_EXEMPT = new Set(['changelog', 'meeting', 'memlog', 'new-task']);
+// commit-push-pr: pure redirect stub to /sync (workspace enforcement banner);
+// flagged as drift in variants that lack the source-command-<name> alias skill
+// (fixed at L0 because core scripts are immutable at L2/L3).
+const COMMAND_SKILL_EXEMPT = new Set(['changelog', 'meeting', 'memlog', 'new-task', 'commit-push-pr']);
 const SKILL_METADATA_EXEMPT = new Set([
     // ADR-0076 / 2026-09-12 graft wiring refresh: tool-owned Claude-only skill
     // with canonical graft frontmatter; workspace lifecycle fields are not
@@ -495,10 +517,13 @@ export interface ManifestLineDiff {
 
 export interface DiffManifestsOptions {
     /**
-     * Shallow mode (T-20260916-013): mask the volatile "Last Modified" cells on
-     * BOTH sides before comparing, so git-depth-dependent dates are ignored
-     * while structural drift (rows added/removed, name/version/path changes)
-     * is still caught. Default false — full-history behavior compares dates.
+     * Date-masked mode (default behavior of --check since ADR-0081 /
+     * T-20260918-001): mask the volatile "Last Modified" cells on BOTH sides
+     * before comparing, so the git-log-derived dates — which always lag the
+     * generating PR's own commit by one commit — are ignored while structural
+     * drift (rows added/removed, name/version/path changes) is still caught.
+     * Default false at the function level (raw comparison remains available
+     * for tests); checkManifest() always passes true.
      */
     ignoreDateColumns?: boolean;
     /** Max reported diffs (default 20). */
@@ -668,17 +693,15 @@ async function checkManifest(): Promise<void> {
     const data = await collectManifestData();
     const regenerated = renderManifest(data);
     const onDisk = fs.readFileSync(MANIFEST_PATH, 'utf-8');
-    // Shallow tolerance (T-20260916-013): a shallow checkout cannot reproduce
-    // git-log-derived "Last Modified" dates, so the comparison drops the date
-    // columns (masked on BOTH sides) and verifies structural content only.
-    // With full history nothing changes — dates are compared as before.
-    const shallow = isShallowRepository();
-    if (shallow) {
-        console.log(`ℹ️ shallow repository detected — Last Modified columns excluded from comparison (run with full history for date verification)`);
-    }
-    const diffs = shallow
-        ? diffManifests(onDisk, regenerated, { ignoreDateColumns: true })
-        : diffManifests(onDisk, regenerated);
+    // Date-column masking (ADR-0081 / T-20260918-001): the "Last Modified"
+    // cells derive from committed `git log`, but the manifest is generated
+    // BEFORE the commit that touches these files (dev-sync step 4.7 vs 6), so
+    // the recorded dates always lag the PR's own commit by one commit and
+    // drift on CI merge previews across day boundaries. The comparison drops
+    // the date columns (masked on BOTH sides) unconditionally and verifies
+    // structural content only; published dates remain informational.
+    console.log(`ℹ️ Last Modified columns excluded from comparison (informational; ADR-0081/T-20260918-001)`);
+    const diffs = diffManifests(onDisk, regenerated, { ignoreDateColumns: true });
     if (diffs.length === 0) {
         console.log(`${GREEN}✓ VERSION_MANIFEST check: ${MANIFEST_PATH} matches the regenerated output${RESET}`);
         return;
