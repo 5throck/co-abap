@@ -26,8 +26,7 @@
     "graft": {
       "command": "graft",
       "args": [
-        "mcp",
-        "@nanonets/graft"
+        "mcp"
       ]
     }
   }
