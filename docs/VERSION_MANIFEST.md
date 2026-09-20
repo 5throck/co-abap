@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-20T08:36:32.438Z
+**Generated**: 2026-09-20T13:20:57.706Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 48
+- **Skills**: 47
 - **Scripts**: 102 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -63,13 +63,12 @@
 | finishing-a-development-branch | 1.0.0 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | gateguard | 1.0.0 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
 | graft | N/A | active | .claude/skills/graft/SKILL.md | claude | N/A | N/A |
-| handbook | 0.4.0 | active | skills/handbook/SKILL.md | workspace | N/A | pm |
+| handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.0 | active | skills/handbook-sync-audit/SKILL.md | workspace | N/A | handbook-reviewer |
 | i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
 | i18n-formatting | 1.0.0 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | pm |
 | i18n-layout | 1.0.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
-| meeting | 1.4.0 | active | .claude/skills/meeting/SKILL.md | both | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | meeting-facilitation | 1.4.1 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | N/A | pm |
 | platform-command-lifecycle-manager | 1.0.0 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
@@ -242,7 +241,7 @@
 **Checked**: Claude (.claude/) vs Gemini (.gemini/)
 
 - **Commands with parity**: 9 / 20
-- **Skills with parity**: 1 / 48 (common-template skills are parity-exempt)
+- **Skills with parity**: 0 / 47 (common-template skills are parity-exempt)
 
 ---
 
@@ -251,7 +250,6 @@
 ⚠️ **Drift detected**:
 
 - [WARNING] Agent pm missing tier or model metadata
-- [WARNING] Skill handbook has no triggers defined
 - [WARNING] Skill handbook-sync-audit has no triggers defined
 - [WARNING] Skill performance-tuning has no triggers defined
 - [ERROR] Skill post-write-chain frontmatter YAML parse error: bad indentation of a mapping entry (2:131)

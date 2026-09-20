@@ -1,5 +1,6 @@
 ---
 name: co-analyst
+phases: [1]
 role: CO Module Analyst
 model: inherit
 color: yellow
@@ -23,8 +24,8 @@ lifecycle:
 version: "1.0.0"
 lifecycle:
   phase: production
-  created: "2026-08-17"
-  last_updated: "2026-08-17"
+  created: "2026-08-15"
+  last_updated: "2026-08-21"
   governance: docs/lifecycle/agents/co-analyst.md
 ---
 
