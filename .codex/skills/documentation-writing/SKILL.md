@@ -4,12 +4,15 @@ description: >
   Creates clear, accessible documentation and communications for diverse audiences.
   Use when: writing guides, creating documentation, drafting communications, or synthesizing
   complex information for technical and non-technical audiences.
-version: 1.0.0
+version: 1.0.3
 scope: common
 status: active
 owner: pm
 last_reviewed: 2026-07-19
 prerequisites: none
+relates_to:
+  - skill: team-builder
+    type: composes_with
 gemini-parity: skip
 metadata:
   type: implementation
@@ -77,6 +80,8 @@ This skill provides comprehensive documentation writing capabilities, from techn
    - Reading level considerations
    - Format preferences (visual, text, interactive)
    - Disability accommodations
+
+**Korean Plain-Language Preference (`순우리말`-first)**: when the deliverable is Korean, prefer native Korean words over loanwords where a natural, widely-understood equivalent exists (e.g. `만들기` over `크리에이션`, `알림` over `노티피케이션`). Settled loanwords (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established technical terms remain permitted — clarity and standard terminology take precedence. When editing existing Korean documents for other reasons, nativize the touched sections incrementally; no bulk rewrites.
 
 **Output**: Audience profile with characteristics and needs
 

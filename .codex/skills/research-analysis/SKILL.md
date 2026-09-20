@@ -4,7 +4,7 @@ description: >
   Conducts systematic research, data synthesis, and evidence-based analysis to support
   decision-making and documentation. Use when: analyzing topics, synthesizing research,
   gathering evidence, or investigating questions for documentation or strategy.
-version: 1.0.0
+version: 1.0.2
 scope: common
 status: active
 owner: pm
@@ -13,18 +13,6 @@ prerequisites: none
 relates_to:
   - skill: documentation-writing
     type: enables
-  - skill: sap-fi
-    type: composes_with
-  - skill: sap-co
-    type: composes_with
-  - skill: sap-sd
-    type: composes_with
-  - skill: sap-mm
-    type: composes_with
-  - skill: sap-le
-    type: composes_with
-  - skill: sap-pp
-    type: composes_with
 gemini-parity: skip
 metadata:
   type: process

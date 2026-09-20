@@ -16,7 +16,7 @@
 | `ci-triage` | L3 | — | — | — | — | — |
 | `decision-record` | L3 | — | — | — | — | — |
 | `desktop-app-fallback` | L3 | — | — | — | — | — |
-| `documentation-writing` | L3 | — | — | — | — | — |
+| `documentation-writing` | L3 | — | — | team-builder (composes_with) | — | — |
 | `dump-monitor` | L3 | — | — | abap-dev (follows), research-analysis (composes_with), sap-co (composes_with), sap-fi (composes_with), sap-le (composes_with), sap-mm (composes_with), sap-sd (composes_with) | — | — |
 | `evidence-ledger` | L3 | — | — | — | — | — |
 | `explain-me` | L3 | — | — | — | — | — |
@@ -34,7 +34,7 @@
 | `platform-skill-lifecycle-manager` | L3 | — | — | — | — | — |
 | `post-write-chain` | L3 | — | — | — | — | — |
 | `project-review` | L3 | — | — | — | — | — |
-| `research-analysis` | L3 | — | — | documentation-writing (enables), sap-co (composes_with), sap-fi (composes_with), sap-le (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-sd (composes_with) | — | — |
+| `research-analysis` | L3 | — | — | documentation-writing (enables) | — | — |
 | `sap-co` | L3 | — | — | sap-le (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-sd (follows) | — | — |
 | `sap-fi` | L3 | — | — | sap-co (follows), sap-le (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-sd (composes_with) | — | — |
 | `sap-le` | L3 | — | — | sap-pp (follows), sap-sd (composes_with) | — | — |
