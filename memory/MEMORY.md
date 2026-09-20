@@ -5,6 +5,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-09-20](2026-09-20.md) | chore: upgrade template to 0.6.0 |
 | [2026-05-24](2026-05-24.md) | ## feat: auto-install superpowers plugin during project setu... |
 | [2026-05-23](2026-05-23.md) | ## Session — feat: backport security governance and auto-dat... |
 | [2026-05-22](2026-05-22.md) | Development Log — 2026-05-22 |

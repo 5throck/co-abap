@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// @version 1.3.1
+// @version 1.4.0
 // sync-md.ts - Update memory/MEMORY.md index
 // Usage:
 //   bun run scripts/sync-md.ts "YYYY-MM-DD" "summary"              # session entry
@@ -40,7 +40,7 @@ const INIT_CONTENT = `# Memory Index
 |----|-------|--------|------|
 `;
 
-// ?€?€ Initialize MEMORY.md with 3-section structure if missing ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ Initialize MEMORY.md with 3-section structure if missing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const file = Bun.file(MEMORY_FILE);
 let exists = await file.exists();
 if (!exists) {
@@ -49,14 +49,14 @@ if (!exists) {
 
 let content = await Bun.file(MEMORY_FILE).text();
 
-// ?€?€ Migrate legacy flat index if no ## Sessions section ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ Migrate legacy flat index if no ## Sessions section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //
 // Idempotency matters here. The previous version keyed the whole migration off a
 // single `## Sessions` guard and then appended the Meetings/ADRs sections
 // unconditionally. Its heading regex required the line to be exactly
 // "# Memory Index", so any project using a suffixed title (e.g.
-// "# Memory Index ??co-newbiz") never got `## Sessions` inserted, the guard stayed
-// false on every subsequent run, and the two sections were re-appended each time ??
+// "# Memory Index â€” co-newbiz") never got `## Sessions` inserted, the guard stayed
+// false on every subsequent run, and the two sections were re-appended each time â€”
 // three copies of each after two syncs. Each section is now inserted only if it is
 // actually absent, and the heading match tolerates a suffix.
 if (!content.includes('## Sessions')) {
@@ -94,7 +94,7 @@ if (!content.includes('## ADRs')) {
 await Bun.write(MEMORY_FILE, content);
 content = await Bun.file(MEMORY_FILE).text();
 
-// ?€?€ Append to appropriate section ?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€
+// â”€â”€ Append to appropriate section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function makeSlug(str: string, maxLen: number): string {
   return str
     .toLowerCase()
@@ -110,8 +110,13 @@ if (type === 'meeting') {
   // Only insert if not already present (dedup by date + summary)
   if (!content.includes(date) && !content.includes(summary)) {
     // Insert row after the separator line of the ## Meetings table
+    // Match the Meetings table header directly rather than requiring it to
+    // immediately follow the "## Meetings" heading â€” a note/blockquote line
+    // (e.g. archive-memory.ts's tombstone explanation) inserted between the
+    // heading and the table would otherwise make this regex silently fail to
+    // match, and the row would never be appended (no error, no insertion).
     content = content.replace(
-      /(## Meetings\r?\n\r?\n\| Date \|[^\n]+\r?\n\|[-| ]+\|)/,
+      /(\| Date \| Topic \| File \|\r?\n\|[-| ]+\|)/,
       `$1\n| ${date} | ${summary} | [${meetingFile}](${meetingFile}) |`
     );
     await Bun.write(MEMORY_FILE, content);
@@ -122,8 +127,10 @@ if (type === 'meeting') {
   const adrFile = `${id}-${slug}.md`;
   // Only insert if not already present
   if (!content.includes(id) && !content.includes(summary)) {
+    // Same fragility fix as Meetings/Sessions: match the ADRs table header
+    // directly, tolerant of any intervening note text after "## ADRs".
     content = content.replace(
-      /(## ADRs\r?\n\r?\n\| ID \|[^\n]+\r?\n\|[-| ]+\|)/,
+      /(\| ID \| Title \| Status \| File \|\r?\n\|[-| ]+\|)/,
       `$1\n| ${id} | ${summary} | Accepted | [${adrFile}](${adrFile}) |`
     );
     await Bun.write(MEMORY_FILE, content);
@@ -131,13 +138,26 @@ if (type === 'meeting') {
 } else {
   // Session: dedup by date
   if (!content.includes(`[${date}]`)) {
+    // Root cause of a missed-row bug (2026-09-20): this regex used to anchor
+    // to "## Sessions\r?\n\r?\n| Date |...", requiring the table to
+    // immediately follow the heading. archive-memory.ts's tombstone
+    // explanatory note (a blockquote line under "## Sessions") sits between
+    // the heading and the table, so the anchored regex silently failed to
+    // match â€” .replace() is a no-op when there's no match, so the row was
+    // never appended and no error surfaced. Match the Sessions table header
+    // itself instead, which is tolerant of any intervening note content.
+    const before = content;
     content = content.replace(
-      /(## Sessions\r?\n\r?\n\| Date \|[^\n]+\r?\n\|[-| ]+\|)/,
+      /(\| Date \| Summary \|\r?\n\|[-| ]+\|)/,
       `$1\n| [${date}](${date}.md) | ${summary} |`
     );
+    if (content === before) {
+      console.error(`âŒ sync-md.ts: could not find the Sessions table header in ${MEMORY_FILE} â€” row for ${date} was NOT added.`);
+      process.exit(1);
+    }
     await Bun.write(MEMORY_FILE, content);
   }
 }
 
-export {}
-
+// Makes this file a module: top-level await below requires it (TS1375).
+export {};

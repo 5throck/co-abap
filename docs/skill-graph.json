@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "graph_profile": "deg/v1",
   "nodes": [
     {
       "id": "abap-code-review",
@@ -409,6 +410,16 @@
     {
       "id": "source-command-commit-push-pr",
       "type": "skill",
+      "layer": "L3"
+    },
+    {
+      "id": "stage.co-abap.S1",
+      "type": "stage",
+      "layer": "L3"
+    },
+    {
+      "id": "stage.co-abap.S2",
+      "type": "stage",
       "layer": "L3"
     },
     {
@@ -1085,31 +1096,36 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "code-writer",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "code-writer",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "fiori-developer",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "form-expert",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "gui-scripter",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1121,13 +1137,21 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "sap-investigator",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "in_stage",
+      "from": "procedure.co-abap.custom-dev-delivery",
+      "to": "stage.co-abap.S2",
+      "source": "process_schema"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
       "to": "test-runner",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_uses_skill",
@@ -1145,19 +1169,22 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "architect",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "co-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "co-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_uses_skill",
@@ -1169,19 +1196,22 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "fi-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "le-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "mm-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1193,7 +1223,8 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "pp-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "enables",
@@ -1205,7 +1236,8 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "read-only-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_uses_skill",
@@ -1253,13 +1285,21 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "schema-inspector",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "sd-analyst",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "in_stage",
+      "from": "procedure.co-abap.requirements-analysis",
+      "to": "stage.co-abap.S1",
+      "source": "process_schema"
     },
     {
       "type": "step_uses_skill",
@@ -1283,7 +1323,14 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.security-closeout-review",
       "to": "security-monitor",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "in_stage",
+      "from": "procedure.co-abap.security-closeout-review",
+      "to": "stage.co-abap.S2",
+      "source": "process_schema"
     },
     {
       "type": "step_uses_skill",
@@ -1307,7 +1354,14 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.security-readiness-baseline",
       "to": "security-monitor",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "in_stage",
+      "from": "procedure.co-abap.security-readiness-baseline",
+      "to": "stage.co-abap.S1",
+      "source": "process_schema"
     },
     {
       "type": "step_uses_skill",
@@ -1331,19 +1385,22 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
       "to": "architect",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
       "to": "dba",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
       "to": "interface-expert",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1364,6 +1421,12 @@
       "source": "procedure_schema"
     },
     {
+      "type": "in_stage",
+      "from": "procedure.co-abap.solution-blueprint",
+      "to": "stage.co-abap.S1",
+      "source": "process_schema"
+    },
+    {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.transport-release",
       "to": "abap-dev",
@@ -1379,7 +1442,8 @@
       "type": "step_by_agent",
       "from": "procedure.co-abap.transport-release",
       "to": "devops-admin",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1394,10 +1458,17 @@
       "source": "procedure_schema"
     },
     {
+      "type": "in_stage",
+      "from": "procedure.co-abap.transport-release",
+      "to": "stage.co-abap.S2",
+      "source": "process_schema"
+    },
+    {
       "type": "step_by_agent",
       "from": "procedure.co-abap.transport-release",
       "to": "test-runner",
-      "source": "procedure_schema"
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "enables",

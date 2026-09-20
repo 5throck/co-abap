@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-20T01:32:03.170Z
+**Generated**: 2026-09-20T04:08:28.449Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 95 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 102 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -116,6 +116,7 @@
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
 | audit.ts | 2.39.0 | scripts/audit.ts | bun |
+| bootstrap-stages.ts | 1.0.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
 | check-authoring.ts | 1.2.0 | scripts/handbook/check-authoring.ts | N/A |
@@ -143,11 +144,14 @@
 | dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
 | dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
+| evidence-backport-scan.ts | 1.0.0 | scripts/evidence-backport-scan.ts | N/A |
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
-| generate-skill-graph.ts | 1.10.0 | scripts/generate-skill-graph.ts | js-yaml |
+| generate-raci.ts | 1.1.0 | scripts/generate-raci.ts | js-yaml |
+| generate-skill-graph.ts | 1.12.0 | scripts/generate-skill-graph.ts | js-yaml |
 | generate-version-manifest.ts | 1.7.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
+| graph-delta-log.ts | 1.0.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
@@ -155,6 +159,7 @@
 | lifecycle-sync-audit.ts | 1.15.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
+| migrate-quality-gates.ts | 1.1.0 | scripts/migrate-quality-gates.ts | fs, js-yaml, path |
 | nav-utils.ts | 1.0.0 | scripts/handbook/nav-utils.ts | N/A |
 | new-requirement.ts | 1.0.1 | scripts/co-abap/new-requirement.ts | N/A |
 | qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
@@ -169,8 +174,8 @@
 | setup.ts | 1.0.2 | scripts/co-abap/setup.ts | bun |
 | skill-lifecycle-audit.ts | 1.4.1 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.0.0 | scripts/skill-session-review.ts | bun |
-| spec-register.ts | 1.2.0 | scripts/spec-register.ts | N/A |
-| sync-md.ts | 1.3.1 | scripts/sync-md.ts | N/A |
+| spec-register.ts | 1.3.0 | scripts/spec-register.ts | N/A |
+| sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.0.1 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.8.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.4.0 | scripts/team-builder.ts | N/A |
@@ -188,14 +193,16 @@
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
 | validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | js-yaml |
+| validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
+| validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
-| validate-templates.ts | 1.35.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.36.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
 | verify-platform-lifecycle.ts | 1.1.3 | scripts/verify-platform-lifecycle.ts | N/A |
 | verify-readme-sync.ts | 1.4.0 | scripts/verify-readme-sync.ts | bun, fs, path |
-| verify-scripts.ts | 1.6.1 | scripts/verify-scripts.ts | fs, path |
+| verify-scripts.ts | 1.7.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.6.0 | scripts/verify-skill-graph.ts | N/A |
 | verify-skills.ts | 1.3.0 | scripts/verify-skills.ts | N/A |
 | vsp-audit.ts | 1.1.0 | scripts/co-abap/vsp-audit.ts | N/A |
