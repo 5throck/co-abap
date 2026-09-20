@@ -5,6 +5,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-09-21](2026-09-21.md) | fix(skills): complete handbook v0.6.0 delivery — Korean reference files |
 | [2026-09-20](2026-09-20.md) | chore: upgrade template to 0.6.0 |
 | [2026-05-24](2026-05-24.md) | ## feat: auto-install superpowers plugin during project setu... |
 | [2026-05-23](2026-05-23.md) | ## Session — feat: backport security governance and auto-dat... |
