@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-20T04:08:28.449Z
+**Generated**: 2026-09-20T07:32:14.802Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -138,10 +138,10 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 1.0.0 | scripts/design-lint.ts | N/A |
 | dev-sync.ts | 1.15.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
-| dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
+| dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
+| dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
 | dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
 | evidence-backport-scan.ts | 1.0.0 | scripts/evidence-backport-scan.ts | N/A |
@@ -166,14 +166,14 @@
 | readme-lifecycle-audit.ts | 1.0.4 | scripts/readme-lifecycle-audit.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
-| retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
+| retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.0.1 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.0.2 | scripts/co-abap/setup.ts | bun |
 | skill-lifecycle-audit.ts | 1.4.1 | scripts/skill-lifecycle-audit.ts | N/A |
-| skill-session-review.ts | 1.0.0 | scripts/skill-session-review.ts | bun |
+| skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.3.0 | scripts/spec-register.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.0.1 | scripts/sync-skill-status.ts | N/A |
