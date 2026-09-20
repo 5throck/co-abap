@@ -8,6 +8,8 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+- **[2026-09-20]**: chore(upgrade): template upgraded to 0.6.0 via `upgrade-project.ts --prune-removed` (2026-09-20 evening resync Step 4) — delivers the common-template LF-enforcement `.gitattributes` block (`*.html/css/js/json/md text eol=lf`), closing the Windows CRLF smudge that failed the pre-push VERSION_MANIFEST gate on 6 of 8 fleet repos; same-version script drift restored to canonical, project-specific gitleaks allowlist entries preserved via merge-aware upgrade `audit.ts` + `verify-scripts.ts --verify` clean post-upgrade.
+
 - **[2026-09-16]**: chore(upgrade): synced template infrastructure via `upgrade-project.ts` (workspace common v0.6.0 content sync, 2026-09-16 fleet resync) — delivered the managed-block merge fix (AGENTS.md graft block and .gitignore secret patterns verified intact), platform skill mirror catch-up (`upgrade-project` 1.5.0 + 4 uniform skills), validator fleet refresh (`audit.ts` 2.39.0 with the VERSION_MANIFEST gate, `validate-templates.ts` 1.33.0, `lifecycle-sync-audit.ts` 1.14.0), full manifest regeneration, and retirement of the inert `sync-agent-status.ts` copy + its ghost SCRIPTS.md rows.
 
 
