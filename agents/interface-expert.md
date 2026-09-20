@@ -1,5 +1,6 @@
 ---
 name: interface-expert
+phases: [2]
 role: SAP Interface Expert
 model: inherit
 color: cyan
@@ -24,8 +25,8 @@ lifecycle:
 version: "1.0.0"
 lifecycle:
   phase: production
-  created: "2026-08-17"
-  last_updated: "2026-08-17"
+  created: "2026-08-15"
+  last_updated: "2026-08-21"
   governance: docs/lifecycle/agents/interface-expert.md
 ---
 

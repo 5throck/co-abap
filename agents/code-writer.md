@@ -1,5 +1,6 @@
 ---
 name: code-writer
+phases: [3]
 role: SAP ABAP Code Implementation Specialist
 model: inherit
 color: green
@@ -18,16 +19,17 @@ examples:
     assistant: "Let me use the code-writer agent for the implementation."
   - user: "Modify the program per the execution plan step 2"
     assistant: "I'll dispatch the code-writer agent for this serial implementation step."
+required_skills: [abap-code-review]
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-08-21"
+  last_updated: "2026-08-25"
   governance: docs/lifecycle/agents/code-writer.md
 version: "1.0.0"
 lifecycle:
   phase: production
-  created: "2026-08-17"
-  last_updated: "2026-08-17"
+  created: "2026-08-15"
+  last_updated: "2026-08-21"
   governance: docs/lifecycle/agents/code-writer.md
 ---
 

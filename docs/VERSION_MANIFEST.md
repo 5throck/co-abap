@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-20T09:48:27.268Z
+**Generated**: 2026-09-20T13:26:29.033Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 48
+- **Skills**: 47
 - **Scripts**: 102 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -19,27 +19,27 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | inherit | 2026-08-23 |
-| co-analyst | agents/co-analyst.md | medium | inherit | 2026-08-23 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-08-23 |
-| dba | agents/dba.md | medium | inherit | 2026-08-23 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-08-23 |
-| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-08-23 |
-| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-08-23 |
-| form-expert | agents/form-expert.md | medium | inherit | 2026-08-23 |
-| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-08-23 |
-| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-12 |
-| interface-expert | agents/interface-expert.md | medium | inherit | 2026-08-23 |
-| le-analyst | agents/le-analyst.md | medium | inherit | 2026-08-23 |
-| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-08-23 |
-| pm | agents/pm.md | N/A | N/A | 2026-09-19 |
-| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-08-23 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-08-23 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-08-23 |
-| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-08-23 |
-| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-08-23 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-08-23 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-08-23 |
+| architect | agents/architect.md | high | inherit | 2026-09-20 |
+| co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-20 |
+| code-writer | agents/code-writer.md | low | inherit | 2026-09-20 |
+| dba | agents/dba.md | medium | inherit | 2026-09-20 |
+| devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-20 |
+| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-20 |
+| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-20 |
+| form-expert | agents/form-expert.md | medium | inherit | 2026-09-20 |
+| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-20 |
+| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-20 |
+| interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-20 |
+| le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-20 |
+| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-20 |
+| pm | agents/pm.md | N/A | N/A | 2026-09-20 |
+| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-20 |
+| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-20 |
+| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-20 |
+| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-20 |
+| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-20 |
+| security-monitor | agents/security-monitor.md | low | inherit | 2026-09-20 |
+| test-runner | agents/test-runner.md | low | inherit | 2026-09-20 |
 
 ---
 
@@ -69,7 +69,6 @@
 | i18n-formatting | 1.0.0 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | pm |
 | i18n-layout | 1.0.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
-| meeting | 1.4.0 | active | .claude/skills/meeting/SKILL.md | both | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | meeting-facilitation | 1.4.1 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | N/A | pm |
 | platform-command-lifecycle-manager | 1.0.0 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
@@ -242,7 +241,7 @@
 **Checked**: Claude (.claude/) vs Gemini (.gemini/)
 
 - **Commands with parity**: 9 / 20
-- **Skills with parity**: 1 / 48 (common-template skills are parity-exempt)
+- **Skills with parity**: 0 / 47 (common-template skills are parity-exempt)
 
 ---
 

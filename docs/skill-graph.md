@@ -8,7 +8,7 @@
 
 | Skill | Layer | Required-by Agents | Phases | Relates-to | Inputs | Outputs |
 |-------|-------|-------------------|--------|------------|--------|---------|
-| `abap-code-review` | L3 | — | — | abap-dev (composes_with), abap-dev (follows) | — | — |
+| `abap-code-review` | L3 | code-writer, test-runner | — | abap-dev (composes_with), abap-dev (follows) | — | — |
 | `abap-dev` | L3 | — | — | dump-monitor (composes_with), research-analysis (composes_with), sap-co (composes_with), sap-co (composes_with), sap-fi (composes_with), sap-fi (follows), sap-le (composes_with), sap-le (composes_with), sap-mm (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-pp (composes_with), sap-sd (composes_with), sap-sd (composes_with) | — | — |
 | `accessibility-audit` | L3 | — | — | — | — | — |
 | `agent-lifecycle-manager` | L3 | — | — | skill-lifecycle-manager (composes_with) | — | — |
@@ -24,10 +24,10 @@
 | `gateguard` | L3 | — | — | — | — | — |
 | `handbook` | L3 | — | — | — | — | — |
 | `handbook-sync-audit` | L3 | — | — | — | — | — |
-| `i18n-audit` | L3 | i18n-specialist | — | — | — | — |
-| `i18n-formatting` | L3 | i18n-specialist | — | — | — | — |
-| `i18n-layout` | L3 | i18n-specialist | — | — | — | — |
-| `i18n-locale-config` | L3 | i18n-specialist | — | — | — | — |
+| `i18n-audit` | L3 | — | — | — | — | — |
+| `i18n-formatting` | L3 | — | — | — | — | — |
+| `i18n-layout` | L3 | — | — | — | — | — |
+| `i18n-locale-config` | L3 | — | — | — | — | — |
 | `meeting-facilitation` | L3 | — | — | — | — | — |
 | `performance-tuning` | L3 | — | — | — | — | — |
 | `platform-command-lifecycle-manager` | L3 | — | — | — | — | — |

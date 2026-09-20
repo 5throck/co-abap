@@ -1,5 +1,6 @@
 ---
 name: fiori-developer
+phases: [3]
 role: SAP Fiori & UI5 Implementation Specialist
 model: inherit
 color: cyan
@@ -26,8 +27,8 @@ lifecycle:
 version: "1.0.0"
 lifecycle:
   phase: production
-  created: "2026-08-17"
-  last_updated: "2026-08-17"
+  created: "2026-08-15"
+  last_updated: "2026-08-21"
   governance: docs/lifecycle/agents/fiori-developer.md
 ---
 
