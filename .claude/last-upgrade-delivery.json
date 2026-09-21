@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-09-21T03:29:56.252Z",
+  "files": [
+    "M .agents/skills/handbook-sync-audit/SKILL.md",
+    "M .claude/skills/handbook-sync-audit/SKILL.md",
+    "M .claude/template-version.txt",
+    "M .codex/prompts/triage.md",
+    "M .codex/skills/handbook-sync-audit/SKILL.md",
+    "M .gemini/skills/handbook-sync-audit/SKILL.md",
+    "M scripts/SCRIPTS.md",
+    "M scripts/dev-sync.ts",
+    "M scripts/skill-lifecycle-audit.ts",
+    "M skills/handbook-sync-audit/SKILL.md",
+    "scripts/lib/upgrade-policy.ts"
+  ]
+}

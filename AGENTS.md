@@ -173,6 +173,14 @@ Full behavioral rules, tool contracts, and output formats live in the linked `ag
 
 ---
 
+### 12. 🌐 I18N Specialist
+- **When to dispatch**: Locale documentation, translation-zone enforcement, or Korean plain-language (`순우리말`-first) output review.
+- **Key Tools**: locale policy checks, `README` translation pairing
+- **Output**: Language-policy-compliant documentation
+- **Subagent prompt**: [`agents/i18n-specialist.md`](agents/i18n-specialist.md) (common agent — delivered with every scaffold)
+
+---
+
 ## Agent Coordination & Orchestration Rules
 
 ### Agent Coordination Workflow (Harness Advanced)
@@ -390,7 +398,7 @@ If the cross-module analysis reveals conflicting ACs (e.g., SD wants field X, FI
 
 ---
 
-*Last Updated: 2026-09-19 (rev 3)*
+*Last Updated: 2026-09-21 (rev 3)*
 
 
 ## Universal Baseline Behaviors
