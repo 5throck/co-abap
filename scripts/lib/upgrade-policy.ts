@@ -1,0 +1,445 @@
+// @version 1.10.0
+// v1.10.0 (2026-09-21, rollout hardening): isDeliveredDiff() — a changed-file list
+//         is fully explained by a recorded upgrade delivery (delivered files ∪
+//         pipeline artifacts) so dev-sync step 3.9 can auto-apply E5 (sync-only)
+//         instead of blocking routine fleet resyncs.
+// v1.8.0 (2026-09-17, T-20260917-009): SCAFFOLD_COMMON_OWNED_FILES exported —
+//         new-project's variant-overlay skip and validate-templates WS-07 both
+//         derive from this one classification instead of parallel hand lists.
+// v1.7.0 (2026-09-17, T-20260917-001): MERGE_MANAGED_FILES exported so the
+//         validate-templates managed-block-parity arm (PM-04) enforces
+//         common→variant parity over the same file set upgrade MERGE unions.
+// v1.6.0 (2026-09-16, T-20260916-010): docs/VERSION_MANIFEST.md joins
+//         REGENERATED_FILES. Variant templates stopped shipping the stub
+//         manifest (validate-templates `variant-version-manifest` arm retires
+//         the stub class); the project manifest is generated state — produced
+//         post-delivery by new-project.ts §7.8 and regenerated post-upgrade by
+//         upgrade-project.ts. Without this reclassification the deny-list
+//         default (TEMPLATE TREE SYNC / SYNC) would deliver any future
+//         template copy over a project's generated manifest.
+// v1.5.0 (2026-09-12, T-20260912-021): PLACEHOLDER_ALLOWLIST gains
+//         skills/explain-me/templates/report.html and skills/explain-me/references/BUILD_GUIDE.md
+//         — the skill's own report template + authoring guide substitute their {{tokens}} at
+//         project RUNTIME (not scaffold time), so they ship verbatim by design. Context: the
+//         files reached templates/common when the explain-me L0↔L1 mirror drift was fixed
+//         (only SKILL.md propagated before, leaving a broken half-skill in projects).
+// v1.2.0: graft fleet surface (ADR-0076): .mcp.json + opencode.json join JSON_MERGE_FILES
+//         (project-owned MCP servers survive the union); .claude/skills/graft/** claims
+//         TEMPLATE TREE SYNC before the platform-mirror rule (the skill is hand-maintained
+//         outside the SSOT skills/, so sync-skills.ts can never deliver it — the verified
+//         fleet-gap root cause); .codex/** is ADD_IF_MISSING (co-abap/co-safety own their
+//         config.toml; the graft section is seeded only into projects lacking the file).
+// v1.1.0: .env.sample reclassified PRESERVE → SYNC/ENV_SAMPLE SYNC (upgrade-project v1.23.0):
+//         the upgrade path now re-delivers template env-key changes with scaffold-parity
+//         country pruning applied (shared scripts/lib/env-sample-blocks.ts), so template
+//         .env.sample additions reach existing projects without re-injecting pruned
+//         country blocks.
+// upgrade-policy.ts — Upgrade classification SSOT (2026-09-11-upgrade-policy-coverage-design.md)
+// Classifies EVERY project-relative path a template can deliver. The fallback claim is
+// TEMPLATE TREE SYNC (deliver by default): coverage is deny-list, not an enumeration, so a
+// template file added without any governance decision still reaches existing projects.
+//
+// Consumers:
+//   - scripts/upgrade-project.ts — the TEMPLATE TREE SYNC pass delivers every file whose
+//     claim.pass === TEMPLATE_TREE_SYNC_PASS (legacy passes keep owning their classified paths).
+//   - scripts/check-upgrade-coverage.ts — reports the classification matrix over the whole
+//     effective template tree and gates on the strict checks (placeholders, WS-07, JSON health).
+
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+
+/** Delivery policies. `SYNC` is the default fallback (deliver with conflict warning). */
+export type UpgradePolicy =
+  | 'LOCKED'
+  | 'MERGE_MANAGED'
+  | 'OVERWRITE'
+  | 'VERSIONED_SYNC'
+  | 'HASH_SYNC'
+  | 'ADD_IF_MISSING'
+  | 'REGENERATED'
+  | 'PRESERVE'
+  | 'PROJECT_STATE'
+  | 'TEMPLATE_ONLY'
+  | 'JSON_MERGE'
+  | 'WORKSPACE'
+  | 'SYNC';
+
+export interface UpgradeClaim {
+  policy: UpgradePolicy;
+  /** Which upgrade-project.ts pass owns (or, for TEMPLATE_TREE_SYNC_PASS, should deliver) this path. */
+  pass: string;
+}
+
+/** Pass id of the default-policy delivery pass in scripts/upgrade-project.ts. */
+export const TEMPLATE_TREE_SYNC_PASS = 'TEMPLATE TREE SYNC';
+
+// ── Legacy pass inventories (mirrored from scripts/upgrade-project.ts; drift-guarded by tests) ──
+
+/** GOVERNANCE FILES SYNC list (upgrade-project.ts). SECURITY.md added per design D5. */
+export const GOVERNANCE_FILES = ['LICENSE', 'SECURITY.md'] as const;
+
+/** docs/ subdirectories that are PROJECT WORKSPACES: template seeds are add-if-missing only;
+ *  project artifacts there are never overwritten and never pruned. `specs` (ADR-0074): the
+ *  registry seed is what activates the Universal Design Gate in a project — it MUST ride the
+ *  TEMPLATE TREE SYNC pass (a named pass with no delivery code is silently never delivered:
+ *  the 2026-09-12 DESIGN GATE SEED incident). */
+export const WORKSPACE_DOC_DIRS = [
+  'designs', 'drafts', 'reports', 'research', 'findings', 'threat-models', 'lifecycle', 'specs',
+] as const;
+
+/** Platform settings files merged (not overwritten) by the TEMPLATE TREE SYNC pass.
+ *  graft (ADR-0076): .mcp.json and opencode.json carry MCP server registrations — projects
+ *  may hold project-only servers (co-newbiz, co-safety, co-abap), so they deep-merge like
+ *  the platform settings instead of syncing. */
+export const JSON_MERGE_FILES = [
+  '.claude/settings.json', '.gemini/settings.json', '.mcp.json', 'opencode.json',
+] as const;
+
+/** Files whose scaffold-delivered copy was intentionally left unsubstituted — `{{tokens}}` are
+ *  expected content, so the coverage validator's placeholder check must not flag them. */
+export const PLACEHOLDER_ALLOWLIST = new Set([
+  'docs/README.template.md',
+  'docs/README_ko.template.md',
+  // explain-me ships its own report TEMPLATE + authoring guide; the {{tokens}} are
+  // substituted by the skill itself at project runtime (report generation), never by
+  // scaffolding — exactly the "ships verbatim unrendered by design" contract above.
+  // (T-20260912-021: the files reached templates/common when the skill's L0↔L1
+  // mirror drift was fixed; before that only SKILL.md propagated and projects got a
+  // broken half-skill.)
+  'skills/explain-me/templates/report.html',
+  'skills/explain-me/references/BUILD_GUIDE.md',
+]);
+
+// ── Scaffold-parity facts (mirrored from scripts/new-project.ts) ─────────────────────────────
+
+/** Staging zones the scaffold DELETES after copying (mirrored from scripts/new-project.ts
+ *  L1_ONLY_DIRS + the template-only docs removal loop) — template-side only; upgrading them
+ *  into a project would resurrect files the scaffold deliberately removed. docs/specs left
+ *  this list in ADR-0074 Amendment 2: its registry seed activates the Universal Design Gate
+ *  in projects and rides the WORKSPACE seed semantics above. */
+const TEMPLATE_ONLY_DIRS = [
+  'docs/_common', 'docs/_templates', 'docs/_examples', 'docs/variants', 'docs/adr',
+];
+
+const TEMPLATE_ONLY_FILES = new Set([
+  'docs/variant.context.template.md',
+  'agents/lifecycle-manager.md',
+  'agents/_COMMON.md',
+  'agents/pm.md.backup',
+  'scripts/propagation-map.json',
+]);
+
+/** Project runtime / generated state — exists in projects but is never template-delivered. */
+const PROJECT_STATE_FILES = new Set([
+  'package.json', 'bun.lock', 'bun.lockb', 'package-lock.json',
+  'variant.json', 'scripts-snapshot.json',
+]);
+
+/** Project files the scaffold/upgrade flows REGENERATE in place
+ *  (T-20260916-010: docs/VERSION_MANIFEST.md joined — templates stopped
+ *  shipping the stub manifest; the full manifest is generated post-delivery
+ *  (new-project §7.8) and regenerated post-upgrade (upgrade-project),
+ *  never template-delivered). */
+const REGENERATED_FILES = new Set([
+  'docs/skill-graph.json', '.claude/template-version.txt',
+  'docs/VERSION_MANIFEST.md',
+]);
+
+const PRESERVE_FILES = new Set([
+  'README.md', 'README_ko.md', 'CHANGELOG.md', 'docs/README.md', 'docs/README_ko.md',
+]);
+
+const LOCKED_FILES = new Set(['.gitattributes', '.gitleaks.toml']);
+
+/** Files whose WORKSPACE-MANAGED blocks upgrade MERGE unions into projects. Exported
+ *  so the validate-templates managed-block-parity arm (PM-04) enforces common→variant
+ *  parity over exactly this set — one SSOT for "which files carry managed blocks"
+ *  (T-20260917-001). */
+export const MERGE_MANAGED_FILES = new Set(['CLAUDE.md', 'GEMINI.md', '.gitignore', 'AGENTS.md', 'agents/pm.md']);
+
+/** Common-owned scaffold files: delivered by templates/common/ and sacred to the
+ *  project — a variant template must never carry them (WS-07) and new-project's
+ *  variant overlay must skip them (defense-in-depth against a variant copy
+ *  clobbering the canonical common file just laid down). One SSOT for both
+ *  consumers; extend here, never with a local hand list. (T-20260917-009,
+ *  design docs/designs/2026-09-17-governance-backlog-batch-design.md) */
+export const SCAFFOLD_COMMON_OWNED_FILES = new Set(['docs/context.md']);
+
+const OVERWRITE_FILES = new Set(['docs/phase-definitions.md', 'docs/security.md']);
+
+const TRAVERSAL_SKIP_DIRS = new Set(['node_modules', '.git', '.gateguard-state']);
+
+/** Top-level dirs claimed by dedicated upgrade passes / platform machinery (everything else at
+ *  top level belongs to the generic VARIANT ASSET DIRS pass). */
+const KNOWN_TOP_DIRS = new Set([
+  'agents', 'skills', 'scripts', 'docs', 'procedures',
+  '.claude', '.gemini', '.agents', '.codex', '.githooks', '.github', '.git', 'memory', 'node_modules',
+]);
+
+function underDir(rel: string, dir: string): boolean {
+  return rel === dir || rel.startsWith(`${dir}/`);
+}
+
+/**
+ * Resolve the upgrade claim for a project-relative path (forward slashes, no leading './').
+ * `variant` enables the `docs/<variant>.context.md` DOCS_MERGE classification.
+ * Never returns null — the fallback is the default-policy delivery claim by design.
+ */
+export function resolveClaim(relPath: string, variant = ''): UpgradeClaim {
+  const rel = relPath.replace(/\\/g, '/').replace(/^\.\//, '');
+  if (!rel || rel === '.') return { policy: 'PROJECT_STATE', pass: '(none)' };
+
+  // Platform-machinery artifacts the scaffold strips or generates
+  if (rel.endsWith('.cmd')) return { policy: 'TEMPLATE_ONLY', pass: '(platform profile)' };
+
+  if (PROJECT_STATE_FILES.has(rel)) return { policy: 'PROJECT_STATE', pass: '(project state)' };
+  if (underDir(rel, 'memory')) return { policy: 'PROJECT_STATE', pass: '(project memory)' };
+  if (rel === 'docs/countries/ACTIVE.md') return { policy: 'PROJECT_STATE', pass: '(country runtime state)' };
+
+  // Universal Design Gate seed (ADR-0074): docs/specs/* claims fall through to the
+  // WORKSPACE branch below (add-if-missing seed, never overwrite/prune project entries).
+
+  if (TEMPLATE_ONLY_FILES.has(rel)) return { policy: 'TEMPLATE_ONLY', pass: '(scaffold-removed)' };
+  for (const dir of TEMPLATE_ONLY_DIRS) {
+    if (underDir(rel, dir)) return { policy: 'TEMPLATE_ONLY', pass: '(scaffold-removed)' };
+  }
+
+  if (REGENERATED_FILES.has(rel)) return { policy: 'REGENERATED', pass: '(regenerated in place)' };
+  // .env.sample delivery is country-aware (ENV_SAMPLE SYNC pass): scaffold-time pruning
+  // (prune-country-scoped-assets.ts, shared lib/env-sample.ts) strips country-scoped env
+  // blocks from the project copy, so upgrades must re-deliver with the same pruning
+  // applied — never a wholesale copy (that would re-inject pruned country profiles). The
+  // pass MERGES (lib/env-sample.ts): template keys updated, project-only keys preserved.
+  if (rel === '.env.sample') return { policy: 'SYNC', pass: 'ENV_SAMPLE SYNC' };
+  if (PRESERVE_FILES.has(rel)) return { policy: 'PRESERVE', pass: '(project-owned)' };
+  if ((GOVERNANCE_FILES as readonly string[]).includes(rel)) {
+    return { policy: 'ADD_IF_MISSING', pass: 'GOVERNANCE FILES' };
+  }
+
+  if (LOCKED_FILES.has(rel) || underDir(rel, '.githooks')) return { policy: 'LOCKED', pass: 'LOCKED' };
+  if (MERGE_MANAGED_FILES.has(rel)) return { policy: 'MERGE_MANAGED', pass: 'MERGE' };
+  if (variant && rel === `docs/${variant}.context.md`) {
+    return { policy: 'MERGE_MANAGED', pass: 'DOCS_MERGE' };
+  }
+  if (OVERWRITE_FILES.has(rel)) return { policy: 'OVERWRITE', pass: 'DOCS_OVERWRITE' };
+  // The former VARIANT_DOCS_SYNC pass (docs/context.md and friends) was folded into the
+  // TEMPLATE TREE SYNC pass in v1.22.0 — these files carry inline `*<file> version: X.Y`
+  // footers (or hash fallback) and the default SYNC policy reproduces the old semantics
+  // exactly, so no explicit claim is needed (deny-list inversion).
+
+  if (underDir(rel, '.claude/commands') || underDir(rel, '.gemini/commands')) {
+    return { policy: 'HASH_SYNC', pass: 'COMMANDS_SYNC' };
+  }
+  if ((JSON_MERGE_FILES as readonly string[]).includes(rel)) {
+    return { policy: 'JSON_MERGE', pass: TEMPLATE_TREE_SYNC_PASS };
+  }
+
+  if (underDir(rel, 'procedures')) return { policy: 'ADD_IF_MISSING', pass: 'PROCEDURES' };
+
+  // graft repo-index skill (ADR-0076): hand-maintained OUTSIDE the SSOT skills/ (claude-only
+  // by design, C-CM-05 exception), so the post-upgrade sync-skills.ts run can never deliver
+  // it — the TEMPLATE TREE SYNC pass must claim it explicitly or the fleet never receives it.
+  if (underDir(rel, '.claude/skills/graft')) return { policy: 'SYNC', pass: TEMPLATE_TREE_SYNC_PASS };
+  // Codex platform mirrors (ADR-0077 W1/W4): claimed BEFORE the blanket `.codex/**` rule
+  // below, which exists only for the per-project config.toml seed. Without this ordering
+  // the blanket ADD_IF_MISSING swallows the mirrors and fleet projects never receive
+  // skill/prompt updates (same incident class as the .claude/skills/graft fleet gap).
+  if (underDir(rel, '.codex/skills') || underDir(rel, '.codex/prompts')) {
+    return { policy: 'SYNC', pass: TEMPLATE_TREE_SYNC_PASS };
+  }
+  // Codex project config is per-project by nature (project MCP servers + codex hooks, e.g.
+  // co-abap/co-safety): seed add-if-missing only, never overwrite an existing file (ADR-0076 D4).
+  if (underDir(rel, '.codex')) return { policy: 'ADD_IF_MISSING', pass: TEMPLATE_TREE_SYNC_PASS };
+
+  // Platform skill mirrors are distributed by the post-upgrade sync-skills.ts run, not file passes
+  if (underDir(rel, '.claude/skills') || underDir(rel, '.gemini/skills') || underDir(rel, '.agents/skills')) {
+    return { policy: 'SYNC', pass: 'sync-skills.ts (platform mirror)' };
+  }
+  // Registration pointers + platform settings extras: default sync (static today, format may evolve)
+  if (underDir(rel, '.claude') || underDir(rel, '.gemini') || underDir(rel, '.agents')) {
+    return { policy: 'SYNC', pass: TEMPLATE_TREE_SYNC_PASS };
+  }
+
+  if (underDir(rel, 'agents')) return { policy: 'SYNC', pass: 'SYNC_IF_NEWER: agents/' };
+  if (underDir(rel, 'skills')) return { policy: 'SYNC', pass: 'SYNC_IF_NEWER: skills/' };
+  if (underDir(rel, 'scripts')) return { policy: 'SYNC', pass: 'SYNC_IF_NEWER: scripts/' };
+
+  if (underDir(rel, 'docs')) {
+    const second = rel.split('/')[1] ?? '';
+    if ((WORKSPACE_DOC_DIRS as readonly string[]).includes(second)) {
+      return { policy: 'WORKSPACE', pass: TEMPLATE_TREE_SYNC_PASS };
+    }
+    return { policy: 'SYNC', pass: TEMPLATE_TREE_SYNC_PASS };
+  }
+
+  // Any other top-level directory (e.g. co-safety's workflows/, regulations/) is the
+  // generic VARIANT ASSET DIRS pass's territory. A path deeper than one segment can only
+  // get here from such a directory (all known tops are claimed above).
+  const top = rel.split('/')[0];
+  if (!KNOWN_TOP_DIRS.has(top) && rel.includes('/')) {
+    return { policy: 'SYNC', pass: 'VARIANT ASSET DIRS' };
+  }
+
+  // Root-level files with no dedicated pass (.editorconfig, …): the inversion —
+  // deliver by default instead of silently dropping.
+  return { policy: 'SYNC', pass: TEMPLATE_TREE_SYNC_PASS };
+}
+
+/** True when a claim's policy delivers file content into the project (validator placeholder check scope). */
+export function isDeliveryPolicy(policy: UpgradePolicy): boolean {
+  return ['LOCKED', 'MERGE_MANAGED', 'OVERWRITE', 'VERSIONED_SYNC', 'HASH_SYNC',
+    'ADD_IF_MISSING', 'JSON_MERGE', 'WORKSPACE', 'SYNC'].includes(policy);
+}
+
+// ── Effective template tree (scaffold parity: variant overlay over common) ────────────────────
+
+export interface EffectiveFile {
+  rel: string;
+  source: 'variant' | 'common';
+  abs: string;
+}
+
+function* walkFiles(root: string, prefix = ''): Generator<string> {
+  if (!existsSync(root)) return;
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (TRAVERSAL_SKIP_DIRS.has(entry.name) || entry.name === '.DS_Store') continue;
+    const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const abs = join(root, entry.name);
+    if (statSync(abs).isDirectory()) yield* walkFiles(abs, rel);
+    else yield rel;
+  }
+}
+
+/**
+ * Walk the effective template tree for a project: the variant template overlaid on
+ * templates/common (variant wins), replicating scaffold overlay facts — the variant never
+ * provides docs/context.md (VARIANT_OVERLAY_SKIP / WS-07).
+ */
+export function* iterEffectiveTemplateFiles(
+  commonDir: string,
+  variantDir: string | null,
+): Generator<EffectiveFile> {
+  const seen = new Set<string>();
+  if (variantDir && existsSync(variantDir)) {
+    for (const rel of walkFiles(variantDir)) {
+      if (rel === 'docs/context.md') continue; // WS-07: common is the SSOT
+      seen.add(rel);
+      yield { rel, source: 'variant', abs: join(variantDir, rel) };
+    }
+  }
+  for (const rel of walkFiles(commonDir)) {
+    if (seen.has(rel)) continue;
+    yield { rel, source: 'common', abs: join(commonDir, rel) };
+  }
+}
+
+// ── JSON_MERGE (platform settings) ────────────────────────────────────────────────────────────
+
+export interface JsonMergeResult {
+  changed: boolean;
+  merged: string;
+  /** Project-only keys/entries the merge preserved (logged by the caller). */
+  preserved: string[];
+}
+
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null && !Array.isArray(v);
+}
+
+/** Deep-merge template settings over project settings (design D4):
+ *  - objects recurse (template wins conflicts),
+ *  - arrays are unioned — project-only entries survive (protects project permission grants),
+ *  - scalars: template wins.
+ *  Project-only keys anywhere in the tree are preserved and reported (dot paths from the root). */
+export function mergeSettingsData(template: unknown, project: unknown, path = ''): { merged: unknown; preserved: string[] } {
+  const preserved: string[] = [];
+  const childPath = (key: string) => (path ? `${path}.${key}` : key);
+
+  if (isPlainObject(template) && isPlainObject(project)) {
+    const out: Record<string, unknown> = { ...project };
+    for (const [key, tVal] of Object.entries(template)) {
+      if (!(key in project)) {
+        out[key] = tVal;
+        continue;
+      }
+      const sub = mergeSettingsData(tVal, project[key], childPath(key));
+      out[key] = sub.merged;
+      preserved.push(...sub.preserved);
+    }
+    for (const key of Object.keys(project)) {
+      if (!(key in template)) preserved.push(childPath(key));
+    }
+    return { merged: out, preserved };
+  }
+
+  if (Array.isArray(template) && Array.isArray(project)) {
+    // Union with template first: template entries present, project-only entries kept.
+    const merged = [...template];
+    for (const item of project) {
+      if (!merged.some(m => JSON.stringify(m) === JSON.stringify(item))) {
+        merged.push(item);
+        preserved.push(`${path}[]`);
+      }
+    }
+    return { merged, preserved };
+  }
+
+  return { merged: template, preserved };
+}
+
+/** Merge the template settings file over the project's copy on disk. Read-only on the template. */
+export function mergeSettingsJson(projectFile: string, templateFile: string): JsonMergeResult {
+  const template = JSON.parse(readFileSync(templateFile, 'utf8'));
+  const projectRaw = readFileSync(projectFile, 'utf8');
+  const project = JSON.parse(projectRaw);
+  const { merged, preserved } = mergeSettingsData(template, project);
+  const out = `${JSON.stringify(merged, null, 2)}\n`;
+  return { changed: out !== projectRaw, merged: out, preserved };
+}
+
+/** Remove an agent/markdown file's top-level `lifecycle:` frontmatter block
+ *  (a YAML mapping at column 0 inside the frontmatter, terminated by the next
+ *  key at column 0 or the closing `---`). Used for drift comparisons where the
+ *  project's lifecycle block is preserved by design and must not count. */
+export function lifecyclelessText(text: string): string {
+  const fm = text.match(/^---\n([\s\S]*?)\n---/);
+  if (!fm) return text;
+  const lines = fm[1].split("\n");
+  const kept: string[] = [];
+  let skipping = false;
+  for (const line of lines) {
+    if (/^lifecycle:\s*$/.test(line)) { skipping = true; continue; }
+    if (skipping) {
+      if (/^[^\s#]/.test(line)) { skipping = false; kept.push(line); }
+      continue;
+    }
+    kept.push(line);
+  }
+  return text.replace(fm[0], `---\n${kept.join("\n")}\n---`);
+}
+
+/** Pipeline-generated paths that never count as hand-authored code in a diff. */
+export const PIPELINE_ARTIFACT_PATHS: readonly string[] = [
+  'CHANGELOG.md',
+  'docs/VERSION_MANIFEST.md',
+  'docs/skill-graph.json',
+  'docs/skill-graph.md',
+  '.claude/last-upgrade-delivery.json',
+];
+
+export function isPipelineArtifact(rel: string): boolean {
+  return PIPELINE_ARTIFACT_PATHS.includes(rel) || rel.startsWith('memory/');
+}
+
+/**
+ * True iff the changed-file list is non-empty and fully covered by the recorded
+ * upgrade delivery ∪ pipeline artifacts (dev-sync step 3.9 auto-E5).
+ */
+export function isDeliveredDiff(changedFiles: string[], deliveredFiles: string[]): boolean {
+  if (changedFiles.length === 0 || deliveredFiles.length === 0) return false;
+  const delivered = new Set(deliveredFiles);
+  // Requires at least one delivered file in the diff — a changelog/memory-only
+  // diff is not an upgrade delivery.
+  return changedFiles.some(f => delivered.has(f))
+    && changedFiles.every(f => delivered.has(f) || isPipelineArtifact(f));
+}
