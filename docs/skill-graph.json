@@ -73,6 +73,21 @@
       "layer": "L3"
     },
     {
+      "id": "doc:AGENTS.md",
+      "type": "doc",
+      "layer": "L3"
+    },
+    {
+      "id": "doc:CLAUDE.md",
+      "type": "doc",
+      "layer": "L3"
+    },
+    {
+      "id": "doc:GEMINI.md",
+      "type": "doc",
+      "layer": "L3"
+    },
+    {
       "id": "documentation-writing",
       "type": "skill",
       "layer": "L3"
@@ -782,6 +797,54 @@
       "from": "decision-record",
       "to": "evidence-ledger",
       "source": "prose"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "agent-lifecycle-manager",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "post-write-chain",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "skill-lifecycle-manager",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:CLAUDE.md",
+      "to": "abap-dev",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:CLAUDE.md",
+      "to": "desktop-app-fallback",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:CLAUDE.md",
+      "to": "post-write-chain",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:GEMINI.md",
+      "to": "abap-dev",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:GEMINI.md",
+      "to": "post-write-chain",
+      "source": "workflow-doc"
     },
     {
       "type": "composes_with",

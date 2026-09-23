@@ -58,7 +58,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
 | `helpers/upgrade-versions.ts` | L0+L1 | 1.0.1 | active | —| —| L0+L1 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.37.0 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.38.0 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-lifecycle-audit.ts` | L0 | 1.3.1 | active | —| —| L0+L1 | —|
@@ -82,7 +82,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `generate-skill-graph.ts` | L0 | 1.12.0 | active | —| —| L0+L1 | —|
+| `generate-skill-graph.ts` | L0 | 1.14.0 | active | —| —| L0+L1 | —|
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `handbook/apply-handbook-theme.ts` | L0 | 1.0.0 | active | — | — | common | — |
@@ -111,7 +111,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/extends-validator.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `helpers/merge-frontmatter.ts` | L0 | 1.8.6 | active | —| —| L0+L1 | —|
 | `helpers/security-validator.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
-| `helpers/context-sections.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
+| `helpers/context-sections.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `helpers/pm-md-parser.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/template-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `tests/apply-handbook-theme.test.ts` | L0 | 1.0.1 | active | — | — | common | — |
@@ -126,7 +126,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/error-handling.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `lib/language-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `lib/pipeline-state.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
+| `lib/pipeline-state.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `lifecycle-sync-audit.ts` | L0 | 1.15.0 | active | —| —| L0+L1 | —|
@@ -140,7 +140,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `team-builder.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `test-runner.ts` | L0 | 1.4.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `validate-agents.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
+| `validate-agents.ts` | L0 | 1.3.2 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-docs-links.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.11.0 | active | —| —| L0+L1 | —|
@@ -153,7 +153,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `verify-memory.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `verify-platform-lifecycle.ts` | L0 | 1.1.3 | active | —| —| L0+L1 | —|
 | `verify-readme-sync.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `verify-scripts.ts` | L0 | 1.7.0 | active | —| —| L0+L1 | —|
+| `verify-scripts.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
 | `validate-pm-extends.ts` | L0 | 0.3.1 | active | —| —| L0+L1 | —|
 | `validate-variant-readiness.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `typecheck.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
@@ -184,6 +184,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `validate-raci.ts` | L0 | 1.2.0 | active | RACI validation per ADR-0083 DEG-R-01..05 + ADR-0084 DEG-R-06/07; DEG-R-06: human-accountable must match gate; DEG-R-07: actor_types key set must equal R/A/C/I union | —| L0+L1 | —|
 | `lib/dependency-guard.ts` | L0 | 1.0.2 | active | DEPENDENCY GUARD — scans delivered scripts' bare-package imports vs project package.json, reports missing packages in the upgrade plan (T-20260920-001) | —| L0+L1 | —|
 | `lib/upgrade-policy.ts` | L0 | 1.11.0 | active | exports `lifecyclelessText()` (equal-version agent drift) + `isDeliveredDiff()` (dev-sync 3.9 auto-E5, rollout hardening 2026-09-21) | —| L0+L1 | —|
+| `upgrade-project.ts` | L0 | 1.43.0 | active | v1.43.0 (adopt-project prerequisites): variant-scope skill prune honors variant.json skill_manifest (v1.17.1 symmetry — adopted foreign skills no longer `git rm`-ed); `.gitattributes` merge-aware LOCKED delivery (`mergeGitattributes`, mergeGitleaksToml pattern). Prior: `--variant`, `--platform` (claude/antigravity/codex/all — `all` renamed from `both`, now merges CODEX.md too), `--dry-run`, `--prune-removed`, `--rollback`, `--yes`, `--skip-context-commonization`, `--force-context-sync`; COMMON-CONTEXT splice under PRESERVE (T-20260919-003); skill sub-file sync — NEW/UPDATE deliver the whole skill dir, equal-version skills get additive CATCH-UP + DRIFT warnings (2026-09-21); W2 HARVEST — variant-only lines inside removed near-duplicate sections reported as backport candidates (2026-09-22) | —| L0+L1 | —|
+| `helpers/skills-registry.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 
 ---
 
