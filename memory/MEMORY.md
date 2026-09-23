@@ -5,6 +5,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-09-23](2026-09-23.md) | chore(deps): bump dependency carets and refresh lockfile |
 | [2026-09-22](2026-09-22.md) | chore: fleet resync completion — upgrade wave + PM tier fix |
 | [2026-09-21](2026-09-21.md) | fix(skills): complete handbook v0.6.0 delivery — Korean reference files |
 | [2026-09-20](2026-09-20.md) | chore: upgrade template to 0.6.0 |
