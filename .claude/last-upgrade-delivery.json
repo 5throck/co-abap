@@ -1,22 +1,11 @@
 {
-  "timestamp": "2026-09-23T08:37:01.551Z",
+  "timestamp": "2026-09-23T11:10:40.830Z",
   "files": [
     "M .claude/template-version.txt",
     "M .codex/prompts/triage.md",
-    "M CLAUDE.md",
-    "M CODEX.md",
-    "M GEMINI.md",
-    "M agents/pm.md",
-    "M docs/workspace-schema.json",
     "M scripts/SCRIPTS.md",
-    "M scripts/generate-skill-graph.ts",
-    "M scripts/helpers/context-sections.ts",
-    "M scripts/lib/pipeline-state.ts",
-    "M scripts/typecheck.ts",
-    "M scripts/validate-agents.ts",
-    "M scripts/validate-templates.ts",
-    "M scripts/verify-scripts.ts",
     "scripts/helpers/skills-registry.ts",
-    "scripts/upgrade-project.ts"
+    "scripts/upgrade-project.ts",
+    "M scripts/validate-templates.ts"
   ]
 }
