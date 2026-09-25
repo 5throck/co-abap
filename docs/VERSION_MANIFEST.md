@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-25T13:32:57.862Z
+**Generated**: 2026-09-25T13:34:37.132Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -19,27 +19,27 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | inherit | 2026-09-20 |
-| co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-20 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-09-20 |
-| dba | agents/dba.md | medium | inherit | 2026-09-20 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-20 |
-| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-20 |
-| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-20 |
-| form-expert | agents/form-expert.md | medium | inherit | 2026-09-20 |
-| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-20 |
-| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-20 |
-| interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-20 |
-| le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-20 |
-| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-20 |
+| architect | agents/architect.md | high | inherit | 2026-09-25 |
+| co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-25 |
+| code-writer | agents/code-writer.md | low | inherit | 2026-09-25 |
+| dba | agents/dba.md | medium | inherit | 2026-09-25 |
+| devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-25 |
+| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-25 |
+| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-25 |
+| form-expert | agents/form-expert.md | medium | inherit | 2026-09-25 |
+| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-25 |
+| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-25 |
+| interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
+| le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
+| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
 | pm | agents/pm.md | N/A | N/A | 2026-09-25 |
-| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-20 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-20 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-20 |
-| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-20 |
-| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-20 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-09-20 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-09-20 |
+| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
+| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-25 |
+| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-25 |
+| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
+| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
+| security-monitor | agents/security-monitor.md | low | inherit | 2026-09-25 |
+| test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
 
 ---
 
