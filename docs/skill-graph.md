@@ -15,6 +15,7 @@
 | `api-documentation` | L3 | — | — | — | — | — |
 | `ci-triage` | L3 | — | — | — | — | — |
 | `decision-record` | L3 | — | — | — | — | — |
+| `design-foundation` | L3 | — | — | accessibility-audit (composes_with), token-usage-lint (composes_with), ui-ux-design-intelligence (enables) | — | — |
 | `desktop-app-fallback` | L3 | — | — | — | — | — |
 | `documentation-writing` | L3 | — | — | team-builder (composes_with) | — | — |
 | `dump-monitor` | L3 | — | — | abap-dev (follows), research-analysis (composes_with), sap-co (composes_with), sap-fi (composes_with), sap-le (composes_with), sap-mm (composes_with), sap-sd (composes_with) | — | — |

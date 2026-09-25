@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-23T11:11:28.076Z
+**Generated**: 2026-09-25T10:20:14.037Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 47
+- **Skills**: 48
 - **Scripts**: 102 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -55,6 +55,7 @@
 | api-documentation | 1.0.2 | active | skills/api-documentation/SKILL.md | workspace | api documentation, document api, api reference, developer documentation, rest api docs, graphql docs, sdk documentation | pm |
 | ci-triage | 0.1.1 | active | skills/ci-triage/SKILL.md | workspace | ci failure, triage failure, audit gate failed, scaffold failed, fix the pipeline | pm |
 | decision-record | 1.1.0 | active | skills/decision-record/SKILL.md | workspace | decision record, gate ruling, go/no-go decision, escalation decision, record a decision | pm |
+| design-foundation | 1.0.0 | active | skills/design-foundation/SKILL.md | workspace | design foundation, design principles, design guide, design tokens setup, design decision record | architect |
 | desktop-app-fallback | 1.0.0 | active | skills/desktop-app-fallback/SKILL.md | workspace | desktop-app-fallback, manual QA, Desktop App | test-runner |
 | documentation-writing | 1.0.3 | active | skills/documentation-writing/SKILL.md | workspace | write documentation, create guide, draft communication, write manual, create tutorial, documentation, technical writing | pm |
 | dump-monitor | 1.0.0 | active | skills/dump-monitor/SKILL.md | workspace | dump-monitor, ListDumps, GetDump, short dump, system health | devops-admin |
@@ -71,7 +72,7 @@
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
 | meeting-facilitation | 1.4.3 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | N/A | pm |
-| platform-command-lifecycle-manager | 1.0.2 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
+| platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
 | post-write-chain | N/A | active | skills/post-write-chain/SKILL.md | workspace | N/A | N/A |
 | project-review | 1.3.0 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
@@ -113,7 +114,7 @@
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.39.0 | scripts/audit.ts | bun |
+| audit.ts | 2.45.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.0.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
@@ -135,26 +136,26 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 1.0.0 | scripts/design-lint.ts | N/A |
-| dev-sync.ts | 1.16.0 | scripts/dev-sync.ts | bun |
+| dev-sync.ts | 1.19.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
 | dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
 | dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
-| evidence-backport-scan.ts | 1.0.0 | scripts/evidence-backport-scan.ts | N/A |
+| evidence-backport-scan.ts | 1.1.0 | scripts/evidence-backport-scan.ts | N/A |
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
 | generate-raci.ts | 1.1.0 | scripts/generate-raci.ts | js-yaml |
 | generate-skill-graph.ts | 1.14.0 | scripts/generate-skill-graph.ts | js-yaml |
-| generate-version-manifest.ts | 1.7.1 | scripts/generate-version-manifest.ts | bun, js-yaml |
+| generate-version-manifest.ts | 1.8.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
 | graph-delta-log.ts | 1.0.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
 | install-vsp.ts | 1.0.1 | scripts/co-abap/install-vsp.ts | bun |
-| lifecycle-sync-audit.ts | 1.15.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
+| lifecycle-sync-audit.ts | 1.17.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
 | migrate-quality-gates.ts | 1.1.0 | scripts/migrate-quality-gates.ts | fs, js-yaml, path |
@@ -169,12 +170,12 @@
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.0.1 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
-| setup.ts | 1.0.2 | scripts/co-abap/setup.ts | bun |
+| setup.ts | 1.0.3 | scripts/co-abap/setup.ts | bun |
 | skill-lifecycle-audit.ts | 1.5.1 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.3.0 | scripts/spec-register.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
-| sync-skill-status.ts | 1.0.1 | scripts/sync-skill-status.ts | N/A |
+| sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.8.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.4.0 | scripts/team-builder.ts | N/A |
 | test-runner.ts | 1.4.0 | scripts/test-runner.ts | fs, os, path |
@@ -186,7 +187,7 @@
 | validate-doc-folder.ts | 1.1.0 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.ts | 1.1.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
-| validate-md-language.ts | 1.11.0 | scripts/validate-md-language.ts | fs |
+| validate-md-language.ts | 1.12.0 | scripts/validate-md-language.ts | fs |
 | validate-model-registry.ts | 1.4.0 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
@@ -194,11 +195,11 @@
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
-| validate-templates.ts | 1.38.1 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.45.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
-| verify-platform-lifecycle.ts | 1.1.3 | scripts/verify-platform-lifecycle.ts | N/A |
+| verify-platform-lifecycle.ts | 1.2.0 | scripts/verify-platform-lifecycle.ts | N/A |
 | verify-readme-sync.ts | 1.4.0 | scripts/verify-readme-sync.ts | bun, fs, path |
 | verify-scripts.ts | 1.8.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.6.0 | scripts/verify-skill-graph.ts | N/A |
@@ -215,22 +216,22 @@
 |------|------|----------|-------------------|
 | abap-dev | .claude/commands/abap-dev.md | claude | N/A |
 | celebrate | .claude/commands/celebrate.md | claude | N/A |
-| changelog | .claude/commands/changelog.md | both | N/A |
-| commit-push-pr | .claude/commands/commit-push-pr.md | both | N/A |
-| gateguard | .claude/commands/gateguard.md | both | N/A |
-| meeting | .claude/commands/meeting.md | both | N/A |
-| memlog | .claude/commands/memlog.md | both | N/A |
-| new-task | .claude/commands/new-task.md | both | N/A |
+| changelog | .claude/commands/changelog.md | all | N/A |
+| commit-push-pr | .claude/commands/commit-push-pr.md | all | N/A |
+| gateguard | .claude/commands/gateguard.md | all | N/A |
+| meeting | .claude/commands/meeting.md | all | N/A |
+| memlog | .claude/commands/memlog.md | all | N/A |
+| new-task | .claude/commands/new-task.md | all | N/A |
 | post-write | .claude/commands/post-write.md | claude | N/A |
-| project-review | .claude/commands/project-review.md | both | N/A |
+| project-review | .claude/commands/project-review.md | all | N/A |
 | sap-co | .claude/commands/sap-co.md | claude | N/A |
 | sap-fi | .claude/commands/sap-fi.md | claude | N/A |
 | sap-le | .claude/commands/sap-le.md | claude | N/A |
 | sap-mm | .claude/commands/sap-mm.md | claude | N/A |
 | sap-pp | .claude/commands/sap-pp.md | claude | N/A |
 | sap-sd | .claude/commands/sap-sd.md | claude | N/A |
-| security-check | .claude/commands/security-check.md | both | N/A |
-| sync | .claude/commands/sync.md | both | N/A |
+| security-check | .claude/commands/security-check.md | all | N/A |
+| sync | .claude/commands/sync.md | all | N/A |
 | transport | .claude/commands/transport.md | claude | N/A |
 | triage | .claude/commands/triage.md | claude | N/A |
 
@@ -238,10 +239,12 @@
 
 ## Platform Parity Status
 
-**Checked**: Claude (.claude/) vs Gemini (.gemini/)
+**Checked**: Claude (.claude/), Gemini (.gemini/), Antigravity (.agents/), Codex (.codex/ prompts mapping)
 
-- **Commands with parity**: 9 / 20
-- **Skills with parity**: 0 / 47 (common-template skills are parity-exempt)
+- **Commands with parity (gemini mirror)**: 9 / 20
+- **Commands with codex prompts mapping**: 9 / 20
+- **Skills in all four mirrors**: 0 / 48
+- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
 
 ---
 

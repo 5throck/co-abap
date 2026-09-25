@@ -20,8 +20,27 @@
  *   bun scripts/lifecycle-sync-audit.ts --json
  *   bun scripts/lifecycle-sync-audit.ts --fix
  *
- * @version 1.15.0
- * @last_updated 2026-09-17
+ * @version 1.17.0
+ * @last_updated 2026-09-25
+ * v1.17.0 (registry-policy-completeness batch W5, spec
+ *          docs/designs/2026-09-25-registry-policy-completeness-design.md R5.6):
+ *          INTENTIONAL_CROSS_REFS gains 'dev-sync:sync-skill-registries' (L1
+ *          dev-sync Step 4.63 references the L0-only registry sync behind an
+ *          isWorkspaceRoot + existsSync double guard) and
+ *          'validate-templates:sync-skill-registries' (the L1 VA-08 fix hint
+ *          names the L0-only remediation command in a string).
+ * v1.16.0 (T-20260924-001, spec
+ *          docs/designs/2026-09-25-propagation-engine-batch-design.md R21):
+ *          Check B gains a projection arm — imports the mirror generator's
+ *          pure builder, regenerates the expected registry span for
+ *          templates/common/scripts/SCRIPTS.md, and byte-compares it with the
+ *          file's actual span. Out-of-band hand edits between syncs now fail
+ *          loudly with `bun scripts/generate-scripts-mirror.ts` as the fix
+ *          hint (the generator itself is dev-sync Step 2.6). The import is
+ *          existsSync-guarded: the generator is L0-only, so the L1 copy of
+ *          this audit skips the arm where the generator is absent. Check B's
+ *          existing version and file-existence checks are retained as
+ *          defense in depth.
  * v1.15.0 (T-20260917-004): Check H gains a coverage arm — versioned scripts
  *          (carrying a `// @version` header) with no docs/lifecycle/scripts/
  *          record are now reported as one aggregated WARNING (records stay
@@ -1077,6 +1096,75 @@ function runCheckB(): SyncIssue[] {
 }
 
 /**
+ * Check B projection arm (v1.16.0, T-20260924-001): the mirror's registry span
+ * is a GENERATED projection of the root registry plus the template scripts
+ * tree (scripts/generate-scripts-mirror.ts, dev-sync Step 2.6). Regenerate the
+ * expected span via the generator's exported pure builder and byte-compare it
+ * with the mirror's actual span, so out-of-band hand edits between syncs fail
+ * loudly with the generator as the fix hint. The version/file-existence checks
+ * above stay as defense in depth.
+ *
+ * Guards: workspace root only (the projection is defined only at L0), and the
+ * generator is L0-only — an existsSync-guarded dynamic import lets the L1 copy
+ * of this audit skip the arm cleanly where the generator is absent.
+ */
+export function compareMirrorProjection(
+  expected: string | null,
+  actual: string | null,
+): SyncIssue[] {
+  if (expected === null) {
+    return [{
+      level: 'error',
+      file: 'scripts/SCRIPTS.md',
+      message: 'Check B projection: no `| script |` header row found in the root registry — cannot build the projection',
+      fix: 'bun scripts/generate-scripts-mirror.ts',
+    }];
+  }
+  if (actual === null) {
+    return [{
+      level: 'error',
+      file: 'templates/common/scripts/SCRIPTS.md',
+      message: 'Check B projection: no `| script |` header row found in the mirror — cannot locate the generated span',
+      fix: 'bun scripts/generate-scripts-mirror.ts',
+    }];
+  }
+  if (actual !== expected) {
+    return [{
+      level: 'error',
+      file: 'templates/common/scripts/SCRIPTS.md',
+      message: `Check B projection: mirror registry span drifted from the generated projection (${expected.split('\n').length} expected lines vs ${actual.split('\n').length} on disk)`,
+      fix: 'bun scripts/generate-scripts-mirror.ts',
+    }];
+  }
+  return [];
+}
+
+export async function runCheckBProjection(): Promise<SyncIssue[]> {
+  if (!IS_WORKSPACE_ROOT) return [];
+  if (!existsSync(TEMPLATE_SCRIPTS_MD)) return [];
+
+  const generatorPath = join(ROOT, 'scripts', 'generate-scripts-mirror.ts');
+  if (!existsSync(generatorPath)) return [];
+
+  try {
+    const generator = await import(generatorPath);
+    const expected: string = generator.buildMirrorRegistrySpan(
+      readFileSync(SCRIPTS_MD, 'utf-8'),
+      join(ROOT, 'templates', 'common', 'scripts'),
+    );
+    const actual: string | null = generator.extractRegistrySpan(readFileSync(TEMPLATE_SCRIPTS_MD, 'utf-8'));
+    return compareMirrorProjection(expected, actual);
+  } catch (e) {
+    return [{
+      level: 'error',
+      file: 'scripts/generate-scripts-mirror.ts',
+      message: `Check B projection: generator import/build failed: ${e instanceof Error ? e.message : String(e)}`,
+      fix: 'Fix the generator error reported above',
+    }];
+  }
+}
+
+/**
  * Check X: Scan templates/common/scripts/ for references to L0-only scripts.
  * If an L0-only script is called from a templates/common script, that is a
  * deployment contract violation — the L0-only script won't exist in generated projects.
@@ -1091,6 +1179,7 @@ const INTENTIONAL_CROSS_REFS = new Set([
   'dev-sync:propagate-to-templates',            // dev-sync.ts: called only inside isL0Context guard
   'audit:propagate-to-templates',               // audit.ts: comment reference only (replaced checkScriptSync)
   'lifecycle-sync-audit:propagate-to-templates',  // lifecycle-sync-audit.ts: string mention in Check C fix hint only (re-sync advice; the hint never runs the L0 script)
+  'lifecycle-sync-audit:generate-scripts-mirror', // lifecycle-sync-audit.ts: string mention in Check B projection-arm fix hint only (v1.16.0); the arm itself is existsSync-guarded and the dynamic import runs only at L0 where the L0-only generator exists
   'create-l3-scaffold:generate-version-manifest', // L0-workflow coordination; reference only in L1 copy
   'list-template-versions:tag-template',        // L0-workflow coordination; reference only in L1 copy
   'new-project:list-template-versions',         // L0-workflow coordination; reference only in L1 copy
@@ -1100,6 +1189,8 @@ const INTENTIONAL_CROSS_REFS = new Set([
   'audit:spec-register',                          // audit.ts: string mention in warning message only (--spec-check mode)
   'audit:upgrade-project',                        // audit.ts: guarded by existsSync('Projects') — checkProjectDocMarkerDrift skips entirely when Projects/ is absent (gitignored, L0-dev-machine-only directory; scaffolded/L1 projects have no Projects/ to check)
   'audit:test-platform-parity',                   // audit.ts: guarded by existsSync — skipped when L0 script absent (L3/L1 projects have no templates/ to test parity on)
+  'dev-sync:sync-skill-registries',               // dev-sync.ts step 4.63: guarded by isWorkspaceRoot + existsSync — registry convergence is workspace-root-only (W5, spec docs/designs/2026-09-25-registry-policy-completeness-design.md)
+  'validate-templates:sync-skill-registries',     // validate-templates.ts VA-08: string mention in the fix hint only (the L0-only remediation command; W5)
   'dev-sync:verify-adr-governance',               // dev-sync.ts step 3.97: guarded by existsSync — skipped when L0 validator absent (ADR-0059 Stage 2 gate; scaffolded projects have no docs/adr corpus)
   'dev-sync:generate-skill-graph',                // dev-sync.ts step 4.65: guarded by existsSync — skipped when L0 generator absent (ADR-0060 skill graph gate; scaffolded projects ship no skill graph tooling)
   'dev-sync:verify-skill-graph',                  // dev-sync.ts step 4.65: guarded by existsSync — skipped when L0 verifier absent (ADR-0060 skill graph gate; scaffolded projects ship no skill graph tooling)
@@ -1421,7 +1512,7 @@ function applyFix(checkAIssues: SyncIssue[]): void {
 /**
  * Run all checks and return the combined result.
  */
-function runAudit(jsonMode = false): AuditResult {
+async function runAudit(jsonMode = false): Promise<AuditResult> {
   if (!jsonMode) {
     console.log(`${colors.cyan}🔍 Lifecycle Sync Audit${colors.reset}`);
     console.log(`${colors.cyan}========================${colors.reset}`);
@@ -1459,7 +1550,7 @@ function runAudit(jsonMode = false): AuditResult {
   }
 
   const checkAIssues = runCheckA();
-  const checkBIssues = runCheckB();
+  const checkBIssues = [...runCheckB(), ...(await runCheckBProjection())];
   const checkCIssues = runCheckC();
   const checkXIssues = runCheckX();
   const checkVIssues = runCheckV();
@@ -1559,11 +1650,11 @@ if (import.meta.main) {
     console.log('');
 
     // Report remaining issues after fix
-    const result = runAudit(false);
+    const result = await runAudit(false);
     printResults(result);
     process.exit(result.errors.length > 0 ? 1 : 0);
   } else {
-    const result = runAudit(jsonMode);
+    const result = await runAudit(jsonMode);
 
     if (jsonMode) {
       // Strip fixData from JSON output (internal only)
