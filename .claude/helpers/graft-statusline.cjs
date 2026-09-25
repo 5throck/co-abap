@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { pathToFileURL } = require('url');
 const { execFileSync } = require('child_process');
 const dir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
-const BAKED = "C:\\Users\\USER\\AppData\\Local\\nvm\\v24.15.0\\node_modules\\@nanonets\\graft\\dist\\claude";
 
 // The dist/claude dir of @nanonets/graft resolved from a base whose node_modules is searched.
 function fromPkg(base) {
@@ -53,9 +53,19 @@ function best(dirs, name) {
   return bestDir;
 }
 
+// Bun's global install tree — the npm probe (globalRoot) cannot see `bun -g` installs.
+function bunGlobal() {
+  return path.join(os.homedir(), '.bun', 'install', 'global', 'node_modules', '@nanonets', 'graft', 'dist', 'claude');
+}
+
 function entry(name) {
-  // Cheap candidates first, and only shell out to npm when every one of them misses.
-  const cheap = [BAKED, fromPkg(dir), fromPkg(path.join(path.dirname(process.execPath), '..', 'lib'))];
+  // Explicit override wins; then cheap candidates, shelling out to npm only if all miss.
+  const cheap = [
+    process.env.GRAFT_DIST_DIR,
+    bunGlobal(),
+    fromPkg(dir),
+    fromPkg(path.join(path.dirname(process.execPath), '..', 'lib')),
+  ];
   const hit = best(cheap, name);
   if (hit) return path.join(hit, name);
   const gr = globalRoot();

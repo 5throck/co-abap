@@ -11,11 +11,11 @@
 
 ## Architecture: TypeScript-Only Policy (ADR-0036)
 
-> **Policy change (2026-06-11)**: All scripts are TypeScript executed via Bun. The former Tier 1 sh/ps1 bootstrap tier has been abolished. See [ADR-0036](../docs/adr/0036-script-ts-migration.md) for rationale.
+> **Policy change (2026-06-11)**: All scripts are TypeScript executed via Bun. The former Tier 1 sh/ps1 bootstrap tier has been abolished. See ADR-0036 (workspace root: `docs/adr/0036-script-ts-migration.md`) for rationale.
 
 ## Error Handling Standard (ADR-0054)
 
-> **Policy (2026-08-16)**: Error and exit paths in all scripts MUST use `scripts/lib/error-handling.ts` (`die()`, `fatalError()` + `logError()`, `withSyncErrorHandling()`). Migration is **incremental** — a script migrates when it is otherwise modified (no pure-consistency rewrites). When migrating an L0+L1 script, sync the change to `templates/common/scripts/` in the same commit. See [ADR-0054](../docs/adr/0054-error-handling-standardization.md) and `docs/context.md` §8.11.
+> **Policy (2026-08-16)**: Error and exit paths in all scripts MUST use `scripts/lib/error-handling.ts` (`die()`, `fatalError()` + `logError()`, `withSyncErrorHandling()`). Migration is **incremental** — a script migrates when it is otherwise modified (no pure-consistency rewrites). When migrating an L0+L1 script, sync the change to `templates/common/scripts/` in the same commit. See ADR-0054 (workspace root: `docs/adr/0054-error-handling-standardization.md`) and `docs/context.md` §8.11.
 
 All scripts in this workspace are written in TypeScript and executed via `bun`. There is no longer a distinction between "bootstrap" and "ops" tiers — Bun is a hard prerequisite for the workspace and is assumed to be installed before any script runs.
 
@@ -83,8 +83,6 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `generate-skill-graph.ts` | L0 | 1.14.0 | active | —| —| L0+L1 | —|
-| `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `handbook/apply-handbook-theme.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/build-search-index.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/check-a11y.ts` | L0 | 1.0.0 | active | — | — | common | — |

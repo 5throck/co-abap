@@ -859,7 +859,73 @@
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
+      "to": "abap-dev",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
       "to": "agent-lifecycle-manager",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "decision-record",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "evidence-ledger",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "explain-me",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "handbook",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "handbook-sync-audit",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "i18n-audit",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "i18n-formatting",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "i18n-layout",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "i18n-locale-config",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "meeting-facilitation",
       "source": "workflow-doc"
     },
     {
@@ -871,7 +937,31 @@
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
+      "to": "project-review",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "security-scan",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
       "to": "skill-lifecycle-manager",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "source-command-commit-push-pr",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
+      "to": "sync",
       "source": "workflow-doc"
     },
     {
@@ -1048,6 +1138,17 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "i18n-audit",
+      "to": "i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
       "type": "references",
       "from": "i18n-formatting",
       "to": "i18n-layout",
@@ -1058,6 +1159,17 @@
       "from": "i18n-formatting",
       "to": "i18n-locale-config",
       "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "i18n-formatting",
+      "to": "i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 1
+      }
     },
     {
       "type": "references",
@@ -1078,6 +1190,17 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "i18n-layout",
+      "to": "i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
       "type": "references",
       "from": "i18n-layout",
       "to": "translate",
@@ -1094,6 +1217,17 @@
       "from": "i18n-locale-config",
       "to": "i18n-layout",
       "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "i18n-locale-config",
+      "to": "i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 0
+      }
     },
     {
       "type": "references",

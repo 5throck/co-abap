@@ -4,7 +4,7 @@ Lifecycle tracking for the `interface-expert` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/interface-expert.md`](../../agents/interface-expert.md) |
+| Agent file | [`agents/interface-expert.md`](../../../agents/interface-expert.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

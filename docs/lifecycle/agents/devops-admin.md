@@ -4,7 +4,7 @@ Lifecycle tracking for the `devops-admin` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/devops-admin.md`](../../agents/devops-admin.md) |
+| Agent file | [`agents/devops-admin.md`](../../../agents/devops-admin.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

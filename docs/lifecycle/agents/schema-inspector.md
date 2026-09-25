@@ -4,7 +4,7 @@ Lifecycle tracking for the `schema-inspector` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/schema-inspector.md`](../../agents/schema-inspector.md) |
+| Agent file | [`agents/schema-inspector.md`](../../../agents/schema-inspector.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

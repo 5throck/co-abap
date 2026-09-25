@@ -4,7 +4,7 @@ Lifecycle tracking for the `pm` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/pm.md`](../../agents/pm.md) |
+| Agent file | [`agents/pm.md`](../../../agents/pm.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

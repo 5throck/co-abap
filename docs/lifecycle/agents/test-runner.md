@@ -4,7 +4,7 @@ Lifecycle tracking for the `test-runner` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/test-runner.md`](../../agents/test-runner.md) |
+| Agent file | [`agents/test-runner.md`](../../../agents/test-runner.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

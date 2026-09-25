@@ -10,7 +10,7 @@
     "agent:verify": "bun scripts/agent-verify.ts",
     "dispatch:parallel": "bun scripts/dispatch.ts parallel",
     "dispatch:serial": "bun scripts/dispatch.ts serial",
-    "scratch-cleanup": "bun scripts/scratch-cleanup.ts --status",
+    "scratch-cleanup": "bun scripts/co-abap/scratch-cleanup.ts --status",
     "test": "bun test scripts",
     "typecheck": "tsc --noEmit -p scripts/tsconfig.json"
   },

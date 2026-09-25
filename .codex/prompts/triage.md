@@ -6,9 +6,9 @@ allowed-tools: ["Bash"]
 gemini-parity: skip # intentional Claude-only command
 ---
 
-# /triage ??Task Triage & Auto-Dispatch
+# /triage — Task Triage & Auto-Dispatch
 
-Automatically classify the incoming request, create a task file, and generate the 짠0-A parallel dispatch block.
+Automatically classify the incoming request, create a task file, and generate the §0-A parallel dispatch block.
 
 ## Steps
 
@@ -50,10 +50,10 @@ bun "${CLAUDE_PLUGIN_ROOT:-.}/scripts/new-requirement.ts" "<short requirement ti
 
 This creates `deliverables/REQ-NNN-<slug>/01_srs.md` pre-filled with the REQ ID and title, and
 adds a `Stage 1 / Draft` row to the RTM table in `deliverables/index.md`. The Module Analyst
-then fills in `01_srs.md` during 짠1 Business Analysis ??see
-[deliverables/index.md ??Workflow Stages](../../deliverables/index.md#workflow-stages--responsible-agents)
-for the full Stage 1?? ownership chain. Skip this step for `Debug`, `Graph Analysis`, `Interface`,
-and `Infra` classifications ??those are scoped fixes/investigations, not new RTM-tracked scope.
+then fills in `01_srs.md` during §1 Business Analysis → see
+[deliverables/index.md → Workflow Stages](../../deliverables/index.md#workflow-stages--responsible-agents)
+for the full Stage 1 → ownership chain. Skip this step for `Debug`, `Graph Analysis`, `Interface`,
+and `Infra` classifications → those are scoped fixes/investigations, not new RTM-tracked scope.
 
 ### 3. Create Task File
 
@@ -65,7 +65,7 @@ bun "${CLAUDE_PLUGIN_ROOT:-.}/scripts/vsp-task.ts" "$ARGUMENTS"
 
 Note the generated filename (e.g., `scratch/tasks/task-2026-05-05-001.md`).
 
-### 4. Pre-fill 짠0
+### 4. Pre-fill §0
 
 Output the following block (filled with detected values) for the user to paste into the task file:
 
@@ -85,14 +85,14 @@ Output the following block (filled with detected values) for the user to paste i
 - Technical: Architect / ABAP Developer / DBA / QA
 ```
 
-### 5. Generate 짠0-A Parallel Dispatch Block
+### 5. Generate §0-A Parallel Dispatch Block
 
 Based on the detected module, output the ready-to-use dispatch block:
 
 ```markdown
-## 0-A. PM Parallel Dispatch (Phase 1 ??Read-Only)
+## 0-A. PM Parallel Dispatch (Phase 1 → Read-Only)
 
-Agent 1 ??sap-investigator  (prompt: agents/sap-investigator.md)
+Agent 1 → sap-investigator  (prompt: agents/sap-investigator.md)
   Task: Scan existing codebase for related objects
   Input:
   {
@@ -103,7 +103,7 @@ Agent 1 ??sap-investigator  (prompt: agents/sap-investigator.md)
     "max_results": 30
   }
 
-Agent 2 ??read-only-analyst  (prompt: agents/read-only-analyst.md)
+Agent 2 → read-only-analyst  (prompt: agents/read-only-analyst.md)
   Task: Query SAP tables for AS-IS data
   Input:
   {
@@ -116,7 +116,7 @@ Agent 2 ??read-only-analyst  (prompt: agents/read-only-analyst.md)
     "tables_to_inspect": ["<MODULE_TABLE_1>", "<MODULE_TABLE_2>"]
   }
 
-Agent 3 ??schema-inspector  (prompt: agents/schema-inspector.md)
+Agent 3 → schema-inspector  (prompt: agents/schema-inspector.md)
   Task: Inspect table structures
   Input:
   {
@@ -127,15 +127,15 @@ Agent 3 ??schema-inspector  (prompt: agents/schema-inspector.md)
   }
 ```
 
-Replace `<MODULE_TABLE_N>` with the module's standard tables from `schema-inspector.md 짠 Standard Table Groups`.
+Replace `<MODULE_TABLE_N>` with the module's standard tables from `schema-inspector.md § Standard Table Groups`.
 
 ### 6. Next Step Reminder
 
 ```
-??Task file created: scratch/tasks/task-YYYY-MM-DD-NNN.md
-?뱥 Copy 짠0 and 짠0-A above into the task file.
-?? Dispatch all 3 agents IN A SINGLE MESSAGE (parallel).
-??Wait for all 3 results, then synthesize into 짠1 Business Analysis.
+✅ Task file created: scratch/tasks/task-YYYY-MM-DD-NNN.md
+📋 Copy §0 and §0-A above into the task file.
+⚡ Dispatch all 3 agents IN A SINGLE MESSAGE (parallel).
+⏳ Wait for all 3 results, then synthesize into §1 Business Analysis.
 ```
 
 ---
