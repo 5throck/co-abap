@@ -157,12 +157,12 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- COMMON-GEMINI:END -->
 
 <!-- COMMON-GEMINI:START -->
-### 6. Workspace & Template Boundary Policy
+### 6. Project Boundary Policy
 
-- **Strict CWD Isolation**: When modifying templates (in `templates/`), you MUST strictly limit your working directory (CWD) to the specific template folder.
-- **No Cross-Modification**: Modifying workspace root files and template files in a single task or session is forbidden. Keep workspace root changes and template changes completely isolated.
+- **Strict Scope**: Work only within the current project directory.
+- **No Cross-Project Modification**: Modifying files outside the project root during a session is forbidden.
 
-> For L1-L2 Fork Model and lifecycle management rules, see [docs/context.md](docs/context.md) and [docs/context.md](docs/context.md).
+> For lifecycle management rules, see [docs/context.md — Lifecycle Management](docs/context.md#lifecycle-management).
 <!-- COMMON-GEMINI:END -->
 
 <!-- COMMON-GEMINI:START -->
@@ -296,7 +296,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-09-23 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-09-25 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,

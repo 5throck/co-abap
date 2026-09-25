@@ -1,4 +1,44 @@
-// @version 1.16.0
+// @version 1.19.0
+// v1.19.0: Step 4.63 runs `sync-skill-registries.ts` (apply mode) after the
+//           4.62 cascade re-publish — every /sync re-converges all skill
+//           registry tables (root workspace rows, root Variant-Exclusive
+//           catalog, common scaffold seed, curated variant registries) with
+//           the SKILL.md frontmatter they document, so a frontmatter bump
+//           plus /sync can no longer leave registry drift behind (spec:
+//           docs/designs/2026-09-25-registry-policy-completeness-design.md
+//           W5/R5.5). Idempotent; non-zero exit (crash) is fatal in L0.
+// v1.18.0: Step 2.6 runs `generate-scripts-mirror.ts` in write mode (Step 2.5
+//           existsSync + hard-exit idiom) on every sync — the L1 SCRIPTS.md
+//           registry span is a generated projection, so drift cannot land in a
+//           /sync commit (T-20260924-001, spec:
+//           docs/designs/2026-09-25-propagation-engine-batch-design.md R20).
+// v1.17.1: Step 4.55 also parses the marker-rewrite engine's new
+//           `Would append: N` summary counter (propagate-to-templates 2.18.0,
+//           T-20260924-006 — opt-in append-on-missing) and WARNs on the sum of
+//           would-overwrite + would-append, so a pending append can no longer
+//           hide behind the overwrite-only drift gate (spec:
+//           docs/designs/2026-09-25-propagation-engine-batch-design.md R12).
+// v1.17.0: two changes in one bump. (1) feat(propagation): Step 4.55
+//           marker-rewrite drift-check domain list gains 'constitution-context-pr'
+//           — the §3.3 COMMON-CONSTITUTION-PR zone (context.md →
+//           templates/common/docs/context.md) is now drift-checked at sync time
+//           alongside the pilot domains. One-line list extension; the map-derived
+//           refactor stays future work. (2) fix(scoped-staging): step 6.5 no longer
+//           fatals on staged deletions under SYNC_SCOPED_STAGING=1 — a path the
+//           cached diff records as removed (`D`, or the SOURCE of a staged
+//           `R<score>` rename) exists in neither worktree nor index, so a plain
+//           pathspec `git add` exits 128 AND poisons the whole batch (one bad
+//           pathspec stages nothing). The add step now parses the cached
+//           name-status (parseCachedNameStatus, lib/git-status.ts 1.1.0), SKIPS
+//           index-removed paths (index already holds the desired state), batch-adds
+//           present paths in one call, attempts each remaining absent path
+//           per-path with .nothrow() (resolves while the index still holds it,
+//           e.g. staged-add-whose-worktree-file-vanished), and fails closed —
+//           loud ❌ + exit 1 — when a committable path matches neither worktree
+//           nor index (true ghost). The WARN-soak branch (bare `git add -A`) is
+//           unchanged. Both changes: spec
+//           docs/designs/2026-09-24-constitution-s33-context-injection-design.md
+//           (Amendment 2, §13).
 // v1.15.0 (ADR-0081 / T-20260918-002): main-integration hardening — two
 //           additions, CONSTITUTION §3.3 unchanged as the primary rule.
 //           (1) Pre-flight main-drift detection: after the language gate, a
@@ -86,7 +126,7 @@ import * as path from 'node:path';
 import * as crypto from 'node:crypto';
 import { withRetry, DEFAULT_CONFIG } from './retry-handler.ts';
 import { hasNonEnglish } from './lib/language-guard.ts';
-import { parseStatusPorcelain } from './lib/git-status.ts';
+import { parseCachedNameStatus, parseStatusPorcelain } from './lib/git-status.ts';
 import { sharedPipelineFilesChanged, parseUnresolvedConflicts } from './helpers/merge-state.ts';
 import { isDeliveredDiff } from './lib/upgrade-policy.ts';
 
@@ -94,6 +134,7 @@ const GREEN = '\x1b[32m';
 const RED = '\x1b[31m';
 const YELLOW = '\x1b[33m';
 const CYAN = '\x1b[36m';
+const DIM = '\x1b[2m';
 const RESET = '\x1b[0m';
 
 // Workspace root guard — dev-sync must run from the workspace root it belongs to.
@@ -350,6 +391,19 @@ if (fs.existsSync(genReadmeTs)) {
         await $`bun ${genReadmeTs}`;
     } catch (e) {
         console.log(`${RED}❌ generate-scripts-readme.ts failed: ${e}${RESET}`);
+        if (import.meta.main) {
+          process.exit(1);
+        }
+    }
+}
+
+// 2.6 Generate templates/common/scripts/SCRIPTS.md registry span (T-20260924-001)
+const genMirrorTs = path.join('scripts', 'generate-scripts-mirror.ts');
+if (fs.existsSync(genMirrorTs)) {
+    try {
+        await $`bun ${genMirrorTs}`;
+    } catch (e) {
+        console.log(`${RED}❌ generate-scripts-mirror.ts failed: ${e}${RESET}`);
         if (import.meta.main) {
           process.exit(1);
         }
@@ -682,7 +736,11 @@ if (isWorkspaceRoot) {
 
 // ── Step 4.55: COMMON-CONTEXT marker-rewrite drift check (WARN stage, L0-only) ──
 // Per ADR-0062 + the ADR-0055 WARN-first playbook: the pilot propagation domains
-// (constitution-context, variant-context) are checked for zone drift at sync time.
+// (constitution-context, variant-context) plus constitution-context-pr (the §3.3
+// COMMON-CONSTITUTION-PR zone; spec
+// 2026-09-24-constitution-s33-context-injection-design) are checked for zone
+// drift at sync time. Hardcoded list, not map-derived — a naive derivation would
+// also pull in --docs-mode domains (e.g. governance-agents), changing check scope.
 // Dry-run only — drift is reported as a WARN (non-fatal); the operator runs
 // `bun scripts/propagate-to-templates.ts --marker-rewrite --domain <name> --apply`
 // manually to refresh zones. Promotion to a hard gate waits for pilot soak.
@@ -690,21 +748,25 @@ if (isWorkspaceRoot) {
 // (design doc: docs/designs/2026-08-24-marker-propagation-engine-design.md).
 if (isWorkspaceRoot && isL0Context) {
     console.log('\n🔍 COMMON-CONTEXT marker-rewrite drift check (WARN stage)...');
-    for (const domain of ['constitution-context', 'variant-context']) {
+    for (const domain of ['constitution-context', 'constitution-context-pr', 'variant-context']) {
         try {
             const res = await $`bun scripts/propagate-to-templates.ts --marker-rewrite --domain ${domain}`.nothrow();
             const out = res.stdout.toString();
             const m = out.match(/Would overwrite: (\d+)/);
             const wouldOverwrite = m ? parseInt(m[1], 10) : null;
+            // v1.17.1: the append-on-missing engine adds a second drift counter —
+            // a pending append is drift the same way a pending overwrite is.
+            const a = out.match(/Would append: (\d+)/);
+            const wouldAppend = a ? parseInt(a[1], 10) : null;
             if (res.exitCode !== 0) {
                 console.log(`${YELLOW}⚠️  marker-rewrite check failed for domain '${domain}' (exit ${res.exitCode}) — investigate manually${RESET}`);
-            } else if (wouldOverwrite === null) {
+            } else if (wouldOverwrite === null || wouldAppend === null) {
                 console.log(`${YELLOW}⚠️  marker-rewrite output for domain '${domain}' had no drift counter — investigate manually${RESET}`);
-            } else if (wouldOverwrite > 0) {
-                console.log(`${YELLOW}⚠️  COMMON-CONTEXT drift in domain '${domain}': ${wouldOverwrite} zone(s) would be overwritten${RESET}`);
+            } else if (wouldOverwrite + wouldAppend > 0) {
+                console.log(`${YELLOW}⚠️  COMMON-CONTEXT drift in domain '${domain}': ${wouldOverwrite} zone(s) would be overwritten, ${wouldAppend} zone(s) would be appended${RESET}`);
                 console.log(`${YELLOW}   Refresh manually: bun scripts/propagate-to-templates.ts --marker-rewrite --domain ${domain} --apply${RESET}`);
             } else {
-                console.log(`${GREEN}✓ COMMON-CONTEXT domain '${domain}' in sync (0 would-overwrite)${RESET}`);
+                console.log(`${GREEN}✓ COMMON-CONTEXT domain '${domain}' in sync (0 would-overwrite, 0 would-append)${RESET}`);
             }
         } catch {
             console.log(`${YELLOW}⚠️  marker-rewrite check could not run for domain '${domain}' — investigate manually${RESET}`);
@@ -776,6 +838,32 @@ if (isWorkspaceRoot) {
             }
         } else {
             console.log(`${YELLOW}⚠️  Cascade re-publish failed — continuing sync${RESET}`);
+        }
+    }
+}
+
+// 4.63 Skill registry sync — converge every skill registry table with the
+//     SKILL.md frontmatter it documents: root workspace rows, the root
+//     Variant-Exclusive catalog, the common scaffold seed, and the curated
+//     variant registries. Runs after 4.62 so cascaded template copies are in
+//     place. Apply mode is idempotent (exit 0 on drift — fixing it IS the
+//     job); a non-zero exit means the script crashed, which is fatal in L0 —
+//     committing un-converged registries would ship the drift forward.
+//     Design: docs/designs/2026-09-25-registry-policy-completeness-design.md W5.
+if (isWorkspaceRoot && fs.existsSync('scripts/sync-skill-registries.ts')) {
+    console.log('📋 Step 4.63: Syncing skill registries to SKILL.md frontmatter...');
+    const registrySyncRes = await $`bun scripts/sync-skill-registries.ts`.nothrow();
+    if (registrySyncRes.exitCode !== 0) {
+        const regSyncErr = registrySyncRes.stderr ? String(registrySyncRes.stderr).trim() : '';
+        if (isL0Context) {
+            console.error(`${RED}❌ Skill registry sync failed (exit ${registrySyncRes.exitCode}) — fatal in L0 context.${RESET}`);
+            if (regSyncErr) console.error(regSyncErr);
+            if (import.meta.main) {
+                process.exit(1);
+            }
+        } else {
+            console.warn(`${YELLOW}⚠️  Skill registry sync failed (exit ${registrySyncRes.exitCode}) — continuing sync${RESET}`);
+            if (regSyncErr) console.warn(regSyncErr);
         }
     }
 }
@@ -1021,8 +1109,41 @@ if (scopedStaging) {
     }
     try {
         if (committable.size > 0) {
-            const addRes = await $`git add -- ${[...committable].sort()}`.nothrow();
-            if (addRes.exitCode !== 0) throw new Error(addRes.stderr.toString());
+            // Staged-deletion handling (spec Amendment 2 §13,
+            // docs/designs/2026-09-24-constitution-s33-context-injection-design.md):
+            // a path the cached diff records as removed (`D`, or the SOURCE of a
+            // staged `R<score>` rename) exists in neither worktree nor index — a
+            // plain pathspec `git add` exits 128, and one poisoned pathspec makes
+            // the whole batch stage nothing. Those paths are skipped (the index
+            // already holds the desired state); present paths stage in one batch;
+            // every remaining absent path is attempted per-path — plain add still
+            // resolves while the index holds the path (staged-add-whose-worktree-
+            // file-vanished). A per-path failure is a true ghost: fail closed
+            // rather than silently under-deliver the commit.
+            const nsRes = await $`git diff --cached --name-status -z`.quiet().nothrow();
+            if (nsRes.exitCode !== 0) throw new Error(nsRes.stderr.toString());
+            const indexRemoved = parseCachedNameStatus(nsRes.stdout.toString());
+            const skip = [...committable].filter(p => indexRemoved.has(p)).sort();
+            if (skip.length > 0) {
+                console.log(`${DIM}   scoped staging: skipping ${skip.length} path(s) already removed in the index (staged deletion / rename source) — index state preserved${RESET}`);
+            }
+            const toStage = [...committable].filter(p => !indexRemoved.has(p)).sort();
+            const present = toStage.filter(p => fs.existsSync(p));
+            const absent = toStage.filter(p => !fs.existsSync(p));
+            if (present.length > 0) {
+                const addRes = await $`git add -- ${present}`.nothrow();
+                if (addRes.exitCode !== 0) throw new Error(addRes.stderr.toString());
+            }
+            for (const p of absent) {
+                const addRes = await $`git add -- ${p}`.nothrow();
+                if (addRes.exitCode !== 0) {
+                    console.log(`${RED}❌ git add failed for '${p}' — path matches neither the worktree nor the index (ghost path; possibly deleted mid-run after the scoped-staging snapshot).${RESET}`);
+                    console.error(addRes.stderr.toString());
+                    if (import.meta.main) {
+                      process.exit(1);
+                    }
+                }
+            }
         }
     } catch (e) {
         console.log(`${RED}❌ git add failed: ${e}${RESET}`);

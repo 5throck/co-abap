@@ -1,4 +1,57 @@
-// @version 2.39.0
+// @version 2.45.0
+// v2.45.0: Variant agent sections resolves extends-stubs before checking (spec:
+//           docs/designs/2026-09-25-registry-policy-completeness-design.md R2.2)
+//           — checkVariantAgentSections composes ADR-0033 stub bodies through
+//           helpers/resolve-pm-stub.ts composeResolvedAgentContent (pure, no
+//           writes) and validates the RESOLVED content; failures on resolved
+//           bodies report against the underlying common file. Section list now
+//           imported from helpers/golden-reference-loader.ts
+//           AGENT_LAYER1_SECTIONS (inline duplicate deleted). Pairs with the
+//           `## Output Format` section added to the common i18n-specialist body
+//           (R2.3) — the 13 stub WARNs drop to 0.
+// v2.44.0: Marker-zone exemption for the context-overlap checks (spec:
+//           docs/designs/2026-09-25-variant-hygiene-batch-design.md, R2) —
+//           checkStalePromotedContent() and checkVariantContextCommonization()
+//           strip COMMON-CONTEXT marker zones from variant docs/*.context.md
+//           copies (stripMarkerZones, helpers/context-sections.ts 1.7.0)
+//           before section-splitting. Zone content is the sanctioned ADR-0062
+//           delivery channel — dev-sync Step 4.55 already gates its drift — so
+//           an in-sync zone must not read as a stale leftover duplicate (the
+//           26 post-heal false WARNs this fixes). Non-zone duplicates still
+//           warn (fixture: tests/unit/marker-zone-exemption.test.ts).
+// v2.43.0: Platform verifier expansion (spec:
+//           docs/designs/2026-09-25-verifier-platform-expansion-design.md,
+//           sites 2a/2b/2c/2d) — skill-exists sweep iterates PLATFORM_SKILL_BASES
+//           (all five bases); command parity gains the .codex/prompts mapping
+//           leg (ADR-0077 D4, no skip marker, WARN severity preserved);
+//           zero-width/BOM scan dirs gain the .agents/.codex trees; stale-ref
+//           scan gains CODEX.md.
+// v2.42.0: Live context placeholder WARN gains the remediation path (spec:
+//           docs/designs/2026-09-24-scaffold-hygiene-bundle-design.md, R7/D6) —
+//           the WARN now names the fix, not just the files: fill the
+//           placeholder fields in the listed file(s), or re-scaffold with
+//           --description "<one sentence>" --type web|cli|api|mcp to pre-fill
+//           docs/project.md. Severity unchanged — WARN is the designed nag for
+//           the TODO(project-overview) fallback, and one message continues to
+//           serve all scanned files (docs/context.md, docs/*.context.md,
+//           docs/project.md).
+// v2.41.0: Live context placeholder check gains docs/project.md (spec:
+//           docs/designs/2026-09-24-scaffold-identity-overview-design.md, R8) —
+//           the project-owned identity seed joins the per-project scan scope
+//           (docs/context.md + docs/*.context.md + docs/project.md), same
+//           placeholder regex family, still WARN-only: an undescribed project
+//           (TODO(project-overview) fallback lines) is a quality signal from its
+//           first audit run, not a broken build.
+// v2.40.0: Template artifact hygiene check (spec:
+//           docs/designs/2026-09-24-template-hygiene-audit-design.md, Decision 2 as
+//           amended) — warn-only, read-only sweep of templates/ for artifact
+//           DIRECTORIES (node_modules, dist, build, .venv, .bun): topmost-flag,
+//           no-descend, depth cap 8, guard `!LIFECYCLE_ONLY &&
+//           fs.existsSync('templates')`. Nothing previously flagged artifact
+//           accumulation at the source: an 18 MB node_modules/ sat invisibly
+//           (gitignored) inside templates/co-design/playground/ until manual
+//           cleanup (2026-09-24). TODO(promotion): Warn -> Fail after one soak
+//           period if recurrence is observed.
 // v2.39.0: VERSION_MANIFEST reconciliation gate
 //           (spec: docs/designs/2026-09-16-registry-version-parity-hardening-design.md,
 //           T-20260915-004 / finding M7) — when scripts/generate-version-manifest.ts
@@ -100,12 +153,15 @@ import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { parsePmMd, extractVariantOverrides } from './helpers/pm-md-parser.ts';
+import { AGENT_LAYER1_SECTIONS } from './helpers/golden-reference-loader.ts';
+import { composeResolvedAgentContent } from './helpers/resolve-pm-stub.ts';
 import { sourceShellInjectionPatterns } from './helpers/security-validator.ts';
-import { splitIntoSections, getContentLines } from './helpers/context-sections.ts';
+import { splitIntoSections, getContentLines, stripMarkerZones } from './helpers/context-sections.ts';
 import { findL0LeakLines } from './helpers/l0-ref-policy.ts';
 import * as url from 'node:url';
 import { safeFetch } from './lib/ssrf.ts';
 import { detectEncoding, detectHomoglyphs, detectZeroWidthChars, readUTF8File } from './lib/encoding-utils.ts';
+import { PLATFORM_SKILL_BASES } from './lib/platforms.ts';
 
 const _TRACKED_CO_VARIANTS: Set<string> | null = (() => {
   try {
@@ -346,7 +402,11 @@ if (!LIFECYCLE_ONLY) {
     let bomErrors = 0;
     let searchDirs = ['.'];
     if (!fs.existsSync(projectCtxPath) && fs.existsSync('templates')) {
-    searchDirs = ['agents', 'docs', 'memory', 'scripts', 'skills', 'templates', '.claude'];
+    // Zero-width/homoglyph scan covers the .agents and .codex platform trees
+    // too — whole-tree by design: .codex/prompts/*.md is as much an injection
+    // surface as a skill mirror (spec 2026-09-25-verifier-platform-expansion-design
+    // site 2c; .json/.toml files are outside the Markdown/YAML scan filter).
+    searchDirs = ['agents', 'docs', 'memory', 'scripts', 'skills', 'templates', '.claude', '.agents', '.codex'];
     if (fs.existsSync('.')) {
         for (const file of fs.readdirSync('.')) {
             if (file.endsWith('.md')) {
@@ -594,6 +654,9 @@ if (!LIFECYCLE_ONLY) {
                 if (f.endsWith('.context.md')) files.push(path.join('docs', f));
             }
         }
+        // R8 (2026-09-24-scaffold-identity-overview-design): the project-owned
+        // identity seed joins the scan scope — same regex family, WARN-only.
+        if (fs.existsSync(path.join('docs', 'project.md'))) files.push(path.join('docs', 'project.md'));
         const placeholderRe = /\[(Project Name|One-sentence description[^\]]*|TODO|TBD)\]|<variant-name>|<project-name>/i;
         const hits: string[] = [];
         for (const file of files) {
@@ -604,7 +667,11 @@ if (!LIFECYCLE_ONLY) {
                 recordSkippedFile(file, e?.code || e?.message || 'read error');
             }
         }
-        if (hits.length > 0) Warn(`Live context placeholder check: ${hits.length} file(s) still contain scaffold placeholders: ${hits.join(', ')}`);
+        // R7 (2026-09-24-scaffold-hygiene-bundle-design): the WARN names the
+        // remediation, not just the files. One generic message serves all
+        // scanned files (docs/context.md, docs/*.context.md, docs/project.md);
+        // severity stays WARN — the nag is designed (D6).
+        if (hits.length > 0) Warn(`Live context placeholder check: ${hits.length} file(s) still contain scaffold placeholders: ${hits.join(', ')} — fill the placeholder fields (project name, one-sentence description, TODO/TBD items) in the listed file(s), or re-scaffold with --description "<one sentence>" --type web|cli|api|mcp to pre-fill docs/project.md`);
         else Pass('Live context placeholder check: no unfilled scaffold placeholders found');
     }
 
@@ -681,7 +748,10 @@ function hasSkillMdRecursive(dir: string): boolean {
     }
     return false;
 }
-for (const skillsDir of ['skills', path.join('.claude', 'skills')]) {
+// skill-exists sweep covers all five bases (skills/ SSOT + the four platform
+// mirrors) via the SSOT constant — spec
+// 2026-09-25-verifier-platform-expansion-design site 2a.
+for (const skillsDir of PLATFORM_SKILL_BASES) {
     if (fs.existsSync(skillsDir)) {
         for (const dir of fs.readdirSync(skillsDir)) {
             const fullDir = path.join(skillsDir, dir);
@@ -1007,7 +1077,7 @@ if (!LIFECYCLE_ONLY && fs.existsSync(claudeCommandsDir)) {
         const filePath = path.join(claudeCommandsDir, file);
         const content = readUTF8File(filePath);
         if (/^gemini-parity:\s*skip/m.test(content)) continue;
-        
+
         const geminiCmd = path.join('.gemini', 'commands', file);
         if (!fs.existsSync(geminiCmd)) {
             Warn(`Command parity gap: .claude/commands/${file} has no matching .gemini/commands/${file} (add 'gemini-parity: skip' to frontmatter for intentional Claude-only commands)`);
@@ -1016,6 +1086,30 @@ if (!LIFECYCLE_ONLY && fs.existsSync(claudeCommandsDir)) {
     }
     if (parityWarnings === 0) {
         Pass('Command parity: all .claude/commands/ files have matching .gemini/commands/ files');
+    }
+
+    // .codex leg (spec 2026-09-25-verifier-platform-expansion-design site 2b):
+    // the ADR-0077 D4 mapping — .claude/commands is the commands SSOT and
+    // sync-skills Phase 1b mirrors it to .codex/prompts UNCONDITIONALLY, so the
+    // gemini-parity: skip marker does NOT apply here (documented asymmetry).
+    // WARN severity preserved (this check is non-blocking). .agents/commands is
+    // excluded — L0-resident by design (spec
+    // docs/designs/2026-09-25-propagation-engine-batch-design.md §6-D8, ticket
+    // T-20260925-003); its consumer is the Antigravity CLI at the workspace root.
+    const codexPromptsDir = path.join('templates', 'common', '.codex', 'prompts');
+    if (fs.existsSync(codexPromptsDir)) {
+        let codexWarnings = 0;
+        const codexPrompts = new Set(fs.readdirSync(codexPromptsDir).filter(f => f.endsWith('.md')));
+        for (const file of fs.readdirSync(claudeCommandsDir)) {
+            if (!file.endsWith('.md')) continue;
+            if (!codexPrompts.has(file)) {
+                Warn(`Command parity gap (codex mapping): .claude/commands/${file} has no templates/common/.codex/prompts/${file} counterpart`);
+                codexWarnings++;
+            }
+        }
+        if (codexWarnings === 0) {
+            Pass('Command parity (codex): all .claude/commands/ files have .codex/prompts counterparts');
+        }
     }
 }
 
@@ -1110,16 +1204,15 @@ function checkVariantContextGuidelinesSection() {
 }
 
 // Check: Variant specialist agent files have all 7 required Layer 1 sections
+// v2.45.0 (registry completeness R2.2): resolves ADR-0033 extends-stubs through
+// the pure compose path (helpers/resolve-pm-stub.ts composeResolvedAgentContent)
+// and checks the RESOLVED body instead of the raw stub file — an empty stub is
+// no longer a false WARN, and a regression in the underlying common body still
+// is one (reported against the common file). The section list is the
+// golden-reference-loader SSOT (AGENT_LAYER1_SECTIONS); the inline duplicate is
+// deleted.
 function checkVariantAgentSections() {
-  const REQUIRED_SECTIONS = [
-    '## Role',
-    '## ⚠️ PM-ONLY INVOCATION',
-    '## Responsibilities',
-    '## Output Format',
-    '## Constraints',
-    '## Meeting Participation',
-    '## Dispatch Protocol',
-  ];
+  const REQUIRED_SECTIONS = AGENT_LAYER1_SECTIONS;
 
   const templatesDir = 'templates';
   if (!fs.existsSync(templatesDir)) return;
@@ -1130,6 +1223,9 @@ function checkVariantAgentSections() {
   if (variants.length === 0) return;
 
   const failures: string[] = [];
+  // Resolved-stub failures group by the underlying common file (R2.2: report
+  // against the common body when the resolved content lacks a section).
+  const resolvedFailures = new Map<string, { sections: Set<string>; stubs: string[] }>();
   for (const variant of variants) {
     const agentsDir = path.join(templatesDir, variant, 'agents');
     if (!fs.existsSync(agentsDir)) continue;
@@ -1137,12 +1233,38 @@ function checkVariantAgentSections() {
       .filter(f => f.endsWith('.md') && f !== 'pm.md' && !f.startsWith('_') && !f.startsWith('README'));
     for (const file of agentFiles) {
       const filePath = path.join(agentsDir, file);
-      const content = readUTF8File(filePath);
+      const rawContent = readUTF8File(filePath);
+      // ADR-0033 extends-stub detection (regex, not js-yaml — audit.ts runs in
+      // L2/L3 projects where js-yaml may not be installed).
+      const fmMatch = rawContent.match(/^---\n([\s\S]*?)\n---\n?/);
+      const extendsMatch = fmMatch ? fmMatch[1].match(/^extends:\s*["']?([^"'\n]+?)["']?\s*$/m) : null;
+      let content = rawContent;
+      let resolvedFrom: string | null = null;
+      if (extendsMatch) {
+        const commonPath = path.resolve(path.dirname(filePath), extendsMatch[1].trim());
+        const composed = composeResolvedAgentContent(filePath, commonPath, variant);
+        // missingL1 (common body absent): fall back to the raw content — the
+        // resolver would leave the stub untouched in that case.
+        if (!composed.missingL1) {
+          content = composed.content;
+          resolvedFrom = path.relative('.', commonPath);
+        }
+      }
       const missing = REQUIRED_SECTIONS.filter(s => !content.includes(s));
       if (missing.length > 0) {
-        failures.push(`templates/${variant}/agents/${file}: missing ${missing.map(s => `"${s}"`).join(', ')}`);
+        if (resolvedFrom) {
+          const entry = resolvedFailures.get(resolvedFrom) ?? { sections: new Set<string>(), stubs: [] };
+          for (const s of missing) entry.sections.add(s);
+          entry.stubs.push(`templates/${variant}/agents/${file}`);
+          resolvedFailures.set(resolvedFrom, entry);
+        } else {
+          failures.push(`templates/${variant}/agents/${file}: missing ${missing.map(s => `"${s}"`).join(', ')}`);
+        }
       }
     }
+  }
+  for (const [commonFile, entry] of resolvedFailures) {
+    failures.push(`${commonFile} (resolved body for stubs ${entry.stubs.join(', ')}): missing ${[...entry.sections].map(s => `"${s}"`).join(', ')}`);
   }
 
   if (failures.length === 0) {
@@ -1375,6 +1497,7 @@ function checkStaleShellReferences() {
         'README.md',
         'AGENTS.md',
         'GEMINI.md',
+        'CODEX.md',
         'docs/constitution/09-operations-workflow.md',
         '.githooks/pre-push',
         '.githooks/commit-msg',
@@ -1911,7 +2034,7 @@ function checkVariantContextCommonization() {
         if (!fs.existsSync(docsDir)) continue;
         for (const file of fs.readdirSync(docsDir)) {
             if (!file.endsWith('.context.md')) continue;
-            const content = readUTF8File(path.join(docsDir, file));
+            const content = stripMarkerZones(readUTF8File(path.join(docsDir, file)));
             for (const { heading, body } of splitIntoSections(content)) {
                 const bodyLines = getContentLines(body);
                 if (bodyLines.size >= 3) { // skip trivial/near-empty sections
@@ -1976,6 +2099,11 @@ checkVariantContextCommonization();
 // against templates/common/docs/context.md's own sections — a >50% overlap here means the
 // variant's copy is stale and should simply be deleted (promote-context-section.ts already did
 // the promotion; nothing left to decide).
+// v2.44.0: COMMON-CONTEXT marker zones are stripped from variant copies before
+// section-splitting (stripMarkerZones, helpers/context-sections.ts 1.7.0) — zone
+// content is the sanctioned ADR-0062 delivery channel whose drift dev-sync Step
+// 4.55 already gates, not a promotion leftover. Duplicates OUTSIDE a zone still
+// warn (spec: docs/designs/2026-09-25-variant-hygiene-batch-design.md, R2).
 function checkStalePromotedContent() {
     const commonContextPath = path.join('templates', 'common', 'docs', 'context.md');
     if (!fs.existsSync(commonContextPath)) return;
@@ -2001,7 +2129,7 @@ function checkStalePromotedContent() {
         for (const file of fs.readdirSync(docsDir)) {
             if (!file.endsWith('.context.md')) continue;
             const filePath = path.join(docsDir, file);
-            const content = readUTF8File(filePath);
+            const content = stripMarkerZones(readUTF8File(filePath));
             for (const { heading, body } of splitIntoSections(content)) {
                 const commonLines = commonByHeading.get(heading);
                 if (!commonLines) continue;
@@ -2341,6 +2469,68 @@ if (!LIFECYCLE_ONLY) {
     }
     if (nulLintHits === 0) {
         Pass(`'> nul' redirect check: no banned redirects found (${nulLintScanned} files scanned)`); // nul-lint-ignore
+    }
+}
+
+// Check: templates/ artifact hygiene — flag dependency/build residue at the SOURCE.
+// On 2026-09-24 an 18 MB node_modules/ tree (a vite dev dependency) plus a dist/ directory
+// were found inside templates/co-design/playground/ — someone had run `bun install` in the
+// playground during template development, and both sat invisibly (gitignored, 0 tracked
+// files) until manual cleanup. Downstream purge defenses already exist at the delivery
+// points (scripts/helpers/scaffold-markers.ts NEW_PROJECT_COPY_SKIP_ENTRIES /
+// L3_COMMON_OVERLAY_EXCLUDE, scripts/new-project.ts purge SKIP set ~line 766,
+// scripts/create-l3-scaffold.ts COMMON_OVERLAY_EXCLUDE), so nothing user-facing breaks —
+// but nothing flagged accumulation at the source, and detection required a human noticing
+// disk growth. This check closes that gap. It is deliberately READ-ONLY and Warn-only: a
+// name match cannot distinguish untracked residue from content a future template
+// legitimately tracks, so auto-delete here could destroy tracked content (unlike the
+// device-name sweep above, whose targets carry no legitimate content by definition).
+// DIRECTORIES only, per Amendment 1 (2026-09-24) of
+// docs/designs/2026-09-24-template-hygiene-audit-design.md: an earlier draft also flagged
+// artifact FILES (bun.lock, bun.lockb, package-lock.json, propagation-map.json), but those
+// basenames are TRACKED, maintained template assets — templates/common/bun.lock (kept
+// current by dependabot sync, commit 7df3b437), templates/common/scripts/
+// propagation-map.json (PM-03 propagation feature, commit 60686c8f), and
+// templates/co-game/projects/*/bun.lock (game-project template content, commit d551e96a);
+// the same basenames are also tracked at the workspace root. Flagging them Warned on
+// legitimate content on every run. Do NOT re-add file names without re-checking
+// `git ls-files templates/` first.
+// TODO(promotion): promote Warn -> Fail after one soak period if recurrence is observed
+// (docs/designs/2026-09-24-template-hygiene-audit-design.md, Decision 2 as amended).
+// The fs.existsSync guard is CRITICAL, not cosmetic: variant projects (L2/L3) have no
+// templates/ directory and this core script must stay byte-identical across tiers, so the
+// check must no-op silently wherever templates/ is absent.
+if (!LIFECYCLE_ONLY && fs.existsSync('templates')) {
+    // Local Set, not an import of NEW_PROJECT_COPY_SKIP_ENTRIES: delivery-exclusion and
+    // source-hygiene are different semantics. All five entries appear in new-project.ts's
+    // purge SKIP set above; .git is deliberately NOT flagged (it cannot occur nested
+    // without a deliberate submodule). Re-derive consistency against the downstream lists
+    // when editing either side: scaffold-markers.ts NEW_PROJECT_COPY_SKIP_ENTRIES (~line
+    // 240) and L3_COMMON_OVERLAY_EXCLUDE (~line 233), plus the purge SKIP set.
+    const TEMPLATE_ARTIFACT_DIRS = new Set(['node_modules', 'dist', 'build', '.venv', '.bun']);
+    let templateArtifactWarns = 0;
+    const sweepTemplateArtifacts = (dir: string, depth: number): void => {
+        if (depth > 8) return; // guard against pathological trees / symlink loops (mirrors the sweep above)
+        let entries: fs.Dirent[];
+        try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+        for (const entry of entries) {
+            const entryPath = path.join(dir, entry.name);
+            if (!entry.isDirectory()) continue;
+            if (TEMPLATE_ARTIFACT_DIRS.has(entry.name)) {
+                // Flag the topmost occurrence only — node_modules/ alone can hold 10k+
+                // entries, so Warn once and do NOT descend (mirrors SWEEP_SKIP_DIRS above).
+                Warn(`Template artifact directory: ${entryPath} — remove it (never run package-manager installs inside templates/; artifacts ship into every scaffolded project)`);
+                templateArtifactWarns++;
+                continue;
+            }
+            sweepTemplateArtifacts(entryPath, depth + 1);
+        }
+    };
+    // Iterate templates/ entries — never hardcode variant names, so future variants are
+    // covered without touching this check.
+    sweepTemplateArtifacts('templates', 1);
+    if (templateArtifactWarns === 0) {
+        Pass('Template artifact hygiene: no dependency/build artifacts in templates/');
     }
 }
 

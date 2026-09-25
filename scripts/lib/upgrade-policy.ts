@@ -1,4 +1,51 @@
-// @version 1.11.0
+// @version 1.16.0
+// v1.16.0 (2026-09-25, registry & platform-policy completeness batch — spec
+//          docs/designs/2026-09-25-registry-policy-completeness-design.md
+//          R4): `.agents/mcp.json` joins JSON_MERGE_FILES (design D6) — same
+//          genus as root `.mcp.json` (ADR-0076 v1.2.0 precedent): pure JSON
+//          carrying MCP server registrations a project may customize; the
+//          blanket `.agents` SYNC claim would destroy project-only servers on
+//          every upgrade. Fleet copies are byte-identical to the template seed
+//          today, so the rollout is a no-op for existing projects and
+//          protective for future ones. `.codex/config.toml` deliberately stays
+//          ADD_IF_MISSING with the rationale documented at the claim site
+//          (design D7).
+// v1.15.0 (2026-09-25, T-20260924-003 — spec
+//         docs/designs/2026-09-25-inventory-decisions-batch-design.md R2.4):
+//         exports isExtendsStub(content) — the ADR-0033 extends-stub shape
+//         test the upgrade agents/ SYNC pass now uses to skip template stub
+//         files (they resolve at scaffold/adopt time; delivering the 8-line
+//         stub over a project's resolved body was the v1.35.0 drift-
+//         reconciliation clobber proven on Projects/co-work agents/pm.md).
+// v1.14.0 (2026-09-25, T-20260924-011 — spec
+//         docs/designs/2026-09-25-codex-merge-claim-routing-design.md D2/D3/R3):
+//         exports VARIANT_ASSET_DIRS_PASS (the pass id already returned for every
+//         top-level dir outside KNOWN_TOP_DIRS) alongside TEMPLATE_TREE_SYNC_PASS,
+//         and resolveClaim uses it at the fallback branch — upgrade-project's
+//         VARIANT ASSET DIRS pass now filters every walked file by claim-pass
+//         identity, ending the procedures/** inversion (the asset pass's
+//         hash-sync overwrite contradicted the PROCEDURES pass's per-entry
+//         add-if-missing ownership; the dedicated pass is the sole delivery
+//         channel for procedure entries). No classification changed — only the
+//         pass-id constant is new.
+// v1.13.0 (2026-09-24, platform-parity P1 bug 4 — spec
+//         docs/designs/2026-09-24-platform-parity-p1-bugfixes-design.md D4):
+//         CODEX.md joins MERGE_MANAGED_FILES — resolveClaim returns
+//         { policy: 'MERGE_MANAGED', pass: 'MERGE' }, so the TEMPLATE TREE SYNC
+//         pass can no longer wholesale-overwrite a divergent project CODEX.md
+//         (the destructive overwrite path is dead; the MERGE pass owns delivery).
+// v1.12.0 (2026-09-24, scaffold identity overview — spec
+//         2026-09-24-scaffold-identity-overview-design): docs/project.md claims
+//         ADD_IF_MISSING on the TEMPLATE TREE SYNC pass (project-owned identity
+//         seed — upgrade copies it only when absent, never overwrites); without
+//         the explicit claim the deny-list fallback (SYNC) would wholesale-copy
+//         the template seed over user content on every upgrade (the co-abap
+//         docs/context.md regression class). docs/project.template.md joins
+//         TEMPLATE_ONLY (scaffold-removed): new-project renders it into
+//         docs/project.md and deletes the raw copy, so an upgrade must never
+//         resurrect it. This claim MUST land in the same change set as the
+//         docs/context.md 2.13 footer bump — the bump is what makes every
+//         project's next upgrade walk the TEMPLATE TREE SYNC pass.
 // v1.10.0 (2026-09-21, rollout hardening): isDeliveredDiff() — a changed-file list
 //         is fully explained by a recorded upgrade delivery (delivered files ∪
 //         pipeline artifacts) so dev-sync step 3.9 can auto-apply E5 (sync-only)
@@ -73,6 +120,13 @@ export interface UpgradeClaim {
 /** Pass id of the default-policy delivery pass in scripts/upgrade-project.ts. */
 export const TEMPLATE_TREE_SYNC_PASS = 'TEMPLATE TREE SYNC';
 
+/** Pass id of the generic VARIANT ASSET DIRS delivery pass in scripts/upgrade-project.ts
+ *  (every top-level template dir outside KNOWN_TOP_DIRS — co-safety's workflows/,
+ *  co-design's decisions/, …). Exported so the pass's per-file claim filter compares
+ *  identities, not a second hard-coded literal — the same drift class
+ *  TEMPLATE_TREE_SYNC_PASS exists to prevent (T-20260924-011, design D2/D3). */
+export const VARIANT_ASSET_DIRS_PASS = 'VARIANT ASSET DIRS';
+
 // ── Legacy pass inventories (mirrored from scripts/upgrade-project.ts; drift-guarded by tests) ──
 
 /** GOVERNANCE FILES SYNC list (upgrade-project.ts). SECURITY.md added per design D5. */
@@ -90,9 +144,15 @@ export const WORKSPACE_DOC_DIRS = [
 /** Platform settings files merged (not overwritten) by the TEMPLATE TREE SYNC pass.
  *  graft (ADR-0076): .mcp.json and opencode.json carry MCP server registrations — projects
  *  may hold project-only servers (co-newbiz, co-safety, co-abap), so they deep-merge like
- *  the platform settings instead of syncing. */
+ *  the platform settings instead of syncing. `.agents/mcp.json` joined in v1.16.0 (registry
+ *  completeness R4.1, design D6): same genus as root `.mcp.json` — pure JSON of the same
+ *  shape carrying MCP server registrations. The blanket `.agents` SYNC claim below would
+ *  have destroyed project-only servers on every upgrade; fleet copies are byte-identical
+ *  to the templates/common seed today, so the merge is a no-op rollout (ADR-0076 v1.2.0
+ *  precedent). */
 export const JSON_MERGE_FILES = [
   '.claude/settings.json', '.gemini/settings.json', '.mcp.json', 'opencode.json',
+  '.agents/mcp.json',
 ] as const;
 
 /** Files whose scaffold-delivered copy was intentionally left unsubstituted — `{{tokens}}` are
@@ -123,11 +183,21 @@ const TEMPLATE_ONLY_DIRS = [
 
 const TEMPLATE_ONLY_FILES = new Set([
   'docs/variant.context.template.md',
+  'docs/project.template.md', // rendered into docs/project.md at scaffold time, then removed (spec 2026-09-24-scaffold-identity-overview-design)
   'agents/lifecycle-manager.md',
   'agents/_COMMON.md',
   'agents/pm.md.backup',
   'scripts/propagation-map.json',
 ]);
+
+/** Project-owned identity seed (spec 2026-09-24-scaffold-identity-overview-design,
+ *  §13.2 guard retention): DEFENSIVE NO-OP as a claim — the TEMPLATE TREE SYNC
+ *  walk enumerates template-side files only, so this claim never fires (the seed
+ *  is delivered by upgrade-project's dedicated IDENTITY SEED step). It stays as
+ *  the guard: if a future change ever put docs/project.md template-side, the
+ *  deny-list fallback (SYNC) would wholesale-copy over user content, and this
+ *  claim still blocks that (the co-abap docs/context.md regression class). */
+const ADD_IF_MISSING_FILES = new Set(['docs/project.md']);
 
 /** Project runtime / generated state — exists in projects but is never template-delivered. */
 const PROJECT_STATE_FILES = new Set([
@@ -151,11 +221,23 @@ const PRESERVE_FILES = new Set([
 
 const LOCKED_FILES = new Set(['.gitattributes', '.gitleaks.toml']);
 
-/** Files whose WORKSPACE-MANAGED blocks upgrade MERGE unions into projects. Exported
- *  so the validate-templates managed-block-parity arm (PM-04) enforces common→variant
- *  parity over exactly this set — one SSOT for "which files carry managed blocks"
- *  (T-20260917-001). */
-export const MERGE_MANAGED_FILES = new Set(['CLAUDE.md', 'GEMINI.md', '.gitignore', 'AGENTS.md', 'agents/pm.md']);
+/**
+ * Files whose WORKSPACE-MANAGED blocks upgrade MERGE unions into projects. Exported
+ * so the validate-templates managed-block-parity arm (PM-04) enforces common→variant
+ * parity over exactly this set — one SSOT for "which files carry managed blocks"
+ * (T-20260917-001).
+ *
+ * CODEX.md joined in v1.13.0 (platform-parity P1 bug 4 — spec
+ * docs/designs/2026-09-24-platform-parity-p1-bugfixes-design.md D4): without it
+ * resolveClaim('CODEX.md') fell through to the blanket root-file SYNC claim and
+ * the TEMPLATE TREE SYNC pass wholesale-overwrote every project CODEX.md edit on
+ * upgrade (CODEX.md carries no inline version footer, so the hash branch always
+ * fired). MERGE membership makes the MERGE pass — which already lists CODEX.md —
+ * the sole delivery channel. The merge is a no-op today (no COMMON-CODEX pattern
+ * in managed-block-merge MANAGED_PATTERNS); when that pattern lands
+ * (T-20260924-010) union-merge activates with no further claim change.
+ */
+export const MERGE_MANAGED_FILES = new Set(['CLAUDE.md', 'GEMINI.md', 'CODEX.md', '.gitignore', 'AGENTS.md', 'agents/pm.md']);
 
 /** Common-owned scaffold files: delivered by templates/common/ and sacred to the
  *  project — a variant template must never carry them (WS-07) and new-project's
@@ -215,6 +297,11 @@ export function resolveClaim(relPath: string, variant = ''): UpgradeClaim {
   if ((GOVERNANCE_FILES as readonly string[]).includes(rel)) {
     return { policy: 'ADD_IF_MISSING', pass: 'GOVERNANCE FILES' };
   }
+  // Project-owned identity seed — claim must sit ABOVE the docs/ fallback SYNC
+  // branch below (spec 2026-09-24-scaffold-identity-overview-design, R6/D2).
+  if (ADD_IF_MISSING_FILES.has(rel)) {
+    return { policy: 'ADD_IF_MISSING', pass: TEMPLATE_TREE_SYNC_PASS };
+  }
 
   if (LOCKED_FILES.has(rel) || underDir(rel, '.githooks')) return { policy: 'LOCKED', pass: 'LOCKED' };
   if (MERGE_MANAGED_FILES.has(rel)) return { policy: 'MERGE_MANAGED', pass: 'MERGE' };
@@ -252,6 +339,14 @@ export function resolveClaim(relPath: string, variant = ''): UpgradeClaim {
   }
   // Codex project config is per-project by nature (project MCP servers + codex hooks, e.g.
   // co-abap/co-safety): seed add-if-missing only, never overwrite an existing file (ADR-0076 D4).
+  //
+  // Rationale for keeping ADD_IF_MISSING (registry completeness R4.2, design D7, v1.16.0):
+  // `.codex/config.toml` project copies are genuinely customized (co-abap carries
+  // `[features] codex_hooks = true` plus additions; co-consult has diverged ADR references
+  // and content), no TOML parser exists in package.json, and a comment-preserving semantic
+  // TOML merge is new delivery machinery that is deliberately out of scope. Accepted
+  // trade-off: template-side config.toml changes intentionally reach only NEW projects —
+  // existing projects drift by design; a drift DETECTOR is a candidate follow-up.
   if (underDir(rel, '.codex')) return { policy: 'ADD_IF_MISSING', pass: TEMPLATE_TREE_SYNC_PASS };
 
   // Registration pointers + platform settings extras: default sync (static today, format may evolve)
@@ -276,7 +371,7 @@ export function resolveClaim(relPath: string, variant = ''): UpgradeClaim {
   // get here from such a directory (all known tops are claimed above).
   const top = rel.split('/')[0];
   if (!KNOWN_TOP_DIRS.has(top) && rel.includes('/')) {
-    return { policy: 'SYNC', pass: 'VARIANT ASSET DIRS' };
+    return { policy: 'SYNC', pass: VARIANT_ASSET_DIRS_PASS };
   }
 
   // Root-level files with no dedicated pass (.editorconfig, …): the inversion —
@@ -415,6 +510,21 @@ export function lifecyclelessText(text: string): string {
     kept.push(line);
   }
   return text.replace(fm[0], `---\n${kept.join("\n")}\n---`);
+}
+
+/**
+ * True iff the content is an ADR-0033 extends-stub: a frontmatter block whose
+ * body declares `extends:` (the pointer, not a resolved file — a project's
+ * resolved agent never carries the field). T-20260924-003 R2.4: the upgrade
+ * agents/ SYNC pass must skip these template files — the v1.35.0 equal-version
+ * drift reconciliation compared the 8-line template stub against the project's
+ * resolved full body and "restored" the stub over it (the proven pm.md
+ * 349→8-line clobber). Stubs are resolved at scaffold/adopt time by
+ * helpers/resolve-pm-stub.ts.
+ */
+export function isExtendsStub(content: string): boolean {
+  const fm = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  return !!fm && /^extends:\s*\S/m.test(fm[1]);
 }
 
 /** Pipeline-generated paths that never count as hand-authored code in a diff. */
