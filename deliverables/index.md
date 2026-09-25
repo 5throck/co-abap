@@ -7,6 +7,7 @@ This index serves as the single source of truth for tracking software requiremen
 | REQ ID | Title | Module | Current Stage | Primary Owner | Status | Link | Implemented Objects | QA Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Example** | *Pricing Condition Optimization* | *SD / FI* | *Stage 5* | *SD Analyst* | *Completed* | [Link](./REQ-000-example/) | `ZCL_SD_PRICING_CALC` | `PASSED` |
+| **REQ-001** | *Flight Occupancy and Revenue Analysis Report* | *SD / FI / CO* | *Stage 5* | *SD Analyst* | *Completed* | [Link](./REQ-001-flight-occupancy-revenue-report/) | `ZFLIGHT_OCC_REVENUE` | `PASSED` (0 P1; P2 accepted — see 04 §3.2) |
 
 ---
 
