@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-25T15:37:24.811Z
+**Generated**: 2026-09-25T15:48:32.945Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -176,7 +176,7 @@
 | spec-register.ts | 1.3.0 | scripts/spec-register.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
-| sync-skills.ts | 1.8.0 | scripts/sync-skills.ts | N/A |
+| sync-skills.ts | 1.9.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.4.0 | scripts/team-builder.ts | N/A |
 | test-runner.ts | 1.4.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
@@ -199,7 +199,7 @@
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
-| verify-platform-lifecycle.ts | 1.2.0 | scripts/verify-platform-lifecycle.ts | N/A |
+| verify-platform-lifecycle.ts | 1.4.0 | scripts/verify-platform-lifecycle.ts | N/A |
 | verify-readme-sync.ts | 1.4.0 | scripts/verify-readme-sync.ts | bun, fs, path |
 | verify-scripts.ts | 1.8.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.6.0 | scripts/verify-skill-graph.ts | N/A |

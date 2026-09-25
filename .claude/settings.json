@@ -40,10 +40,6 @@
         ]
       },
       {
-        "matcher": "Write|Edit",
-        "command": "bun scripts/sync-md.ts"
-      },
-      {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
           {
@@ -62,6 +58,10 @@
             "timeout": 8000
           }
         ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "command": "bun scripts/sync-md.ts"
       }
     ],
     "SessionStart": [

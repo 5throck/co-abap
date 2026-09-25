@@ -13,8 +13,7 @@
  * recorded 2169-error baseline; the Phase 2 triage (2026-09-11) fixed the
  * type roots (@types/bun, tsconfig) and all 2169 errors — the baseline is
  * now 0, so ANY type error fails. Wired into the dev-sync battery
- * (root context). The CI workflow (ci.yml) runs audit.ts only — run this
- * gate manually via `bun run typecheck` in project checkouts.
+ * (root context) and CI (test.yml).
  *
  * Usage: bun scripts/typecheck.ts
  * Exit codes: 0 (at/below baseline), 1 (regression above baseline, or tsc
