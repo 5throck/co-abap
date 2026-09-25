@@ -1,5 +1,5 @@
 ---
-content_hash: 56b54fc2487238a646c6808729086b8819665dcfdea050aa7a703d450d693838
+content_hash: de21683933c5bd5cc71d770aa3a284293b065c5f2f2f2dbf61ec20d904055fa5
 ---
 # Harness Engineering for SAP ABAP
 
@@ -34,7 +34,7 @@ Key principles of Harness Engineering include:
 
 The system operates as a bridge between modern AI interfaces and SAP environments:
 
-1. **Agent Tier**: AI agents (Claude Code CLI, Antigravity, Gemini CLI) act as the "brain," orchestrating tasks based on predefined Harness roles.
+1. **Agent Tier**: AI agents (Claude Code CLI, Gemini CLI, Antigravity, Codex CLI, Hermes Agent) act as the "brain," orchestrating tasks based on predefined Harness roles.
 2. **Protocol Tier**: Standardized protocols (such as Model Context Protocol) are used to safely expose SAP ADT (ABAP Development Tools) capabilities to the agents.
 3. **SAP Tier**: Direct interaction with SAP systems via REST APIs and WebSockets for stateful operations like debugging, query execution, and object management.
 
@@ -63,6 +63,8 @@ AI agents operate under a **PM-led Governance** model, categorized into two stra
 | gui-scripter | Technical | 2 | Serial |
 | test-runner | Technical | 3 | Serial after write |
 | devops-admin | Technical | 4 | Serial |
+| security-monitor | Technical | 0, 5 | Serial |
+| i18n-specialist | Support | — | Serial |
 
 For detailed roles, trigger keywords, and handoff protocols, see [AGENTS.md](AGENTS.md).
 
@@ -74,6 +76,7 @@ For detailed roles, trigger keywords, and handoff protocols, see [AGENTS.md](AGE
 | **[docs/context.md](docs/context.md)** | **Shared** project context: build commands, codebase map, and development rules. |
 | **[skills/abap-dev/SKILL.md](skills/abap-dev/SKILL.md)** | Specialized AI skills (BAPI explorer, memory intelligence) and QA chains. |
 | **[docs/setup-guide.md](docs/setup-guide.md)** | Step-by-step environment setup (MCP, SAP, abapGit). |
+| **[docs/user-guide.md](docs/user-guide.md)** | Task-level guide — how to hand SAP work to the agent team (한국어: [user-guide_ko.md](docs/user-guide_ko.md)). |
 | **[deliverables/index.md](deliverables/index.md)** | Requirements Traceability Matrix (RTM) — Stage 1–5 tracking for every requirement. |
 | **[SECURITY.md](SECURITY.md)** | Vulnerability reporting and the MCP-driven SAP access threat model. |
 | **[memory/MEMORY.md](memory/MEMORY.md)** | Index of development history and architectural decisions. |
@@ -103,7 +106,8 @@ New functional scope gets a formal Requirements Traceability Matrix entry automa
 
 ```bash
 bun scripts/new-requirement.ts "New Pricing Rule" --module SD --owner "SD Analyst"
-# Scaffolds deliverables/REQ-NNN-slug/01_srs.md and registers the RTM row (Stage 1 / Draft)
+# Scaffolds deliverables/REQ-NNN-slug/ (01_srs.md, 05_unit_test_plan.md, 06_release_report.md)
+# and registers the RTM row (Stage 1 / Draft)
 ```
 
 ---
@@ -140,26 +144,25 @@ bun scripts/audit.ts
 bun scripts/dispatch.ts parallel
 bun scripts/verify-skills.ts
 bun run typecheck   # tsc --noEmit over scripts/
-bun run test        # bun test scripts/ (100+ tests)
+bun run test        # bun test scripts/ (26 tests)
 ```
 
 ---
 
 ## Quality Gates
 
-Every PR runs through CI on **Ubuntu and Windows** matrix runners plus a dedicated secret scan:
+CI runs on **Ubuntu** with a dedicated secret scan; the remaining gates run inside the
+local `/sync` pipeline (and stay available as standalone commands):
 
-| Gate | What it checks |
-| :--- | :--- |
-| Type check | `tsc --noEmit` across all scripts |
-| Unit tests | `bun test scripts/` — git/file-mutating scripts (sync, audit, cleanup) are covered |
-| Workspace audit | `bun scripts/audit.ts` — documentation and structure integrity |
-| Skill / agent sync | `verify-skills.ts`, `agent-verify.ts` — docs match the actual roster |
-| MCP config drift | `.mcp.json` ↔ `.claude/settings.json` ↔ `.gemini/settings.json` |
-| 3-platform skill drift | `skills/` (SSOT) ↔ `.claude/skills/` ↔ `.gemini/skills/` ↔ `.agents/skills/` |
-| Secret scan | gitleaks, dedicated CI job + pre-commit hook |
+| Gate | Where | What it checks |
+| :--- | :--- | :--- |
+| Workspace audit | CI + `/sync` | `bun scripts/audit.ts` — documentation and structure integrity, platform parity and platform-lifecycle drift across the 5 skill mirrors (`.claude`, `.gemini`, `.codex`, `.agents`, `.hermes`), co-abap variant checks |
+| Secret scan | CI + pre-commit hook | gitleaks |
+| Unit tests | `/sync` QA pre-check | `bun test scripts/` — git/file-mutating scripts (sync, audit, cleanup) are covered |
+| Type check | Local | `bun run typecheck` — `tsc --noEmit` across all scripts |
+| Spec registry | `/sync` | `audit.ts --spec-check` — substantive changes carry design-doc activity (ADR-0074) |
 
-Locally, the same gates run automatically after every `WriteSource`/`EditSource` via the
+SAP-side, the same discipline applies after every `WriteSource`/`EditSource` via the
 [Post-Write Mandatory Chain](skills/post-write-chain/SKILL.md): `SyntaxCheck` → `RunUnitTests` →
 `GetCodeCoverage` (≥70% on new objects) → `RunATCCheck` (zero Priority-1 findings).
 
@@ -188,4 +191,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-08-28*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-09-26*

@@ -1,3 +1,6 @@
+---
+translated_from_hash: de21683933c5bd5cc71d770aa3a284293b065c5f2f2f2dbf61ec20d904055fa5
+---
 # SAP ABAP를 위한 Harness Engineering
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
@@ -31,7 +34,7 @@
 
 이 시스템은 현대적인 AI 인터페이스와 SAP 환경 사이의 브리지 역할을 합니다:
 
-1. **에이전트 계층**: AI 에이전트(Claude Code CLI, Antigravity, Gemini CLI)가 사전 정의된 Harness 역할에 따라 작업을 조율하는 "두뇌" 역할을 합니다.
+1. **에이전트 계층**: AI 에이전트(Claude Code CLI, Gemini CLI, Antigravity, Codex CLI, Hermes Agent)가 사전 정의된 Harness 역할에 따라 작업을 조율하는 "두뇌" 역할을 합니다.
 2. **프로토콜 계층**: MCP(Model Context Protocol)와 같은 표준화된 프로토콜을 사용하여 SAP ADT(ABAP Development Tools) 기능을 에이전트에게 안전하게 노출합니다.
 3. **SAP 계층**: REST API와 WebSocket을 통해 SAP 시스템과 직접 상호작용하며, 디버깅, 쿼리 실행, 객체 관리 등 상태 기반 작업을 수행합니다.
 
@@ -60,6 +63,8 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 | gui-scripter | 기술 | 2 | 직렬 |
 | test-runner | 기술 | 3 | 쓰기 후 직렬 |
 | devops-admin | 기술 | 4 | 직렬 |
+| security-monitor | 기술 | 0, 5 | 직렬 |
+| i18n-specialist | 지원 | — | 직렬 |
 
 역할, 트리거 키워드, 핸드오프 프로토콜에 대한 자세한 내용은 [AGENTS.md](AGENTS.md)를 참조하세요.
 
@@ -71,6 +76,7 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 | **[docs/context.md](docs/context.md)** | **공유** 프로젝트 컨텍스트: 빌드 명령어, 코드베이스 맵, 개발 규칙 |
 | **[skills/abap-dev/SKILL.md](skills/abap-dev/SKILL.md)** | 전문 AI 스킬(BAPI 탐색기, 메모리 인텔리전스) 및 QA 체인 |
 | **[docs/setup-guide.md](docs/setup-guide.md)** | 단계별 환경 설정(MCP, SAP, abapGit) |
+| **[docs/user-guide.md](docs/user-guide.md)** | 태스크 단위 가이드 — SAP 업무를 에이전트 팀에 맡기는 방법(한국어: [user-guide_ko.md](docs/user-guide_ko.md)) |
 | **[deliverables/index.md](deliverables/index.md)** | 요구사항 추적 매트릭스(RTM) — 모든 요구사항의 Stage 1–5 추적 |
 | **[SECURITY.md](SECURITY.md)** | 취약점 신고 절차 및 MCP 기반 SAP 접근 위협 모델 |
 | **[memory/MEMORY.md](memory/MEMORY.md)** | 개발 이력 및 아키텍처 결정 인덱스 |
@@ -100,7 +106,8 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 
 ```bash
 bun scripts/new-requirement.ts "새 가격 규칙" --module SD --owner "SD Analyst"
-# deliverables/REQ-NNN-slug/01_srs.md를 스캐폴딩하고 RTM 행을 등록합니다 (Stage 1 / Draft)
+# deliverables/REQ-NNN-slug/를 스캐폴딩합니다(01_srs.md, 05_unit_test_plan.md, 06_release_report.md)
+# 그리고 RTM 행을 등록합니다 (Stage 1 / Draft)
 ```
 
 ---
@@ -137,28 +144,28 @@ bun scripts/audit.ts
 bun scripts/dispatch.ts parallel
 bun scripts/verify-skills.ts
 bun run typecheck   # scripts/ 전체에 대한 tsc --noEmit
-bun run test        # bun test scripts/ (100개 이상의 테스트)
+bun run test        # bun test scripts/ (26개 테스트)
 ```
 
 ---
 
 ## 품질 게이트
 
-모든 PR은 **Ubuntu와 Windows** 매트릭스 러너 및 전용 시크릿 스캔을 통과해야 합니다:
+CI는 **Ubuntu**에서 전용 시크릿 스캔과 함께 실행되며, 나머지 게이트는 로컬 `/sync`
+파이프라인 내부에서 실행됩니다(독립 실행 명령으로도 사용 가능):
 
-| 게이트 | 검사 내용 |
-| :--- | :--- |
-| 타입 체크 | 전체 스크립트에 대한 `tsc --noEmit` |
-| 단위 테스트 | `bun test scripts/` — git/파일을 조작하는 스크립트(sync, audit, cleanup)까지 커버 |
-| 워크스페이스 감사 | `bun scripts/audit.ts` — 문서 및 구조 무결성 |
-| 스킬 / 에이전트 동기화 | `verify-skills.ts`, `agent-verify.ts` — 문서와 실제 로스터 일치 여부 |
-| MCP 설정 drift | `.mcp.json` ↔ `.claude/settings.json` ↔ `.gemini/settings.json` |
-| 3-플랫폼 스킬 drift | `skills/`(SSOT) ↔ `.claude/skills/` ↔ `.gemini/skills/` ↔ `.agents/skills/` |
-| 시크릿 스캔 | gitleaks, 전용 CI 잡 + pre-commit 훅 |
+| 게이트 | 실행 위치 | 검사 내용 |
+| :--- | :--- | :--- |
+| 워크스페이스 감사 | CI + `/sync` | `bun scripts/audit.ts` — 문서 및 구조 무결성, 5개 스킬 미러(`.claude`, `.gemini`, `.codex`, `.agents`, `.hermes`)의 플랫폼 패리티·라이프사이클 drift, co-abap 변형 검사 |
+| 시크릿 스캔 | CI + pre-commit 훅 | gitleaks |
+| 단위 테스트 | `/sync` QA 사전 점검 | `bun test scripts/` — git/파일을 조작하는 스크립트(sync, audit, cleanup)까지 커버 |
+| 타입 체크 | 로컬 | `bun run typecheck` — 전체 스크립트에 대한 `tsc --noEmit` |
+| 스펙 레지스트리 | `/sync` | `audit.ts --spec-check` — 실질 변경에 설계 문서 활동 동반(ADR-0074) |
 
-로컬에서는 [Post-Write Mandatory Chain](skills/post-write-chain/SKILL.md)을 통해 모든
-`WriteSource`/`EditSource` 이후 동일한 게이트가 자동 실행됩니다: `SyntaxCheck` →
-`RunUnitTests` → `GetCodeCoverage`(신규 객체 70% 이상) → `RunATCCheck`(Priority-1 발견 0건).
+SAP 측에서는 모든 `WriteSource`/`EditSource` 이후 [Post-Write Mandatory
+Chain](skills/post-write-chain/SKILL.md)을 통해 동일한 규율이 적용됩니다:
+`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage`(신규 객체 70% 이상) →
+`RunATCCheck`(Priority-1 발견 0건).
 
 ---
 
@@ -185,4 +192,4 @@ bun run test        # bun test scripts/ (100개 이상의 테스트)
 
 ---
 
-*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-07-10*
+*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-09-26*
