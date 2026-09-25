@@ -26,6 +26,24 @@
       "source": "manual",
       "created": "2026-09-25",
       "last_updated": "2026-09-25"
+    },
+    {
+      "id": "02-technical-design",
+      "title": "02_technical_design",
+      "file": "deliverables/REQ-001-flight-occupancy-revenue-report/02_technical_design.md",
+      "status": "implemented",
+      "source": "manual",
+      "created": "2026-09-25",
+      "last_updated": "2026-09-25"
+    },
+    {
+      "id": "2026-09-26-new-requirement-scaffolding-design",
+      "title": "new requirement scaffolding design",
+      "file": "docs/designs/2026-09-26-new-requirement-scaffolding-design.md",
+      "status": "implemented",
+      "source": "manual",
+      "created": "2026-09-25",
+      "last_updated": "2026-09-25"
     }
   ]
 }
