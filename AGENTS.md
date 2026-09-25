@@ -548,7 +548,6 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 - Loanwords effectively settled in Korean (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established international technical terms remain permitted — clarity and standard terminology take precedence over forced nativization.
 - Applies immediately to new Korean-language content (including `ko/`, `locales/ko/`, `*_ko.md`, and `lang: ko` exception files).
 - Existing Korean documents are nativized incrementally: apply the preference to touched sections whenever a document is edited for other reasons; no bulk rewrites.
-- Korean glyphs inside this section are linguistic examples; they do not make this document non-English.
 
 ### Enforcement
 - Pre-commit audit checks for Korean content outside ko/ and locales/ko/
@@ -577,7 +576,7 @@ Substantive LLM-assisted development work — generation or modification of code
 
 ### Instruction Writing Standard (ASD-STE100, ADR-0079)
 
-Development-facing instruction text — requirement statements, task briefs, execution-plan task descriptions, agent dispatch prompts, design-doc requirement sections, API endpoint documentation, and how-to steps — follows ASD-STE100 (Simplified Technical English) structural rules, in every development domain (web, app, API, scripts, documents). Rules: one instruction per sentence (≤ 20 words procedural / ≤ 25 descriptive); active voice with imperative steps; present tense; one term = one meaning (use glossary/registry terms exactly); no idioms; positive phrasing preferred; minimal pronouns; lists for parallel items and tables for structured data. The STE dictionary is not adopted. Enforcement is advisory: PM conforms task briefs at triage; architect checks requirement sections at Design Gate review. Full policy: §3.10 (workspace root AGENTS.md) and ADR-0079 (workspace root, `docs/adr/0079-simplified-english-development-instructions.md`).
+Development-facing instruction text — requirement statements, task briefs, execution-plan task descriptions, agent dispatch prompts, design-doc requirement sections, API endpoint documentation, and how-to steps — follows ASD-STE100 (Simplified Technical English) structural rules, in every development domain (web, app, API, scripts, documents). Rules: one instruction per sentence (≤ 20 words procedural / ≤ 25 descriptive); active voice with imperative steps; present tense; one term = one meaning (use glossary/registry terms exactly); no idioms; positive phrasing preferred; minimal pronouns; lists for parallel items and tables for structured data. The STE dictionary is not adopted. Enforcement is advisory: PM conforms task briefs at triage; architect checks requirement sections at Design Gate review. Full policy: §3.10 (workspace root AGENTS.md) and ADR-0079 (`docs/adr/0079-simplified-english-development-instructions.md`).
 
 ### PM Team-Management Authority (ADR-0080)
 
@@ -1306,4 +1305,4 @@ no API key, $0).
 
 ---
 
-*Last Updated: 2026-09-25 (rev 4) — regenerated onto the §-numbered skeleton; ABAP registry content re-seated under §2 and §4.*
+*Last Updated: 2026-09-26 (rev 4) — regenerated onto the §-numbered skeleton; ABAP registry content re-seated under §2 and §4.*
