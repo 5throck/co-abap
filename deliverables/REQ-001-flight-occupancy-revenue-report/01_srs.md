@@ -132,3 +132,31 @@ flowchart LR
 - **Authoring Analyst Signature**: ___________________ (Date: 2026-09-25)
 - **PM Governance Approval**: ___________________ (Date: _________)
 - **Technical Lead Acceptance**: ___________________ (Date: _________)
+
+---
+
+## 6. Constraints, Assumptions & Dependencies
+
+> Added 2026-09-26 after the deliverables benchmark review ([IEEE 830 §2.7](https://en.wikipedia.org/wiki/Software_requirements_specification) alignment).
+
+- **Constraints**:
+  - C-01: The report runs against the standard Flight Demo Model only; no custom tables exist.
+  - C-02: The object is created in package `$TMP` (local, not transportable) for the demo scope.
+  - C-03: Output technology is CL_SALV_TABLE (classic ALV); no Fiori/UI5 runtime is targeted.
+- **Assumptions**:
+  - A-01: `SFLIGHT.CURRENCY` equals `SCARR.CURRCODE` for every flight row; revenue is displayed in the carrier currency without conversion.
+  - A-02: SBOOK rows represent confirmed bookings; no cancellation/status flag exists in the demo model, so all rows count as sold seats.
+- **Dependencies**:
+  - D-01: Standard tables SCARR, SPFLI, SFLIGHT, SBOOK, SAIRPORT must exist with the demo data loaded.
+  - D-02: Standard authorization concept (S_TABU_DIS) applies; no new roles are required.
+
+## 7. Glossary
+
+| Term | Definition |
+| :--- | :--- |
+| ALV | ABAP List Viewer — the standard SAP grid output technology (CL_SALV_TABLE is its object model). |
+| ATC | ABAP Test Cockpit — static quality check framework; P1 findings are release blockers. |
+| F / C / Y | SBOOK booking classes: First, Business, Economy. |
+| Occupancy rate | SEATSOCC / SEATSMAX × 100, one decimal place (REQ-001-F02). |
+| RTM | Requirements Traceability Matrix (`deliverables/index.md`). |
+| SFLIGHT model | SAP's standard flight demo data model used for ABAP training and samples. |
