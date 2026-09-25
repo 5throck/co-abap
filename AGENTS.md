@@ -295,105 +295,19 @@ Technical agents are dispatched by the PM in Phase 2 (serial execution) or Phase
 
 ## §3: PM Gateway Workflow
 
+**Thin-dispatcher section (ADR-0090)**: full phase protocol and ADR policy summaries → [`docs/governance/agents/pm-gateway-workflow.md`](docs/governance/agents/pm-gateway-workflow.md).
+
+### §3.6 3-Tier Strategy
+
+<!-- WORKSPACE-MANAGED: tier-model-mapping -->
+- **High-tier**: Complex reasoning, architectural design, planning (claude-opus-5-0 / gemini-3.1-pro / gpt-5.6-sol)
+- **Medium-tier**: Code review, testing, PR review, quality gates (claude-sonnet-5-0 / gemini-3.8-flash / gpt-5.6-terra)
+- **Low-tier**: Fast, repetitive coding, script maintenance (claude-haiku-4-5 / gemini-3.8-flash / gpt-5.6-luna)
+<!-- /WORKSPACE-MANAGED -->
+
+
+
 **Integrated from pm.md, CLAUDE.md §5, GEMINI.md §5**
-
-### §3.1 PM Gateway Policy
-
-**Single Point of Entry**: PM is the ONLY agent that users may directly invoke.
-All specialist agents require PM dispatch - enforced at 4 levels.
-
-#### §3.1.1 PM Direct Execution Scope
-
-PM is an escalation gateway, not an executor. **⚠️ CRITICAL**: PM MUST NOT perform Write/Edit on any file except `memory/*.md` and `CHANGELOG.md`. All file modifications MUST be dispatched to project specialists. See [PM Direct Execution Constraints](agents/pm.md#pm-direct-execution-scope) in `agents/pm.md`.
-
-| Category | Tools | Scope |
-|----------|-------|-------|
-| Unconditional | Read, Glob, Grep, Agent, TaskCreate, TaskUpdate, AskUserQuestion, Skill, ToolSearch | Always allowed |
-| Conditional | Write, Edit | `memory/*.md` and `CHANGELOG.md` only |
-| Conditional | Bash | Read-only: `git status/diff/log`, `bun scripts/audit.ts`, `ls`, `cat` |
-| Forbidden | Write, Edit (all other paths) | Must delegate to project specialist |
-| Forbidden | Bash (write/execute patterns) | Must delegate to specialist |
-
-**Rationale**: PM is orchestrator, not executor. Direct execution violates governance separation of concerns. See [Role Clarification](agents/pm.md#-role-clarification) in `agents/pm.md` and the Task Owner vs Executor Distinction below.
-
-When a specialist agent's required tool is denied, PM applies the [Permission Denial Protocol](#38-permission-denial-protocol) — never substitutes for the specialist.
-
-#### §3.1.2 PM Role Boundaries
-
-**What PM Does**:
-- Orchestrate multi-agent workflows
-- Create execution plans
-- Dispatch specialist agents
-- Enforce quality gates
-- Track progress
-
-**What PM Does NOT Do**:
-- Directly Edit/Write files (except `memory/*.md`, `CHANGELOG.md`)
-- Implement code or scripts
-- Perform documentation updates (delegate to `[docs specialist]`)
-- Perform design work (delegate to `[design specialist]`)
-
-**Task Owner vs Executor Distinction**:
-- **Task owner (PM)**: PM is accountable for task progress and final delivery
-- **Task executor (specialist)**: Agent who performs the actual work
-- PM creates tasks (owner: pm), dispatches project specialists (executor: `[specialist agent]`), and updates task status upon completion
-
-**User Communication for Specialist Tasks**:
-When work requires specialist delegation, PM uses the following template:
-```
-PM: 🔍 [Task Analysis] This task falls within the [specialist] domain of expertise.
-   Task: [description]
-   Specialist: [specialist name]
-   Reason: [why specialist needed]
-PM: Shall I dispatch [specialist]?
-User: "Yes"
-PM: ▶️ [specialist] dispatch...
-```
-
-See [agents/pm.md](agents/pm.md) for complete role definition and delegation protocols.
-
-#### §3.1.3 Enforcement Layers
-1. **Tool-Level**: Agent tool rejects non-PM specialist calls (hard enforcement)
-2. **System Prompt-Level**: CLAUDE.md/GEMINI.md rules loaded first
-3. **Agent File-Level**: All specialists have "PM-ONLY INVOCATION" section
-4. **QA Gate-Level**: Auditor detects bypass in Phase 6 QA
-
-#### §3.1.4 Specialist Agent Dispatch Flow
-```
-User Request → PM Triage → Design Approval → Specialist Dispatch → QA Gate → Finalization
-```
-
-#### §3.1.5 Specialist Agent Roster (PM-ONLY INVOCATION)
-
-All specialist agents below are dispatched ONLY through PM:
-
-<!-- VARIANT-DISPATCH-TRIGGERS-START -->
-| Agent | Phase | Dispatch Trigger |
-|-------|-------|------------------|
-| `architect` | Phase 1 | "architect" |
-| `co-analyst` | Phase 1 | "co analyst" |
-| `code-writer` | Phase 3 | "code writer" |
-| `dba` | Phase 2 | "dba", "data analysis", "statistics", "data model" |
-| `devops-admin` | Phase 4 | "devops admin" |
-| `fi-analyst` | Phase 1 | "fi analyst" |
-| `fiori-developer` | Phase 3 | "fiori developer" |
-| `form-expert` | Phase 3 | "form expert", "write", "document", "draft" |
-| `gui-scripter` | Phase 3 | "gui scripter" |
-| `i18n-specialist` | — | "i18n specialist" |
-| `interface-expert` | Phase 2 | "interface expert" |
-| `le-analyst` | Phase 1 | "le analyst" |
-| `mm-analyst` | Phase 1 | "mm analyst" |
-| `pp-analyst` | Phase 1 | "pp analyst" |
-| `read-only-analyst` | Phase 1 | "read only analyst", "data analysis", "statistics", "data model" |
-| `sap-investigator` | Phase 3 | "sap investigator" |
-| `schema-inspector` | Phase 1 | "schema inspector", "data analysis", "statistics", "data model" |
-| `sd-analyst` | Phase 1 | "sd analyst" |
-| `security-monitor` | Phase 0 | "security monitor", "security", "pentest", "vulnerability" |
-| `test-runner` | Phase 3 | "test runner" |
-<!-- VARIANT-DISPATCH-TRIGGERS-END -->
-**⚠️ IMPORTANT**: Do NOT invoke any specialist agent directly. All requests must go through PM.
-
-> **Execution Plan Format**: For mandatory criteria, boilerplate table, and rules, see [§5 Execution Plan Templates](#5-execution-plan-templates). For platform-specific dispatch instructions, see [CLAUDE.md §5](CLAUDE.md#5-agent-dispatch-rules) or [GEMINI.md §5](GEMINI.md#5-agent-dispatch-rules).
 
 ### §3.5 Phase Determination (Deliverable-Type Gate)
 
@@ -437,35 +351,6 @@ Before assigning an agent to any task, PM MUST classify the deliverable type:
 
 > **Execution Plan Boilerplate Policy**: For mandatory and discretionary boilerplate cases, see [§3 (PM Gateway Workflow)](AGENTS.md#§3-pm-gateway-workflow) above.
 
-
-### §3.6 3-Tier Strategy
-
-When leading execution and improvement tasks, PM MUST use the 3-Tier model strategy:
-
-<!-- WORKSPACE-MANAGED: tier-model-mapping -->
-- **High-tier**: Complex reasoning, architectural design, planning (claude-opus-5-0 / gemini-3.1-pro / gpt-5.6-sol)
-- **Medium-tier**: Code review, testing, PR review, quality gates (claude-sonnet-5-0 / gemini-3.8-flash / gpt-5.6-terra)
-- **Low-tier**: Fast, repetitive coding, script maintenance (claude-haiku-4-5 / gemini-3.8-flash / gpt-5.6-luna)
-<!-- /WORKSPACE-MANAGED -->
-
-### §3.7 Meeting Facilitation
-
-When `/meeting` is invoked, the PM orchestrates structured multi-agent discussions.
-
-**Meeting Process**:
-1. **Open meeting**: Set agenda and objectives
-2. **Facilitate dialogue**: Ensure all specialists contribute
-3. **Synthesize outcomes**: Cross-domain agent synthesizes agreements
-4. **Document results**: Write transcript to `memory/meeting-YYYY-MM-DD-[slug].md`
-
-### §3.7.5 Governance Backlog Dispatch
-
-**Workspace root only** — `scripts/ticket.ts` and `tickets/` do not exist in variant projects (`@l2-propagate: false`); this section intentionally lives in `AGENTS.md` (L0-only SSOT, never propagated) rather than `agents/pm.md`, which extends into every variant's PM.
-
-Deferred governance decisions (e.g. an ADR's soak-period gate) are tracked as `kind: manual` tickets with an optional `not_before` date — see [docs/designs/2026-08-16-governance-backlog-design.md](docs/designs/2026-08-16-governance-backlog-design.md). When `bun scripts/ticket.ts list --ready --kind manual` surfaces a ticket (at session start or during the Weekly Health Check, [docs/context.md](docs/context.md) and [§9.1](docs/context.md)):
-
-- If it's a pure decision (approve/reject), PM reviews and moves it (`bun scripts/ticket.ts move <id> review`, then `done`) — no specialist dispatch needed.
-- If acting on it requires implementation work, PM dispatches through the normal PM Gateway path (§3.1–§3.5) like any other task — no new mechanism. If the item is independent of other in-flight work and Agent Teams is enabled for the session, PM may dispatch it as a parallel teammate instead of sequentially.
 
 ### §3.8 Permission Denial Protocol
 
@@ -513,77 +398,9 @@ PM owns the composition of the agent team and rules on skill changes:
 
 ---
 
-<!-- COMMON-AGENTS:START -->
-## Language Policy
-
-**English-Only Documentation Rule**: All workspace documentation files (.md) must be written in English, with explicit exceptions for recognized locale translation zones and declared Korean legal/regulatory content (see Exceptions below).
-
-### English Documentation Requirement
-- All `.md` files outside locale translation zones (`<lang-code>/`, `locales/<lang-code>/`, and `*_&lt;lang-code&gt;` suffix files) MUST be in English
-- Applies to: README.md, CLAUDE.md, GEMINI.md, AGENTS.md, context.md, CHANGELOG.md, all documentation in docs/, agents/, skills/
-- Rationale: English documentation ensures global accessibility and cross-team collaboration
-
-### Translation Zones (Locale Exceptions)
-- `<lang-code>/` directories — language-specific documentation (e.g. `ko/`, `ja/`)
-- `locales/<lang-code>/` — locale translation files for internationalization (e.g. `locales/ko/`, `locales/zh-CN/`)
-- `*_&lt;lang-code&gt;.md` / `*_&lt;lang-code&gt;.yaml` suffix files — translation mirrors tracked by hash-sync (e.g. `README_ko.md`)
-- These are the ONLY locations where non-English `.md` files are permitted (except declared exceptions)
-- Recognized locale codes (from `docs/workspace-schema.json` `i18n.locale_codes` — 16 codes including `en`, the source language; `en` is not a translation-zone target):
-  `ko`, `ja`, `zh-CN`, `zh-TW`, `de`, `es`, `fr`, `pt`, `vi`, `ms`, `id`, `th`, `ru`, `it`, `ar` (+ `en`)
-
-### Language Policy Exception — Korean Legal/Regulatory Content
-The English-only policy admits a narrow exception for files where Korean is legally or academically mandatory. To declare an exception, add to the file's frontmatter:
-```yaml
-lang: ko
-lang_reason: legal   # legal | source-material | proper-noun
-```
-- `legal`: Statutory texts, ordinances, regulations, contracts where Korean original has legal force.
-- `source-material`: Primary source quotations where English translation would compromise academic accuracy or meaning.
-- `proper-noun`: Files dominated by Korean proper nouns (institution/place/person names).
-
-*Note: Exception is NOT available for: context.md, CLAUDE.md, GEMINI.md, AGENTS.md, or any variant context.md file. It IS available for `agents/*.md` and `skills/*.md` (with `lang_reason` declared).*
-
-### Korean Plain-Language Preference (`순우리말`-First)
-When writing Korean documentation or Korean translation output, prefer native Korean words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`, `모음` over `컬렉션` in general prose.
-- Loanwords effectively settled in Korean (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established international technical terms remain permitted — clarity and standard terminology take precedence over forced nativization.
-- Applies immediately to new Korean-language content (including `ko/`, `locales/ko/`, `*_ko.md`, and `lang: ko` exception files).
-- Existing Korean documents are nativized incrementally: apply the preference to touched sections whenever a document is edited for other reasons; no bulk rewrites.
-
-### Enforcement
-- Pre-commit audit checks for Korean content outside ko/ and locales/ko/
-- PR reviews reject non-English documentation outside translation zones
-- Auditor validates compliance during Phase 6 QA gate
-
-### Git/PR Artifacts Language Rule
-- All commit messages: English
-- All PR titles: English
-- All PR descriptions: English
-- All branch names: English
-- Code comments: English (unless documenting locale-specific logic)
-
-### Pluggable Variant Audit Hooks and Integrity Protection
-- **Core Script Standardization**: The core synchronization and validation scripts (`scripts/dev-sync.ts` and `scripts/audit.ts`) must remain standardized and identical across all templates and variants. Direct modification of these core scripts in L2 projects is strictly forbidden.
-- **Variant-Specific Audit Hook**: Variant projects requiring custom verification checks must implement them in a pluggable hook script at the path declared in the variant's `variant.json` → `script_manifest` (conventionally `scripts/audit-variant.ts` or `scripts/<variant>/audit-variant.ts`).
-- **Integrity Enforcement**: During template reconciliation (`l3-to-variant-pipeline.ts`), any modified core scripts will be automatically detected and will fail the reconciliation.
-
-### Universal Design Gate (ADR-0074)
-
-Every code change at any tier (L0–L3) must carry spec activity: create/update a design doc at `docs/designs/<spec-id>-design.md` and register it (`bun scripts/spec-register.ts --file <design-doc> --source manual --status implemented`) before `/sync`. The sync-time spec-check (`audit.ts --spec-check`, dev-sync step 3.9) blocks commits without it; trivial changes use `--spec-exempt=E1..E5` (AGENTS.md §5.1.1). Project registries (`docs/specs/registry.json`) are add-if-missing seeds — upgrades never overwrite or prune project entries.
-
-### LLM Work Routing Policy (ADR-0078)
-
-Substantive LLM-assisted development work — generation or modification of code, documents, designs, tests, or scripts — MUST be routed through this project's agent team: `user → PM triage → Design Gate (unless exempt) → specialist dispatch → QA gate → /sync PR`. Querying an external LLM directly (e.g. a web chat) and landing its output in this repository is a policy violation. IDE inline completions and one-off Q&A that never land in the repository are exempt; repository-landing work uses the E1–E5 exemption codes only. An application calling LLM APIs at runtime is an architecture concern covered by the Design Gate (ADR-0074). Enforcement is structural via the existing hard gates — see ADR-0078 (workspace root, `docs/adr/0078-agent-mediated-llm-work-routing.md`) for the full decision.
-
-### Instruction Writing Standard (ASD-STE100, ADR-0079)
-
-Development-facing instruction text — requirement statements, task briefs, execution-plan task descriptions, agent dispatch prompts, design-doc requirement sections, API endpoint documentation, and how-to steps — follows ASD-STE100 (Simplified Technical English) structural rules, in every development domain (web, app, API, scripts, documents). Rules: one instruction per sentence (≤ 20 words procedural / ≤ 25 descriptive); active voice with imperative steps; present tense; one term = one meaning (use glossary/registry terms exactly); no idioms; positive phrasing preferred; minimal pronouns; lists for parallel items and tables for structured data. The STE dictionary is not adopted. Enforcement is advisory: PM conforms task briefs at triage; architect checks requirement sections at Design Gate review. Full policy: §3.10 (workspace root AGENTS.md) and ADR-0079 (`docs/adr/0079-simplified-english-development-instructions.md`).
-
-### PM Team-Management Authority (ADR-0080)
-
-PM owns team composition and skill-change rulings. Hiring and firing: PM decides timing and target from workflow signals — recurring unmatched work types, role overload, absorbed roles, the quarterly roster review — and records every decision (ADR-0061 decision record + memory log) before dispatch; the default exit for a fired agent is `status: deprecated`, and hard delete requires an explicit user request. Skill requests: agents file structured `create|attach|remove` request blocks with evidence in their task reports and memory logs; PM triages them and only approved requests are executed — agents never create, attach, or remove skills unilaterally. Procedures: `agent-lifecycle-manager` and `skill-lifecycle-manager` skills. Full decision: ADR-0080 in the workspace root `docs/adr/`.
-<!-- COMMON-AGENTS:END -->
 
 ---
+
 
 ## §4: Other Workflows
 
@@ -975,92 +792,7 @@ interface SkillMetadata {
 
 ## §5: Execution Plan Templates
 
-### §5.1 Standard Execution Plan Template
-
-> **Design Gate (Row 0)**: Universal across tiers (L0–L3) per ADR-0074 — every code change must
-> carry spec activity (design doc + registry entry), enforced by the sync-time spec-check
-> (`audit.ts --spec-check`, dev-sync step 3.9, FATAL). Full Row 0 ceremony (execution-plan
-> boilerplate, architect ownership) applies at L0/L1; L2/L3 satisfy the gate with the
-> one-design-doc convention via `scripts/spec-register.ts`.
-
-| # | Task | Agent | Tier | Model | Spec |
-|---|------|-------|------|-------|------|
-| 0 | Create/update design doc → `docs/designs/<spec-id>-design.md` | architect | High | [model] | NEW |
-| 1 | [task description] | [specialist] | High/Medium/Low | [model] | <spec-id> |
-| N | `/sync "type(scope): message"` — lifecycle + audit + commit + push + PR | pm | Medium | [model] | |
-
-**Execution Order**: [Parallel | Sequential]
-
-**Key points**:
-- **Row 0 (Design Gate) is MANDATORY at every tier (ADR-0074)** — a design document must be created/updated before implementation; L2/L3 satisfy it with a single design doc + `spec-register.ts` entry (full ceremony stays L0/L1)
-- **Design docs for user-facing features MUST include an Accessibility section** (target level, affected interaction areas, verification method) per ADR-0065 — accessibility is a mandatory consideration for web/app/CLI/document feature development (WCAG 2.1 AA baseline); backend/non-UI work is exempt only with an explicit statement
-- **Design docs for user-facing web/app UI MUST include a Preview Verification note** (rendered check at ≥ 2 declared breakpoints, ≥ 1 key interaction, evidence attached) per ADR-0070 — a UI change is not done until it was seen rendered; pure backend/non-UI work is exempt only with an explicit statement
-- Tier column is MANDATORY (High/Medium/Low)
-- `/sync` is always the final step — it covers lifecycle update, full audit, commit, push, and PR creation
-- No separate Lifecycle Update or Final QA Audit rows needed — `/sync` handles both
-- State parallel vs sequential order below the table
-- "pm (direct)" is FORBIDDEN - PM never executes directly
-- **When a plan spans more than one PR**: merge each PR before branching for the next row's work, per [docs/context.md](docs/context.md) — `dev-sync.ts` touches shared pipeline files (CHANGELOG.md, memory logs, VERSION_MANIFEST.md, generated READMEs) on every commit, so unmerged parallel branches conflict by default. If parallel branches are genuinely required, this plan's Trade-offs section must state why.
-
-### §5.1.1 Design Gate Exemptions
-
-When a task falls into an exempt category, Row 0 is replaced with an exemption marker:
-
-| Category | ID | Description | Row 0 Format |
-|----------|----|-------------|--------------|
-| memory-log | E1 | Session log entry in `memory/YYYY-MM-DD.md` | `── EXEMPT: memory-log ──` |
-| changelog | E2 | `CHANGELOG.md` update only | `── EXEMPT: changelog ──` |
-| hotfix-typo | E3 | Typo fix, single-line change, trivial fix | `── EXEMPT: hotfix-typo ──` |
-| pure-readme | E4 | README.md body text only (no structural/design change) | `── EXEMPT: pure-readme ──` |
-| sync-only | E5 | `/sync` execution only (lifecycle finalization) | `── EXEMPT: sync-only ──` |
-
-**Rules**:
-- Exempt Row 0: Agent/Tier/Model columns left blank (`—`)
-- Only E1–E5 categories may be used — PM cannot invent ad-hoc exemptions
-- Abuse of exemptions is a governance violation
-- These codes are machine-consumed by `audit.ts --spec-exempt=E1..E5` / `SYNC_SPEC_EXEMPT` (ADR-0055 Stage 2 gating; invalid codes hard-Fail)
-
-### §5.2 Platform Parity Considerations
-
-When modifying files that affect both CLAUDE.md and GEMINI.md:
-
-| # | Task | Agent | Tier | Model | Spec | Platform |
-|---|------|-------|------|---------|----------|
-| 1 | [task] | [specialist] | [tier] | [model] | Both |
-| N | `/sync "type(scope): message"` | pm | Medium | [model] | Both |
-
-**Platform Column**: `Claude` / `Antigravity` / `Both` / `L0-only`
-
-**Note**: See execution plan boilerplate in CLAUDE.md ("### 5. Agent Dispatch Rules" and "## Execution Plan Boilerplate"), GEMINI.md (identical headings), and agents/pm.md for the Platform column definition.
-
-### §5.3 Example Execution Plans
-
-#### Example 1: Multi-Agent Platform Parity Update
-
-<!-- WORKSPACE-MANAGED: tier-model-mapping -->
-> **Note**: The `Model` column below shows the Claude Code short alias (`sonnet`/`opus`/`haiku`/`fable`) actually passed to the `Agent()` tool's `model` parameter — not the registry ID (e.g. `claude-sonnet-5-0`). See [CLAUDE.md §6](CLAUDE.md#6-native-sub-agents-agent-tool) for the registry-ID → alias translation table. On Gemini/Antigravity, use the literal model ID instead (see GEMINI.md's equivalent example).
-<!-- /WORKSPACE-MANAGED -->
-
-| # | Task | Agent | Tier | Model | Spec |
-|---|------|-------|------|-------|------|
-| 1 | Update agents/pm.md | `[docs specialist]` | Medium | sonnet | <spec-id> |
-| 2 | Update scripts/audit.ts | `[implementation specialist]` | Low | haiku | <spec-id> |
-| 3 | Update CLAUDE.md §5 | `[docs specialist]` | Medium | sonnet | <spec-id> |
-| 4 | Update GEMINI.md §5 | `[docs specialist]` | Medium | sonnet | <spec-id> |
-| 5 | `/sync "docs(agents): update pm.md and platform dispatch rules"` | pm | Medium | sonnet | |
-
-**Execution Order**: Sequential (platform parity requires CLAUDE.md and GEMINI.md updates together)
-
-#### Example 2: Single Specialist Task
-
-| # | Task | Agent | Tier | Model | Spec |
-|---|------|-------|------|-------|------|
-| 1 | Update project README introduction | `[docs specialist]` | Medium | sonnet | <spec-id> |
-| 2 | `/sync "docs: update project README introduction"` | pm | Medium | sonnet | |
-
-**Execution Order**: Sequential
-
----
+**Thin-dispatcher section (ADR-0090)**: governed by [`docs/governance/agents/execution-plan-templates.md`](docs/governance/agents/execution-plan-templates.md) — Read before writing any execution plan.
 
 ## §6: Skills
 
