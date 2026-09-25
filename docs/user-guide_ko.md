@@ -1,5 +1,5 @@
 ---
-translated_from_hash: c900c2ecbdf27a3b4105e28984ed81bfa47d696b5e610e7fc178f245c3ededbf
+translated_from_hash: 93499c41e7579a96b3d3813466f33ea0fc77ed3fee48d6dbe2a07a62ab4c9660
 ---
 # Co-ABAP 사용자 가이드
 
@@ -29,8 +29,8 @@ translated_from_hash: c900c2ecbdf27a3b4105e28984ed81bfa47d696b5e610e7fc178f245c3
 4. 구현은 `code-writer`가 수행하며, 모든 `WriteSource` / `EditSource` 직후에
    **post-write 필수 체인**(`SyntaxCheck → RunUnitTests → GetCodeCoverage →
    RunATCCheck`)이 실행됩니다.
-5. QA는 `04_qa_report.md`를 산출하고, `/transport`로 CTS 트랜스포트를 생성/릴리스
-   합니다.
+5. QA는 `04_qa_report.md`와 `05_unit_test_plan.md`를 산출하고, `/transport`로 CTS
+   트랜스포트를 생성/릴리스 합니다.
 6. `/sync`로 마감합니다 — 유일하게 지원되는 커밋 경로이며, 항상 `/transport`
    **이후에** 실행되어 CTS 트랜스포트와 git 커밋이 어긋나지 않습니다.
 
@@ -68,10 +68,10 @@ translated_from_hash: c900c2ecbdf27a3b4105e28984ed81bfa47d696b5e610e7fc178f245c3
 구현 (code-writer — 모든 쓰기 직후 post-write 체인)
         │
         ▼
-QA 및 검증 (test-runner → 04_qa_report.md)
+QA 및 검증 (test-runner → 04_qa_report.md + 05_unit_test_plan.md)
         │
         ▼
-/transport (CTS 트랜스포트 생성/릴리스)
+릴리스 (PM + devops-admin → 06_release_report.md, /transport)
         │
         ▼
 /sync (memlog → changelog → audit → commit → PR)
@@ -96,8 +96,12 @@ QA 및 검증 (test-runner → 04_qa_report.md)
 | 1 — 요구사항 정의 | `deliverables/REQ-NNN-[slug]/01_srs.md` | 모듈 애널리스트 + PM |
 | 2 — 기술 설계 | `deliverables/REQ-NNN-[slug]/02_technical_design.md` | Architect + DBA |
 | 3 — 구현 요약 | `deliverables/REQ-NNN-[slug]/03_implementation_report.md` | 전문 개발자 |
-| 4 — QA 및 검증 | `deliverables/REQ-NNN-[slug]/04_qa_report.md` | QA 엔지니어 |
-| 5 — 릴리스 및 동기화 | transport + `/sync` | PM + DevOps/Admin |
+| 4 — QA 및 검증 | `deliverables/REQ-NNN-[slug]/04_qa_report.md` + `05_unit_test_plan.md` | QA 엔지니어 |
+| 5 — 릴리스 | `deliverables/REQ-NNN-[slug]/06_release_report.md` + transport + `/sync` | PM + DevOps/Admin |
+
+`new-requirement.ts` 스캐폴딩은 Stage 1에서 `01_srs.md`, `05_unit_test_plan.md`,
+`06_release_report.md`를 미리 생성합니다. 테스트 계획은 Stage 1 리뷰에서 수립되어
+Stage 4에서 실행되며, 릴리스 보고서는 Stage 5에서 완성됩니다.
 
 읽기(스키마 조사, 비즈니스 데이터 조회)는 병렬 실행 가능, **쓰기는 순차 처리** —
 특정 파일에는 한 번에 한 에이전트만 기록하며 PM이 조율합니다.
@@ -106,7 +110,7 @@ QA 및 검증 (test-runner → 04_qa_report.md)
 
 | 산출물 | 위치 |
 |--------|------|
-| 요구사항 산출물 | `deliverables/REQ-NNN-[slug]/` (번호 `01_`–`04_` 파일) |
+| 요구사항 산출물 | `deliverables/REQ-NNN-[slug]/` (번호 `01_`–`06_` 파일) |
 | 로컬 `.abap` 파일 | `scratch/` — 유일하게 허용된 위치 |
 | 세션 로그 | `memory/YYYY-MM-DD.md` (`memory/MEMORY.md`가 인덱싱) |
 | 사용자 대상 변경 이력 | `CHANGELOG.md` → PR |

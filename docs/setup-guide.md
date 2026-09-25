@@ -21,6 +21,13 @@
 12. [Troubleshooting](#12-troubleshooting)
 13. [Team Onboarding Checklist](#13-team-onboarding-checklist)
 
+> **Other supported agent surfaces**: skills also mirror to Codex CLI (`.codex/`,
+> ADR-0077) and Hermes Agent (`.hermes/skills/`, ADR-0088). Hermes reads `AGENTS.md`
+> natively as its project instruction file and invokes skills as `/<skill-name>`.
+> Hermes loads project skills only after you add this repository to its user-side
+> `skills.trusted_project_dirs` trust list — this step is intentional (prompt-injection
+> defense) and stays on the user side.
+
 ---
 
 ## 1. Prerequisites
