@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-09-26](2026-09-26.md) | feat(deliverables): REQ-001 flight occupancy and revenue analysis report |
 | [2026-09-25](2026-09-25.md) | chore(upgrade): template sync 2026-09-25 — deliver audit helper chain (Design Gate repair) + full project review remediation |
 | [2026-09-23](2026-09-23.md) | chore(deps): bump dependency carets and refresh lockfile |
 | [2026-09-22](2026-09-22.md) | chore: fleet resync completion — upgrade wave + PM tier fix |
