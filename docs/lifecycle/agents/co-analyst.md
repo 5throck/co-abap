@@ -4,7 +4,7 @@ Lifecycle tracking for the `co-analyst` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/co-analyst.md`](../../agents/co-analyst.md) |
+| Agent file | [`agents/co-analyst.md`](../../../agents/co-analyst.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

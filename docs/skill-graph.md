@@ -25,10 +25,10 @@
 | `gateguard` | L3 | — | — | — | — | — |
 | `handbook` | L3 | — | — | — | — | — |
 | `handbook-sync-audit` | L3 | — | — | — | — | — |
-| `i18n-audit` | L3 | — | — | — | — | — |
-| `i18n-formatting` | L3 | — | — | — | — | — |
-| `i18n-layout` | L3 | — | — | — | — | — |
-| `i18n-locale-config` | L3 | — | — | — | — | — |
+| `i18n-audit` | L3 | i18n-specialist | — | — | — | — |
+| `i18n-formatting` | L3 | i18n-specialist | — | — | — | — |
+| `i18n-layout` | L3 | i18n-specialist | — | — | — | — |
+| `i18n-locale-config` | L3 | i18n-specialist | — | — | — | — |
 | `meeting-facilitation` | L3 | — | — | — | — | — |
 | `performance-tuning` | L3 | — | — | — | — | — |
 | `platform-command-lifecycle-manager` | L3 | — | — | — | — | — |
@@ -91,6 +91,6 @@ Catalog table above — not skill references and not yet resolved as graph edges
 | Document | Type | Cites skills | References | Supersedes |
 |----------|------|--------------|------------|------------|
 | `adr:0001` | adr | — | — | — |
-| `doc:AGENTS.md` | doc | `agent-lifecycle-manager`, `post-write-chain`, `skill-lifecycle-manager` | — | — |
+| `doc:AGENTS.md` | doc | `abap-dev`, `agent-lifecycle-manager`, `decision-record`, `evidence-ledger`, `explain-me`, `handbook`, `handbook-sync-audit`, `i18n-audit`, `i18n-formatting`, `i18n-layout`, `i18n-locale-config`, `meeting-facilitation`, `post-write-chain`, `project-review`, `security-scan`, `skill-lifecycle-manager`, `source-command-commit-push-pr`, `sync` | — | — |
 | `doc:CLAUDE.md` | doc | `abap-dev`, `desktop-app-fallback`, `post-write-chain` | — | — |
 | `doc:GEMINI.md` | doc | `abap-dev`, `post-write-chain` | — | — |

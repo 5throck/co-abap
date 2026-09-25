@@ -1747,7 +1747,7 @@ Add to `docs/context.md`:
 ## Agent Roles and Orchestration
 
 For the complete agent registry, role definitions, and orchestration rules,
-see [AGENTS.md](../AGENTS.md).
+see [AGENTS.md](../../../AGENTS.md).
 ```
 
 - [ ] **Step 4: Update AGENTS.md with error recovery section**

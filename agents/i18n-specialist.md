@@ -1,7 +1,7 @@
 ---
 name: i18n-specialist
 formal_name: I18N Specialist Agent
-role: specialist
+role: Internationalization & Localization Guidance Specialist
 status: active
 tier:
   claude: medium        # claude-sonnet-5-0
@@ -13,7 +13,7 @@ model: inherit
 lifecycle:
   phase: production
   created: "2026-08-24"
-  last_updated: "2026-09-15"
+  last_updated: "2026-09-25"
   governance: docs/lifecycle/agents/i18n-specialist.md
 version: "1.0.0"
 last_reviewed: "2026-08-24"
@@ -29,11 +29,6 @@ required_skills:
   - i18n-formatting
   - i18n-layout
   - i18n-audit
-lifecycle:
-  phase: production
-  created: "2026-08-24"
-  last_updated: "2026-08-24"
-  governance: docs/lifecycle/agents/i18n-specialist.md
 ---
 
 ## Role

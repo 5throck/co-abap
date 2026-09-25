@@ -4,7 +4,7 @@ Lifecycle tracking for the `dba` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/dba.md`](../../agents/dba.md) |
+| Agent file | [`agents/dba.md`](../../../agents/dba.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

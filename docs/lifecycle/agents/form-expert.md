@@ -4,7 +4,7 @@ Lifecycle tracking for the `form-expert` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/form-expert.md`](../../agents/form-expert.md) |
+| Agent file | [`agents/form-expert.md`](../../../agents/form-expert.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

@@ -4,7 +4,7 @@ Lifecycle tracking for the `architect` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/architect.md`](../../agents/architect.md) |
+| Agent file | [`agents/architect.md`](../../../agents/architect.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

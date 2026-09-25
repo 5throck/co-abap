@@ -4,9 +4,7 @@
       "type": "local",
       "command": [
         "graft",
-        "mcp",
-        "bunx",
-        "@nanonets/graft"
+        "mcp"
       ],
       "enabled": true
     }

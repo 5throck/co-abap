@@ -23,14 +23,9 @@ required_skills: [abap-code-review]
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-08-25"
+  last_updated: "2026-09-25"
   governance: docs/lifecycle/agents/test-runner.md
 version: "1.0.0"
-lifecycle:
-  phase: production
-  created: "2026-08-15"
-  last_updated: "2026-08-21"
-  governance: docs/lifecycle/agents/test-runner.md
 ---
 
 ## Role

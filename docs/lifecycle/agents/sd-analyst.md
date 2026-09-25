@@ -4,7 +4,7 @@ Lifecycle tracking for the `sd-analyst` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/sd-analyst.md`](../../agents/sd-analyst.md) |
+| Agent file | [`agents/sd-analyst.md`](../../../agents/sd-analyst.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

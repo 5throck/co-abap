@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-25T10:20:14.037Z
+**Generated**: 2026-09-25T13:32:57.862Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -32,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-20 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-20 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-20 |
-| pm | agents/pm.md | N/A | N/A | 2026-09-23 |
+| pm | agents/pm.md | N/A | N/A | 2026-09-25 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-20 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-20 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-20 |
@@ -74,7 +74,7 @@
 | performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | N/A | pm |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | N/A | active | skills/post-write-chain/SKILL.md | workspace | N/A | N/A |
+| post-write-chain | 1.1.0 | active | skills/post-write-chain/SKILL.md | workspace | N/A | pm |
 | project-review | 1.3.0 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -254,13 +254,7 @@
 
 - [WARNING] Agent pm missing tier or model metadata
 - [WARNING] Skill performance-tuning has no triggers defined
-- [ERROR] Skill post-write-chain frontmatter YAML parse error: bad indentation of a mapping entry (2:131)
-
- 1 |  ... 
- 2 |  ... rces the mandatory quality gate: SyntaxCheck → RunUnitTests → G ...
------------------------------------------^
- 3 |  ... 
- 4 |  ... 
+- [WARNING] Skill post-write-chain has no triggers defined
 - [WARNING] Command post-write has no matching skill of the same name
 - [WARNING] Command security-check has no matching skill of the same name
 - [WARNING] Command transport has no matching skill of the same name

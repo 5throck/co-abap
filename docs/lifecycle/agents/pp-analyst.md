@@ -4,7 +4,7 @@ Lifecycle tracking for the `pp-analyst` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/pp-analyst.md`](../../agents/pp-analyst.md) |
+| Agent file | [`agents/pp-analyst.md`](../../../agents/pp-analyst.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

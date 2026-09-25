@@ -4,7 +4,7 @@ Lifecycle tracking for the `code-writer` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/code-writer.md`](../../agents/code-writer.md) |
+| Agent file | [`agents/code-writer.md`](../../../agents/code-writer.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

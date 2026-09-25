@@ -4,7 +4,7 @@ Lifecycle tracking for the `fiori-developer` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/fiori-developer.md`](../../agents/fiori-developer.md) |
+| Agent file | [`agents/fiori-developer.md`](../../../agents/fiori-developer.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

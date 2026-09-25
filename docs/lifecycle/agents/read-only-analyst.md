@@ -4,7 +4,7 @@ Lifecycle tracking for the `read-only-analyst` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/read-only-analyst.md`](../../agents/read-only-analyst.md) |
+| Agent file | [`agents/read-only-analyst.md`](../../../agents/read-only-analyst.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block

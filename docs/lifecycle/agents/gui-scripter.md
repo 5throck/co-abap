@@ -4,7 +4,7 @@ Lifecycle tracking for the `gui-scripter` agent (co-abap variant).
 
 | Field | Value |
 |-------|-------|
-| Agent file | [`agents/gui-scripter.md`](../../agents/gui-scripter.md) |
+| Agent file | [`agents/gui-scripter.md`](../../../agents/gui-scripter.md) |
 | Lifecycle states | draft / production (active) / deprecated / retired |
 
 > The authoritative lifecycle state lives in the agent file's `lifecycle:` frontmatter block
