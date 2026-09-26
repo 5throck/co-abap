@@ -1,23 +1,22 @@
 {
-  "timestamp": "2026-09-25T15:46:39.636Z",
+  "timestamp": "2026-09-26T07:58:11.136Z",
   "files": [
     "M .claude/helpers/graft-hooks.cjs",
     "M .claude/helpers/graft-statusline.cjs",
-    "M .claude/settings.json",
     "M .claude/template-version.txt",
     "M .env.sample",
-    "M .gitattributes",
-    "M .github/workflows/ci.yml",
     "M AGENTS.md",
-    "M CLAUDE.md",
-    "M docs/workspace-schema.json",
+    "M docs/governance/agents/execution-plan-templates.md",
+    "M docs/governance/agents/pm-gateway-workflow.md",
+    "M docs/governance/agents/workflows.md",
+    "M docs/user-guide.md",
+    "M docs/user-guide_ko.md",
     "M scripts/SCRIPTS.md",
+    "M scripts/dev-sync.ts",
+    "M scripts/helpers/context-sections.ts",
     "M scripts/helpers/scaffold-markers.ts",
-    "M scripts/lib/platforms.ts",
-    "M scripts/lib/upgrade-policy.ts",
-    "M scripts/sync-skills.ts",
-    "M scripts/typecheck.ts",
-    "M scripts/verify-platform-lifecycle.ts",
-    ".hermes/"
+    "M scripts/validate-templates.ts",
+    "M scripts/verify-scripts.ts",
+    "scripts/regenerate-agents-md.ts"
   ]
 }
