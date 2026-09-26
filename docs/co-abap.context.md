@@ -4,7 +4,7 @@
 > context.md is IMMUTABLE — all project-specific changes belong here.
 >
 > Read order for all AI tools:
->   1. docs/context.md            — immutable project identity (architecture, standards)
+>   1. docs/context.md            — immutable shared architecture and standards
 >   2. docs/co-abap.context.md    — THIS FILE — tech stack, agents, skills, workflow
 >
 > Tool-specific overrides live in `../CLAUDE.md` (Claude Code CLI + Desktop App), `../.codex/config.toml` and `../.codex/hooks.json` (Codex), `../GEMINI.md` (Gemini CLI).
@@ -99,27 +99,27 @@ Required env keys (see `.env.sample`):
 ## Skills
 
 <!-- DYNAMIC_SKILLS_START -->
-<!-- Auto-discovered from .agents/skills/ — synced to .claude/skills/ and .gemini/skills/ via sync-skills.ts -->
+<!-- Auto-discovered from skills/ (SSOT) — mirrored to five platform directories by sync-skills.ts -->
 <!-- Status: active | deprecated | experimental -->
 
 | Skill | Directory | Purpose | Status |
 |-------|-----------|---------|--------|
-| ABAP Development | `.agents/skills/abap-dev/` | Core SAP ABAP development workflow | active |
-| ABAP Code Review | `.agents/skills/abap-code-review/` | Clean ABAP review pass over naming, formatting, and anti-patterns with ATC cross-reference | active |
-| Desktop App Fallback | `.agents/skills/desktop-app-fallback/` | Manual post-write QA for Claude Code Desktop App | active |
-| Dump Monitoring | `.agents/skills/dump-monitor/` | Standardized ListDumps/GetDump health check routed to /triage | active |
-| Performance Tuning | `.agents/skills/performance-tuning/` | Standardized trace/SQL/call-graph analysis for slow programs and large-table access | active |
-| Post-Write Chain | `.agents/skills/post-write-chain/` | Mandatory QA chain after WriteSource/EditSource | active |
-| SAP CO — Controlling | `.agents/skills/sap-co/` | CO module: cost centers, internal orders, CO-PA | active |
-| SAP FI — Financial Accounting | `.agents/skills/sap-fi/` | FI module: journal entries, GL, AR/AP, fixed assets | active |
-| SAP LE — Logistics Execution | `.agents/skills/sap-le/` | LE module: shipping, transport, warehouse management | active |
-| SAP MM — Materials Management | `.agents/skills/sap-mm/` | MM module: purchasing, goods receipt, material master | active |
-| SAP PP — Production Planning | `.agents/skills/sap-pp/` | PP module: BOM, routing, production orders, MRP | active |
-| SAP SD — Sales & Distribution | `.agents/skills/sap-sd/` | SD module: sales orders, deliveries, billing, pricing | active |
-| Source Command: Celebrate | `.agents/skills/source-command-celebrate/` | Celebrate task completion for team morale | active |
+| ABAP Development | `skills/abap-dev/` | Core SAP ABAP development workflow | active |
+| ABAP Code Review | `skills/abap-code-review/` | Clean ABAP review pass over naming, formatting, and anti-patterns with ATC cross-reference | active |
+| Desktop App Fallback | `skills/desktop-app-fallback/` | Manual post-write QA for Claude Code Desktop App | active |
+| Dump Monitoring | `skills/dump-monitor/` | Standardized ListDumps/GetDump health check routed to /triage | active |
+| Performance Tuning | `skills/performance-tuning/` | Standardized trace/SQL/call-graph analysis for slow programs and large-table access | active |
+| Post-Write Chain | `skills/post-write-chain/` | Mandatory QA chain after WriteSource/EditSource | active |
+| SAP CO — Controlling | `skills/sap-co/` | CO module: cost centers, internal orders, CO-PA | active |
+| SAP FI — Financial Accounting | `skills/sap-fi/` | FI module: journal entries, GL, AR/AP, fixed assets | active |
+| SAP LE — Logistics Execution | `skills/sap-le/` | LE module: shipping, transport, warehouse management | active |
+| SAP MM — Materials Management | `skills/sap-mm/` | MM module: purchasing, goods receipt, material master | active |
+| SAP PP — Production Planning | `skills/sap-pp/` | PP module: BOM, routing, production orders, MRP | active |
+| SAP SD — Sales & Distribution | `skills/sap-sd/` | SD module: sales orders, deliveries, billing, pricing | active |
+| Source Command: Celebrate | `skills/source-command-celebrate/` | Celebrate task completion for team morale | active |
 <!-- DYNAMIC_SKILLS_END -->
 
-> **SSOT**: Skills live in `.agents/skills/` and are synced to `.claude/skills/` and `.gemini/skills/` via `bun scripts/sync-skills.ts`.
+> **SSOT**: Skills live in `skills/`. Run `bun scripts/sync-skills.ts` to update the five derived mirrors: `.claude/skills/`, `.gemini/skills/`, `.agents/skills/`, `.codex/skills/`, and `.hermes/skills/`.
 > Workspace-root skills (e.g., `meeting`, `meeting-facilitation`, `project-review`, `sync`) are inherited from L0 at scaffold time and are not variant-managed.
 
 ---
@@ -131,10 +131,11 @@ Required env keys (see `.env.sample`):
 | Script | Purpose | Status |
 |--------|---------|--------|
 | `dev-sync.ts` | Full sync pipeline (memlog → changelog → audit → commit → PR) — *inherited from common* | active |
-| `sync-skills.ts` | 3-platform skill distribution (.agents → .claude/.gemini) — *inherited from common* | active |
+| `sync-skills.ts` | Five-platform skill distribution (`skills/` → platform mirrors) — *inherited from common* | active |
 | `audit.ts` | Documentation integrity audit — *inherited from common* | active |
+| `review-baseline.ts` | Detached L3 baseline; reports absent L0-only checks as explicit N/A — *inherited from common* | active |
+| `validate-docs-links.ts` | Relative-link and anchor validator — *inherited from common* | active |
 | `sync-md.ts` | Update memory/MEMORY.md index — *inherited from common* | active |
-| `sync-mcp.ts` | Propagate .mcp.json (SSOT) to .claude/.gemini settings — *inherited from common* | active |
 | `verify-skills.ts` | Skill auto-discovery and index generation — *inherited from common* | active |
 | `agent-verify.ts` | Agent file ↔ documentation synchronization check — *inherited from common* | active |
 | `agent-create.ts` | Create new agent files from template — *inherited from common* | active |
@@ -190,6 +191,28 @@ Manual equivalent: `bun scripts/dev-sync.ts "feat: description"`.
 
 ---
 
+## Repository Quality Gates
+
+Run the local closeout baseline:
+
+```bash
+bun run typecheck
+bun run test
+bun scripts/review-baseline.ts --quiet
+bun scripts/audit.ts
+bun scripts/validate-docs-links.ts --all
+gitleaks git --no-banner
+git diff --check
+```
+
+CI defines the Documentation Audit, Secret Scan, Typecheck, and Script Tests gates.
+The L3 review baseline is a local deterministic battery and reports L0-only template
+or propagation checks as **N/A**. Relative links and anchors are repository contracts;
+validate them after documentation changes. Text files use UTF-8 without BOM and LF
+line endings, enforced by `.gitattributes` and checked by the audit.
+
+---
+
 ## Deployed vsp Binary
 
 | Item | Value |
@@ -209,7 +232,9 @@ MCP servers are configured in `.mcp.json` (Single Source of Truth).
 
 > **Policy**: `.mcp.json` is tracked in git as a shared configuration template. It must NEVER contain credentials. All secrets must be stored in `.env` (gitignored). This is enforced by the pre-commit hook.
 
-> **Duplication Note**: MCP server definitions exist in 3 locations — `.mcp.json` (SSOT), `.claude/settings.json` (Claude Code), and `.gemini/settings.json` (Gemini CLI). The pre-commit hook (Step 5) detects drift between these files. Run `bun scripts/sync-mcp.ts` to propagate `.mcp.json` changes to the other two files automatically (`--check` for drift report only).
+> **MCP configuration**: `.mcp.json` is the shared safe-default profile. No MCP synchronization script is delivered. Keep project configuration changes under review, and make client-specific configuration changes using that client's documented local settings procedure.
+>
+> **Privileged SAP opt-in**: `SAP_FEATURE_ABAPGIT`, `SAP_FEATURE_TRANSPORT`, `SAP_FEATURE_UI5`, and `SAP_FEATURE_RAP` are `off` by default. To enable an approved capability locally, create the ignored `.mcp.local.json` from `.mcp.json.sample`, set only the required `SAP_FEATURE_*` value to `on`, and point the local MCP client to that file. Do not commit local overrides.
 
 See `.mcp.json` for the complete server list.
 
@@ -236,7 +261,7 @@ See `.mcp.json` for the complete server list.
 | `scratch/tasks/` | Active task handoff files (created by `/new-task`) | Yes |
 | `scratch/stable/` | Exported ABAP sources kept for reference (read-only snapshots) | Yes |
 | `scratch/temp/` | Throwaway work files — not committed | No |
-| `.agents/skills/` | Skill SSOT — synced to `.claude/skills/` and `.gemini/skills/` via `sync-skills.ts` | Yes |
+| `skills/` | Skill SSOT — synchronized to five platform mirrors via `sync-skills.ts` | Yes |
 | `.agents/` (other) | Claude Code plugin runtime cache (auto-generated by Desktop App) | No |
 | `.claude/worktrees/` | Parallel session worktrees (auto-managed by Desktop App) | No |
 
@@ -278,7 +303,7 @@ For full project governance and role-based orchestration, refer to [AGENTS.md �
 
 ```powershell
 # 1. Initialize Task
-bun scripts/vsp-task.ts "Task Description"
+bun scripts/co-abap/vsp-task.ts "Task Description"
 
 # 2. Execution (Research -> Implementation -> Verification)
 # Use specialized skills from skills/abap-dev/SKILL.md
@@ -503,6 +528,7 @@ For a full comparison of tool capabilities (Claude Code CLI vs Desktop App vs An
 
 ## File Encoding Rule (Markdown & Scripts)
 - All text files, including Markdown (.md) and scripts (.ps1, .sh, .py, .js, etc.), must be saved as **UTF-8 (without BOM)**.
+- All text files must use **LF** line endings. `.gitattributes` defines the checkout policy, and `bun scripts/audit.ts` detects violations.
 - Script outputs (Add-Content, Set-Content) must explicitly specify -Encoding UTF8.
 
 ---

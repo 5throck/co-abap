@@ -40,12 +40,6 @@ vsp test run --object "<object_url>"
 vsp atc run --object "<object_url>"
 ```
 
-## Or Use the Combined Script
-
-```bash
-bun scripts/post-write.ts "<object_url>"
-```
-
 ## Expected Results
 
 | Step | Required | Action on Fail |
@@ -56,8 +50,8 @@ bun scripts/post-write.ts "<object_url>"
 
 ## After QA Pass
 
-1. Sync changes: `bun scripts/sync-mcp.ts`
-2. Commit: `bun scripts/dev-sync.ts "description"`
+1. Record the three validation results in the task report.
+2. Commit through the delivered sync procedure: `bun scripts/dev-sync.ts "description"`.
 
 ## Context
 
@@ -68,8 +62,8 @@ The Claude Code Desktop App does not automatically fire `PostToolUse` hooks afte
 1. **Syntax Check** — Run `vsp syntax check --object "<object_url>"` and verify pass.
 2. **Unit Tests** — Run `vsp test run --object "<object_url>"` and review results.
 3. **ATC Check** — Run `vsp atc run --object "<object_url>"` and ensure no Priority-1 findings.
-4. Alternatively, run the combined script: `bun scripts/post-write.ts "<object_url>"`.
-5. After QA passes, sync changes with `bun scripts/sync-mcp.ts` and commit with `bun scripts/dev-sync.ts`.
+4. Record the results after all required checks pass.
+5. Commit through `bun scripts/dev-sync.ts "description"`.
 
 ## Output Format
 

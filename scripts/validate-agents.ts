@@ -17,10 +17,27 @@
 
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 // v1.2.1: ./validators/ is L0-only; L1/L3 project copies must not crash at import time —
 // the frontmatter schema sweep degrades to a skip when the validators are absent.
-const schemaValidatorAvailable = existsSync(join(import.meta.dir, 'validators', 'schema-validator.ts'));
-const schemaValidator = schemaValidatorAvailable ? await import('./validators/schema-validator.ts') : null;
+interface SchemaValidationIssue {
+  severity: 'error' | 'warning';
+  message: string;
+}
+
+interface AgentSchemaValidator {
+  parseFrontmatter: (content: string) => Record<string, unknown>;
+  validateAgentFrontmatter: (frontmatter: Record<string, unknown>, filename: string) => SchemaValidationIssue[];
+}
+
+export async function loadOptionalAgentSchemaValidator(
+  validatorPath: string = join(import.meta.dir, 'validators', 'schema-validator.ts'),
+): Promise<AgentSchemaValidator | null> {
+  if (!existsSync(validatorPath)) return null;
+  return await import(pathToFileURL(validatorPath).href) as AgentSchemaValidator;
+}
+
+const schemaValidator = await loadOptionalAgentSchemaValidator();
 const parseFrontmatterYaml = schemaValidator?.parseFrontmatter;
 const validateAgentFrontmatter = schemaValidator?.validateAgentFrontmatter;
 import { cwd } from 'node:process';

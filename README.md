@@ -1,5 +1,5 @@
 ---
-content_hash: de21683933c5bd5cc71d770aa3a284293b065c5f2f2f2dbf61ec20d904055fa5
+content_hash: 74449b0a33b775737ba3f0844d1db5594570ae36782c64c90495da2489dff8e2
 ---
 # Harness Engineering for SAP ABAP
 
@@ -144,23 +144,37 @@ bun scripts/audit.ts
 bun scripts/dispatch.ts parallel
 bun scripts/verify-skills.ts
 bun run typecheck   # tsc --noEmit over scripts/
-bun run test        # bun test scripts/ (26 tests)
+bun run test        # bun test scripts/
 ```
 
 ---
 
 ## Quality Gates
 
-CI runs on **Ubuntu** with a dedicated secret scan; the remaining gates run inside the
-local `/sync` pipeline (and stay available as standalone commands):
+Run this deterministic local closeout baseline:
 
-| Gate | Where | What it checks |
+```bash
+bun run typecheck
+bun run test
+bun scripts/review-baseline.ts --quiet
+bun scripts/audit.ts
+bun scripts/validate-docs-links.ts --all
+gitleaks git --no-banner
+git diff --check
+```
+
+| Gate | Local command | CI status |
 | :--- | :--- | :--- |
-| Workspace audit | CI + `/sync` | `bun scripts/audit.ts` — documentation and structure integrity, platform parity and platform-lifecycle drift across the 5 skill mirrors (`.claude`, `.gemini`, `.codex`, `.agents`, `.hermes`), co-abap variant checks |
-| Secret scan | CI + pre-commit hook | gitleaks |
-| Unit tests | `/sync` QA pre-check | `bun test scripts/` — git/file-mutating scripts (sync, audit, cleanup) are covered |
-| Type check | Local | `bun run typecheck` — `tsc --noEmit` across all scripts |
-| Spec registry | `/sync` | `audit.ts --spec-check` — substantive changes carry design-doc activity (ADR-0074) |
+| Typecheck | `bun run typecheck` | `Typecheck` job |
+| Script tests | `bun run test` | `Script Tests` job |
+| L3 review baseline | `bun scripts/review-baseline.ts --quiet` | Local deterministic baseline; L0-only checks are explicit N/A |
+| Documentation audit | `bun scripts/audit.ts` | `Documentation Audit` job |
+| Link validation | `bun scripts/validate-docs-links.ts --all` | Run locally after documentation changes |
+| Secret scan | `gitleaks git --no-banner` | `Secret Scan` job |
+
+CI uses pinned Bun `1.4.2`; the secret-scan job uses a digest-pinned gitleaks image.
+The table describes configured gates and does not assert that a GitHub Actions run has
+been observed.
 
 SAP-side, the same discipline applies after every `WriteSource`/`EditSource` via the
 [Post-Write Mandatory Chain](skills/post-write-chain/SKILL.md): `SyntaxCheck` → `RunUnitTests` →

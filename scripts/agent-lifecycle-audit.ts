@@ -9,9 +9,12 @@
  *   bun scripts/agent-lifecycle-audit.ts
  *   bun scripts/agent-lifecycle-audit.ts --json   # JSON output
  *
- * @version 1.3.1
+ * @version 1.3.2
  * @l2-propagate false
  * @last_updated 2026-09-21
+ * v1.3.2: Discover every frontmatter-bearing document in agents/, including
+ *         minimal extends stubs such as pm.md. Agent discovery must not depend
+ *         on optional role/color metadata.
  * v1.3.1: Check 12 gated to IS_WORKSPACE_ROOT — project snapshots keep delivered owners as-is (co-safety virtual domain owners would otherwise fail project-side audits).
  * @license MIT
  *
@@ -168,7 +171,7 @@ function parseAgentFrontmatter(filePath: string): AgentFrontmatter | null {
 }
 
 // Recursively find all agent files
-function findAgentFiles(dir: string, depth = 0): string[] {
+export function findAgentFiles(dir: string, depth = 0): string[] {
   const agents: string[] = [];
 
   if (!existsSync(dir)) return agents;
@@ -198,16 +201,11 @@ function findAgentFiles(dir: string, depth = 0): string[] {
                entry.name !== 'AGENTS.md' &&
                entry.name !== 'README.md' &&
                entry.name !== 'SKILL.md') {
-      // Check if it looks like an agent file (has frontmatter with role or color)
+      // Every frontmatter-bearing document under agents/ is an agent definition.
+      // In particular, L3 pm.md may be an extends stub and intentionally has no
+      // role/color fields until its workspace base is available.
       const content = readFileSync(fullPath, 'utf-8');
-      const frontmatterMatch = content.match(/^---\n([\s\S]*?)\n---/);
-      if (frontmatterMatch) {
-        const fm = frontmatterMatch[1];
-        // Agents have 'role:' or 'color:' in frontmatter; skills have 'description:' instead
-        if ((fm.includes('role:') || fm.includes('color:')) && !fm.includes('description: This skill should be used')) {
-          agents.push(fullPath);
-        }
-      }
+      if (/^(?:\uFEFF)?---\r?\n[\s\S]*?\r?\n---/m.test(content)) agents.push(fullPath);
     }
   }
 
@@ -749,4 +747,3 @@ Platform: ${PLATFORM}
 
   process.exit(result.errors.length > 0 ? 1 : 0);
 }
-

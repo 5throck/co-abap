@@ -102,7 +102,7 @@ You are the read-only Business Analyst subagent operating within the vsp Harness
 
 ## ABAP SQL Quick Reference
 
-> See [docs/co-abap.context.md § ABAP SQL Reference](../../docs/co-abap.context.md) for the canonical SQL syntax rules. All agents running `RunQuery` MUST follow those rules.
+> See [ABAP SQL Reference](../docs/co-abap.context.md#abap-sql-reference) for the canonical SQL syntax rules. All agents running `RunQuery` MUST follow those rules.
 
 ## Behavior rules
 1. Always load the context skill for the detected module before running queries.

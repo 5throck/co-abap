@@ -1,12 +1,12 @@
-# [Project Name] — Project Context
+# co-abap — Project Context
 
 > Shared reference for all AI tools (Claude Code, Gemini CLI, Antigravity).
 > Tool-specific behaviors: CLAUDE.md (Claude Code), GEMINI.md (Gemini/Antigravity).
 > Variant-specific configuration (tech stack, agents, skills, scripts, workflow):
->   → docs/<variant-name>.context.md
+>   → docs/co-abap.context.md
 >
 > ⚠️ This file is pipeline-maintained — make no hand edits after project creation.
->    All project-specific changes belong in docs/<variant-name>.context.md
+>    All project-specific changes belong in docs/co-abap.context.md
 
 ---
 
@@ -69,7 +69,7 @@ Standard directory layout for all projects in this workspace:
 ```
 <project-root>/
 ├── src/          # Source code
-├── docs/         # context.md (this file) + <variant>.context.md + ADRs
+├── docs/         # context.md (this file) + co-abap.context.md + ADRs
 ├── scripts/      # Automation scripts (TypeScript, .ts via bun)
 ├── memory/       # Session logs (MEMORY.md index + daily logs)
 ├── agents/       # Role-based agent definitions
@@ -80,7 +80,7 @@ Standard directory layout for all projects in this workspace:
 └── .agents/      # Antigravity / Antigravity CLI settings and slash commands
 ```
 
-**Cross-Platform Skill Availability**: `skills/` is the Single Source of Truth (SSOT) for all skill definitions. Every skill MUST be available on all AI platforms (Claude Code, Claude Desktop App, Gemini CLI, Antigravity, Antigravity CLI). Platform distribution directories (`.claude/skills/`, `.gemini/skills/`, `.agents/skills/`) are derived copies — they MUST NOT be the sole location of any skill.
+**Cross-Platform Skill Availability**: `skills/` is the Single Source of Truth (SSOT) for all skill definitions. `bun scripts/sync-skills.ts` distributes each eligible skill to five derived mirrors: `.claude/skills/`, `.gemini/skills/`, `.agents/skills/`, `.codex/skills/`, and `.hermes/skills/`. Mirrors MUST NOT be edited as sources.
 
 ---
 
@@ -89,7 +89,7 @@ Standard directory layout for all projects in this workspace:
 | File | Purpose |
 |------|---------|
 | `docs/context.md` | This file — pipeline-maintained shared reference; make no hand edits |
-| `docs/<variant>.context.md` | Variant config — tech stack, agents, skills, scripts, workflow |
+| `docs/co-abap.context.md` | Variant config — tech stack, agents, skills, scripts, workflow |
 | `CLAUDE.md` | Claude Code session behavior and slash commands |
 | `GEMINI.md` | Gemini CLI / Antigravity session behavior |
 | `AGENTS.md` | Canonical agent index (linked from CLAUDE.md/GEMINI.md/CODEX.md — not auto-loaded by any platform on its own) |
@@ -307,7 +307,7 @@ Register new skills and skill changes through the `skill-lifecycle-manager` skil
 
 #### Pluggable Variant Audit Hook
 
-A mechanism that allows variant-specific validation checks to be executed during the synchronization and validation pipeline without modifying core script files (e.g., `dev-sync.ts`, `audit.ts`). Variant-specific audits are placed in `scripts/audit-variant.ts`. If this script is present, the core validation runner (`audit.ts`) dynamically detects and executes it. Any non-zero exit code from `audit-variant.ts` will fail the audit gate.
+A mechanism that allows variant-specific validation checks to run during the synchronization and validation pipeline without modifying core script files (for example, `dev-sync.ts` and `audit.ts`). This project has no separate variant-audit hook; run `bun scripts/audit.ts` for the delivered audit procedure. Any future optional validator must be documented and registered before it is invoked.
 <!-- COMMON-CONSTITUTION:END -->
 
 ---

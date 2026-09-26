@@ -91,6 +91,8 @@ Catalog table above — not skill references and not yet resolved as graph edges
 | Document | Type | Cites skills | References | Supersedes |
 |----------|------|--------------|------------|------------|
 | `adr:0001` | adr | — | — | — |
+| `adr:0002` | adr | — | — | — |
+| `dec:DEC-20260926-01` | decision | `decision-record`, `project-review` | — | — |
 | `doc:AGENTS.md` | doc | `agent-lifecycle-manager`, `decision-record`, `evidence-ledger`, `explain-me`, `handbook`, `handbook-sync-audit`, `i18n-audit`, `i18n-formatting`, `i18n-layout`, `i18n-locale-config`, `meeting-facilitation`, `project-review`, `security-scan`, `skill-lifecycle-manager`, `sync` | — | — |
 | `doc:CLAUDE.md` | doc | `abap-dev`, `desktop-app-fallback`, `post-write-chain` | — | — |
 | `doc:GEMINI.md` | doc | `abap-dev`, `post-write-chain` | — | — |

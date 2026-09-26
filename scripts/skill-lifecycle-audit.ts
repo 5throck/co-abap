@@ -9,7 +9,12 @@
  *   bun scripts/skill-lifecycle-audit.ts
  *   bun scripts/skill-lifecycle-audit.ts --json   # JSON output
  *
- * @version 1.5.1
+ * @version 1.5.2
+ * v1.5.2 (2026-09-26, project-review remediation Phase 2): L3 project skill
+ *         copies are reviewed and lifecycle-recorded by their L0 SSOT. A
+ *         local upgrade commit is delivery evidence, not a new authoring
+ *         change, so L0-only freshness and lifecycle-record checks explicitly
+ *         SKIP in a detached L3 project instead of producing false findings.
  * v1.5.1: scope validation accepts the project's variant name from
  *         .claude/template-version.txt (project dir name != variant name);
  *         orphaned-owner WARN gated to the workspace-root authoring surface.
@@ -113,6 +118,10 @@ function isValidScope(scope: string): boolean {
 
 // Detect if we're at workspace root or in a sub-project
 const IS_WORKSPACE_ROOT = existsSync(CONSTITUTION_FILE);
+const IS_DETACHED_L3_PROJECT = !IS_WORKSPACE_ROOT
+  && !existsSync(join(ROOT, 'templates'))
+  && existsSync(join(ROOT, '.claude', 'template-version.txt'))
+  && existsSync(join(ROOT, 'docs', 'context.md'));
 
 // Platform detection: Claude Code vs Antigravity
 const PLATFORM = detectPlatform();
@@ -417,7 +426,32 @@ function checkCircularDependencies(
 }
 
 // Main audit function
-function auditSkills(jsonMode = false): AuditResult {
+export function l3LifecyclePolicy(root: string): {
+  detachedL3: boolean;
+  requireLifecycleRecords: boolean;
+  requireLocalFreshness: boolean;
+  reason: string;
+} {
+  const detachedL3 = !existsSync(join(root, 'CONSTITUTION.md'))
+    && !existsSync(join(root, 'templates'))
+    && existsSync(join(root, '.claude', 'template-version.txt'))
+    && existsSync(join(root, 'docs', 'context.md'));
+  return detachedL3
+    ? {
+        detachedL3,
+        requireLifecycleRecords: false,
+        requireLocalFreshness: false,
+        reason: 'Detached L3 skill copies inherit L0 SSOT review evidence and lifecycle records; local upgrade commits are delivery events.',
+      }
+    : {
+        detachedL3,
+        requireLifecycleRecords: true,
+        requireLocalFreshness: true,
+        reason: 'Authoring contexts own skill review evidence and lifecycle records.',
+      };
+}
+
+export function auditSkills(jsonMode = false): AuditResult {
   const registry = getAgentRegistry();
   const skillFiles = findSkillFiles(ROOT);
   const allSkills = new Map<string, string>();
@@ -446,6 +480,10 @@ function auditSkills(jsonMode = false): AuditResult {
     console.log(`${colors.dim}Location: ${IS_WORKSPACE_ROOT ? 'workspace root' : 'current project'}${colors.reset}`);
     console.log(`${colors.dim}Skills found: ${skillFiles.length}${colors.reset}`);
     console.log('');
+    if (IS_DETACHED_L3_PROJECT) {
+      console.log(`${colors.cyan}[SKIP]${colors.reset} Active-skill freshness and lifecycle-record checks are L0-only: ${l3LifecyclePolicy(ROOT).reason}`);
+      console.log('');
+    }
   }
 
   for (const skillFile of skillFiles) {
@@ -645,8 +683,10 @@ function auditSkills(jsonMode = false): AuditResult {
           fix: `Move the reference to the agent-relations section or cite the actual skill name`,
         });
       }
-      // Check LC (v1.5.0): active skills must carry a lifecycle record
-      if (frontmatter.status === 'active' && !existsSync(join(ROOT, 'docs', 'lifecycle', 'skills', `${frontmatter.name}.md`))) {
+      // Check LC (v1.5.0): active authoring skills must carry a lifecycle record.
+      // Detached L3 copies inherit L0 governance records by policy; requiring
+      // duplicated local records would create stale, unreviewed governance.
+      if (frontmatter.status === 'active' && !IS_DETACHED_L3_PROJECT && !existsSync(join(ROOT, 'docs', 'lifecycle', 'skills', `${frontmatter.name}.md`))) {
         warnings.push({
           level: 'warning',
           file: relPath,
@@ -763,7 +803,7 @@ const args = process.argv.slice(2);
 const jsonMode = args.includes('--json');
 const helpMode = args.includes('--help') || args.includes('-h');
 
-if (helpMode) {
+if (helpMode && import.meta.main) {
   console.log(`
 Skill Lifecycle Audit v1.0.0
 
@@ -781,20 +821,15 @@ Checks:
 
 Platform: ${PLATFORM}
   `);
-  if (import.meta.main) {
-    process.exit(0);
-  }
-}
-
-const result = auditSkills(jsonMode);
-
-if (jsonMode) {
-  printJsonResults(result);
-} else {
-  printResults(result);
+  process.exit(0);
 }
 
 if (import.meta.main) {
+  const result = auditSkills(jsonMode);
+  if (jsonMode) {
+    printJsonResults(result);
+  } else {
+    printResults(result);
+  }
   process.exit(result.errors.length > 0 ? 1 : 0);
 }
-

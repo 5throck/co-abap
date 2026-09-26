@@ -232,4 +232,3 @@ All specialist agents below are dispatched ONLY through PM:
 | **lifecycle-manager** | 5 | "Lifecycle finalization", "Governance record sync", "L0->L1 template publishing", "L1->L2 explicit skill/script sync" — invoked on-demand for governance changes; lifecycle finalization runs automatically via `/sync` (**Workspace root only — L0-only agent, NOT available in variant templates**) |
 | **auditor** | 6 | "Quality verification", "Documentation consistency check", "QA gate required" (Workspace root only) |
 | **skill-graph-analyst** | 6 | "Fleet skill-graph analytics", "skill graph report", "skill convergence triage", "weekly analytics cadence" (Workspace root only — L0-only agent; triage only, tickets for promotion candidates) |
-

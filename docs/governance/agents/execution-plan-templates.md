@@ -96,4 +96,3 @@ When modifying files that affect both CLAUDE.md and GEMINI.md:
 **Execution Order**: Sequential
 
 ---
-

@@ -33,6 +33,18 @@ export function isPureDeletionPush(refUpdates: PushRefUpdate[]): boolean {
   return refUpdates.length > 0 && refUpdates.every(r => isZeroOid(r.localOid));
 }
 
+/**
+ * Tests changed under either repository test root must run before push.
+ * `scripts/tests` holds Bun unit tests for repository automation.
+ */
+export function isRelevantTestFile(file: string): boolean {
+  const normalized = file.replace(/\\/g, '/');
+  return (
+    (normalized.startsWith('tests/') || normalized.startsWith('scripts/tests/')) &&
+    normalized.endsWith('.test.ts')
+  );
+}
+
 // Read stdin ONCE to determine what refs are actually being pushed.
 // Format per line: <local ref> SP <local oid> SP <remote ref> SP <remote oid> LF
 // A deletion (e.g. `git push origin --delete <branch>`) has localOid all-zero.
@@ -212,7 +224,7 @@ async function main() {
   console.log("=== pre-push changed-path tests ===");
   const changedTestFiles = (await collectPushedChangedFiles(refUpdates))
     .map(f => f.replace(/\\/g, '/'))
-    .filter(f => f.startsWith('tests/') && f.endsWith('.test.ts'));
+    .filter(isRelevantTestFile);
   if (changedTestFiles.length > 0) {
     try {
       console.log(`Running ${changedTestFiles.length} changed test file(s)...`);

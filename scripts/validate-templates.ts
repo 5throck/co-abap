@@ -1,7 +1,14 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.46.1
+ * @version 1.46.2
+ *
+ * v1.46.2 (2026-09-26, project-review remediation Phase 2): detached L3
+ *          projects identified by their scaffold provenance
+ *          (`.claude/template-version.txt`) and `docs/context.md` now emit a
+ *          justified [SKIP] when they do not carry the L0-only `templates/`
+ *          source tree. Repositories that are not proven L3 projects retain
+ *          the hard failure for a missing templates/ directory.
  *
  * v1.46.1 (2026-09-26, ADR-0090 program closure — design Addendum 3): the
  *         size-budget arm's WARN message and header note record the user
@@ -340,11 +347,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const TEMPLATES_DIR = join(ROOT, 'templates');
 
-if (!existsSync(TEMPLATES_DIR)) {
-  console.error(`\x1b[31m[ERROR] templates/ directory not found at: ${TEMPLATES_DIR}\x1b[0m`);
-  if (import.meta.main) {
-    process.exit(1);
-  }
+export function isDetachedL3Project(root: string): boolean {
+  return !existsSync(join(root, 'templates'))
+    && existsSync(join(root, '.claude', 'template-version.txt'))
+    && existsSync(join(root, 'docs', 'context.md'));
+}
+
+export function templateValidationDisposition(root: string): 'validate' | 'skip-detached-l3' | 'error-missing-templates' {
+  if (existsSync(join(root, 'templates'))) return 'validate';
+  return isDetachedL3Project(root) ? 'skip-detached-l3' : 'error-missing-templates';
 }
 
 const args = process.argv.slice(2);
@@ -5360,6 +5371,29 @@ function checkProjectIdentityPlaceholders(): void {
 }
 
 function main(): number {
+  const disposition = templateValidationDisposition(ROOT);
+  if (disposition !== 'validate') {
+    if (disposition === 'skip-detached-l3') {
+      if (!JSON_MODE) {
+        console.log(`${colors.cyan}[SKIP]${colors.reset} templates/ validation is L0-only and this detached L3 project has no templates/ source tree (verified by .claude/template-version.txt and docs/context.md).`);
+      } else {
+        console.log(JSON.stringify({
+          variantsScanned: 0,
+          errors: [],
+          warnings: [],
+          skipped: [{
+            check: 'templates',
+            reason: 'Detached L3 project: templates/ is an L0 source tree and is intentionally absent.',
+          }],
+          summary: '0 error(s), 0 warning(s), 1 skipped check',
+        }, null, 2));
+      }
+      return 0;
+    }
+    console.error(`${colors.red}[ERROR]${colors.reset} templates/ directory not found at: ${TEMPLATES_DIR}. This validator requires templates/ outside a detached L3 project.`);
+    return 1;
+  }
+
   if (!JSON_MODE) {
     console.log(`${colors.cyan}Template Lifecycle Validator${colors.reset}`);
     console.log(`${colors.dim}Root: ${ROOT}${colors.reset}`);
