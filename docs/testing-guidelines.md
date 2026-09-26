@@ -2,6 +2,26 @@
 
 This document provides standards for writing ABAP Unit tests within the Harness Engineering framework. The **🧪 QA Engineer** agent should refer to this guide when creating or updating test classes.
 
+## 0. Repository Quality Gates
+
+Run the following local gates before closeout:
+
+```bash
+bun run typecheck
+bun run test
+bun scripts/review-baseline.ts --quiet
+bun scripts/audit.ts
+bun scripts/validate-docs-links.ts --all
+gitleaks git --no-banner
+git diff --check
+```
+
+`review-baseline.ts` is the detached L3 baseline. It reports intentionally absent
+L0 template and propagation tooling as explicit **N/A**, not as a pass. CI runs the
+Documentation Audit, Secret Scan, Typecheck, and Script Tests jobs. The audit checks
+the repository LF policy; the standalone link validator verifies relative links and
+anchors. Run a local link validation after documentation changes.
+
 ## 1. Test Class Structure
 
 All test classes should be created as local classes within the global class or program they are testing. They should follow the standard ABAP Unit definitions.
@@ -163,4 +183,4 @@ Use `RISK LEVEL DANGEROUS` only for integration tests that modify real SAP data.
 Use TEST-SEAMs to inject mock dependencies without modifying production code interfaces. See skeleton for the full pattern.
 
 ---
-*Maintained by the Harness Engineering Team | Last Updated: 2026-05-20*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-09-26*

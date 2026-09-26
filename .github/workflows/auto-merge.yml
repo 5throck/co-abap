@@ -3,81 +3,97 @@ name: Auto Merge PR on Approval
 on:
   pull_request_review:
     types: [submitted]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
 
 permissions:
-  contents: write
+  checks: read
+  contents: read
   pull-requests: write
 
 jobs:
-  check-reviews:
-    name: Check Review Approval Count
-    runs-on: ubuntu-latest
-    if: github.event.review.state == 'approved'
-    outputs:
-      approved: ${{ steps.check.outputs.approved }}
-    steps:
-      - name: Verify minimum approvals
-        id: check
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
-        with:
-          script: |
-            const pr = context.payload.pull_request;
-            const reviews = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: pr.number
-            });
-            // Only count approvals submitted for the current head commit —
-            // approvals on earlier commits are stale after a new push.
-            const approvals = reviews.data.filter(
-              r => r.state === 'APPROVED' && r.commit_id === pr.head.sha
-            );
-            if (approvals.length >= 2) {
-              console.log(`✅ ${approvals.length} approvals — proceeding`);
-              core.setOutput('approved', 'true');
-            } else {
-              console.log(`⏳ Only ${approvals.length}/2 approvals — waiting`);
-              core.setOutput('approved', 'false');
-            }
-
   automerge:
-    name: Auto Squash & Merge
-    needs: check-reviews
+    name: Evaluate and Merge Approved PR
     runs-on: ubuntu-latest
-    if: needs.check-reviews.outputs.approved == 'true'
-    permissions:
-      contents: write
-      pull-requests: write
+    if: >-
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     steps:
-      - name: Check CI status
+      - name: Merge only after every required check succeeds
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
         with:
           script: |
-            const pr = context.payload.pull_request;
-            const checks = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: pr.head.sha
-            });
-            const checkRuns = checks.data.check_runs || [];
-            const total = checkRuns.length;
-            const passed = checkRuns.filter(c => c.conclusion === 'success').length;
-            const pending = checkRuns.filter(c => c.status === 'in_progress' || c.status === 'queued').length;
-            const failed = checkRuns.filter(c => c.conclusion === 'failure').length;
-            console.log(`CI: ${passed}/${total} passed, ${pending} pending, ${failed} failed`);
-            if (total === 0) {
-              core.setFailed('❌ No CI check runs found on the head SHA — refusing to merge without CI evidence');
-            } else if (failed > 0) {
-              core.setFailed(`❌ ${failed} CI check(s) failed — aborting merge`);
-            } else if (pending > 0) {
-              core.setFailed(`⏳ ${pending} CI check(s) still running — will retry on next event`);
+            const requiredChecks = new Set([
+              'Documentation Audit',
+              'Secret Scan',
+              'Typecheck',
+              'Script Tests',
+            ]);
+
+            let pr = context.payload.pull_request;
+            if (context.eventName === 'workflow_run') {
+              const associated = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: context.payload.workflow_run.head_sha,
+              });
+              pr = associated.data.find(candidate => candidate.state === 'open');
+              if (!pr) {
+                console.log('No open PR is associated with the completed CI head SHA.');
+                return;
+              }
             }
 
-      - name: Merge PR
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
-        with:
-          script: |
-            const pr = context.payload.pull_request;
+            if (pr.state !== 'open') {
+              console.log(`PR #${pr.number} is not open; nothing to merge.`);
+              return;
+            }
+
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+            });
+            const approvals = reviews.filter(
+              review => review.state === 'APPROVED' && review.commit_id === pr.head.sha,
+            );
+            if (approvals.length < 2) {
+              core.setFailed(`Only ${approvals.length}/2 current-head approvals; refusing to merge.`);
+              return;
+            }
+
+            const checkRuns = await github.paginate(github.rest.checks.listForRef, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha,
+              per_page: 100,
+            });
+            if (checkRuns.length === 0) {
+              core.setFailed('No CI check runs found on the head SHA; refusing to merge.');
+              return;
+            }
+
+            const missing = [...requiredChecks].filter(
+              required => !checkRuns.some(check => check.name === required),
+            );
+            if (missing.length > 0) {
+              core.setFailed(`Required checks missing from the head SHA: ${missing.join(', ')}`);
+              return;
+            }
+
+            const blocked = checkRuns.filter(
+              check => check.status !== 'completed' || check.conclusion !== 'success',
+            );
+            if (blocked.length > 0) {
+              core.setFailed(
+                `All checks must conclude success. Blocking checks: ${blocked
+                  .map(check => `${check.name}=${check.status}/${check.conclusion ?? 'none'}`)
+                  .join(', ')}`,
+              );
+              return;
+            }
+
             await github.rest.pulls.merge({
               owner: context.repo.owner,
               repo: context.repo.repo,

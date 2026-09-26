@@ -23,7 +23,7 @@ jobs:
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: latest
+          bun-version: "1.4.2"
 
       # package.json lives at the repository root, not under scripts/.
       - name: Install dependencies
@@ -46,28 +46,40 @@ jobs:
       # pull-requests:read to annotate PRs — neither is warranted here, since all
       # this job needs is a pass/fail scan. Config comes from .gitleaks.toml.
       - name: Run gitleaks
-        uses: docker://ghcr.io/gitleaks/gitleaks:v8.28.0
+        # v8.28.0 linux/amd64 manifest, verified locally with
+        # `docker manifest inspect ghcr.io/gitleaks/gitleaks:v8.28.0`.
+        uses: docker://ghcr.io/gitleaks/gitleaks@sha256:bf00b5e039f0fad4b32935dc5ec1e358f227ccd097bcb64b971f0331072fe2ae
         with:
           args: detect --source=/github/workspace --config=/github/workspace/.gitleaks.toml --redact --verbose --no-banner
 
-  # Uncomment and configure the test job for your stack:
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-  # test-python:
-  #   name: Python Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-  #     - uses: actions/setup-python@v4.6.0  # pin by SHA in real use
-  #       with:
-  #         python-version: "3.11"
-  #     - run: pip install -r requirements.txt
-  #     - run: pytest
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
 
-  # test-node:
-  #   name: Node.js Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-  #     - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-  #     - run: bun install
-  #     - run: bun test
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run typecheck
+        run: bun run typecheck
+
+  script-tests:
+    name: Script Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run script tests
+        run: bun run test

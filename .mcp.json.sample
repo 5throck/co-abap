@@ -1,5 +1,5 @@
 {
-  "//": "MCP Server configuration for vsp. Copy the block for your OS, rename the key to 'abap', and save as .mcp.json in the project root.",
+  "//": "Safe MCP configuration for vsp. Privileged SAP features default to off. To opt in locally, copy this file to ignored .mcp.local.json, change only approved SAP_FEATURE_* values to on, and configure your MCP client to use that local file.",
   "mcpServers": {
     "abap-windows": {
       "command": "./vsp",
@@ -7,10 +7,10 @@
       "env": {
         "SAP_MODE": "hyperfocused",
         "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
+        "SAP_FEATURE_ABAPGIT": "off",
+        "SAP_FEATURE_TRANSPORT": "off",
+        "SAP_FEATURE_UI5": "off",
+        "SAP_FEATURE_RAP": "off"
       }
     },
     "abap-macos": {
@@ -19,10 +19,10 @@
       "env": {
         "SAP_MODE": "hyperfocused",
         "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
+        "SAP_FEATURE_ABAPGIT": "off",
+        "SAP_FEATURE_TRANSPORT": "off",
+        "SAP_FEATURE_UI5": "off",
+        "SAP_FEATURE_RAP": "off"
       }
     },
     "abap-linux": {
@@ -31,10 +31,10 @@
       "env": {
         "SAP_MODE": "hyperfocused",
         "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
+        "SAP_FEATURE_ABAPGIT": "off",
+        "SAP_FEATURE_TRANSPORT": "off",
+        "SAP_FEATURE_UI5": "off",
+        "SAP_FEATURE_RAP": "off"
       }
     },
     "abap-docs": {

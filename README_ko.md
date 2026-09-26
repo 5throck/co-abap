@@ -1,5 +1,5 @@
 ---
-translated_from_hash: de21683933c5bd5cc71d770aa3a284293b065c5f2f2f2dbf61ec20d904055fa5
+translated_from_hash: 74449b0a33b775737ba3f0844d1db5594570ae36782c64c90495da2489dff8e2
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -144,23 +144,37 @@ bun scripts/audit.ts
 bun scripts/dispatch.ts parallel
 bun scripts/verify-skills.ts
 bun run typecheck   # scripts/ 전체에 대한 tsc --noEmit
-bun run test        # bun test scripts/ (26개 테스트)
+bun run test        # bun test scripts/
 ```
 
 ---
 
 ## 품질 게이트
 
-CI는 **Ubuntu**에서 전용 시크릿 스캔과 함께 실행되며, 나머지 게이트는 로컬 `/sync`
-파이프라인 내부에서 실행됩니다(독립 실행 명령으로도 사용 가능):
+결정적 로컬 종료 기준선은 다음과 같이 실행합니다:
 
-| 게이트 | 실행 위치 | 검사 내용 |
+```bash
+bun run typecheck
+bun run test
+bun scripts/review-baseline.ts --quiet
+bun scripts/audit.ts
+bun scripts/validate-docs-links.ts --all
+gitleaks git --no-banner
+git diff --check
+```
+
+| 게이트 | 로컬 명령 | CI 상태 |
 | :--- | :--- | :--- |
-| 워크스페이스 감사 | CI + `/sync` | `bun scripts/audit.ts` — 문서 및 구조 무결성, 5개 스킬 미러(`.claude`, `.gemini`, `.codex`, `.agents`, `.hermes`)의 플랫폼 패리티·라이프사이클 drift, co-abap 변형 검사 |
-| 시크릿 스캔 | CI + pre-commit 훅 | gitleaks |
-| 단위 테스트 | `/sync` QA 사전 점검 | `bun test scripts/` — git/파일을 조작하는 스크립트(sync, audit, cleanup)까지 커버 |
-| 타입 체크 | 로컬 | `bun run typecheck` — 전체 스크립트에 대한 `tsc --noEmit` |
-| 스펙 레지스트리 | `/sync` | `audit.ts --spec-check` — 실질 변경에 설계 문서 활동 동반(ADR-0074) |
+| 타입 검사 | `bun run typecheck` | `Typecheck` 작업 |
+| 스크립트 테스트 | `bun run test` | `Script Tests` 작업 |
+| L3 리뷰 기준선 | `bun scripts/review-baseline.ts --quiet` | 로컬 결정적 기준선; L0 전용 검사는 명시적으로 N/A |
+| 문서 감사 | `bun scripts/audit.ts` | `Documentation Audit` 작업 |
+| 링크 검증 | `bun scripts/validate-docs-links.ts --all` | 문서를 변경한 뒤 로컬에서 실행 |
+| 시크릿 스캔 | `gitleaks git --no-banner` | `Secret Scan` 작업 |
+
+CI는 Bun `1.4.2`를 고정해 사용하며, 시크릿 스캔 작업은 다이제스트로 고정된
+gitleaks 이미지를 사용합니다. 이 표는 구성된 게이트를 설명하며 GitHub Actions 실행이
+이미 관찰되었음을 주장하지 않습니다.
 
 SAP 측에서는 모든 `WriteSource`/`EditSource` 이후 [Post-Write Mandatory
 Chain](skills/post-write-chain/SKILL.md)을 통해 동일한 규율이 적용됩니다:

@@ -14,6 +14,8 @@ triggers:
   - "merge branch"
   - "create PR"
   - "push and PR"
+metadata:
+  type: process
 ---
 
 # Finishing a Development Branch (Workspace Override)

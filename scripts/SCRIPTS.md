@@ -58,10 +58,10 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
 | `helpers/upgrade-versions.ts` | L0+L1 | 1.0.1 | active | —| —| L0+L1 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.45.0 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.45.1 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `agent-lifecycle-audit.ts` | L0 | 1.3.1 | active | —| —| L0+L1 | —|
+| `agent-lifecycle-audit.ts` | L0 | 1.3.2 | active | —| —| L0+L1 | —|
 | `agent-list.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
@@ -113,8 +113,11 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/pm-md-parser.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/template-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `tests/apply-handbook-theme.test.ts` | L0 | 1.0.1 | active | — | — | common | — |
+| `tests/automation-quality-gates.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
+| `tests/lifecycle-l3-baseline.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
+| `tests/validate-docs-links.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
@@ -132,7 +135,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.0.4 | active | —| —| L0+L1 | —|
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `skill-lifecycle-audit.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
+| `skill-lifecycle-audit.ts` | L0 | 1.5.2 | active | —| —| L0+L1 | —|
+| `review-baseline.ts` | L3 | 1.0.0 | active | —| —| L3 | —|
 | `skill-session-review.ts` | L0 | 1.1.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.1.0 | active | — | — | L0+L1 | — |
 | `team-builder.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
@@ -140,7 +144,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `validate-agents.ts` | L0 | 1.3.2 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `validate-docs-links.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `validate-docs-links.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.12.0 | active | —| —| L0+L1 | —|
 | `validate-model-registry.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -329,6 +333,8 @@ section presence (VARIANT-INJECT: guidelines [REQUIRED] marker enforcement).
 deprecated agent references, missing fields.
 **Usage**: `bun scripts/agent-lifecycle-audit.ts`
 **Runs automatically**: pre-commit hook when `agents/*.md` files are staged.
+**L3 policy**: scans every frontmatter-bearing document in `agents/`, including
+minimal `extends` stubs such as `pm.md`.
 
 ---
 
@@ -340,6 +346,17 @@ skills still being modified, dependency graph, circular dependencies, `scope` fi
 **Usage**: `bun scripts/skill-lifecycle-audit.ts`
 **Runs automatically**: pre-commit hook when `skills/**` files are staged.
 **v1.2.0**: `scope` validation now accepts `workspace | common | variant | <current project's own directory name>` (was previously only the literal string `variant`, which incorrectly flagged legitimate variant-name scope values like `scope: co-consult`); `docs/_examples/skills/**` excluded from scanning (illustrative documentation, not real skills). Run once per location (workspace root + each `templates/co-*/` variant + `templates/common/`) since agent/scope resolution is relative to `cwd`.
+**L3 lifecycle policy**: a detached L3 project is identified by
+`.claude/template-version.txt` plus `docs/context.md` and no `templates/`. Its skill
+copies inherit L0 SSOT review evidence and lifecycle records; the audit emits `[SKIP]`
+for those L0-owned checks rather than treating local upgrade commits as unreviewed skill
+changes. L0 authoring contexts continue to require lifecycle records.
+
+#### `review-baseline.ts`
+**Purpose**: Runs the deterministic detached-L3 project-review baseline. It runs only
+delivered checks and reports `validate-templates` and propagation drift as N/A because
+they depend on the absent L0 template source tree.
+**Usage**: `bun scripts/review-baseline.ts [--quiet]`
 
 #### `readme-lifecycle-audit.ts`
 **Purpose**: Validates README.md / README_ko.md pairing in `templates/` directories.

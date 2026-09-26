@@ -74,10 +74,12 @@ technical control limiting write scope — it restricts `WriteSource`/`EditSourc
 custom namespaces, so agents cannot modify SAP standard objects even if instructed to. Do not
 widen this whitelist without a documented reason recorded in `docs/co-abap.context.md`.
 
-`SAP_FEATURE_*` flags (`ABAPGIT`, `TRANSPORT`, `UI5`, `RAP`) gate entire tool categories. Disable
-a feature flag (set to `off`) for any environment where that capability is not needed — this
-follows least-privilege: an agent cannot call a tool category the server doesn't expose,
-regardless of what the conversation asks for.
+`SAP_FEATURE_*` flags (`ABAPGIT`, `TRANSPORT`, `UI5`, `RAP`) gate entire tool categories.
+The tracked `.mcp.json` safe-default profile sets all four flags to `off`. To enable an
+approved capability locally, copy `.mcp.json.sample` to the ignored `.mcp.local.json`,
+change only the required feature flag to `on`, and configure the local MCP client to use
+that override. This follows least privilege: an agent cannot call a tool category the
+server does not expose, regardless of what the conversation asks for.
 
 ### Secrets Handling
 
@@ -86,6 +88,10 @@ regardless of what the conversation asks for.
 - `.mcp.json` is tracked in git as a config template and must **never** contain credentials —
   enforced by the pre-commit hook's secret scan (gitleaks + regex fallback) and by CI's
   dedicated secret-scan job.
+- Tracked `memory/` content is scanned by gitleaks. The gitleaks configuration must not
+  broadly exclude it.
+- CI uses Bun `1.4.2` and a digest-pinned gitleaks container image for reproducible
+  secret scanning.
 - `scripts/dev-sync.ts` scans both untracked and **staged** files/diffs for sensitive filenames
   and inline credential patterns before every commit.
 - Session artifacts that may echo live SAP data — `scratch/stable/`, `scratch/qa-reports/`,

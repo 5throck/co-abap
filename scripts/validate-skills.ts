@@ -12,11 +12,29 @@
 
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 // v1.5.1: ./validators/ is L0-only; the L1/L3 project copies of this script must not crash
 // at import time — the schema sweep degrades to a skip when the validators are absent
 // (the workspace-side sweep covers those checks).
-const schemaValidatorAvailable = existsSync(join(import.meta.dir, 'validators', 'schema-validator.ts'));
-const schemaValidator = schemaValidatorAvailable ? await import('./validators/schema-validator.ts') : null;
+interface SchemaValidationIssue {
+  severity: 'error' | 'warning';
+  category: string;
+  message: string;
+}
+
+interface SkillSchemaValidator {
+  parseFrontmatter: (content: string) => Record<string, unknown>;
+  validateSkillFrontmatter: (frontmatter: Record<string, unknown>, filename: string) => SchemaValidationIssue[];
+}
+
+export async function loadOptionalSkillSchemaValidator(
+  validatorPath: string = join(import.meta.dir, 'validators', 'schema-validator.ts'),
+): Promise<SkillSchemaValidator | null> {
+  if (!existsSync(validatorPath)) return null;
+  return await import(pathToFileURL(validatorPath).href) as SkillSchemaValidator;
+}
+
+const schemaValidator = await loadOptionalSkillSchemaValidator();
 const parseFrontmatterYaml = schemaValidator?.parseFrontmatter;
 const validateSkillFrontmatter = schemaValidator?.validateSkillFrontmatter;
 import { cwd } from 'node:process';
@@ -535,4 +553,6 @@ function main() {
   process.exit(errors.length > 0 ? 1 : 0);
 }
 
-main();
+if (import.meta.main) {
+  main();
+}

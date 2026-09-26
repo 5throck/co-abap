@@ -14,7 +14,7 @@ description: >
   phase schema changes, workspace-schema.json modified, new variant added);
   QA escalation from auditor (audit.ts ERROR >= 3 or security Critical finding).
 owner: pm
-version: 1.3.0
+version: 1.3.1
 last_reviewed: 2026-09-14
 prerequisites: []
 metadata:
@@ -53,9 +53,21 @@ catches that class mechanically, not by agent effort.
 Run the validator battery and record results — this is (a) the report's Baseline
 section and (b) the reference for classifying findings as `script-gap` later.
 
-One-shot consolidated runner (T-20260912-030): `bun scripts/review-baseline.ts` —
-runs the six validators below in read-only mode with a PASS/FAIL summary
-(`--quiet` for summary only). Individual commands:
+**Detached L3 project** (no `templates/`, with `.claude/template-version.txt` and
+`docs/context.md`): run the local consolidated baseline:
+
+```bash
+bun scripts/review-baseline.ts
+```
+
+It runs only delivered, applicable L3 checks and reports `validate-templates` and
+`propagate-to-templates` as **N/A** because they require the L0 template source tree.
+Do not treat unavailable L0 tooling as a pass or failure. The lifecycle audit likewise
+reports an explicit **[SKIP]** for L0-owned skill-review freshness and lifecycle records:
+L3 copies inherit that reviewed evidence from their L0 SSOT, and local upgrade commits
+are delivery events rather than unreviewed authoring changes.
+
+**Workspace/template context**: run the full validator battery below. Individual commands:
 
 ```bash
 bun scripts/audit.ts                              # workspace standards
@@ -69,7 +81,7 @@ bun scripts/propagate-to-templates.ts --check-drift  # L1↔L2 drift (tolerate g
 Record per script: PASS/FAIL/WARN counts. In variant projects, run the project's own
 `bun scripts/audit.ts` instead of the root battery.
 
-If the baseline already shows ≥3 ERRORs, triage those FIRST (T-03) — agents may still be
+If the applicable baseline already shows ≥3 ERRORs, triage those FIRST (T-03) — agents may still be
 dispatched for non-machine-detectable classes, but don't let agents re-discover what the
 scripts just printed.
 

@@ -489,7 +489,11 @@ Step 1: GetSource(type=MSAG, name=ZRAY_00)
 
 ## Specialized Tools (Requires Feature Flags)
 
-These tools require specific feature flags to be enabled in `.mcp.json` or `.env` (e.g., `SAP_FEATURE_TRANSPORT=on`).
+The tracked `.mcp.json` profile sets `SAP_FEATURE_ABAPGIT`,
+`SAP_FEATURE_TRANSPORT`, `SAP_FEATURE_UI5`, and `SAP_FEATURE_RAP` to `off`.
+These tools require deliberate local opt-in. Copy `.mcp.json.sample` to the ignored
+`.mcp.local.json`, enable only the approved `SAP_FEATURE_*` flag, and configure the
+local MCP client to use that override. Do not commit the override.
 
 ### 1. Transport Management (CTS)
 **Flag:** `SAP_FEATURE_TRANSPORT=on`
@@ -559,7 +563,7 @@ flowchart TD
 
 ---
 
-**Last Updated:** 2026-05-18
+**Last Updated:** 2026-09-26
 **Last Verified:** 2026-05-18 (tool counts confirmed from vibing-steampunk v2.38.1 README: focused=100, expert=147)
 **MCP Server Version:** v2.38.1
 **Maintained by:** vsp project

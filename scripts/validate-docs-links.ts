@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// @version 1.1.0
+// @version 1.1.1
 // @description Scans workspace Markdown files for broken relative file links.
 //              Invoked by dev-sync.ts as a pre-flight link validation gate.
 //              By default scans docs/ root level files only (no subdirectories).
@@ -12,7 +12,8 @@
 //              accepted when it matches either (a) the GitHub-style auto-slug of a
 //              heading, or (b) an explicit `{#custom-anchor}` declaration on a
 //              heading — the workspace uses both conventions (docs/constitution/).
-//              Headings inside ```/~~~ fences are ignored.
+//              Headings inside ```/~~~ fences are ignored. Link-like text inside
+//              inline code or fenced code blocks is also ignored.
 // @usage bun scripts/validate-docs-links.ts [--dir <path>] [--all] [--verbose]
 
 import { existsSync, readdirSync, statSync, readFileSync } from "fs";
@@ -152,6 +153,66 @@ function isExamplePath(href: string): boolean {
   return EXAMPLE_PATH_PATTERNS.some((re) => re.test(href));
 }
 
+/**
+ * Replace Markdown code with spaces while preserving newlines and offsets.
+ * Link syntax in code samples is illustrative rather than a navigable Markdown
+ * link, so it must not be passed to the relative-link validator.
+ */
+function maskCodeForLinkValidation(content: string): string {
+  const masked = content.split("");
+  const maskRange = (start: number, end: number): void => {
+    for (let index = start; index < end; index++) {
+      if (masked[index] !== "\n" && masked[index] !== "\r") masked[index] = " ";
+    }
+  };
+
+  let fence: { marker: "`" | "~"; length: number } | null = null;
+  let lineStart = 0;
+  while (lineStart < content.length) {
+    const newline = content.indexOf("\n", lineStart);
+    const lineEnd = newline === -1 ? content.length : newline;
+    const line = content.slice(lineStart, lineEnd);
+    const marker = line.match(/^\s*(`{3,}|~{3,})/);
+
+    if (fence) {
+      maskRange(lineStart, lineEnd);
+      if (
+        marker &&
+        marker[1][0] === fence.marker &&
+        marker[1].length >= fence.length
+      ) {
+        fence = null;
+      }
+    } else if (marker) {
+      maskRange(lineStart, lineEnd);
+      fence = {
+        marker: marker[1][0] as "`" | "~",
+        length: marker[1].length,
+      };
+    }
+
+    lineStart = lineEnd + 1;
+  }
+
+  const fenceFreeContent = masked.join("");
+  for (let index = 0; index < fenceFreeContent.length; index++) {
+    if (fenceFreeContent[index] !== "`") continue;
+
+    let delimiterLength = 1;
+    while (fenceFreeContent[index + delimiterLength] === "`") delimiterLength++;
+    const delimiter = "`".repeat(delimiterLength);
+    const closingIndex = fenceFreeContent.indexOf(delimiter, index + delimiterLength);
+    if (closingIndex === -1) {
+      index += delimiterLength - 1;
+      continue;
+    }
+    maskRange(index, closingIndex + delimiterLength);
+    index = closingIndex + delimiterLength - 1;
+  }
+
+  return masked.join("");
+}
+
 function checkFile(mdPath: string): void {
   let content: string;
   try {
@@ -163,7 +224,7 @@ function checkFile(mdPath: string): void {
   const mdDir = dirname(mdPath);
   RELATIVE_LINK_RE.lastIndex = 0;
 
-  for (const match of content.matchAll(RELATIVE_LINK_RE)) {
+  for (const match of maskCodeForLinkValidation(content).matchAll(RELATIVE_LINK_RE)) {
     const href = match[2].trim();
     const fragment = match[3] ? match[3].slice(1) : null;
     // Skip remote URLs, empty hrefs, anchor-only refs, and example placeholders

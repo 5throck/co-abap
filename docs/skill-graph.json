@@ -23,6 +23,11 @@
       "layer": "L3"
     },
     {
+      "id": "adr:0002",
+      "type": "adr",
+      "layer": "L3"
+    },
+    {
       "id": "agent-lifecycle-manager",
       "type": "skill",
       "layer": "L3"
@@ -55,6 +60,11 @@
     {
       "id": "dba",
       "type": "agent",
+      "layer": "L3"
+    },
+    {
+      "id": "dec:DEC-20260926-01",
+      "type": "decision",
       "layer": "L3"
     },
     {
@@ -796,6 +806,18 @@
       "from": "ci-triage",
       "to": "project-review",
       "source": "prose"
+    },
+    {
+      "type": "cites_skill",
+      "from": "dec:DEC-20260926-01",
+      "to": "decision-record",
+      "source": "skills_used"
+    },
+    {
+      "type": "cites_skill",
+      "from": "dec:DEC-20260926-01",
+      "to": "project-review",
+      "source": "skills_used"
     },
     {
       "type": "references",
