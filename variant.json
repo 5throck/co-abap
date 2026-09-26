@@ -1,0 +1,16 @@
+{
+  "name": "co-abap",
+  "description": "6-phase SAP ABAP development workflow with PM-led orchestration, six SAP module analysts (SD, MM, FI, CO, PP, LE), technical execution agents, and automated QA chains",
+  "status": "stable",
+  "version": "0.6.0",
+  "inherits_common": "templates/common",
+  "lifecycle": {
+    "statusSince": "2026-09-26",
+    "lastTransition": "2026-09-26"
+  },
+  "country_config": {
+    "profiles_dir": "docs/countries",
+    "supported": [],
+    "default": null
+  }
+}
