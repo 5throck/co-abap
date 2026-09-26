@@ -1,5 +1,5 @@
 ---
-content_hash: 74449b0a33b775737ba3f0844d1db5594570ae36782c64c90495da2489dff8e2
+content_hash: 13351b562ae9d1c171c1c14d3364be019d932008786c1c966a5cb6d0136e9cd1
 ---
 # Harness Engineering for SAP ABAP
 
@@ -172,7 +172,8 @@ git diff --check
 | Link validation | `bun scripts/validate-docs-links.ts --all` | Run locally after documentation changes |
 | Secret scan | `gitleaks git --no-banner` | `Secret Scan` job |
 
-CI uses pinned Bun `1.4.2`; the secret-scan job uses a digest-pinned gitleaks image.
+CI uses pinned Bun `1.4.2`; the Typecheck and Script Tests gates run on an
+ubuntu/windows/macos matrix, and the secret-scan job uses a digest-pinned gitleaks image.
 The table describes configured gates and does not assert that a GitHub Actions run has
 been observed.
 
