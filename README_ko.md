@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 74449b0a33b775737ba3f0844d1db5594570ae36782c64c90495da2489dff8e2
+translated_from_hash: 13351b562ae9d1c171c1c14d3364be019d932008786c1c966a5cb6d0136e9cd1
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -172,7 +172,8 @@ git diff --check
 | 링크 검증 | `bun scripts/validate-docs-links.ts --all` | 문서를 변경한 뒤 로컬에서 실행 |
 | 시크릿 스캔 | `gitleaks git --no-banner` | `Secret Scan` 작업 |
 
-CI는 Bun `1.4.2`를 고정해 사용하며, 시크릿 스캔 작업은 다이제스트로 고정된
+CI는 Bun `1.4.2`를 고정해 사용하며, Typecheck 및 Script Tests 게이트는
+ubuntu/windows/macos 매트릭스로 실행되고, 시크릿 스캔 작업은 다이제스트로 고정된
 gitleaks 이미지를 사용합니다. 이 표는 구성된 게이트를 설명하며 GitHub Actions 실행이
 이미 관찰되었음을 주장하지 않습니다.
 
