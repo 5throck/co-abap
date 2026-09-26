@@ -881,12 +881,6 @@
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "abap-dev",
-      "source": "workflow-doc"
-    },
-    {
-      "type": "cites_skill",
-      "from": "doc:AGENTS.md",
       "to": "agent-lifecycle-manager",
       "source": "workflow-doc"
     },
@@ -953,12 +947,6 @@
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "post-write-chain",
-      "source": "workflow-doc"
-    },
-    {
-      "type": "cites_skill",
-      "from": "doc:AGENTS.md",
       "to": "project-review",
       "source": "workflow-doc"
     },
@@ -972,12 +960,6 @@
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
       "to": "skill-lifecycle-manager",
-      "source": "workflow-doc"
-    },
-    {
-      "type": "cites_skill",
-      "from": "doc:AGENTS.md",
-      "to": "source-command-commit-push-pr",
       "source": "workflow-doc"
     },
     {

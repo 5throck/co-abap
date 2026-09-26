@@ -26,8 +26,7 @@
 4. Implementation runs through `code-writer` with the **post-write mandatory chain**
    (`SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck`) after every
    `WriteSource` / `EditSource`.
-5. QA produces `04_qa_report.md` and `05_unit_test_plan.md`; the transport is
-   created/released with `/transport`.
+5. QA produces `04_qa_report.md`; the transport is created/released with `/transport`.
 6. Close with `/sync` — the only supported commit path, and it always runs **after**
    `/transport` so the CTS transport and the git commit stay in sync.
 
@@ -65,10 +64,10 @@ Tech Design (architect + dba → 02_technical_design.md)
 Implementation (code-writer — post-write chain after EVERY write)
         │
         ▼
-QA & Verification (test-runner → 04_qa_report.md + 05_unit_test_plan.md)
+QA & Verification (test-runner → 04_qa_report.md)
         │
         ▼
-Release (PM + devops-admin → 06_release_report.md, /transport)
+/transport (CTS transport created/released)
         │
         ▼
 /sync (memlog → changelog → audit → commit → PR)
@@ -93,12 +92,8 @@ Every requirement lives in its own numbered directory, built up stage by stage:
 | 1 — Requirements Definition | `deliverables/REQ-NNN-[slug]/01_srs.md` | Module analyst + PM |
 | 2 — Technical Design | `deliverables/REQ-NNN-[slug]/02_technical_design.md` | Architect + DBA |
 | 3 — Implementation Summary | `deliverables/REQ-NNN-[slug]/03_implementation_report.md` | Specialist developers |
-| 4 — QA & Verification | `deliverables/REQ-NNN-[slug]/04_qa_report.md` + `05_unit_test_plan.md` | QA engineer |
-| 5 — Release | `deliverables/REQ-NNN-[slug]/06_release_report.md` + transport + `/sync` | PM + DevOps/Admin |
-
-The `new-requirement.ts` scaffold pre-creates `01_srs.md`, `05_unit_test_plan.md`, and
-`06_release_report.md` at Stage 1; the test plan is planned at the Stage 1 review and
-executed at Stage 4, and the release report is completed at Stage 5.
+| 4 — QA & Verification | `deliverables/REQ-NNN-[slug]/04_qa_report.md` | QA engineer |
+| 5 — Release & sync | transport + `/sync` | PM + DevOps/Admin |
 
 Reads (schema inspection, business data queries) may run in parallel; **writes are
 serialized** — one agent writes a given file at a time, coordinated by the PM.
@@ -107,7 +102,7 @@ serialized** — one agent writes a given file at a time, coordinated by the PM.
 
 | Output | Location |
 |--------|----------|
-| Requirement deliverables | `deliverables/REQ-NNN-[slug]/` (numbered `01_`–`06_` files) |
+| Requirement deliverables | `deliverables/REQ-NNN-[slug]/` (numbered `01_`–`04_` files) |
 | Local `.abap` files | `scratch/` — the ONLY allowed location |
 | Session log entries | `memory/YYYY-MM-DD.md` (indexed by `memory/MEMORY.md`) |
 | User-facing change entries | `CHANGELOG.md` → PR |

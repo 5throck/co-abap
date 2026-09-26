@@ -53,6 +53,15 @@
       "source": "pm",
       "created": "2026-09-26",
       "last_updated": "2026-09-26"
+    },
+    {
+      "id": "2026-09-26-agents-md-w4-thin-dispatcher-design",
+      "title": "agents md w4 thin dispatcher design",
+      "file": "docs/designs/2026-09-26-agents-md-w4-thin-dispatcher-design.md",
+      "status": "implemented",
+      "source": "manual",
+      "created": "2026-09-25",
+      "last_updated": "2026-09-25"
     }
   ]
 }

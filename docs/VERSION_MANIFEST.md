@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-26T12:42:09.364Z
+**Generated**: 2026-09-26T12:45:58.109Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,8 +9,8 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 48
-- **Scripts**: 106 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Skills**: 47
+- **Scripts**: 107 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -32,9 +32,9 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
-| pm | agents/pm.md | high | N/A | 2026-09-25 |
+| pm | agents/pm.md | high | N/A | 2026-09-26 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-25 |
+| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-26 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-25 |
 | schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
 | sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
@@ -63,7 +63,6 @@
 | explain-me | 1.0.0 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
 | finishing-a-development-branch | 1.0.1 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
-| graft | N/A | active | .claude/skills/graft/SKILL.md | claude | N/A | N/A |
 | handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
 | i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
@@ -71,10 +70,10 @@
 | i18n-layout | 1.0.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
 | meeting-facilitation | 1.4.3 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
-| performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | N/A | pm |
+| performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | 1.1.0 | active | skills/post-write-chain/SKILL.md | workspace | N/A | pm |
+| post-write-chain | 1.1.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
 | project-review | 1.3.1 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -137,7 +136,7 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 1.0.0 | scripts/design-lint.ts | N/A |
-| dev-sync.ts | 1.19.0 | scripts/dev-sync.ts | bun |
+| dev-sync.ts | 1.20.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
@@ -165,6 +164,7 @@
 | new-requirement.ts | 1.1.0 | scripts/co-abap/new-requirement.ts | N/A |
 | qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
 | readme-lifecycle-audit.ts | 1.0.4 | scripts/readme-lifecycle-audit.ts | N/A |
+| regenerate-agents-md.ts | 1.2.0 | scripts/regenerate-agents-md.ts | fs, path |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
@@ -199,13 +199,13 @@
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
-| validate-templates.ts | 1.45.1 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.46.2 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
 | verify-platform-lifecycle.ts | 1.4.0 | scripts/verify-platform-lifecycle.ts | N/A |
 | verify-readme-sync.ts | 1.4.0 | scripts/verify-readme-sync.ts | bun, fs, path |
-| verify-scripts.ts | 1.8.0 | scripts/verify-scripts.ts | fs, path |
+| verify-scripts.ts | 1.9.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.6.0 | scripts/verify-skill-graph.ts | N/A |
 | verify-skills.ts | 1.3.0 | scripts/verify-skills.ts | N/A |
 | vsp-audit.ts | 1.1.0 | scripts/co-abap/vsp-audit.ts | N/A |
@@ -247,8 +247,8 @@
 
 - **Commands with parity (gemini mirror)**: 9 / 20
 - **Commands with codex prompts mapping**: 9 / 20
-- **Skills in all four mirrors**: 0 / 48
-- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
+- **Skills in all four mirrors**: 0 / 47
+- **Skills in claude+gemini only (both)**: 0 / 47 (common-template skills are parity-exempt)
 
 ---
 
@@ -257,8 +257,6 @@
 ⚠️ **Drift detected**:
 
 - [WARNING] Agent pm missing tier or model metadata
-- [WARNING] Skill performance-tuning has no triggers defined
-- [WARNING] Skill post-write-chain has no triggers defined
 - [WARNING] Command post-write has no matching skill of the same name
 - [WARNING] Command security-check has no matching skill of the same name
 - [WARNING] Command transport has no matching skill of the same name
