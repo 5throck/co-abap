@@ -36,7 +36,7 @@
 
 | Item | Minimum | Recommended |
 |------|---------|-------------|
-| OS | Windows 10 64-bit **or** macOS 12 (Monterey) | Windows 11 / macOS 14 (Sonoma) |
+| OS | Windows 10 64-bit, macOS 12 (Monterey), or Linux (x64/ARM64) | Windows 11 / macOS 14 (Sonoma) / Ubuntu 22.04 LTS |
 | RAM | 8 GB | 16 GB |
 | Disk | 10 GB free | 20 GB free (if running SAP locally) |
 | Network | SAP system reachable via HTTP | Same network segment as SAP |
@@ -209,7 +209,7 @@ This project uses automation scripts for task initialization and repository sync
 
 - **Windows**: Requires **PowerShell 7+** (pwsh).
   - Download: [PowerShell Releases](https://github.com/PowerShell/PowerShell/releases/latest)
-- **macOS/Linux**: Requires **Bash** (v4+) and standard utilities (`awk`, `sed`).
+- **macOS/Linux**: Requires **Bash** (v3.2 or later — the macOS system default is sufficient) and standard utilities (`awk`, `sed`).
 
 Verify on Windows:
 ```bash

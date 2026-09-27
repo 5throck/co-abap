@@ -1,9 +1,27 @@
 # Upstream Fix List — co-abap → workspace root
 
-Status (2026-08-24 review): **§1 RESOLVED** (#631, propagated). Open items: **§6 dev-sync
-spec-exempt arg bug (High)**, **§5 CRLF stripComment (Med-High)**, **§4 validators import (Med)**,
-**§7 ADR-0058 prune upgrade-path hole (Med, new)**, **§2 patch-ledger (Med, framing updated)**.
-§6–§7 discovered during the 2026-08-24 L0↔L1 comparison analysis.
+Status (2026-08-24 review): **§1 RESOLVED** (#631, propagated). Open items: **§9 graft helper
+re-bake vector (High, new)**, **§6 dev-sync spec-exempt arg bug (High)**, **§5 CRLF stripComment
+(Med-High)**, **§4 validators import (Med)**, **§7 ADR-0058 prune upgrade-path hole (Med, new)**,
+**§2 patch-ledger (Med, framing updated)**. §6–§7 discovered during the 2026-08-24 L0↔L1
+comparison analysis; §9 during the 2026-09-26 cross-platform audit.
+
+## 9. NEW (2026-09-26, High): templates/common graft helpers still carry the re-baked machine path — fleet-wide regression vector
+
+`templates/common/.claude/helpers/graft-hooks.cjs` and `graft-statusline.cjs` line 7 hard-code
+`const BAKED = "C:\Users\...\nvm\v24.15.0\node_modules\@nanonets\graft\dist\claude"` — the
+pre-issue-#1048 layout that graft's own session-start hook bakes in while it rewrites the tracked
+helper files. The workspace root carries the fixed version (machine-local override moved to the
+UNTRACKED sibling `graft.local.json`, demoted to last in the resolution chain — see the issue-#1048
+comment in the L0 helpers), but templates/common was re-baked after the fix, and every
+`upgrade-project` run re-delivers the baked constant into each co-* project, silently regressing
+the fix at the next template sync. Observed in co-abap on 2026-09-26: the constant had re-entered
+via template delivery, and on machines whose node install moved (nvm version switched/uninstalled)
+the baked path is dead — graft hooks and the statusline silently no-op with no signal. The project
+re-applied the L0 portable helpers locally (PR with this entry) plus the
+`.claude/helpers/graft.local.json` gitignore rule, which L0 has but template delivery had not
+carried. Upstream fix: propagate the issue-#1048 portable helpers into templates/common and
+include the gitignore rule in template delivery.
 
 ## 6. NEW (2026-08-24, High): dev-sync `--spec-exempt` CLI flag is inert inside the pipeline
 

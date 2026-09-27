@@ -30,7 +30,6 @@ jobs:
               'Typecheck',
               'Script Tests',
             ]);
-
             let pr = context.payload.pull_request;
             if (context.eventName === 'workflow_run') {
               const associated = await github.rest.repos.listPullRequestsAssociatedWithCommit({
@@ -74,8 +73,16 @@ jobs:
               return;
             }
 
+            // Matrix jobs (Typecheck / Script Tests) append the OS to the check
+            // name, e.g. "Typecheck (windows-latest)" — match on the job-name
+            // prefix. The all-checks-success gate below still covers every leg.
             const missing = [...requiredChecks].filter(
-              required => !checkRuns.some(check => check.name === required),
+              required =>
+                !checkRuns.some(
+                  check =>
+                    check.name === required ||
+                    check.name.startsWith(`${required} (`),
+                ),
             );
             if (missing.length > 0) {
               core.setFailed(`Required checks missing from the head SHA: ${missing.join(', ')}`);
