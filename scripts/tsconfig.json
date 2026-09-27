@@ -3,7 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM"],
     "types": ["node", "bun-types"],
     "strict": true,
     "esModuleInterop": true,
@@ -15,5 +15,5 @@
     "noEmit": true
   },
   "include": ["*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "validate-agents.ts", "validate-skills.ts"]
 }

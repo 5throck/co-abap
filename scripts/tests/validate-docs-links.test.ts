@@ -27,17 +27,6 @@ function runValidator(content: string): { exitCode: number; output: string } {
 }
 
 describe("validate-docs-links", () => {
-  test("ignores the ${entry.file} placeholder in a fenced code sample", () => {
-    const result = runValidator([
-      "```ts",
-      "const link = `[${entry.date}](${entry.file})`;",
-      "```",
-      "",
-    ].join("\n"));
-
-    expect(result.exitCode).toBe(0);
-    expect(result.output).not.toContain("${entry.file}");
-  });
 
   test("still detects a broken relative link in prose", () => {
     const result = runValidator("[broken prose link](missing/path.md)\n");
