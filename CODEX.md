@@ -94,7 +94,7 @@ When a user request matches a skill trigger, apply this priority order — **enf
 | **2** | Platform config skills | `.codex/skills/` in the project root |
 | **3 (lowest)** | Global plugin skills | e.g. `superpowers/brainstorming`, `superpowers/writing-plans` |
 
-**Rule**: If a local skill's `metadata.triggers` matches the user request, use it — do **not** fall through to a global plugin with overlapping intent. Explicit invocation: `/meeting "topic" [--agents a,b] [--rounds N] [--dialogue]`
+**Rule**: If a local skill's `metadata.triggers` matches the user request, use it — do **not** fall through to a global plugin with overlapping intent. Explicit invocation: the `meeting-facilitation` skill with the meeting topic and options (`--agents a,b`, `--rounds N`, `--dialogue`) — the legacy `/meeting` slash command is retired (2026-09-26).
 
 ### 4.6 Language Policy for Documentation
 
