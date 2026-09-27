@@ -12,13 +12,13 @@
  *
  * Tier 1 vs Tier 3 auto-detection: if variant.json exists in cwd, runs Tier 3 subset (E+F only).
  *
- * Net-new coverage (.agents/.codex legs, codex prompts leg) soaks in WARN per
- * ADR-0055; the dated promotion tickets (T-20260925-002, not-before 2026-10-09)
- * flip those to fail. The .hermes legs were promoted out of soak on 2026-09-25
- * (T-20260925-008: live hermes-agent E2E verification green). Pre-existing
- * .claude/.gemini semantics keep their severity.
+ * PROMOTED 2026-09-27 (T-20260925-002, user-authorized early promotion with the
+ * zero-WARN precondition verified): the .agents/.codex legs, the codex prompts
+ * mapping leg, and the Check G .agents lockstep leg all run at fail severity.
+ * The .hermes legs preceded on 2026-09-25 (T-20260925-008: live hermes-agent
+ * E2E verification green). Pre-existing .claude/.gemini semantics unchanged.
  *
- * @version 1.4.0
+ * @version 1.6.0
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
@@ -41,12 +41,15 @@ const VERSION_EXEMPT_PLATFORM_SKILLS = new Set([
   '.claude/skills/graft',
 ]);
 
-// Net-new mirror legs soak in WARN (ADR-0055) — TODO(promotion): flip to fail.
+// (Historical) net-new mirror legs soaked in WARN (ADR-0055) until promotion.
 // .hermes/skills joined in ADR-0088 W2 (same onboarding path as .agents/.codex)
 // and was PROMOTED out of soak on 2026-09-25 (T-20260925-008: live hermes-agent
 // v0.21.4 E2E — project skill discovery, frontmatter tolerance, AGENTS.md entry
 // all verified green), so its legs run at fail severity like .claude/.gemini.
-const SOAK_MIRRORS = new Set(['.agents/skills', '.codex/skills']);
+// All platform legs promoted out of WARN soak 2026-09-27 (T-20260925-002;
+// .hermes preceded 2026-09-25, T-20260925-008). The set stays as the mechanism —
+// a future net-new mirror leg soaks by joining it.
+const SOAK_MIRRORS = new Set<string>();
 
 function platformOf(mirrorDir: string): string {
   return mirrorDir.split('/')[0];
@@ -185,18 +188,26 @@ function checkF(): void {
 //                     /<skill-name> (ADR-0088 D1, live-verified T-20260925-008)
 interface CommandsSurface {
   platform: string;
-  mode: 'mirror-1:1' | 'mapping' | 'excluded';
+  mode: 'mirror-1:1' | 'mapping' | 'excluded' | 'lockstep-root';
   /** soak=true emits WARN instead of FAIL on the mapping leg (ADR-0055). */
   soak?: boolean;
   /** Required for mode 'excluded' — the recorded reason an exclusion stands. */
   exclusionNote?: string;
 }
 
+// .agents/commands is L0-resident (T-20260925-003): it never propagates to
+// templates/common, but it IS governed — same-commit lockstep with
+// .claude/commands. Files here are recorded exceptions to that lockstep:
+//   - ADAPTED: intentionally platform-adapted content (differs from .claude)
+//   - EXCLUDED: no .agents copy at all
+const AGENTS_COMMANDS_ADAPTED: ReadonlySet<string> = new Set(['commit-push-pr.md']);
+const AGENTS_COMMANDS_EXCLUDED: ReadonlySet<string> = new Set(['gateguard.md']);
+
 export const COMMANDS_SURFACES: readonly CommandsSurface[] = [
   { platform: '.claude', mode: 'mirror-1:1' },
   { platform: '.gemini', mode: 'mirror-1:1' },
-  { platform: '.codex', mode: 'mapping', soak: true },
-  { platform: '.agents', mode: 'excluded', exclusionNote: 'L0-resident by design — workspace-root Antigravity CLI surface (T-20260925-003)' },
+  { platform: '.codex', mode: 'mapping' },
+  { platform: '.agents', mode: 'lockstep-root' },
   { platform: '.hermes', mode: 'excluded', exclusionNote: 'no commands mirror — Hermes invokes skills natively as /<skill-name> (ADR-0088 D1)' },
 ];
 
@@ -235,6 +246,7 @@ export function checkG(): void {
 
     // mode === 'mapping': .codex leg — ADR-0077 D4 (.claude/commands → .codex/prompts),
     // NO skip marker — Phase 1b mirrors unconditionally, a deliberate asymmetry.
+    if (surface.mode === 'mapping') {
     const codexPromptsDir = join(ROOT, 'templates', 'common', '.codex', 'prompts');
     if (!existsSync(claudeCmdDir)) continue;
     const codexPrompts = existsSync(codexPromptsDir)
@@ -250,7 +262,41 @@ export function checkG(): void {
     } else {
       pass(`.claude/commands/ → templates/common/.codex/prompts: all ${claudeFiles.length} prompt(s) propagated (mapping)`);
     }
+    continue;
   }
+
+  // mode === 'lockstep-root': the .agents leg (T-20260927-001). .agents/commands
+  // never propagates to templates/common (L0-resident, T-20260925-003), but the
+  // ruling requires same-commit lockstep WITH .claude/commands — existence for
+  // every non-excluded command, and content parity for every non-adapted one.
+  // This leg shipped 2026-09-27 after project-review.md drifted 2.5 months
+  // behind with no gate watching; net-new → WARN soak per ADR-0055 (joins the
+  // T-20260925-002 promotion scope).
+  if (surface.mode === 'lockstep-root') {
+    const agentsCmdDir = join(ROOT, '.agents', 'commands');
+    if (!existsSync(claudeCmdDir) || !existsSync(agentsCmdDir)) continue;
+    const agentsFiles = new Set(readdirSync(agentsCmdDir).filter(f => f.endsWith('.md')));
+    const claudeFiles = readdirSync(claudeCmdDir).filter(f => f.endsWith('.md'));
+    const emit = surface.soak ? warn : fail;
+    const missing = claudeFiles.filter(f => !agentsFiles.has(f) && !AGENTS_COMMANDS_EXCLUDED.has(f));
+    if (missing.length > 0) {
+      emit('platform-command-propagation',
+        `.claude/commands/ files with no .agents/commands/ counterpart (L0-resident lockstep, T-20260925-003)${surface.soak ? ' (soak: WARN until promotion)' : ''}: ${missing.join(', ')}`,
+        `Copy the .claude/commands file to .agents/commands/, or record the exclusion`);
+    }
+    const drifted = claudeFiles
+      .filter(f => agentsFiles.has(f) && !AGENTS_COMMANDS_ADAPTED.has(f))
+      .filter(f => readFileSync(join(claudeCmdDir, f), 'utf-8') !== readFileSync(join(agentsCmdDir, f), 'utf-8'));
+    if (drifted.length > 0) {
+      emit('platform-command-propagation',
+        `.agents/commands/ files drifted from .claude/commands/ (lockstep ruling T-20260925-003; platform adaptations must be recorded in AGENTS_COMMANDS_ADAPTED)${surface.soak ? ' (soak: WARN until promotion)' : ''}: ${drifted.join(', ')}`,
+        `Re-sync from .claude/commands (the canonical source), or record the adaptation`);
+    } else {
+      pass(`.agents/commands/ ↔ .claude/commands/: lockstep holds (${claudeFiles.length - AGENTS_COMMANDS_EXCLUDED.size} governed file(s), ${AGENTS_COMMANDS_ADAPTED.size} adapted, ${AGENTS_COMMANDS_EXCLUDED.size} excluded)`);
+    }
+    continue;
+  }
+}
 }
 
 // Check H: Platform Skill propagation to templates/common/ (Tier 1 only)

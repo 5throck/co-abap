@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// @version 1.9.0
+// @version 1.10.0
 // v1.9.0 (2026-09-25, ADR-0088 W1): fifth platform target `.hermes/skills/` (NousResearch
 //   Hermes Agent mirror — same B-03/mirror:false exclusions as the other targets). Hermes
 //   scans project-local `<git-root>/.hermes/skills` as its primary skill path (source-
@@ -42,7 +42,6 @@
  * Phase 2: Back-sync shortcut skill dirs that exist ONLY in .agents/skills/ (absent
  *          from the SSOT) to .claude and .gemini; WARN on .agents dirs that diverge
  *          from their SSOT counterpart (SSOT wins — see the Phase 2 comment).
- * Special: meeting-facilitation SKILL.md is also synced to .claude/commands/meeting.md and .gemini/commands/meeting.md.
  *
  * Idempotent: a target is only overwritten when its content differs from the
  * source (dirsEqual()); unchanged skills are left untouched on repeat runs
@@ -290,38 +289,36 @@ export async function syncSkills(dirs: SkillSyncDirs, opts: SyncSkillsOptions = 
                 console.log(`  -> Synced ${item} to ${path.relative(root, targetDir)}/`);
             }
 
-            // Special logic for commands derived from skills — workspace root ONLY.
-            // Variant `.claude|gemini/commands/meeting.md` files are Fork-Model overlays
-            // (e.g. co-safety's adjudicated divergence, T-20260910-022); regenerating them
-            // from the variant's own meeting-facilitation SKILL.md would clobber the
-            // adapted frontmatter (scope/audit_exception) that the variant registry
-            // validates against.
-            if (item === 'meeting-facilitation' && path.resolve(root) === workspaceRoot) {
-                const claudeCmdDir = path.join(root, '.claude', 'commands');
-                const geminiCmdDir = path.join(root, '.gemini', 'commands');
-                fs.mkdirSync(claudeCmdDir, { recursive: true });
-                fs.mkdirSync(geminiCmdDir, { recursive: true });
-
-                const skillMdPath = path.join(itemPath, 'SKILL.md');
-                if (fs.existsSync(skillMdPath)) {
-                    const claudeCmdTarget = path.join(claudeCmdDir, 'meeting.md');
-                    if (!dirsEqual(skillMdPath, claudeCmdTarget)) {
-                        fs.copyFileSync(skillMdPath, claudeCmdTarget);
-                        console.log(`  -> Synced SKILL.md to .claude/commands/meeting.md`);
-                    }
-
-                    const geminiCmdTarget = path.join(geminiCmdDir, 'meeting.md');
-                    if (!dirsEqual(skillMdPath, geminiCmdTarget)) {
-                        fs.copyFileSync(skillMdPath, geminiCmdTarget);
-                        console.log(`  -> Synced SKILL.md to .gemini/commands/meeting.md`);
-                    }
-                }
-            }
         } catch (err) {
             const msg = (err instanceof Error) ? err.message : String(err);
             errors.push(`Phase 1: ${item}: ${msg}`);
             console.error(`  ❌ Error syncing ${item}: ${msg}`);
         }
+    }
+
+    // --- Phase 1c: Remove platform mirror ghosts (project contexts only) ---
+    // A platform skill directory with no skills/ SSOT counterpart is a stale
+    // mirror: scaffold-time distribution ran before the workspace-only sweep,
+    // or the SSOT copy was retired after an earlier sync. Left alone, ghosts
+    // drift per-project (observed: workspace-process skills mirrored into 4
+    // platforms on fresh scaffolds but surviving only as .codex ghosts in
+    // older projects). Gated to project contexts — the workspace root is the
+    // one place platform-only skill directories are legitimate.
+    const isProjectContext = fs.existsSync(path.join(root, '.claude', 'template-version.txt'));
+    if (isProjectContext) {
+        let ghostCount = 0;
+        for (const targetDir of [claudeSkills, geminiSkills, agentsSkills, codexSkills, hermesSkills]) {
+            if (!fs.existsSync(targetDir)) continue;
+            for (const item of fs.readdirSync(targetDir)) {
+                const target = path.join(targetDir, item);
+                if (!fs.statSync(target).isDirectory()) continue;
+                if (fs.existsSync(path.join(ssotSkills, item))) continue;
+                fs.rmSync(target, { recursive: true, force: true });
+                ghostCount++;
+                console.log(`  -> Removed ghost platform mirror ${path.relative(root, target)}/ (no skills/ SSOT counterpart)`);
+            }
+        }
+        if (ghostCount === 0) console.log('  -> No ghost platform mirrors found');
     }
 
     // --- Phase 1b: Mirror .claude/commands/*.md to .codex/prompts/ (ADR-0077 D4) ---

@@ -1,14 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.46.2
- *
- * v1.46.2 (2026-09-26, project-review remediation Phase 2): detached L3
- *          projects identified by their scaffold provenance
- *          (`.claude/template-version.txt`) and `docs/context.md` now emit a
- *          justified [SKIP] when they do not carry the L0-only `templates/`
- *          source tree. Repositories that are not proven L3 projects retain
- *          the hard failure for a missing templates/ directory.
+ * @version 1.48.0
  *
  * v1.46.1 (2026-09-26, ADR-0090 program closure — design Addendum 3): the
  *         size-budget arm's WARN message and header note record the user
@@ -347,15 +340,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const TEMPLATES_DIR = join(ROOT, 'templates');
 
-export function isDetachedL3Project(root: string): boolean {
-  return !existsSync(join(root, 'templates'))
-    && existsSync(join(root, '.claude', 'template-version.txt'))
-    && existsSync(join(root, 'docs', 'context.md'));
-}
-
-export function templateValidationDisposition(root: string): 'validate' | 'skip-detached-l3' | 'error-missing-templates' {
-  if (existsSync(join(root, 'templates'))) return 'validate';
-  return isDetachedL3Project(root) ? 'skip-detached-l3' : 'error-missing-templates';
+if (!existsSync(TEMPLATES_DIR)) {
+  console.error(`\x1b[31m[ERROR] templates/ directory not found at: ${TEMPLATES_DIR}\x1b[0m`);
+  if (import.meta.main) {
+    process.exit(1);
+  }
 }
 
 const args = process.argv.slice(2);
@@ -681,6 +670,33 @@ function checkVariantManifests(): Map<string, VariantManifest> {
         }
       }
 
+      // B-04 (ADR-0091 R3, T-20260927-002): uniform country_config declaration —
+      // adopting or not, every variant.json declares the mechanism
+      // ({ profiles_dir: "docs/countries", supported: [], default: null } for
+      // non-adopting variants); divergence by omission is eliminated.
+      const cc = raw.country_config as Record<string, unknown> | undefined;
+      if (!cc || typeof cc !== 'object' || Array.isArray(cc)) {
+        fail(dir, 'country-config',
+          `templates/${dir}/variant.json missing 'country_config' (ADR-0091 R3 uniform declaration)`,
+          `Add "country_config": { "profiles_dir": "docs/countries", "supported": [], "default": null } (empty supported = non-adopting)`);
+      } else {
+        let ccOk = true;
+        if (cc.profiles_dir !== 'docs/countries') {
+          fail(dir, 'country-config', `country_config.profiles_dir must be "docs/countries", got ${JSON.stringify(cc.profiles_dir)}`);
+          ccOk = false;
+        }
+        if (!Array.isArray(cc.supported)) {
+          fail(dir, 'country-config', `country_config.supported must be an array (empty for non-adopting variants)`);
+          ccOk = false;
+        }
+        if (cc.default !== null) {
+          fail(dir, 'country-config', `country_config.default must be null (country-profiles rule; ADR-0091 R2)`,
+            `Set "default": null — the active country is selected per-project via docs/countries/ACTIVE.md`);
+          ccOk = false;
+        }
+        if (ccOk) pass(`templates/${dir}/variant.json country_config declaration OK (ADR-0091 R3)`);
+      }
+
       // B-03: script_manifest path existence check
       const scriptManifest = raw.script_manifest as { local?: Array<{ name: string; path: string }> } | undefined;
       if (scriptManifest?.local && Array.isArray(scriptManifest.local)) {
@@ -762,8 +778,12 @@ function checkVariantManifests(): Map<string, VariantManifest> {
         if (!countryConfig.profiles_dir || countryConfig.profiles_dir.trim() === '') {
           fail(dir, 'country-config', `templates/${dir}/variant.json country_config.profiles_dir is missing or empty`);
         }
-        if (!countryConfig.supported || !Array.isArray(countryConfig.supported) || countryConfig.supported.length === 0) {
-          fail(dir, 'country-config', `templates/${dir}/variant.json country_config.supported is missing or empty`);
+        // T-20260927-002 (ADR-0091 R3): an EMPTY supported array is now the
+        // canonical non-adopting declaration — divergence by omission is what
+        // B-04 above eliminates. Only a MALFORMED value fails here; the
+        // adopting-path profile-file checks run for each declared code.
+        if (!countryConfig.supported || !Array.isArray(countryConfig.supported)) {
+          fail(dir, 'country-config', `templates/${dir}/variant.json country_config.supported is missing or not an array (use [] for non-adopting variants)`);
         } else {
           // Check each supported code has a profile file
           for (const code of countryConfig.supported) {
@@ -1306,7 +1326,7 @@ const SOAK_COMMAND_SURFACES = new Set(['.codex/prompts']);
 function checkCommands(variant: string): void {
   if (!JSON_MODE) console.log(`\n=== Check 6: commands in ${variant} ===`);
 
-  const allSharedCommands = ['changelog.md', 'commit-push-pr.md', 'gateguard.md', 'meeting.md', 'memlog.md', 'new-task.md', 'project-review.md', 'sync.md'];
+  const allSharedCommands = ['changelog.md', 'commit-push-pr.md', 'gateguard.md', 'memlog.md', 'new-task.md', 'project-review.md', 'sync.md'];
 
   if (variant === 'common') {
     // common/ must have all shared commands in every command surface
@@ -1348,26 +1368,7 @@ function checkCommands(variant: string): void {
 
 // Check 7: scripts and .githooks parity — removed (dead code after ADR-0036 TypeScript migration)
 
-// Check 8: Shared file sync warning
-function checkSharedFileSync(): void {
-  if (!JSON_MODE) console.log('\n=== Check 8: Shared file sync ===');
-  const workspaceMeeting = join(ROOT, '.claude', 'commands', 'meeting.md');
-  const templateMeeting = join(TEMPLATES_DIR, 'common', '.claude', 'commands', 'meeting.md');
-
-  if (!existsSync(workspaceMeeting) || !existsSync(templateMeeting)) {
-    // One or both missing — skip silently
-    return;
-  }
-
-  const wsContent = normalizeContent(readFileSync(workspaceMeeting, 'utf-8'));
-  const tplContent = normalizeContent(readFileSync(templateMeeting, 'utf-8'));
-
-  if (wsContent !== tplContent) {
-    warn('root', 'shared-sync', 'meeting.md differs between workspace and templates/common', 'Run: cp .claude/commands/meeting.md templates/common/.claude/commands/meeting.md');
-  } else {
-    pass('meeting.md: workspace and common are in sync');
-  }
-}
+// Check 8: shared file sync warning — removed (meeting command retired 2026-09-26, spec 2026-09-26-meeting-command-retirement)
 
 // Check 11: README presence in stable variants
 function checkReadmePresence(variant: string): void {
@@ -3889,7 +3890,8 @@ function checkSkillMirrorVersionSync(variant: string): void {
   const findings = collectMirrorVersionMismatches(join(TEMPLATES_DIR, variant), variant);
   // WARN soak per ADR-0055 — severity flip is ticket-gated (T-20260925-006).
   for (const f of findings) {
-    warn(variant, 'VA-07', `${f.message} (soak: WARN until promotion)`, `Align the SKILL.md frontmatter version across all platform mirrors of ${variant} (and the curated registry row)`);
+    // PROMOTED to fail 2026-09-27 (T-20260925-006, zero-WARN precondition verified).
+    fail(variant, 'VA-07', f.message, `Align the SKILL.md frontmatter version across all platform mirrors of ${variant} (and the curated registry row)`);
   }
   if (findings.length === 0) {
     pass(`VA-07: ${variant} -- mirror skill versions in sync (mirrors and registry rows)`);
@@ -3910,7 +3912,8 @@ function checkSkillRegistrySync(): void {
   const findings = collectWorkspaceRegistryFindings(ROOT);
   // WARN soak per ADR-0055 — severity flip is ticket-gated (T-20260925-007).
   for (const f of findings) {
-    warn('registries', 'VA-08', `${f.message} (soak: WARN until promotion)`, 'Run: bun scripts/sync-skill-registries.ts (dev-sync Step 4.63 re-converges on every /sync)');
+    // PROMOTED to fail 2026-09-27 (T-20260925-007, zero-WARN precondition verified).
+    fail('registries', 'VA-08', f.message, 'Run: bun scripts/sync-skill-registries.ts (dev-sync Step 4.63 re-converges on every /sync)');
   }
   if (findings.length === 0) {
     pass('VA-08: all skill registry tables match SKILL.md frontmatter');
@@ -4339,8 +4342,13 @@ export interface AgentReferenceCandidate {
 
 // Reference shape 1: `agents/<name>.md` path references (prose links, code
 // strings, roster rows). Underscore-leading internal fragments (agents/_COMMON)
-// are not agent references and don't match.
-const AGENT_PATH_REF_RE = /\bagents\/([A-Za-z0-9][A-Za-z0-9_-]*)\.md\b/g;
+// are not agent references and don't match. Governance-doc pointers under a
+// `governance/` directory (docs/governance/agents/<name>.md — the ADR-0090
+// thin-dispatcher relocation targets) are NOT agent references: the segment
+// immediately before `agents/` is `governance/`, so a negative lookbehind
+// excludes them (T-20260925-004 precondition — the 33 false positives this
+// removes were the only thing blocking the check's WARN→FAIL promotion).
+const AGENT_PATH_REF_RE = /(?<!governance\/)\bagents\/([A-Za-z0-9][A-Za-z0-9_-]*)\.md\b/g;
 // Reference shape 2: backtick-adjacent `<name>` agent mentions ("the
 // stack setup agent").
 const AGENT_BACKTICK_MENTION_RE = /`([A-Za-z0-9][A-Za-z0-9_-]*)`\s+agents?\b/g;
@@ -4367,8 +4375,9 @@ export function extractAgentReferenceCandidates(content: string): AgentReference
 /** Check: variant-agent-references — agent references in templates/<v>/AGENTS.md
  *  and the variant scripts tree (.ts files, recursive) must resolve at
  *  templates/<v>/agents/, templates/common/agents/, or the workspace-root
- *  agents/. WARN-mode per ADR-0055 soak (dated promotion ticket filed at
- *  implementation). */
+ *  agents/. WARN-mode per ADR-0055 soak at introduction (T-20260924-007c);
+ *  PROMOTED to fail 2026-09-27 (T-20260925-004) after the governance-doc-link
+ *  false positives were fixed at the extractor. */
 function checkVariantAgentReferences(variant: string, opts?: {
   /** Directory-root override for fixture tests (defaults to the real templates/). */
   templatesDir?: string;
@@ -4379,7 +4388,10 @@ function checkVariantAgentReferences(variant: string, opts?: {
   const quiet = opts !== undefined;
   const FIX =
     'Fix the reference so it names an agent that exists at templates/<variant>/agents/, templates/common/agents/, or the workspace-root agents/ — or remove it. A legitimately agent-shaped name that must stay unresolvable goes on AGENT_REFERENCE_EXEMPT with a justification.';
-  const report = opts?.report ?? ((finding: string) => warn(variant, 'variant-agent-references', finding, FIX));
+  // PROMOTED to fail 2026-09-27 (T-20260925-004, user-authorized early promotion):
+  // the ADR-0090 governance-doc-link false positives were root-caused out of the
+  // extractor (governance/ lookbehind), leaving zero findings on the fleet.
+  const report = opts?.report ?? ((finding: string) => fail(variant, 'variant-agent-references', finding, FIX));
 
   if (!quiet && !JSON_MODE) {
     console.log(`\n=== Check T-007c: agent references resolve in ${variant} AGENTS.md and scripts ===`);
@@ -5371,29 +5383,6 @@ function checkProjectIdentityPlaceholders(): void {
 }
 
 function main(): number {
-  const disposition = templateValidationDisposition(ROOT);
-  if (disposition !== 'validate') {
-    if (disposition === 'skip-detached-l3') {
-      if (!JSON_MODE) {
-        console.log(`${colors.cyan}[SKIP]${colors.reset} templates/ validation is L0-only and this detached L3 project has no templates/ source tree (verified by .claude/template-version.txt and docs/context.md).`);
-      } else {
-        console.log(JSON.stringify({
-          variantsScanned: 0,
-          errors: [],
-          warnings: [],
-          skipped: [{
-            check: 'templates',
-            reason: 'Detached L3 project: templates/ is an L0 source tree and is intentionally absent.',
-          }],
-          summary: '0 error(s), 0 warning(s), 1 skipped check',
-        }, null, 2));
-      }
-      return 0;
-    }
-    console.error(`${colors.red}[ERROR]${colors.reset} templates/ directory not found at: ${TEMPLATES_DIR}. This validator requires templates/ outside a detached L3 project.`);
-    return 1;
-  }
-
   if (!JSON_MODE) {
     console.log(`${colors.cyan}Template Lifecycle Validator${colors.reset}`);
     console.log(`${colors.dim}Root: ${ROOT}${colors.reset}`);
@@ -5552,7 +5541,6 @@ function checkAgentsMdPointerIntegrity(): void {
 
   checkCountryProfileDivergence();                               // B-05: cross-variant last_verified divergence
 
-  checkSharedFileSync();
   checkL0L1ScriptParity();
   checkPlatformDocumentationParity();
   checkRootCommonCommandsParity();

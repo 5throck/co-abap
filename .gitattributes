@@ -1,8 +1,8 @@
-# Normalize every detected text file to LF in the repository and on checkout.
-# Binary files remain unspecified because Git does not classify them as text.
-* text=auto eol=lf
+# Auto detect text files and perform LF normalization
+* text=auto
 
-# Explicitly declare common text files for LF normalization.
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
 *.c text
 *.h text
 *.js text
@@ -19,10 +19,12 @@
 *.cmd text eol=crlf
 *.bat text eol=crlf
 
-# Shell scripts must also retain LF line endings on checkout.
+# Declare files that will always have LF line endings on checkout.
 *.sh text eol=lf
 
-# Reinforce LF for common web, configuration, and documentation files.
+# Enforce LF line endings for all text-based web and doc files.
+# Prevents CRLF smudge on Windows checkouts, which breaks LF-expecting
+# pipeline gates (e.g. the VERSION_MANIFEST drift check).
 *.html text eol=lf
 *.css text eol=lf
 *.js text eol=lf
@@ -40,3 +42,6 @@ CHANGELOG.md merge=union
 memory/*.md merge=union
 docs/VERSION_MANIFEST.md merge=union
 scripts/README.md merge=union
+
+# Preserved from this project's prior .gitattributes (not in the current template):
+* text=auto eol=lf

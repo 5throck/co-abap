@@ -58,8 +58,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
 | `helpers/upgrade-versions.ts` | L0+L1 | 1.0.1 | active | —| —| L0+L1 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
-| `regenerate-agents-md.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.46.2 | active | —| —| L0+L1 | —|
+| `regenerate-agents-md.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.48.0 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-lifecycle-audit.ts` | L0 | 1.3.2 | active | —| —| L0+L1 | —|
@@ -67,17 +67,17 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `archive-memory.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `audit.ts` | L0 | 2.45.0 | active | —| —| L0+L1 | —|
+| `audit.ts` | L0 | 2.46.0 | active | —| —| L0+L1 | —|
 | `cleanup-completed-md.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `clear-pm-approval.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `compile-tokens.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `design-lint.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `design-lint.ts` | L0 | 2.0.0 | active | —| —| L0+L1 | —|
 | `retry-handler.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `setup-github-branch-protection.ts` | L0 | 1.0.1 | active | `--repo`, `--branch`, `--check` (repeatable), `--dry-run` | —| L0+L1 | —|
 | `sync-md.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `sync-skills.ts` | L0 | 1.9.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
+| `sync-skills.ts` | L0 | 1.10.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `dev-sync.ts` | L0 | 1.20.0 | active | —| —| L0+L1 | —|
+| `dev-sync.ts` | L0 | 1.21.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch-serial.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
@@ -137,15 +137,14 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `readme-lifecycle-audit.ts` | L0 | 1.0.4 | active | —| —| L0+L1 | —|
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `skill-lifecycle-audit.ts` | L0 | 1.5.2 | active | —| —| L0+L1 | —|
-| `review-baseline.ts` | L3 | 1.0.0 | active | —| —| L3 | —|
 | `skill-session-review.ts` | L0 | 1.1.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.1.0 | active | — | — | L0+L1 | — |
-| `team-builder.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `team-builder.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `test-runner.ts` | L0 | 1.4.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `validate-agents.ts` | L0 | 1.3.2 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `validate-docs-links.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `validate-docs-links.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.12.0 | active | —| —| L0+L1 | —|
 | `validate-model-registry.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -154,8 +153,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `verify-agent-deliverables.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `verify-skill-graph.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `verify-memory.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `verify-platform-lifecycle.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `verify-readme-sync.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `verify-platform-lifecycle.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
+| `verify-readme-sync.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `verify-scripts.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `validate-pm-extends.ts` | L0 | 0.3.1 | active | —| —| L0+L1 | —|
 | `validate-variant-readiness.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -170,7 +169,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
 | `generate-version-manifest.ts` | L0 | 1.8.0 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
 | `helpers/rollback-partial-project.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `helpers/scaffold-markers.ts` | L0 | 1.6.1 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
+| `helpers/scaffold-markers.ts` | L0 | 1.6.2 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
 | `lib/managed-block-parity.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/platform-delivery.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/platform-mirror-freshness.ts` | L0 | 1.1.0 | active | Pure platform-skill-mirror vs skills/ SSOT version comparison for the platform-mirror-freshness check (T-20260916-008) | —| L0+L1 | —|
