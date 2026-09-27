@@ -36,26 +36,6 @@ interface DeckInspection {
   title?: string;
 }
 
-interface BrowserDocument {
-  fonts?: {
-    ready: Promise<unknown>;
-  };
-}
-
-interface BrowserGlobal {
-  document?: BrowserDocument;
-}
-
-/**
- * Wait for web fonts from inside the browser context without requiring the
- * TypeScript DOM library in this Node/Bun script.
- */
-export async function waitForDocumentFonts(
-  browserGlobal: BrowserGlobal = globalThis as BrowserGlobal,
-): Promise<void> {
-  await browserGlobal.document?.fonts?.ready;
-}
-
 /**
  * Parse CLI command line arguments
  */
@@ -255,7 +235,11 @@ async function main(): Promise<void> {
     await page.goto(fileUrl, { waitUntil: "networkidle" });
     await page.emulateMedia({ media: "print" });
 
-    await page.evaluate(waitForDocumentFonts);
+    await page.evaluate(async () => {
+      if (document.fonts) {
+        await document.fonts.ready;
+      }
+    });
 
     await page.pdf({
       path: outputPath,
@@ -274,9 +258,7 @@ async function main(): Promise<void> {
   }
 }
 
-if (import.meta.main) {
-  main().catch((err) => {
-    console.error(`[FATAL] Unhandled error:`, err);
-    process.exit(1);
-  });
-}
+main().catch((err) => {
+  console.error(`[FATAL] Unhandled error:`, err);
+  process.exit(1);
+});

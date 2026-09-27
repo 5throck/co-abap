@@ -1,8 +1,10 @@
 #!/usr/bin/env bun
-// @version 1.1.1
+// @version 1.2.0
 // @description Scans workspace Markdown files for broken relative file links.
-//              Invoked by dev-sync.ts as a pre-flight link validation gate.
-//              By default scans docs/ root level files only (no subdirectories).
+//              Invoked by dev-sync.ts as a pre-flight link validation gate and
+//              spawned by audit.ts as the docs relative-link gate.
+//              By default scans docs/ root level files only (no subdirectories)
+//              PLUS templates/common/docs/ recursively (v1.2.0).
 //              The docs/ subdirectories have many historical cross-references that
 //              are managed by the validate-doc-folder.ts validator separately.
 //              Use --dir to scan a specific directory, --all to scan all of docs/.
@@ -12,12 +14,28 @@
 //              accepted when it matches either (a) the GitHub-style auto-slug of a
 //              heading, or (b) an explicit `{#custom-anchor}` declaration on a
 //              heading — the workspace uses both conventions (docs/constitution/).
-//              Headings inside ```/~~~ fences are ignored. Link-like text inside
-//              inline code or fenced code blocks is also ignored.
+//              Headings inside ```/~~~ fences are ignored.
+//
+//              v1.2.0 (design-foundation v1.2 PR-2): the default scope now also
+//              covers templates/common/docs/** recursively — design-foundation.md
+//              §8 previously shipped a stale project path that rotted under
+//              review-only checking. Template-docs links get a documented
+//              post-scaffold resolution allowance, applied per link (whole files
+//              are never skipped): a link passes when its target exists at
+//              (i) the plain relative path, (ii) the same href from the workspace
+//              root (repo-root-relative authoring), (iii) the same href inside
+//              the template delivery tree (templates/common models a delivered
+//              project root, so docs/context.md matches
+//              templates/common/docs/context.md), or (iv) the delivered docs/
+//              root (the file's templates/common/docs subpath mirrored onto the
+//              workspace docs/, so ../adr/x.md from variants/ matches
+//              docs/adr/x.md — "resolves only post-scaffold", mirroring the
+//              agents-md-pointer-integrity precedent). _examples/ is scaffold
+//              staging, not delivered docs, and is excluded from this scope.
 // @usage bun scripts/validate-docs-links.ts [--dir <path>] [--all] [--verbose]
 
 import { existsSync, readdirSync, statSync, readFileSync } from "fs";
-import { join, resolve, dirname, extname } from "path";
+import { join, resolve, dirname, extname, relative, sep } from "path";
 
 const WORKSPACE_ROOT = resolve(import.meta.dir, "..");
 const args = process.argv.slice(2);
@@ -48,6 +66,14 @@ const EXAMPLE_PATH_PATTERNS = [
   /\.sh$/, // Shell scripts removed per ADR-0036
   /^\[.+\]+$/, // Regex patterns accidentally matched as links
 ];
+
+// Template-scope staging directories: scaffold staging content, not delivered
+// docs — excluded from the templates/common/docs scan (v1.2.0).
+const TEMPLATE_STAGING_SKIP = new Set(["_examples"]);
+
+// Template docs root: scanned recursively in the default scope; links inside it
+// get the post-scaffold resolution allowance (see header, rules (i)-(iv)).
+const TEMPLATE_DOCS_ROOT = join(WORKSPACE_ROOT, "templates", "common", "docs");
 
 // Link pattern: [text](path#fragment) — captures relative paths plus their
 // optional anchor fragment (v1.1.0 verifies fragments; not http/https/mailto/#-only anchors)
@@ -109,8 +135,9 @@ function collectAnchorFragments(mdPath: string): Set<string> {
  * Collect .md files from a directory.
  * @param dir Directory to scan
  * @param recurse Whether to recurse into subdirectories
+ * @param extraSkipDirs Additional directory names to skip (merged with SKIP_DIRS)
  */
-function collectMdFiles(dir: string, recurse = true): string[] {
+function collectMdFiles(dir: string, recurse = true, extraSkipDirs?: Set<string>): string[] {
   const files: string[] = [];
   if (!existsSync(dir)) return files;
   let entries: string[];
@@ -128,8 +155,8 @@ function collectMdFiles(dir: string, recurse = true): string[] {
       continue;
     }
     if (stat.isDirectory()) {
-      if (recurse && !SKIP_DIRS.has(entry)) {
-        files.push(...collectMdFiles(fullPath, recurse));
+      if (recurse && !SKIP_DIRS.has(entry) && !extraSkipDirs?.has(entry)) {
+        files.push(...collectMdFiles(fullPath, recurse, extraSkipDirs));
       }
     } else if (extname(entry) === ".md") {
       files.push(fullPath);
@@ -153,66 +180,6 @@ function isExamplePath(href: string): boolean {
   return EXAMPLE_PATH_PATTERNS.some((re) => re.test(href));
 }
 
-/**
- * Replace Markdown code with spaces while preserving newlines and offsets.
- * Link syntax in code samples is illustrative rather than a navigable Markdown
- * link, so it must not be passed to the relative-link validator.
- */
-function maskCodeForLinkValidation(content: string): string {
-  const masked = content.split("");
-  const maskRange = (start: number, end: number): void => {
-    for (let index = start; index < end; index++) {
-      if (masked[index] !== "\n" && masked[index] !== "\r") masked[index] = " ";
-    }
-  };
-
-  let fence: { marker: "`" | "~"; length: number } | null = null;
-  let lineStart = 0;
-  while (lineStart < content.length) {
-    const newline = content.indexOf("\n", lineStart);
-    const lineEnd = newline === -1 ? content.length : newline;
-    const line = content.slice(lineStart, lineEnd);
-    const marker = line.match(/^\s*(`{3,}|~{3,})/);
-
-    if (fence) {
-      maskRange(lineStart, lineEnd);
-      if (
-        marker &&
-        marker[1][0] === fence.marker &&
-        marker[1].length >= fence.length
-      ) {
-        fence = null;
-      }
-    } else if (marker) {
-      maskRange(lineStart, lineEnd);
-      fence = {
-        marker: marker[1][0] as "`" | "~",
-        length: marker[1].length,
-      };
-    }
-
-    lineStart = lineEnd + 1;
-  }
-
-  const fenceFreeContent = masked.join("");
-  for (let index = 0; index < fenceFreeContent.length; index++) {
-    if (fenceFreeContent[index] !== "`") continue;
-
-    let delimiterLength = 1;
-    while (fenceFreeContent[index + delimiterLength] === "`") delimiterLength++;
-    const delimiter = "`".repeat(delimiterLength);
-    const closingIndex = fenceFreeContent.indexOf(delimiter, index + delimiterLength);
-    if (closingIndex === -1) {
-      index += delimiterLength - 1;
-      continue;
-    }
-    maskRange(index, closingIndex + delimiterLength);
-    index = closingIndex + delimiterLength - 1;
-  }
-
-  return masked.join("");
-}
-
 function checkFile(mdPath: string): void {
   let content: string;
   try {
@@ -222,9 +189,21 @@ function checkFile(mdPath: string): void {
   }
   totalFiles++;
   const mdDir = dirname(mdPath);
+  // v1.2.0: post-scaffold resolution allowance for template docs, applied per
+  // link (whole files are never skipped). Candidate bases in resolution order;
+  // see the header for rules (i)-(iv). Files outside the template docs keep
+  // the plain relative-path behavior.
+  const candidateBases: string[] = [mdDir];
+  if (!relative(TEMPLATE_DOCS_ROOT, mdPath).startsWith("..")) {
+    candidateBases.push(
+      WORKSPACE_ROOT, // (ii) repo-root-relative authoring
+      join(WORKSPACE_ROOT, "templates", "common"), // (iii) template delivery tree
+      join(WORKSPACE_ROOT, "docs", relative(TEMPLATE_DOCS_ROOT, mdDir)), // (iv) delivered docs/ root
+    );
+  }
   RELATIVE_LINK_RE.lastIndex = 0;
 
-  for (const match of maskCodeForLinkValidation(content).matchAll(RELATIVE_LINK_RE)) {
+  for (const match of content.matchAll(RELATIVE_LINK_RE)) {
     const href = match[2].trim();
     const fragment = match[3] ? match[3].slice(1) : null;
     // Skip remote URLs, empty hrefs, anchor-only refs, and example placeholders
@@ -235,9 +214,17 @@ function checkFile(mdPath: string): void {
     if (!hrefClean) continue;
 
     totalLinks++;
-    const target = resolve(mdDir, hrefClean);
+    // v1.2.0: the first existing candidate in the allowance chain wins
+    let target: string | null = null;
+    for (const base of candidateBases) {
+      const candidate = resolve(base, hrefClean);
+      if (existsSync(candidate)) {
+        target = candidate;
+        break;
+      }
+    }
 
-    if (!existsSync(target)) {
+    if (target === null) {
       brokenLinks++;
       const rel = mdPath.replace(WORKSPACE_ROOT + "\\", "").replace(WORKSPACE_ROOT + "/", "");
       const msg = `  ${rel}: broken link → ${href}`;
@@ -285,6 +272,10 @@ if (dirArg) {
   // Subdirectories like adr/, designs/, architecture/ have many historical
   // cross-references managed separately by validate-doc-folder.ts
   mdFiles = collectMdFiles(join(WORKSPACE_ROOT, "docs"), false);
+  // v1.2.0: also gate the common template docs (design-foundation.md et al.),
+  // recursive. _examples/ is scaffold staging and skipped via
+  // TEMPLATE_STAGING_SKIP; template Projects staging lives outside docs/.
+  mdFiles.push(...collectMdFiles(TEMPLATE_DOCS_ROOT, true, TEMPLATE_STAGING_SKIP));
 }
 
 if (verbose) console.log(`🔍 Scanning ${mdFiles.length} markdown file(s) for broken links...\n`);

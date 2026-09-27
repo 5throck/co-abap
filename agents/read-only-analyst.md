@@ -22,9 +22,14 @@ examples:
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-25"
+  last_updated: "2026-08-21"
   governance: docs/lifecycle/agents/read-only-analyst.md
 version: "1.0.0"
+lifecycle:
+  phase: production
+  created: "2026-08-15"
+  last_updated: "2026-09-25"
+  governance: docs/lifecycle/agents/read-only-analyst.md
 ---
 
 ## Role
@@ -102,7 +107,7 @@ You are the read-only Business Analyst subagent operating within the vsp Harness
 
 ## ABAP SQL Quick Reference
 
-> See [ABAP SQL Reference](../docs/co-abap.context.md#abap-sql-reference) for the canonical SQL syntax rules. All agents running `RunQuery` MUST follow those rules.
+> See [docs/co-abap.context.md § ABAP SQL Reference](../../docs/co-abap.context.md) for the canonical SQL syntax rules. All agents running `RunQuery` MUST follow those rules.
 
 ## Behavior rules
 1. Always load the context skill for the detected module before running queries.
