@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-28T04:02:16.932Z
+**Generated**: 2026-09-28T12:21:16.964Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 47
+- **Skills**: 48
 - **Scripts**: 104 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -84,6 +84,7 @@
 | sap-sd | 1.0.0 | active | skills/sap-sd/SKILL.md | workspace | sap-sd, sales order, delivery, billing, pricing, O2C | sd-analyst |
 | script-lifecycle-manager | 1.2.2 | active | skills/script-lifecycle-manager/SKILL.md | workspace | create script, update script, deprecate script, script lifecycle, manage scripts | pm |
 | security-scan | 1.2.0 | active | skills/security-scan/SKILL.md | workspace | security scan, scan for vulnerabilities, security check, run security | pm |
+| service-design | 1.1.0 | active | skills/service-design/SKILL.md | workspace | service design, customer journey, service blueprint, touchpoint design, customer experience, service innovation, operational alignment | pm |
 | skill-lifecycle-manager | 1.5.0 | active | skills/skill-lifecycle-manager/SKILL.md | workspace | create skill, new skill, validate skills, skill lifecycle, manage skills, skill request, deprecate skill, remove skill | pm |
 | source-command-celebrate | 1.0.0 | active | skills/source-command-celebrate/SKILL.md | workspace | source-command-celebrate, celebrate, task complete | pm |
 | source-command-commit-push-pr | 1.0.3 | active | skills/source-command-commit-push-pr/SKILL.md | workspace | commit-push-pr, commit and push, create PR | pm |
@@ -186,7 +187,7 @@
 | validate-decisions.ts | 1.0.0 | scripts/validate-decisions.ts | js-yaml |
 | validate-doc-folder.ts | 1.1.0 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test |
-| validate-docs-links.ts | 1.2.0 | scripts/validate-docs-links.ts | fs, path |
+| validate-docs-links.ts | 1.3.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
 | validate-md-language.ts | 1.12.0 | scripts/validate-md-language.ts | fs |
 | validate-model-registry.ts | 1.4.0 | scripts/validate-model-registry.ts | N/A |
@@ -196,7 +197,7 @@
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
-| validate-templates.ts | 1.48.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.50.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
@@ -244,8 +245,8 @@
 
 - **Commands with parity (gemini mirror)**: 9 / 20
 - **Commands with codex prompts mapping**: 9 / 20
-- **Skills in all four mirrors**: 0 / 47
-- **Skills in claude+gemini only (both)**: 0 / 47 (common-template skills are parity-exempt)
+- **Skills in all four mirrors**: 0 / 48
+- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
 
 ---
 
