@@ -77,7 +77,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `sync-md.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `sync-skills.ts` | L0 | 1.10.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `dev-sync.ts` | L0 | 1.21.0 | active | —| —| L0+L1 | —|
+| `dev-sync.ts` | L0 | 1.21.1 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch-serial.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
 | `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|

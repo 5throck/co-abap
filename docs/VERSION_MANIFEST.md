@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-29T04:06:22.812Z
+**Generated**: 2026-09-29T16:53:25.290Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -28,7 +28,7 @@
 | fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-25 |
 | form-expert | agents/form-expert.md | medium | inherit | 2026-09-25 |
 | gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-25 |
-| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-25 |
+| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-29 |
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
@@ -136,7 +136,7 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.0.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.21.0 | scripts/dev-sync.ts | bun |
+| dev-sync.ts | 1.21.1 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
