@@ -1,6 +1,15 @@
 {
-  "timestamp": "2026-09-28T16:56:26.829Z",
+  "timestamp": "2026-09-29T04:05:53.171Z",
   "files": [
-    "M .claude/template-version.txt"
+    "M .claude/template-version.txt",
+    "M AGENTS.md",
+    "M CLAUDE.md",
+    "M agents/i18n-specialist.md",
+    "M docs/governance/agents/execution-plan-templates.md",
+    "M docs/user-guide.md",
+    "M docs/user-guide_ko.md",
+    "M docs/workspace-schema.json",
+    "M scripts/SCRIPTS.md",
+    "M scripts/validate-templates.ts"
   ]
 }
