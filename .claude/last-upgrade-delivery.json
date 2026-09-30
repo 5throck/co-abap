@@ -1,11 +1,12 @@
 {
-  "timestamp": "2026-09-29T16:49:26.583Z",
+  "timestamp": "2026-09-30T16:50:40.432Z",
   "files": [
     ".claude/template-version.txt",
-    "AGENTS.md",
-    "agents/pm.md",
-    "docs/governance/agents/execution-plan-templates.md",
     "scripts/SCRIPTS.md",
-    "scripts/dev-sync.ts"
+    "scripts/agent-lifecycle-audit.ts",
+    "scripts/dev-sync.ts",
+    "scripts/lib/upgrade-policy.ts",
+    "scripts/validate-templates.ts",
+    "scripts/verify-scripts.ts"
   ]
 }
