@@ -1,9 +1,17 @@
 {
-  "timestamp": "2026-10-01T14:20:34.848Z",
+  "timestamp": "2026-10-01T20:49:50.044Z",
   "files": [
-    "CLAUDE.md",
-    "CODEX.md",
-    "GEMINI.md",
-    "template-version.txt"
+    ".agents/skills/sync/SKILL.md",
+    ".claude/skills/sync/SKILL.md",
+    ".codex/skills/sync/SKILL.md",
+    ".gemini/skills/sync/SKILL.md",
+    ".hermes/skills/sync/SKILL.md",
+    "docs/context.md",
+    "scripts/SCRIPTS.md",
+    "scripts/audit.ts",
+    "scripts/dev-sync.ts",
+    "skills/sync/SKILL.md",
+    "template-version.txt",
+    "scripts/validate-surface-registry.ts"
   ]
 }
