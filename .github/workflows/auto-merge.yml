@@ -24,11 +24,12 @@ jobs:
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
         with:
           script: |
+            // Only check names this repo's CI actually produces (ci.yml:
+            // 'Documentation Audit', 'Secret Scan'). Names that never exist
+            // make the gate fail closed on every PR (2026-10-01 FW-6).
             const requiredChecks = new Set([
               'Documentation Audit',
               'Secret Scan',
-              'Typecheck',
-              'Script Tests',
             ]);
             let pr = context.payload.pull_request;
             if (context.eventName === 'workflow_run') {
