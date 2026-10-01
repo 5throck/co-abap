@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-09-29T16:53:25.290Z
+**Generated**: 2026-10-01T00:18:44.772Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -32,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
-| pm | agents/pm.md | high | N/A | 2026-09-26 |
+| pm | agents/pm.md | high | N/A | 2026-09-29 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-25 |

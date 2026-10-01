@@ -1,5 +1,5 @@
 ---
-extends: ../../common/agents/pm.md
+extends: ../../../agents/pm.md
 name: pm
 role: Project Manager
 status: active
