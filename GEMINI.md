@@ -116,6 +116,8 @@ The High/Medium/Low tier concept and its usage rules are the Single Source of Tr
 ---
 
 <!-- COMMON-GEMINI:START -->
+> **Mandatory**: Read [`AGENTS.md`](AGENTS.md) first and follow its content in every task. It is the SSOT registry for the agent roster, PM Gateway workflow, tier model, skill resolution priority, and universal baseline behaviors; this file carries platform-specific behavior only.
+
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Gemini/Antigravity's model-ID mapping (overridden per subagent invocation when appropriate):
 - **High-tier** → `gemini-3.1-pro` (Parameter: `thinking_level="medium"`)

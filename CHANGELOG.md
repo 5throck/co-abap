@@ -8,6 +8,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+- **[2026-10-01]**: chore(governance): require AGENTS.md read-first in platform instruction files — a compact `> **Mandatory**: Read AGENTS.md first and follow its content in every task` callout was added inside the first managed block of templates/common `CLAUDE.md`/`GEMINI.md`/`CODEX.md` and delivered to existing projects via the upgrade positional block merge; `HERMES.md` already carries the directive at its header (ADR-0093) and is unchanged.
 
 - **[2026-10-01]**: chore(upgrade): template sync v0.8.3 delivery (2026-10-01) — workspace `upgrade-project.ts` fleet resync delivering the current template tree: template-version stamp migrated from `.claude/` to the project root, graft skill surfaces delivered to all five platform mirrors, `ci.yml` PROJECT-JOB markers + opt-in `unit-tests` job (ADR-0094), script fleet refresh (`upgrade-policy`, `sync-skills`, `generate-version-manifest`, `verify-platform-lifecycle`), governance doc merges (`agents/pm.md` tier-semantics link, `pm-gateway-workflow`, `workflows`), and registry/schema regeneration (VERSION_MANIFEST, skill-graph, workspace-schema).
 - **[2026-09-29]**: chore(upgrade): **template upgrade to v0.8.1 — Claude 5.5 models.** Registry High/Medium tiers move to `claude-opus-5-5` / `claude-sonnet-5-5`; AGENTS.md `tier-model-mapping` blocks refreshed (now delivered by the fixed upstream managed-block merge); agent tier lines carry the tier word only (stale `# <model-id>` comments removed — the registry resolves models).
