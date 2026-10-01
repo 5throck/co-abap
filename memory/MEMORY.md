@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-01](2026-10-01.md) | chore(upgrade): template sync v0.8.3 delivery (2026-10-01) |
 | [2026-10-01](2026-10-01.md) | chore: update |
 | [2026-09-30](2026-09-30.md) | chore(upgrade): template sync v0.8.2 delivery (2026-09-30) |
 | [2026-09-29](2026-09-29.md) | chore(upgrade): template sync v0.8.0 (auto-release 2026-09-29) |
