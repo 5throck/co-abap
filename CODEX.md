@@ -123,7 +123,7 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 
 For the **4-level enforcement model**, **mandatory criteria**, **execution plan format**, and **phase determination**, see [AGENTS.md §3 and §5](AGENTS.md).
 
-**Execution Plan Boilerplate**: the table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in [AGENTS.md §5.1](AGENTS.md#51-standard-execution-plan-template) and [§5.1.1](AGENTS.md#511-design-gate-exemptions).
+**Execution Plan Boilerplate**: the table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in [Execution Plan Templates §5.1](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template) and [§5.1.1](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions).
 
 > **Note (Codex-specific)**: Use the literal model ID (e.g. `gpt-5.6-sol`) in the `Model` column, not a Claude-style short alias. With no native subagent tool, each plan row is executed sequentially in-session under the row's named specialist role.
 

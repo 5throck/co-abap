@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-01T06:32:39.251Z
+**Generated**: 2026-10-01T13:59:00.485Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 48
+- **Skills**: 49
 - **Scripts**: 104 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -63,6 +63,7 @@
 | explain-me | 1.0.0 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
 | finishing-a-development-branch | 1.0.1 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
+| graft | 1.0.0 | active | skills/graft/SKILL.md | workspace | graft, repo context graph, find where code lives, what calls this symbol, blast radius | pm |
 | handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
 | i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
@@ -107,7 +108,7 @@
 |------|---------|----------|--------------|
 | agent-create.ts | 1.0.1 | scripts/agent-create.ts | N/A |
 | agent-delete.ts | 1.0.1 | scripts/agent-delete.ts | N/A |
-| agent-lifecycle-audit.ts | 1.5.0 | scripts/agent-lifecycle-audit.ts | N/A |
+| agent-lifecycle-audit.ts | 1.6.0 | scripts/agent-lifecycle-audit.ts | N/A |
 | agent-list.ts | 1.1.0 | scripts/agent-list.ts | N/A |
 | agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | N/A |
 | analyze-git-history.ts | 1.0.2 | scripts/analyze-git-history.ts | child_process |
@@ -149,7 +150,7 @@
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
 | generate-raci.ts | 1.1.0 | scripts/generate-raci.ts | js-yaml |
 | generate-skill-graph.ts | 1.14.0 | scripts/generate-skill-graph.ts | js-yaml |
-| generate-version-manifest.ts | 1.8.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
+| generate-version-manifest.ts | 1.10.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
 | graph-delta-log.ts | 1.0.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
@@ -177,7 +178,7 @@
 | spec-register.ts | 1.3.0 | scripts/spec-register.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
-| sync-skills.ts | 1.10.0 | scripts/sync-skills.ts | N/A |
+| sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.4.1 | scripts/team-builder.ts | N/A |
 | test-runner.ts | 1.4.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
@@ -245,8 +246,8 @@
 
 - **Commands with parity (gemini mirror)**: 9 / 20
 - **Commands with codex prompts mapping**: 9 / 20
-- **Skills in all four mirrors**: 0 / 48
-- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
+- **Skills in all four mirrors**: 0 / 49
+- **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
 
 ---
 

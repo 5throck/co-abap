@@ -23,6 +23,7 @@
 | `explain-me` | L3 | — | — | — | — | — |
 | `finishing-a-development-branch` | L3 | — | — | — | — | — |
 | `gateguard` | L3 | — | — | — | — | — |
+| `graft` | L3 | — | — | — | — | — |
 | `handbook` | L3 | — | — | — | — | — |
 | `handbook-sync-audit` | L3 | — | — | — | — | — |
 | `i18n-audit` | L3 | i18n-specialist | — | — | — | — |

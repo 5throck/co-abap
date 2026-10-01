@@ -62,7 +62,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `validate-templates.ts` | L0 | 1.50.2 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `agent-lifecycle-audit.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
+| `agent-lifecycle-audit.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `agent-list.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
@@ -75,7 +75,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `retry-handler.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `setup-github-branch-protection.ts` | L0 | 1.0.1 | active | `--repo`, `--branch`, `--check` (repeatable), `--dry-run` | —| L0+L1 | —|
 | `sync-md.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `sync-skills.ts` | L0 | 1.10.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
+| `sync-skills.ts` | L0 | 1.11.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `dev-sync.ts` | L0 | 1.22.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
@@ -165,7 +165,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/propagation-map-schema.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/markers.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
-| `generate-version-manifest.ts` | L0 | 1.8.0 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
+| `generate-version-manifest.ts` | L0 | 1.10.0 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
 | `helpers/rollback-partial-project.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/scaffold-markers.ts` | L0 | 1.6.2 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
 | `lib/managed-block-parity.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -182,7 +182,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `validate-process.ts` | L0 | 1.0.0 | active | Process/stages validation (ADR-0083 DEG-P-*), distinctness check (`--determinism` flag) | —| L0+L1 | —|
 | `validate-raci.ts` | L0 | 1.2.0 | active | RACI validation per ADR-0083 DEG-R-01..05 + ADR-0084 DEG-R-06/07; DEG-R-06: human-accountable must match gate; DEG-R-07: actor_types key set must equal R/A/C/I union | —| L0+L1 | —|
 | `lib/dependency-guard.ts` | L0 | 1.0.2 | active | DEPENDENCY GUARD — scans delivered scripts' bare-package imports vs project package.json, reports missing packages in the upgrade plan (T-20260920-001) | —| L0+L1 | —|
-| `lib/upgrade-policy.ts` | L0 | 1.19.0 | active | exports `lifecyclelessText()` (equal-version agent drift) + `isDeliveredDiff()` (dev-sync 3.9 auto-E5, rollout hardening 2026-09-21) | —| L0+L1 | —|
+| `lib/upgrade-policy.ts` | L0 | 1.21.0 | active | exports `lifecyclelessText()` (equal-version agent drift) + `isDeliveredDiff()` (dev-sync 3.9 auto-E5, rollout hardening 2026-09-21) | —| L0+L1 | —|
 | `helpers/golden-reference-loader.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/mirror-hygiene.ts` | L0 | 1.0.0 | active | v1.0.0 mirror-hygiene scanner (R6, spec docs/designs/2026-09-25-verifier-platform-expansion-design.md): a platform skill mirror contains only skill directories; stray files (SKILLS.md/README*.md) and non-skill dirs are findings; wired into validate-templates checkMirrorHygiene (WARN soak) | —| L0+L1 | —|
 | `helpers/registries/capability-registry.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -192,6 +192,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/skills-registry.ts` | L0 | 1.2.0 | active | v1.2.0 (registry-policy-completeness batch W5, spec docs/designs/2026-09-25-registry-policy-completeness-design.md R5.1): registry auto-sync machinery — collectRegistryDrift, listSkillDirs, splitRootRegistry, collectCatalogEntries, collectCatalogDrift, syncVariantExclusiveCatalog, syncGenericRegistry, collectWorkspaceRegistryFindings (pure compute shared by the sync CLI, validate-templates VA-08, and unit tests; the root Variant-Exclusive catalog reconciles via a dedicated path — its 7th column is the owner-variant list, not notes). Prior: v1.1.0 (T-20260924-008, spec docs/designs/2026-09-24-skills-registry-overlay-reconcile-design.md): adds collectDeliveredSkills + pruneSkillRegistryRows (fresh-scaffold reconcile half); extractFrontmatterVersionAndReviewed moved in verbatim from upgrade-project.ts. v1.0.0: parse/reconcile project skills/SKILLS.md (T-20260922-001) | —| L0+L1 | —|
 | `lib/platforms.ts` | L0 | 1.1.0 | active | Platform-list SSOT constants (PLATFORM_SKILL_BASES, PLATFORM_MIRROR_DIRS); Step 1 of the platform-parity program (spec: docs/designs/2026-09-24-platform-ssot-constant-design.md) | —| L0+L1 | —|
 | `co-abap/new-requirement.ts` | L3 | 1.1.0 | active | Variant-local requirement scaffolder — creates `deliverables/REQ-NNN-<slug>/` (01_srs.md, 05_unit_test_plan.md, 06_release_report.md) and inserts the RTM row in deliverables/index.md. v1.1.0 (spec docs/designs/2026-09-26-new-requirement-scaffolding-design.md): repo-root resolution fix (folders were landing under scripts/deliverables/), --help/-h handling, 05/06 pre-scaffolding per the standardized deliverable set | —| L3 | —|
+| `lib/ci-workflow-merge.ts` | L0 | 1.0.0 | active | v1.0.0 (T-20260930-026 PR-A, ADR-0094): fail-closed merge/validate of a project `.github/workflows/ci.yml` against the template — 12 error codes (MARKER_*, REGION_*, YAML_PARSE, DUPLICATE_KEY, RESERVED_JOB, FORBIDDEN_TRIGGER, TEMPLATE_JOB_DRIFT, MIGRATION_UNSAFE); PROJECT-JOBS region is untrusted input; legacy migration copies original text slices (never re-serializes); fs confined to applyCiWorkflowMerge (temp + re-validate + atomic rename) | —| L0+L1 | —|
 
 ---
 
