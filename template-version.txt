@@ -2,4 +2,4 @@ variant=co-abap
 version=0.8.3
 platform=all
 country=none
-upgraded=2026-10-01T13:53:19.519Z
+upgraded=2026-10-01T14:20:34.756Z

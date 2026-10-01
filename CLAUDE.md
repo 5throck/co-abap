@@ -79,6 +79,8 @@ Config file: `.mcp.json` (project root) - auto-loaded by both the CLI and the De
 * **Path Resolving**: relative paths (e.g., `./server` or `python scripts/mcp.py`) are automatically resolved by Claude Code relative to the individual project's root folder. When defining commands inside `.mcp.json`, always keep command executable paths relative to the project directory for portable cross-platform runs.
 
 <!-- COMMON-CLAUDE:START -->
+> **Mandatory**: Read [`AGENTS.md`](AGENTS.md) first and follow its content in every task. It is the SSOT registry for the agent roster, PM Gateway workflow, tier model, skill resolution priority, and universal baseline behaviors; this file carries platform-specific behavior only.
+
 #### teammateMode (Claude Code Agent Teams execution mode)
 
 **teammateMode** specifies the parallel execution mode when Agent Teams is enabled in Claude Code.

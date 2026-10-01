@@ -1,30 +1,9 @@
 {
-  "timestamp": "2026-10-01T13:53:19.641Z",
+  "timestamp": "2026-10-01T14:20:34.848Z",
   "files": [
-    ".claude/template-version.txt",
-    ".github/workflows/ci.yml",
     "CLAUDE.md",
     "CODEX.md",
     "GEMINI.md",
-    "agents/pm.md",
-    "docs/governance/agents/pm-gateway-workflow.md",
-    "docs/governance/agents/workflows.md",
-    "docs/workspace-schema.json",
-    "scripts/SCRIPTS.md",
-    "scripts/agent-lifecycle-audit.ts",
-    "scripts/generate-version-manifest.ts",
-    "scripts/lib/upgrade-policy.ts",
-    "scripts/sync-skills.ts",
-    "scripts/validate-templates.ts",
-    "scripts/verify-platform-lifecycle.ts",
-    ".agents/skills/graft/SKILL.md",
-    ".claude/skills/graft/SKILL.md",
-    ".codex/skills/graft/SKILL.md",
-    ".gemini/skills/graft/SKILL.md",
-    ".hermes/skills/graft/SKILL.md",
-    "scripts/lib/ci-workflow-merge.ts",
-    "skills/.sync-skills-managed.json",
-    "skills/graft/SKILL.md",
     "template-version.txt"
   ]
 }
