@@ -32,8 +32,8 @@ The mapping is immutable per generation:
 - **Low**: `gemini-3.8-flash` (Fast, repetitive execution)
 
 **Claude Tier Mapping:**
-- **High**: `claude-opus-5-0`
-- **Medium**: `claude-sonnet-5-0`
+- **High**: `claude-opus-5-5`
+- **Medium**: `claude-sonnet-5-5`
 - **Low**: `claude-haiku-4-5`
 
 Tier layering: the workspace-root PM and template PMs are all Medium (orchestration and coordination; workspace-root aligned to Medium 2026-09-15). Design-adjudication-heavy work dispatches to the architect or the High-tier design specialists. A variant whose PM must own design adjudication re-declares `tier: high` in its own `agents/pm.md` frontmatter.
@@ -80,7 +80,7 @@ Standard directory layout for all projects in this workspace:
 └── .agents/      # Antigravity / Antigravity CLI settings and slash commands
 ```
 
-**Cross-Platform Skill Availability**: `skills/` is the Single Source of Truth (SSOT) for all skill definitions. `bun scripts/sync-skills.ts` distributes each eligible skill to five derived mirrors: `.claude/skills/`, `.gemini/skills/`, `.agents/skills/`, `.codex/skills/`, and `.hermes/skills/`. Mirrors MUST NOT be edited as sources.
+**Cross-Platform Skill Availability**: `skills/` is the Single Source of Truth (SSOT) for all skill definitions. Every skill MUST be available on all supported surfaces (see Supported Surfaces below: Claude Code, Claude Desktop App, Antigravity, Antigravity CLI, Codex CLI, Codex Desktop App, Hermes Agent, Hermes CLI; Gemini CLI as the legacy Google path). Platform distribution directories (`.claude/skills/`, `.gemini/skills/`, `.agents/skills/`) are derived copies — they MUST NOT be the sole location of any skill.
 
 ---
 
@@ -307,7 +307,7 @@ Register new skills and skill changes through the `skill-lifecycle-manager` skil
 
 #### Pluggable Variant Audit Hook
 
-A mechanism that allows variant-specific validation checks to run during the synchronization and validation pipeline without modifying core script files (for example, `dev-sync.ts` and `audit.ts`). This project has no separate variant-audit hook; run `bun scripts/audit.ts` for the delivered audit procedure. Any future optional validator must be documented and registered before it is invoked.
+A mechanism that allows variant-specific validation checks to be executed during the synchronization and validation pipeline without modifying core script files (e.g., `dev-sync.ts`, `audit.ts`). Variant-specific audits are placed in `scripts/audit-variant.ts`. If this script is present, the core validation runner (`audit.ts`) dynamically detects and executes it. Any non-zero exit code from `audit-variant.ts` will fail the audit gate.
 <!-- COMMON-CONSTITUTION:END -->
 
 ---
@@ -498,6 +498,30 @@ For full lifecycle procedures:
 - **Skill Lifecycle**: See [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
 - **Script Lifecycle**: See [AGENTS.md §8 Lifecycle Management](../AGENTS.md)
 
+## Supported Surfaces — Mandatory Coverage
+
+This project and its template lineage MUST support all of the following surfaces.
+
+| # | Surface | Family | Instruction file | Machine-global MCP config |
+|---|---------|--------|------------------|---------------------------|
+| 1 | Claude Code | Anthropic | `CLAUDE.md` | `~/.claude.json` |
+| 2 | Claude Desktop App | Anthropic | `CLAUDE.md` (Code tab, bundled CLI) | `~/.claude.json` (Code tab); `claude_desktop_config.json` (chat) |
+| 3 | Antigravity | Google | `GEMINI.md` | `~/.gemini/config/mcp_config.json` |
+| 4 | Antigravity CLI | Google | `GEMINI.md`, `AGENTS.md` | `~/.gemini/config/mcp_config.json` (shared with #3) |
+| 5 | Codex CLI | OpenAI | `CODEX.md`, `AGENTS.md` | `~/.codex/config.toml` |
+| 6 | Codex Desktop App | OpenAI | `CODEX.md`, `AGENTS.md` | `~/.codex/config.toml` (shared with #5) |
+| 7 | Hermes Agent | Nous Research | `HERMES.md`, `AGENTS.md` | `~/.hermes/config.yaml` |
+| 8 | Hermes CLI | Nous Research | `HERMES.md`, `AGENTS.md` | `~/.hermes/config.yaml` (shared with #7) |
+
+Gemini CLI (`.gemini/`) remains supported as the legacy path of the Google family while its settings files ship.
+
+Rules:
+
+1. **Coverage.** Every new or changed rule, instruction text, skill, command, hook, script, or tool registration MUST work on all eight surfaces. If a capability cannot reach a surface, record the gap (surface, reason, fallback, ticket) in the design document or PR. Never omit a surface silently.
+2. **Single source.** Shared behavior lives in one source (`agents/pm.md`, `skills/`, `AGENTS.md`). Platform instruction files point to it and do not copy it.
+3. **Machine-global registrations** (for example MCP servers) are delivered by an idempotent installer that the user runs, with `--dry-run` and `--uninstall`. It covers every config file in the table, skips a client that is not installed, and never creates a config that the client owns.
+4. **Verify against the vendor.** Before an installer or a template writes a client config, confirm the path and the format in the vendor's official documentation, and record the source URL in the design document. Do not infer a format from a local file alone.
+
 ## Platform Hooks & Governance Enforcement
 
 This workspace uses a 3-layer enforcement model (Hook → Prompt → Skill) to ensure governance rules are applied across all platforms.
@@ -538,4 +562,4 @@ See the workspace governance documentation (Governance Enforcement Layers) and A
 
 ---
 
-*context.md version: 2.13 — Project Overview is now a two-line pointer to project-owned docs/project.md (identity seed, spec 2026-09-24-scaffold-identity-overview-design)*
+*context.md version: 2.14 — Supported Surfaces section delivered to projects (footer bump: the section was added at 2.13 without a version bump, so same-version project copies never received it; T-20261001-021)*
