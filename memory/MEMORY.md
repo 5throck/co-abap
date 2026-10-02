@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-03](2026-10-03.md) | chore(upgrade): template sync v0.10.0 delivery (2026-10-03) |
 | [2026-10-02](2026-10-02.md) | chore(upgrade): template sync v0.9.0 fleet rollout (T-20261001-021) |
 | [2026-10-01](2026-10-01.md) | chore(upgrade): template sync v0.8.3 delivery (2026-10-01) |
 | [2026-10-01](2026-10-01.md) | chore: update |
@@ -12,7 +13,7 @@
 | [2026-09-28](2026-09-28.md) | docs(reflection): upgrade-wave record (v0.7.0 PRs #163–#165) + scratch cleanup |
 | [2026-09-27](2026-09-27.md) | chore(upgrade): template sync v0.7.0 (auto-release 2026-09-27) |
 | [2026-09-26](2026-09-26.md) | feat(deliverables): REQ-001 flight occupancy and revenue analysis report |
-| [2026-09-25](2026-09-25.md) | chore(upgrade): template sync 2026-09-25 — deliver audit helper chain (Design Gate repair) + full project review remediation |
+| 2026-09-25 | chore(upgrade): template sync 2026-09-25 — deliver audit helper chain (Design Gate repair) + full project review remediation |
 | 2026-09-23 | chore(deps): bump dependency carets and refresh lockfile |
 | 2026-09-22 | chore: fleet resync completion — upgrade wave + PM tier fix |
 | 2026-09-21 | fix(skills): complete handbook v0.6.0 delivery — Korean reference files |
