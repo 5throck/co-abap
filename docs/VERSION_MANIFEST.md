@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-02T13:34:29.023Z
+**Generated**: 2026-10-03T01:54:47.645Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -108,7 +108,7 @@
 |------|---------|----------|--------------|
 | agent-create.ts | 1.0.1 | scripts/agent-create.ts | N/A |
 | agent-delete.ts | 1.0.1 | scripts/agent-delete.ts | N/A |
-| agent-lifecycle-audit.ts | 1.6.0 | scripts/agent-lifecycle-audit.ts | N/A |
+| agent-lifecycle-audit.ts | 1.7.0 | scripts/agent-lifecycle-audit.ts | N/A |
 | agent-list.ts | 1.1.0 | scripts/agent-list.ts | N/A |
 | agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | N/A |
 | analyze-git-history.ts | 1.0.2 | scripts/analyze-git-history.ts | child_process |
@@ -141,7 +141,7 @@
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
-| dispatch-serial.ts | 1.1.1 | scripts/dispatch-serial.ts | N/A |
+| dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
 | dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
 | evidence-backport-scan.ts | 1.1.0 | scripts/evidence-backport-scan.ts | N/A |
@@ -156,7 +156,7 @@
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
 | install-vsp.ts | 1.0.1 | scripts/co-abap/install-vsp.ts | bun |
-| lifecycle-sync-audit.ts | 1.17.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
+| lifecycle-sync-audit.ts | 1.17.1 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
 | migrate-quality-gates.ts | 1.1.0 | scripts/migrate-quality-gates.ts | fs, js-yaml, path |
@@ -191,15 +191,15 @@
 | validate-docs-links.ts | 1.3.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
 | validate-md-language.ts | 1.12.0 | scripts/validate-md-language.ts | fs |
-| validate-model-registry.ts | 1.4.0 | scripts/validate-model-registry.ts | N/A |
+| validate-model-registry.ts | 1.4.1 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
 | validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | js-yaml |
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
-| validate-surface-registry.ts | 1.0.0 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.50.2 | scripts/validate-templates.ts | js-yaml |
+| validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
+| validate-templates.ts | 1.50.5 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |

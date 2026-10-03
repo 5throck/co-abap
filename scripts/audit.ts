@@ -1685,6 +1685,36 @@ function checkDesignLint() {
 }
 checkDesignLint();
 
+// T-20261002-008 (review H1 doc-command lint): governance docs may only name
+// ticket.ts subcommands that exist — the CLI's usage line is the SSOT, so a doc
+// referencing a removed/renamed/never-shipped subcommand fails the audit.
+// Remedy: fix the doc (or, if the CLI changed intentionally, update §3.12 / pm.md).
+if (fs.existsSync(path.join('scripts', 'validate-ticket-doc-commands.ts'))) {
+    const { status, stdout, stderr } = spawnSync('bun', ['scripts/validate-ticket-doc-commands.ts'], { encoding: 'utf-8' });
+    if (status !== 0) {
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+        Fail('ticket.ts doc-command lint: governance docs reference non-existent ticket.ts subcommands (see output above)');
+    } else {
+        Pass('ticket.ts doc-command lint: governance docs name only real ticket.ts subcommands');
+    }
+}
+
+// T-20261002-011: variant .claude/settings.json SessionStart entries managed by the
+// workspace (pm-role-bootstrap) must stay in sync with templates/common — a stale
+// hook on 13 variants is exactly the drift class the propagation map exists to close.
+// Remedy: bun scripts/sync-variant-settings.ts
+if (fs.existsSync(path.join('scripts', 'sync-variant-settings.ts'))) {
+    const { status, stdout, stderr } = spawnSync('bun', ['scripts/sync-variant-settings.ts', '--check'], { encoding: 'utf-8' });
+    if (status !== 0) {
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+        Fail('variant settings.json SessionStart drift — run: bun scripts/sync-variant-settings.ts');
+    } else {
+        Pass('variant settings.json SessionStart: managed entries in sync with templates/common');
+    }
+}
+
 // Variant script drift detection (WARN-only, first-pass heuristic).
 // Flags templates/co-*/scripts files that duplicate templates/common/scripts files by >50% content overlap.
 // See docs/designs/2026-08-16-august-regression-coverage-design.md §2 for design, rationale, and denominator choice.

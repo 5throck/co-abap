@@ -920,6 +920,12 @@
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
+      "to": "graft",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:AGENTS.md",
       "to": "handbook",
       "source": "workflow-doc"
     },
