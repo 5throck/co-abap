@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-03T06:33:25.774Z
+**Generated**: 2026-10-03T06:44:14.850Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,7 +9,7 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 49
+- **Skills**: 48
 - **Scripts**: 105 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
@@ -63,7 +63,6 @@
 | explain-me | 1.0.0 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
 | finishing-a-development-branch | 1.0.1 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
-| graft | 1.0.0 | active | skills/graft/SKILL.md | workspace | graft, repo context graph, find where code lives, what calls this symbol, blast radius | pm |
 | handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
 | i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
@@ -247,8 +246,8 @@
 
 - **Commands with parity (gemini mirror)**: 9 / 20
 - **Commands with codex prompts mapping**: 9 / 20
-- **Skills in all four mirrors**: 0 / 49
-- **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
+- **Skills in all four mirrors**: 0 / 48
+- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
 
 ---
 
