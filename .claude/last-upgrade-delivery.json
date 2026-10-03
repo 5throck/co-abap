@@ -1,31 +1,12 @@
 {
-  "timestamp": "2026-10-03T01:41:05.100Z",
+  "timestamp": "2026-10-03T06:32:47.059Z",
   "files": [
-    ".claude/helpers/graft-hooks.cjs",
-    ".claude/helpers/graft-statusline.cjs",
-    ".claude/settings.json",
     ".env.sample",
-    ".gemini/settings.json",
-    ".gitattributes",
-    ".github/workflows/ci.yml",
-    ".gitignore",
-    "AGENTS.md",
     "CLAUDE.md",
     "agents/pm.md",
     "docs/governance/agents/pm-gateway-workflow.md",
     "scripts/SCRIPTS.md",
-    "scripts/agent-lifecycle-audit.ts",
-    "scripts/audit.ts",
-    "scripts/dispatch-serial.ts",
-    "scripts/hooks/pre-commit.ts",
-    "scripts/lifecycle-sync-audit.ts",
-    "scripts/skill-lifecycle-audit.ts",
-    "scripts/validate-model-registry.ts",
-    "scripts/validate-surface-registry.ts",
-    "scripts/validate-templates.ts",
-    "scripts/verify-platform-lifecycle.ts",
-    "template-version.txt",
-    "scripts/hooks/pm-role-bootstrap.ts",
-    "scripts/lib/self-managed-tools.ts"
+    "scripts/helpers/scaffold-markers.ts",
+    "template-version.txt"
   ]
 }
