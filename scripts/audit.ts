@@ -1,4 +1,10 @@
-// @version 2.46.0
+// @version 2.48.1
+// v2.48.1 (2026-10-04): the manifest-gate spawn is L0-only (context.md guard) —
+//           the E2E caught scaffold-context leakage (project docs/ are project-scoped).
+// v2.48.0 (2026-10-04, spec 2026-10-04-docs-folder-manifest-design): docs/ folder
+//           manifest gate — spawns validate-doc-folder.ts --workspace (existsSync-guarded,
+//           after the doc-command lint): every docs/ top-level entry must be in the
+//           docs/README.md manifest, so folder proliferation fails the audit.
 // v2.46.0: Docs relative-link gate — spawns scripts/validate-docs-links.ts
 //           (workspace root only, placed after the docs-cluster checks) covering
 //           docs/ root-level files plus templates/common/docs/** recursively,
@@ -1700,6 +1706,23 @@ if (fs.existsSync(path.join('scripts', 'validate-ticket-doc-commands.ts'))) {
     }
 }
 
+// 2026-10-04 (spec 2026-10-04-docs-folder-manifest-design): docs/ top-level folder
+// governance — every directory and loose file under docs/ must be in the manifest
+// (docs/README.md); unknown entries fail instead of accreting. Remedy: move the
+// content to its default home, or add manifest row + decision reference + allowlist.
+// L0-only: scaffolded projects deliver validate-doc-folder.ts (project mode) but
+// their docs/ tree is project-scoped — the workspace manifest must not apply there.
+if (fs.existsSync(path.join('scripts', 'validate-doc-folder.ts')) && fs.existsSync(path.join('CONSTITUTION.md'))) {
+    const { status, stdout, stderr } = spawnSync('bun', ['scripts/validate-doc-folder.ts', '--workspace'], { encoding: 'utf-8' });
+    if (status !== 0) {
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+        Fail('docs/ folder manifest: unmanifested entries present (see output above)');
+    } else {
+        Pass('docs/ folder manifest: tree matches docs/README.md');
+    }
+}
+
 // T-20261002-011: variant .claude/settings.json SessionStart entries managed by the
 // workspace (pm-role-bootstrap) must stay in sync with templates/common — a stale
 // hook on 13 variants is exactly the drift class the propagation map exists to close.
@@ -3206,6 +3229,26 @@ if (SPEC_CHECK) {
         }
         if (missingSpecFiles === 0 && registry.specs.length > 0) {
             Pass(`Spec check: all ${registry.specs.length} spec file(s) exist`);
+        }
+
+        // Check 4 (T-20261003-013): status vocabulary — the registry previously accepted
+        // out-of-enum casts (superseded/planned/designed) that no gate saw, and a
+        // `superseded` row without a successor pointer could strand forever.
+        const SPEC_STATUS_VOCABULARY = ['draft', 'proposed', 'approved', 'planned', 'implemented', 'superseded', 'drifted', 'archived'];
+        const badStatus = registry.specs.filter(s => !SPEC_STATUS_VOCABULARY.includes(s.status));
+        if (badStatus.length > 0) {
+            for (const s of badStatus) {
+                Fail(`Spec check: "${s.id}" carries illegal status "${s.status}" (legal: ${SPEC_STATUS_VOCABULARY.join('|')}) — fix via spec-register.ts --update`);
+            }
+        }
+        const supersededNoPointer = registry.specs.filter(s => s.status === 'superseded' && !(s as { superseded_by?: string }).superseded_by);
+        if (supersededNoPointer.length > 0) {
+            for (const s of supersededNoPointer) {
+                Fail(`Spec check: "${s.id}" is superseded but has no superseded_by pointer — record the successor spec id`);
+            }
+        }
+        if (badStatus.length === 0 && supersededNoPointer.length === 0 && registry.specs.length > 0) {
+            Pass(`Spec check: all ${registry.specs.length} spec status(es) within the vocabulary`);
         }
         }
     }

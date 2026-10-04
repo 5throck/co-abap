@@ -1,12 +1,30 @@
 {
-  "timestamp": "2026-10-03T06:32:47.059Z",
+  "timestamp": "2026-10-04T17:05:55.691Z",
   "files": [
+    ".agents/skills/ci-triage/SKILL.md",
+    ".claude/skills/ci-triage/SKILL.md",
+    ".codex/skills/ci-triage/SKILL.md",
     ".env.sample",
+    ".gemini/skills/ci-triage/SKILL.md",
+    ".github/workflows/ci.yml",
+    ".hermes/skills/ci-triage/SKILL.md",
+    "AGENTS.md",
     "CLAUDE.md",
     "agents/pm.md",
+    "docs/co-abap.context.md",
     "docs/governance/agents/pm-gateway-workflow.md",
+    "docs/governance/agents/workflows.md",
     "scripts/SCRIPTS.md",
+    "scripts/audit.ts",
     "scripts/helpers/scaffold-markers.ts",
-    "template-version.txt"
+    "scripts/spec-register.ts",
+    "scripts/validate-decisions.ts",
+    "scripts/validate-doc-folder.ts",
+    "scripts/validate-docs-links.ts",
+    "scripts/verify-scripts.ts",
+    "skills/ci-triage/SKILL.md",
+    "template-version.txt",
+    "docs/standards/llm-interaction-standard.md",
+    "scripts/dependency-audit.ts"
   ]
 }

@@ -228,7 +228,7 @@ All shared Git/PR rules are in [docs/context.md](docs/context.md). Claude Code-s
 
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 
-*Last Updated: 2026-10-03 — removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR; previous: 2026-06-21 inlined N-1/N rows*
+*Last Updated: 2026-10-05 — removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR; previous: 2026-06-21 inlined N-1/N rows*
 <!-- COMMON-CLAUDE:END -->
 
 ---
@@ -291,7 +291,7 @@ See `skills/desktop-app-fallback/SKILL.md` for the complete fallback workflow.
 
 ---
 
-*Last Updated: 2026-10-03 — resynced Claude Code-Specific Behaviors (§1-11) with the current
+*Last Updated: 2026-10-05 — resynced Claude Code-Specific Behaviors (§1-11) with the current
 templates/common/CLAUDE.md baseline (Role Declaration, full Automated Hooks/Slash Commands/
 Language Policy/Skill Resolution/Agent Dispatch/Plan Mode/Task Tracking sections had drifted
 out of sync); consolidated the orphaned teammateMode block into §6; kept all ABAP-specific
