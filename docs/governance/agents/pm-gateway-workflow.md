@@ -47,22 +47,11 @@ Substantive LLM-assisted development work — generation or modification of code
 - **Runtime LLM integration**: an application calling LLM APIs at runtime is an architecture concern covered by the Design Gate (ADR-0074) — no additional ceremony.
 - **Enforcement**: structural, via the existing hard gates (spec-check, pre-commit audit, QA gate). See ADR-0078 (workspace root, `docs/adr/0078-agent-mediated-llm-work-routing.md`).
 
-### §3.10 Instruction Writing Standard (ASD-STE100, ADR-0079)
+### §3.10 Instruction Standard (LLM Interaction Standard §2, ADR-0098)
 
-Development-facing instruction text follows ASD-STE100 (Simplified Technical English) structural rules. **Applies to**: requirement statements, task briefs, execution-plan task descriptions, agent dispatch prompts, design-doc requirement/acceptance sections, API endpoint documentation, and how-to steps — in every development domain (web, app, API, scripts, documents). API development routes through the agent team identically to web/app development (§3.9).
+Instruction text follows the input side of the LLM Interaction Standard — SSOT: workspace-root `docs/standards/llm-interaction-standard.md` (§2 objective and controlled structure; §2.8 structural rules, consolidated from ADR-0079). **Applies to**: requirement statements, task briefs, execution-plan task descriptions, agent dispatch prompts, design-doc requirement/acceptance sections, API endpoint documentation, and how-to steps — in every development domain (web, app, API, scripts, documents). API development routes through the agent team identically to web/app development (§3.9).
 
-**Rules** (STE dictionary not adopted; technical vocabulary stays as-is):
-
-1. One instruction per sentence — ≤ 20 words for procedures, ≤ 25 for descriptions.
-2. Active voice; imperative mood for steps ("Run the audit").
-3. Present tense for procedures and current-state statements.
-4. One term = one meaning; use glossary/registry terms (agent, script, tier names) exactly.
-5. No idioms, slang, or culture-specific phrasing.
-6. Prefer positive phrasing; use negatives only for prohibitions.
-7. Minimal pronouns — repeat the noun when ambiguity is possible.
-8. Lists for parallel items; tables for structured data (§5 conventions).
-
-**Enforcement**: advisory — PM conforms task briefs and execution-plan rows at triage (flagging substantive rewrites); architect checks requirement sections at Design Gate review; specialists author new docs in the standard. See ADR-0079 (workspace root, `docs/adr/0079-simplified-english-development-instructions.md`).
+**Enforcement**: advisory — PM conforms task briefs and execution-plan rows at triage (flagging substantive rewrites); architect checks requirement sections at Design Gate review; specialists author new docs in the standard. Decisions: ADR-0079 (originating input standard, workspace root `docs/adr/0079-simplified-english-development-instructions.md`) and ADR-0098 (full loop).
 
 ### §3.11 PM Team-Management Authority (ADR-0080)
 
@@ -169,91 +158,3 @@ All specialist agents below are dispatched ONLY through PM:
 
 
 ---
-
-### §3.1 Operational Detail (relocated from AGENTS.md, ADR-0090 W1b remainder)
-
-**User Communication for Specialist Tasks**:
-When work requires specialist delegation, PM uses the following template:
-```
-PM: 🔍 [Task Analysis] This task falls within the [specialist] domain of expertise.
-   Task: [description]
-   Specialist: [specialist name]
-   Reason: [why specialist needed]
-PM: Shall I dispatch [specialist]?
-User: "Yes"
-PM: ▶️ [specialist] dispatch...
-```
-
-See [agents/pm.md](../../../agents/pm.md) for complete role definition and delegation protocols.
-
-#### §3.1.3 Enforcement Layers
-1. **Tool-Level**: Agent tool rejects non-PM specialist calls (hard enforcement)
-2. **System Prompt-Level**: CLAUDE.md/GEMINI.md rules loaded first
-3. **Agent File-Level**: All specialists have "PM-ONLY INVOCATION" section
-4. **QA Gate-Level**: Auditor detects bypass in Phase 6 QA
-
-#### §3.1.4 Specialist Agent Dispatch Flow
-```
-User Request → PM Triage → Design Approval → Specialist Dispatch → QA Gate → Finalization
-```
-
-#### §3.1.5 Specialist Agent Roster (PM-ONLY INVOCATION)
-
-All specialist agents below are dispatched ONLY through PM:
-
-| Agent | Phase | Dispatch Trigger |
-|-------|-------|-------------------|
-| **scaffolding-expert** | 0 | "Creating new projects", "Template validation", "Scaffolding tasks" |
-| **architect** | 1-2 | "Architecture design needed", "Project structure planning", "Technical decision making" |
-| **automation-engineer** | 4 | "Creating scripts", "Cross-platform automation", "Implementation tasks" |
-| **docs-writer** | 4 | "Updating documentation", "README creation", "CHANGELOG updates" |
-| **security-expert** | 6 | "Security review", "Hook configuration", "Secret detection" |
-| **lifecycle-manager** | 5 | "Lifecycle finalization", "Governance record sync", "L0->L1 template publishing", "L1->L2 explicit skill/script sync" — invoked on-demand for governance changes; lifecycle finalization runs automatically via `/sync` (**Workspace root only — L0-only agent, NOT available in variant templates**) |
-| **auditor** | 6 | "Quality verification", "Documentation consistency check", "QA gate required" (Workspace root only) |
-| **skill-graph-analyst** | 6 | "Fleet skill-graph analytics", "skill graph report", "skill convergence triage", "weekly analytics cadence" (Workspace root only — L0-only agent; triage only, tickets for promotion candidates) |
-
-
----
-
-### §3.1 Operational Detail (relocated from AGENTS.md, ADR-0090 W1b remainder)
-
-**User Communication for Specialist Tasks**:
-When work requires specialist delegation, PM uses the following template:
-```
-PM: 🔍 [Task Analysis] This task falls within the [specialist] domain of expertise.
-   Task: [description]
-   Specialist: [specialist name]
-   Reason: [why specialist needed]
-PM: Shall I dispatch [specialist]?
-User: "Yes"
-PM: ▶️ [specialist] dispatch...
-```
-
-See [agents/pm.md](../../../agents/pm.md) for complete role definition and delegation protocols.
-
-#### §3.1.3 Enforcement Layers
-1. **Tool-Level**: Agent tool rejects non-PM specialist calls (hard enforcement)
-2. **System Prompt-Level**: CLAUDE.md/GEMINI.md rules loaded first
-3. **Agent File-Level**: All specialists have "PM-ONLY INVOCATION" section
-4. **QA Gate-Level**: Auditor detects bypass in Phase 6 QA
-
-#### §3.1.4 Specialist Agent Dispatch Flow
-```
-User Request → PM Triage → Design Approval → Specialist Dispatch → QA Gate → Finalization
-```
-
-#### §3.1.5 Specialist Agent Roster (PM-ONLY INVOCATION)
-
-All specialist agents below are dispatched ONLY through PM:
-
-| Agent | Phase | Dispatch Trigger |
-|-------|-------|-------------------|
-| **scaffolding-expert** | 0 | "Creating new projects", "Template validation", "Scaffolding tasks" |
-| **architect** | 1-2 | "Architecture design needed", "Project structure planning", "Technical decision making" |
-| **automation-engineer** | 4 | "Creating scripts", "Cross-platform automation", "Implementation tasks" |
-| **docs-writer** | 4 | "Updating documentation", "README creation", "CHANGELOG updates" |
-| **security-expert** | 6 | "Security review", "Hook configuration", "Secret detection" |
-| **lifecycle-manager** | 5 | "Lifecycle finalization", "Governance record sync", "L0->L1 template publishing", "L1->L2 explicit skill/script sync" — invoked on-demand for governance changes; lifecycle finalization runs automatically via `/sync` (**Workspace root only — L0-only agent, NOT available in variant templates**) |
-| **auditor** | 6 | "Quality verification", "Documentation consistency check", "QA gate required" (Workspace root only) |
-| **skill-graph-analyst** | 6 | "Fleet skill-graph analytics", "skill graph report", "skill convergence triage", "weekly analytics cadence" (Workspace root only — L0-only agent; triage only, tickets for promotion candidates) |
-
