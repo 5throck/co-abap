@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-07T06:07:48.875Z
+**Generated**: 2026-10-07T06:53:11.855Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -35,10 +35,10 @@
 | pm | agents/pm.md | high | N/A | 2026-10-04 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-09-25 |
+| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
 | schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
 | sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-09-25 |
+| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-07 |
 | test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
 
 ---

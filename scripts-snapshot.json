@@ -1,7 +1,7 @@
 {
   "created": "2026-10-07",
   "variant": "co-abap",
-  "l1_source": "/Users/techcross/git/ai_workspace/templates/common/scripts",
+  "l1_source": "templates/common/scripts",
   "scripts": {
     "agent-create.ts": {
       "version": "1.0.1",
