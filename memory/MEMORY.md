@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-07](2026-10-07.md) | chore: upgrade template to 0.13.1 |
 | [2026-10-05](2026-10-05.md) | chore: upgrade template to 0.12.0 |
 | [2026-10-03](2026-10-03.md) | chore: upgrade template to 0.10.0 |
 | [2026-10-03](2026-10-03.md) | chore(upgrade): template sync v0.10.0 delivery (2026-10-03) |
@@ -11,8 +12,8 @@
 | [2026-10-01](2026-10-01.md) | chore(upgrade): template sync v0.8.3 delivery (2026-10-01) |
 | [2026-10-01](2026-10-01.md) | chore: update |
 | [2026-09-30](2026-09-30.md) | chore(upgrade): template sync v0.8.2 delivery (2026-09-30) |
-| [2026-09-29](2026-09-29.md) | chore(upgrade): template sync v0.8.0 (auto-release 2026-09-29) |
-| [2026-09-28](2026-09-28.md) | docs(reflection): upgrade-wave record (v0.7.0 PRs #163–#165) + scratch cleanup |
+| 2026-09-29 | chore(upgrade): template sync v0.8.0 (auto-release 2026-09-29) |
+| 2026-09-28 | docs(reflection): upgrade-wave record (v0.7.0 PRs #163–#165) + scratch cleanup |
 | 2026-09-27 | chore(upgrade): template sync v0.7.0 (auto-release 2026-09-27) |
 | 2026-09-26 | feat(deliverables): REQ-001 flight occupancy and revenue analysis report |
 | 2026-09-25 | chore(upgrade): template sync 2026-09-25 — deliver audit helper chain (Design Gate repair) + full project review remediation |

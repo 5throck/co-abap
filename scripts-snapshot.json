@@ -1,0 +1,563 @@
+{
+  "created": "2026-10-07",
+  "variant": "co-abap",
+  "l1_source": "/Users/techcross/git/ai_workspace/templates/common/scripts",
+  "scripts": {
+    "agent-create.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "agent-delete.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "agent-lifecycle-audit.ts": {
+      "version": "1.7.0",
+      "status": "active"
+    },
+    "agent-list.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "agent-verify.ts": {
+      "version": "1.0.2",
+      "status": "active"
+    },
+    "analyze-git-history.ts": {
+      "version": "1.0.2",
+      "status": "active"
+    },
+    "archive-memory.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "audit.ts": {
+      "version": "2.51.0",
+      "status": "active"
+    },
+    "bootstrap-stages.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "cleanup-completed-md.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "clear-pm-approval.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/local-date.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "compile-tokens.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "dependency-audit.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "design-lint.ts": {
+      "version": "2.1.0",
+      "status": "active"
+    },
+    "lib/self-managed-tools.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/skills-registry.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "evidence-backport-scan.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "dev-sync.ts": {
+      "version": "1.23.0",
+      "status": "active"
+    },
+    "dispatch-parallel.ts": {
+      "version": "1.1.1",
+      "status": "active"
+    },
+    "dispatch-serial.ts": {
+      "version": "1.1.2",
+      "status": "active"
+    },
+    "dispatch.ts": {
+      "version": "1.1.1",
+      "status": "active"
+    },
+    "gen-pr-body.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "generate-ide-rules.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "generate-raci.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "generate-skill-graph.ts": {
+      "version": "1.15.0",
+      "status": "active"
+    },
+    "generate-version-manifest.ts": {
+      "version": "1.10.0",
+      "status": "active"
+    },
+    "graph-delta-log.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/golden-reference-loader.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/layer-filter.ts": {
+      "version": "1.5.0",
+      "status": "active"
+    },
+    "helpers/extends-validator.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "helpers/upgrade-versions.ts": {
+      "version": "1.0.2",
+      "status": "active"
+    },
+    "helpers/merge-frontmatter.ts": {
+      "version": "1.8.6",
+      "status": "active"
+    },
+    "helpers/security-validator.ts": {
+      "version": "1.1.1",
+      "status": "active"
+    },
+    "helpers/l0-ref-policy.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/context-sections.ts": {
+      "version": "1.8.0",
+      "status": "active"
+    },
+    "helpers/markers.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "helpers/merge-state.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/scaffold-markers.ts": {
+      "version": "1.8.0",
+      "status": "active"
+    },
+    "helpers/pm-md-parser.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/resolve-pm-stub.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "helpers/registries/variant-type-registry.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "helpers/registries/capability-registry.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/registries/validation-policy.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "helpers/template-utils.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "helpers/rollback-partial-project.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/mirror-hygiene.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "hooks/gateguard-fact-force.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "hooks/pm-role-bootstrap.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "hooks/post-write-lifecycle-check.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "hooks/pre-commit.ts": {
+      "version": "1.9.0",
+      "status": "active"
+    },
+    "hooks/pre-push.ts": {
+      "version": "1.4.1",
+      "status": "active"
+    },
+    "regenerate-agents-md.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "lib/context-md-schema.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "lib/auth.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/constitution-scrub.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/encoding-utils.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "lib/error-handling.ts": {
+      "version": "1.4.0",
+      "status": "active"
+    },
+    "lib/language-guard.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/git-status.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/pipeline-state.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "lib/platform-context.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/propagation-map-schema.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "lib/ci-workflow-merge.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/managed-block-parity.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "lib/platform-delivery.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/ssrf.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/upgrade-policy.ts": {
+      "version": "1.22.0",
+      "status": "active"
+    },
+    "lib/dependency-guard.ts": {
+      "version": "1.0.2",
+      "status": "active"
+    },
+    "lib/variant-overlay-guard.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/platform-mirror-freshness.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/platforms.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lifecycle-sync-audit.ts": {
+      "version": "1.17.1",
+      "status": "active"
+    },
+    "lint-instructions.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "md-to-ooxml.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "migrate-quality-gates.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "resolve-variants.ts": {
+      "version": "1.0.3",
+      "status": "active"
+    },
+    "qa-gate.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
+    "readme-lifecycle-audit.ts": {
+      "version": "1.0.4",
+      "status": "active"
+    },
+    "render-pdf-deck.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "retry-handler.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "setup-github-branch-protection.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "spec-register.ts": {
+      "version": "1.6.0",
+      "status": "active"
+    },
+    "skill-lifecycle-audit.ts": {
+      "version": "1.6.0",
+      "status": "active"
+    },
+    "skill-session-review.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "sync-md.ts": {
+      "version": "1.4.0",
+      "status": "active"
+    },
+    "sync-skill-status.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "sync-skills.ts": {
+      "version": "1.11.0",
+      "status": "active"
+    },
+    "team-builder.ts": {
+      "version": "1.4.1",
+      "status": "active"
+    },
+    "test-runner.ts": {
+      "version": "1.4.0",
+      "status": "active"
+    },
+    "handbook/apply-handbook-theme.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/build-search-index.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-a11y.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-authoring.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "handbook/check-external-links.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "handbook/check-i18n-parity.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-labels.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-links.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-lint.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-search.ts": {
+      "version": "2.0.0",
+      "status": "active"
+    },
+    "handbook/check-spell.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-structure.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-symmetry.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/check-tables.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/deploy-handbook.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "handbook/extract-copycode.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/handbook-doctor.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/handbook-sync-audit.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/nav-utils.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/scaffold-handbook.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "handbook/update-footers.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "handbook/validate-handbook.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "handbook/validate-nav.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "tests/apply-handbook-theme.test.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "tests/check-structure.test.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "tests/deploy-readme-patch.test.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "translate-readme.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "typecheck.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "validate-agents.ts": {
+      "version": "1.3.2",
+      "status": "active"
+    },
+    "validate-doc-folder.ts": {
+      "version": "1.2.1",
+      "status": "active"
+    },
+    "validate-docs-links.ts": {
+      "version": "1.5.0",
+      "status": "active"
+    },
+    "validate-md-language.ts": {
+      "version": "1.12.0",
+      "status": "active"
+    },
+    "validate-model-registry.ts": {
+      "version": "1.4.1",
+      "status": "active"
+    },
+    "validate-surface-registry.ts": {
+      "version": "1.1.1",
+      "status": "active"
+    },
+    "validate-process.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "validate-raci.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "validate-skills.ts": {
+      "version": "1.5.1",
+      "status": "active"
+    },
+    "validate-procedures.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "validate-decisions.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "validate-templates.ts": {
+      "version": "1.51.0",
+      "status": "active"
+    },
+    "validate-variant-readiness.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "verify-agent-deliverables.ts": {
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "verify-skill-graph.ts": {
+      "version": "1.6.0",
+      "status": "active"
+    },
+    "verify-memory.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "verify-platform-lifecycle.ts": {
+      "version": "1.6.0",
+      "status": "active"
+    },
+    "verify-readme-sync.ts": {
+      "version": "1.4.1",
+      "status": "active"
+    },
+    "verify-scripts.ts": {
+      "version": "1.12.0",
+      "status": "active"
+    },
+    "verify-skills.ts": {
+      "version": "1.5.1",
+      "status": "active"
+    },
+    "validate-pm-extends.ts": {
+      "version": "0.3.1",
+      "status": "active"
+    }
+  }
+}

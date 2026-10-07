@@ -1,31 +1,27 @@
-# Unit Test Plan & Results
-## [REQ-NNN] [Requirement Title]
+# Unit Test Plan — [Requirement Title]
 
-> [!NOTE]
-> Test plan with requirement traceability (IEEE 829-style, adapted). Fill expected results at planning time; fill actual results during Stage 4 execution.
-> **Owner**: test-runner (plan) / code-writer (automated cases)
+- **Req ID**: REQ-NNN
+- **Status**: Draft — filled during Stage 4 by `test-runner`
 
-### Document Metadata
-- **Associated SRS**: [01_srs.md](../01_srs.md)
-- **Associated QA Report**: [04_qa_report.md](../04_qa_report.md)
-- **System**: [SYS] / client [CLIENT]
-- **Status**: PLANNED | EXECUTED
-- **Last Updated**: YYYY-MM-DD
+## 1. Test Objects
 
-## 1. Traceability Matrix (Requirement → Test)
+| Object | Type | Package | Test Class |
+|--------|------|---------|------------|
 
-| Test ID | Requirement | Method / Level | Automated? |
-| :--- | :--- | :--- | :--- |
-| TC-01 | REQ-NNN-F01 | [method or manual step] | Yes / No |
-| TC-02 | REQ-NNN-F02 | [method or manual step] | Yes / No |
+## 2. Test Cases
 
-## 2. Test Cases — Expected vs. Actual
+| # | Scenario | Expected Result | Result |
+|---|----------|-----------------|--------|
 
-| Test ID | Precondition / Test Data | Expected Result | Actual Result | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| TC-01 | [data] | [expected] | [actual / PENDING] | PASS / FAIL / OPEN |
+## 3. Mandatory QA Chain Results
 
-## 3. Exit Criteria
-- All automated cases PASS.
-- Static checks (ATC): zero P1 findings.
-- Manual cases: listed with owner and target session; none are code-path blockers unless noted.
+Run in order; each step must pass before the next (gates DG-ABAP-01 / DG-ABAP-02).
+
+- [ ] `SyntaxCheck` — no errors after the final write
+- [ ] `RunUnitTests` — all tests passing
+- [ ] `GetCodeCoverage` — >= 70% coverage on all new objects
+- [ ] `RunATCCheck` — zero Priority 1 findings
+
+[QUALITY GATE STATUS: PENDING]
+
+<!-- Mark [QUALITY GATE STATUS: PASSED] only after all four steps pass. -->

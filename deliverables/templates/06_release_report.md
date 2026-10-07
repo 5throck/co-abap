@@ -1,58 +1,27 @@
-# Release & Governance Report
-## [REQ-NNN] [Requirement Title]
+# Release Report — [Requirement Title]
 
-> [!NOTE]
-> Stage 5 closure record: documentation audit, deployment/transport status, promotion and rollback plan, and handover.
-> **Stage 5 Owner**: PM & DevOps/Admin
+- **Req ID**: REQ-NNN
+- **Status**: Draft — filled at Stage 5 release closure
 
-### Document Metadata
-- **Associated QA Report**: [04_qa_report.md](../04_qa_report.md) — Quality Gate Status: [PENDING | PASSED | FAILED]
-- **Benchmark Review**: [link, if performed]
-- **Status**: DRAFT | RELEASED
-- **Last Updated**: YYYY-MM-DD
+## 1. Delivered Objects
 
----
+| Object | Type | Transport |
+|--------|------|-----------|
 
-## 1. Documentation Audit
+## 2. QA Gate Evidence
 
-| Document | Present | Consistent with system state |
-| :--- | :--- | :--- |
-| `01_srs.md` | ✔ / ✖ | ✔ / ✖ |
-| `02_technical_design.md` | ✔ / ✖ | ✔ / ✖ |
-| `03_implementation_report.md` | ✔ / ✖ | ✔ / ✖ |
-| `04_qa_report.md` | ✔ / ✖ | ✔ / ✖ |
-| `05_unit_test_plan.md` | ✔ / ✖ | ✔ / ✖ |
-| `deliverables/index.md` (RTM) | ✔ / ✖ | ✔ / ✖ |
-| `docs/specs/registry.json` | ✔ / ✖ | ✔ / ✖ |
+<!-- Summarize or link `05_unit_test_plan.md`; the quality gate must be PASSED. -->
 
-## 2. Deployment / Transport Status
+## 3. Transport & Release
 
-| Item | Value |
-| :--- | :--- |
-| Object(s) | [object names + types] |
-| System / Client | [SYS] / [CLIENT] |
-| Package | [package] |
-| Transport Request | [CTR-Kxxxxxx / none — local object] |
-| Activation State | [Active / Inactive] |
-| Repository Record | [PR link] |
+- [ ] CTS transport created and released (PM dispatched `devops-admin` — transport step convention)
+- [ ] Post-transport smoke tests passed in the target system
 
-## 3. Promotion Plan (dev → productive system)
+## 4. Remaining Risks / Follow-ups
 
-1. [package / transport preparation]
-2. [object move / re-create steps]
-3. [follow-ups: texts, authorizations, variants]
-4. [target-system QA re-run]
-5. [remaining manual test cases]
+<!-- Known limitations and deferred items. -->
 
-## 4. Rollback Plan
+## 5. Sign-off
 
-- [Transport reversal / object deletion — state side-effect completeness]
-- [Repository revert path]
-
-## 5. Open Items & Handover
-
-| # | Item | Owner |
-| :--- | :--- | :--- |
-| 1 | [item] | [role] |
-
-**Sign-off**: PM ___________________ (Date: _________) · DevOps/Admin ___________________ (Date: _________)
+- PM: <!-- date -->
+- DevOps/Admin: <!-- date -->

@@ -1,8 +1,24 @@
 #!/usr/bin/env bun
 /**
  * Skill Verification Script
- * @version 1.3.0
+ * @version 1.5.1
  * Verifies all skills in skills/ directory are loadable and properly formatted
+ *
+ * v1.5.1: skillName derivation is separator-tolerant (skills[/\\]) — Windows
+ * backslash paths previously fell back to the full absolute path as the index
+ * row name/link (exposed by the curated-index tests on windows-latest).
+ *
+ * skills/SKILLS.md write contract (U-20261006-002): the auto-index writer only
+ * ever rewrites a REGENERABLE file — one that is missing, or whose FIRST line
+ * is exactly "# Skills Index" (the generated stub's title; trailing whitespace
+ * /CR tolerated). A curated index whose first line merely STARTS WITH that
+ * prefix (e.g. "# Skills Index - co-security") is hand-maintained and is never
+ * rewritten, in any mode. `--check` adds a read-only drift gate: when a
+ * curated SKILLS.md differs from the freshly generated index content, --check
+ * prints the path plus the first differing line number and exits 1 without
+ * writing; a missing/exact-stub file is not drift — --check regenerates it and
+ * exits 0. Exit code of the non-check path is unchanged (only failing skills
+ * exit non-zero; index regeneration never does).
  */
 
 import path from "node:path";
@@ -104,6 +120,62 @@ async function checkSkillsCatalogSync(): Promise<SkillCheck | null> {
   };
 }
 
+/**
+ * L0 ↔ L1 registry parity (T-20261004-021): for a skill rowed in BOTH
+ * skills/SKILLS.md and templates/common/skills/SKILLS.md, the version AND the
+ * notes/description cell must match. ci-triage's description diverged
+ * 2026-10-04 (root gained "; merge-time CI healing loop", common did not) —
+ * version-only eyes never see that class. Row shape (both files, 7 columns):
+ * | `name` | version | status | owner | last_reviewed | removal-date | notes |
+ * Intersection-only: workspace-only and variant-exclusive rows (the L0
+ * Variant-Exclusive catalog's 7th column is an owner-variant list, not notes)
+ * have no L1 counterpart by DEC-20260829-02 and are skipped naturally.
+ */
+async function checkRegistryL0L1Parity(): Promise<SkillCheck | null> {
+  const l0Path = path.join(projectRoot, 'skills', 'SKILLS.md');
+  const l1Path = path.join(projectRoot, 'templates', 'common', 'skills', 'SKILLS.md');
+  if (!existsSync(l0Path) || !existsSync(l1Path)) return null;
+
+  const parseRows = async (p: string): Promise<Map<string, { version: string; notes: string }>> => {
+    const rows = new Map<string, { version: string; notes: string }>();
+    let content = await Bun.file(p).text();
+    // The Variant-Exclusive catalog's 7th column is an owner-variant list, not
+    // notes — a catalog row (e.g. i18n-audit "co-price only") must never be
+    // compared against a same-named L1 common row. Workspace/common tables only.
+    const catalogStart = content.match(/^###\s+Variant-Exclusive Skills\b.*(?:\n|$)/m);
+    if (catalogStart && catalogStart.index !== undefined) content = content.slice(0, catalogStart.index);
+    for (const line of content.split('\n')) {
+      if (!/^\|\s*`[a-z0-9-]+`\s*\|/.test(line)) continue; // data rows only (skips header/separator)
+      const cells = line.split('|').map((c) => c.trim());
+      // leading + trailing splits give 9 cells for a 7-column row
+      if (cells.length < 9) continue;
+      const name = cells[1].replace(/`/g, '');
+      rows.set(name, { version: cells[2], notes: cells[7] });
+    }
+    return rows;
+  };
+
+  const [l0, l1] = await Promise.all([parseRows(l0Path), parseRows(l1Path)]);
+  const issues: string[] = [];
+  for (const [name, row0] of l0) {
+    const row1 = l1.get(name);
+    if (!row1) continue; // workspace-only or variant-exclusive — no L1 counterpart by design
+    if (row0.version !== row1.version) {
+      issues.push(`registry version drift for '${name}': root=${row0.version}, common=${row1.version} — align the two SKILLS.md rows`);
+    }
+    if (row0.notes !== row1.notes) {
+      issues.push(`registry description drift for '${name}': root="${row0.notes}", common="${row1.notes}" — align the two SKILLS.md rows`);
+    }
+  }
+  if (issues.length === 0) return null;
+  return {
+    name: 'SKILLS.md L0↔L1 parity',
+    path: l0Path,
+    status: 'FAIL',
+    issues,
+  };
+}
+
 async function main(): Promise<void> {
   console.log("🔍 Verifying Skills\n");
 
@@ -116,6 +188,10 @@ async function main(): Promise<void> {
   // Catalog sync: SKILLS.md rows must exist and match frontmatter versions
   const catalogSyncCheck = await checkSkillsCatalogSync();
   if (catalogSyncCheck) checks.push(catalogSyncCheck);
+
+  // T-20261004-021: L0 ↔ L1 registry row parity (version + description)
+  const parityCheck = await checkRegistryL0L1Parity();
+  if (parityCheck) checks.push(parityCheck);
 
   for (const check of checks) {
     const icon = check.status === "PASS" ? "✅" : check.status === "WARN" ? "⚠️" : "❌";
@@ -138,17 +214,55 @@ async function main(): Promise<void> {
     console.log("✅ All skills verified");
   }
 
-  // Legacy auto-index writer — SKIP when the curated lifecycle catalog is in place.
-  // skills/SKILLS.md is a hand-maintained SSOT registry (header "# SKILLS.md — Skill
-  // Lifecycle Registry"); only the legacy "# Skills Index" stub may be regenerated.
+  // Legacy auto-index writer (U-20261006-002): only a REGENERABLE SKILLS.md is
+  // rewritten — one that is missing, or whose first line is exactly the
+  // generated stub title "# Skills Index". A curated index whose first line
+  // merely STARTS WITH that prefix (e.g. "# Skills Index - co-security") is
+  // hand-maintained and is never rewritten. In --check mode a curated file is
+  // instead compared against the generated content: any difference is reported
+  // (path + first differing line) and exits 1 without writing.
   const skillsMdPath = path.join(projectRoot, "skills", "SKILLS.md");
   const { readFileSync } = await import("node:fs");
-  const isLegacyIndex =
-    !existsSync(skillsMdPath) ||
-    readFileSync(skillsMdPath, "utf-8").startsWith("# Skills Index");
-  if (isLegacyIndex) {
+  const existing = existsSync(skillsMdPath) ? readFileSync(skillsMdPath, "utf-8") : null;
+  const regenerable = existing === null || isExactGeneratedStub(existing);
+  if (process.argv.includes("--check")) {
+    const generated = await buildSkillsIndexContent(checks);
+    if (regenerable) {
+      // A missing/stub index is not drift — regenerate it and exit 0.
+      await Bun.write(skillsMdPath, generated);
+      console.log(`\n📝 Generated skills index: ${skillsMdPath}`);
+      return;
+    }
+    if (existing !== generated) {
+      console.error(`\n❌ SKILLS.md drift: ${skillsMdPath} differs from the generated index (--check)`);
+      const curLines = existing.split("\n");
+      const genLines = generated.split("\n");
+      for (let i = 0; i < Math.max(curLines.length, genLines.length); i++) {
+        if (curLines[i] !== genLines[i]) {
+          console.error(`   first differing line: ${i + 1}`);
+          break;
+        }
+      }
+      console.error("   The file is curated (first line is not the exact generated stub) — verify-skills never rewrites it.");
+      console.error("   Align the curated index manually, then re-run with --check.");
+      process.exit(1);
+    }
+    console.log("\n✅ skills/SKILLS.md matches the generated index (--check clean)");
+    return;
+  }
+  if (regenerable) {
     await generateSkillsIndex(checks);
   }
+}
+
+/**
+ * Exact generated-stub detection (U-20261006-002): true only when the content's
+ * FIRST line is exactly "# Skills Index" (trailing whitespace/CR tolerated).
+ * A prefix match such as "# Skills Index - co-security" is a curated variant
+ * index — never regenerable.
+ */
+function isExactGeneratedStub(content: string): boolean {
+  return (content.split(/\r?\n/, 1)[0] ?? "").trimEnd() === "# Skills Index";
 }
 
 async function scanSkills(): Promise<SkillCheck[]> {
@@ -261,10 +375,11 @@ function extractSkillMetadata(content: string, skillPath: string): SkillMetadata
 }
 
 /**
- * Generate SKILLS.md index from discovered skills
+ * Build the SKILLS.md index content from discovered skills (pure — no I/O,
+ * U-20261006-002: factored out of generateSkillsIndex so --check can compare
+ * the generated content against a curated file without writing).
  */
-async function generateSkillsIndex(checks: SkillCheck[]): Promise<void> {
-  const indexPath = path.join(projectRoot, "skills", "SKILLS.md");
+async function buildSkillsIndexContent(checks: SkillCheck[]): Promise<string> {
   let content = "# Skills Index\n\n";
   content += "> Auto-generated by verify-skills.ts. Do not edit manually.\n\n";
   content += `Generated: ${new Date().toISOString()}\n\n`;
@@ -294,6 +409,15 @@ async function generateSkillsIndex(checks: SkillCheck[]): Promise<void> {
     content += "\n";
   }
 
+  return content;
+}
+
+/**
+ * Generate SKILLS.md index from discovered skills
+ */
+async function generateSkillsIndex(checks: SkillCheck[]): Promise<void> {
+  const indexPath = path.join(projectRoot, "skills", "SKILLS.md");
+  const content = await buildSkillsIndexContent(checks);
   await Bun.write(indexPath, content);
   console.log(`\n📝 Generated skills index: ${indexPath}`);
 }
@@ -358,7 +482,10 @@ async function verifySkill(skillFile: string): Promise<SkillCheck> {
       }
     }
 
-    const skillName = skillFile.match(/skills\/([^/]+)\//)?.[1] || skillFile;
+    // Separator-tolerant (v1.5.1): Windows skillFile paths carry \ — the old
+    // /skills\/([^/]+)\// match missed them and the index row fell back to the
+    // full absolute path for both the name and the link target.
+    const skillName = skillFile.match(/skills[/\\]([^/\\]+)[/\\]/)?.[1] || skillFile;
 
     return {
       name: skillName,
