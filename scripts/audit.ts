@@ -1,5 +1,35 @@
-// @version 2.48.1
-// v2.48.1 (2026-10-04): the manifest-gate spawn is L0-only (context.md guard) —
+// @version 2.51.0
+// v2.51.0 (2026-10-07, U-20261006-004): Skip verdict — self-skipped gates stop
+//          reading as passes. New Skip() helper (cyan [SKIP] + skipped counter,
+//          distinct from Pass in the summary line); the verify-memory gate now
+//          also fires in scaffolded projects (memory/MEMORY.md target, not just
+//          the L0 context.md marker) and emits Skip when the memory target
+//          is absent entirely or --skip-memory is passed; the design-lint
+//          gate's two self-skip branches (lint script absent, no scan roots)
+//          emit Skip instead of Pass. Typecheck's context skip is labeled
+//          [SKIP] at the source (scripts/typecheck.ts v1.2.0) so no caller can
+//          mistake it for a pass. "All checks passed" can no longer coexist
+//          with gates that silently skipped without the summary saying so.
+// v2.50.0 (2026-10-05, T-20261005-005, spec docs/designs/2026-10-05-spec-registry-entries-projection-design.md):
+//           spec-check Check 5b — docs/specs/registry.json is a generated
+//           projection of docs/specs/entries/*.json; when the entries directory
+//           exists the projection must match its id set exactly (a stale
+//           projection after a same-gap merge FAILs with the --regenerate fix).
+//           Skipped for legacy trees without an entries directory.
+// v2.49.0 (2026-10-05, T-20261005-002, spec docs/designs/2026-10-05-spec-registry-canonical-order-design.md):
+//           spec-check Check 5 — docs/specs/registry.json must be in canonical
+//           id order (canonicalOrderViolation from spec-register.ts). The
+//           concurrent-registration merge model relies on content-derived
+//           insertion; a hand-spliced or tail-appended file fails the gate and
+//           is re-sorted by the next spec-register write.
+// v2.48.2 (2026-10-05, T-20261004-024): the docs relative-link gate now also
+//           enforces `validate-docs-links.ts --all` (every docs/ subdirectory —
+//           adr/, designs/, architecture/, governance/). The historical-rot
+//           carve-out is retired: all 59 then-broken deep links were repaired to
+//           real targets (or dead targets demoted to inline-code text), so the
+//           deep scan exits 0 and any regrowth fails the audit. Same spawn
+//           contract as before (workspace-root only, existsSync-guarded).
+// v2.48.1 (2026-10-04): the manifest-gate spawn is L0-only (workspace-root marker guard) —
 //           the E2E caught scaffold-context leakage (project docs/ are project-scoped).
 // v2.48.0 (2026-10-04, spec 2026-10-04-docs-folder-manifest-design): docs/ folder
 //           manifest gate — spawns validate-doc-folder.ts --workspace (existsSync-guarded,
@@ -166,6 +196,7 @@ import * as os from 'node:os';
 import * as crypto from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { parsePmMd, extractVariantOverrides } from './helpers/pm-md-parser.ts';
+import { canonicalOrderViolation } from './spec-register.ts';
 import { AGENT_LAYER1_SECTIONS } from './helpers/golden-reference-loader.ts';
 import { composeResolvedAgentContent } from './helpers/resolve-pm-stub.ts';
 import { sourceShellInjectionPatterns } from './helpers/security-validator.ts';
@@ -224,6 +255,7 @@ const CYAN = '\x1b[36m';
 const RESET = '\x1b[0m';
 
 let errors = 0;
+let skippedChecks = 0;
 let skippedFileCount = 0;
 const skippedFileSamples: string[] = [];
 function recordSkippedFile(filePath: string, reason: string) {
@@ -240,6 +272,13 @@ function Fail(msg: string) {
 }
 function Warn(msg: string) {
     console.log(`${YELLOW}[WARN] ${msg}${RESET}`);
+}
+// U-20261006-004: a gate that determines it does not apply in this context is
+// SKIPPED, not PASSED — the verdict is counted separately so the summary can
+// distinguish "all gates ran and passed" from "some gates did not run".
+function Skip(msg: string) {
+    console.log(`${CYAN}[SKIP] ${msg}${RESET}`);
+    skippedChecks++;
 }
 
 console.log(`${CYAN}=== audit.ts - workspace standards check ===${RESET}`);
@@ -922,22 +961,30 @@ if (hasBun) {
         else
             Pass("README lifecycle audit: all READMEs healthy");
     }
-    if (fs.existsSync(path.join('scripts', 'verify-memory.ts')) && fs.existsSync('context.md') && !SKIP_MEMORY) {
-        // explicitly skip any files located in memory/archive/
-        const memoryFiles = fs.readdirSync('memory')
-            .filter(f => f.endsWith('.md') && fs.statSync(path.join('memory', f)).isFile())
-            .map(f => path.join('memory', f));
+    // U-20261006-004: the gate fires wherever a memory target exists — the L0
+    // workspace root (context.md marker) or a scaffolded project's
+    // memory/MEMORY.md. A context with verify-memory.ts but no memory target
+    // at all is a Skip, not a silent non-event or a Pass.
+    if (fs.existsSync(path.join('scripts', 'verify-memory.ts')) && !SKIP_MEMORY) {
+        if (fs.existsSync('CONSTITUTION.md') || fs.existsSync(path.join('memory', 'MEMORY.md'))) {
+            // explicitly skip any files located in memory/archive/
+            const memoryFiles = fs.readdirSync('memory')
+                .filter(f => f.endsWith('.md') && fs.statSync(path.join('memory', f)).isFile())
+                .map(f => path.join('memory', f));
 
-        // We do not pass explicit files to verify-memory.ts to avoid triggering its pre-commit mode (which only checks the last entry),
-        // but verify-memory.ts natively only reads files in memory/ directly.
-        const out = await $`bun ${path.join('scripts', 'verify-memory.ts')}`.quiet().nothrow();
-        if (out.exitCode !== 0)
-            Warn("Memory log format issues detected (run 'bun scripts/verify-memory.ts' to see details)");
-        else
-            Pass("Memory logs: format valid");
+            // We do not pass explicit files to verify-memory.ts to avoid triggering its pre-commit mode (which only checks the last entry),
+            // but verify-memory.ts natively only reads files in memory/ directly.
+            const out = await $`bun ${path.join('scripts', 'verify-memory.ts')}`.quiet().nothrow();
+            if (out.exitCode !== 0)
+                Warn("Memory log format issues detected (run 'bun scripts/verify-memory.ts' to see details)");
+            else
+                Pass("Memory logs: format valid");
+        } else {
+            Skip("Memory logs: no memory target in this context (no CONSTITUTION.md, no memory/MEMORY.md) — skipped");
+        }
     } else if (SKIP_MEMORY) {
         // Skip memory check when --skip-memory flag is provided
-        Pass("Memory logs: check skipped (--skip-memory flag)");
+        Skip("Memory logs: check skipped (--skip-memory flag)");
     }
     if (fs.existsSync(path.join('scripts', 'lifecycle-sync-audit.ts'))) {
         const out = await $`bun ${path.join('scripts', 'lifecycle-sync-audit.ts')} --json`.quiet().nothrow();
@@ -1656,7 +1703,7 @@ checkShellInjectionPatterns();
 function checkDesignLint() {
     const lintScript = path.join('scripts', 'design-lint.ts');
     if (!fs.existsSync(lintScript)) {
-        Pass('Design-lint gate: scripts/design-lint.ts not present — skipped');
+        Skip('Design-lint gate: scripts/design-lint.ts not present — skipped');
         return;
     }
     const schemaPath = path.join('docs', 'workspace-schema.json');
@@ -1679,7 +1726,7 @@ function checkDesignLint() {
     }
     const roots = (config.scanRoots ?? []).filter((r) => fs.existsSync(r));
     if (roots.length === 0) {
-        Pass('Design-lint gate: no configured scan roots present — skipped');
+        Skip('Design-lint gate: no configured scan roots present — skipped');
         return;
     }
     const result = spawnSync('bun', [lintScript, '--dir', ...roots], { encoding: 'utf-8' });
@@ -2229,23 +2276,33 @@ checkTemplateDependencyMirror();
 // distinguishes the governance root from generated project copies.
 const IS_WORKSPACE_ROOT = fs.existsSync('CONSTITUTION.md') && !fs.existsSync('variant.json');
 
-// ── Docs relative-link gate (design-foundation v1.2 PR-2) ────────────────────
+// ── Docs relative-link gate (design-foundation v1.2 PR-2; T-20261004-024) ─────
 // design-foundation.md §8 previously shipped a stale project path and rotted
 // under review-only checking (stale path fixed in PR #1102). Spawn the existing
-// validator — the same gate dev-sync runs as pre-flight — which checks docs/
-// root-level files plus templates/common/docs/** (recursive) with a documented
-// post-scaffold resolution allowance. Workspace-root only: the validator is
-// hard-scoped to the L0 docs layout, so project (L2) contexts self-skip.
+// validator — the same gate dev-sync runs as pre-flight — in BOTH scopes:
+// default (docs/ root-level files plus templates/common/docs/** recursive, with
+// the documented post-scaffold resolution allowance) and --all (every docs/
+// subdirectory: adr/, designs/, architecture/, governance/ — T-20261004-024
+// retired the historical-rot carve-out by repairing all of it; the deep scan
+// exits 0 and is enforced here so the count cannot regrow). Workspace-root
+// only: the validator is hard-scoped to the L0 docs layout, so project (L2)
+// contexts self-skip.
 if (IS_WORKSPACE_ROOT && fs.existsSync(path.join('scripts', 'validate-docs-links.ts'))) {
-    const { status, stdout, stderr } = spawnSync('bun', ['scripts/validate-docs-links.ts'], {
-        encoding: 'utf-8',
-    });
-    if (status !== 0) {
-        if (stdout) console.log(stdout);
-        if (stderr) console.error(stderr);
-        Fail('docs link validation failed — run scripts/validate-docs-links.ts for details');
-    } else {
-        Pass('Docs link gate: relative links in docs/ root and templates/common/docs resolve');
+    const linkScopes: Array<{ args: string[]; label: string }> = [
+        { args: [], label: 'relative links in docs/ root and templates/common/docs resolve' },
+        { args: ['--all'], label: 'deep scan (--all): all docs/ relative links resolve' },
+    ];
+    for (const scope of linkScopes) {
+        const { status, stdout, stderr } = spawnSync('bun', ['scripts/validate-docs-links.ts', ...scope.args], {
+            encoding: 'utf-8',
+        });
+        if (status !== 0) {
+            if (stdout) console.log(stdout);
+            if (stderr) console.error(stderr);
+            Fail(`docs link validation failed (scope: ${scope.args.join(' ') || 'default'}) — run scripts/validate-docs-links.ts ${scope.args.join(' ')} for details`);
+        } else {
+            Pass(`Docs link gate: ${scope.label}`);
+        }
     }
 }
 
@@ -3250,6 +3307,34 @@ if (SPEC_CHECK) {
         if (badStatus.length === 0 && supersededNoPointer.length === 0 && registry.specs.length > 0) {
             Pass(`Spec check: all ${registry.specs.length} spec status(es) within the vocabulary`);
         }
+
+        // Check 5 (T-20261005-002): canonical id order — concurrent registrations
+        // merge cleanly only while every writer inserts content-derived (sorted);
+        // a hand-spliced or tail-appended file breaks that model. The next
+        // spec-register write canonicalizes the array (saveRegistry re-sorts).
+        const orderViolation = canonicalOrderViolation(registry.specs);
+        if (orderViolation) {
+            Fail(`Spec check: docs/specs/registry.json is not in canonical id order (${orderViolation}) — the next spec-register.ts write re-sorts it`);
+        } else if (registry.specs.length > 0) {
+            Pass(`Spec check: all ${registry.specs.length} registry entries in canonical id order`);
+        }
+
+        // Check 5b (T-20261005-005): projection drift — docs/specs/registry.json is a
+        // generated projection of docs/specs/entries/*.json; a stale projection means
+        // an entry file landed without regeneration (e.g. after a same-gap merge).
+        const ENTRIES_DIR = path.join('docs', 'specs', 'entries');
+        if (fs.existsSync(ENTRIES_DIR)) {
+            const entryIds = fs.readdirSync(ENTRIES_DIR).filter(f => f.endsWith('.json'))
+                .map(f => f.replace(/\.json$/, '')).sort();
+            const projectionIds = registry.specs.map(s => s.id).sort();
+            const drift = entryIds.length !== projectionIds.length
+                || entryIds.some((id, i) => id !== projectionIds[i]);
+            if (drift) {
+                Fail(`Spec check: docs/specs/registry.json is stale vs docs/specs/entries/ (${entryIds.length} entry file(s) vs ${projectionIds.length} projected) — run: bun scripts/spec-register.ts --regenerate`);
+            } else {
+                Pass(`Spec check: registry projection matches ${entryIds.length} entry file(s)`);
+            }
+        }
         }
     }
 }
@@ -3371,6 +3456,12 @@ if (fs.existsSync(path.join('scripts', 'generate-version-manifest.ts'))) {
 
 if (skippedFileCount > 0) {
     Warn(`Skipped/unreadable files during scan: ${skippedFileCount}${skippedFileSamples.length ? ` (samples: ${skippedFileSamples.join('; ')})` : ''}`);
+}
+
+// U-20261006-004: skipped gates are reported in the summary so "All checks
+// passed" can never silently coexist with gates that did not run.
+if (skippedChecks > 0) {
+    console.log(`\n${CYAN}ℹ️  ${skippedChecks} check(s) skipped (see [SKIP] lines above) — skipped gates are distinct from passed gates.${RESET}`);
 }
 
 console.log("");

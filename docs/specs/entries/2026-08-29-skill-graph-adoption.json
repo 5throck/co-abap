@@ -1,0 +1,9 @@
+{
+  "id": "2026-08-29-skill-graph-adoption",
+  "title": "skill graph adoption (reledgev wave)",
+  "file": "docs/adr/0001-skill-graph-adoption.md",
+  "status": "implemented",
+  "source": "pm",
+  "created": "2026-08-29",
+  "last_updated": "2026-10-07"
+}
