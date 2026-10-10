@@ -125,7 +125,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/sap-action-gate.test.ts` | L3 | 1.3.0 | active | — | — | L3 | — |
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `hooks/pre-commit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
+| `hooks/pre-commit.ts` | L0 | 1.10.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `hooks/sap-action-gate.ts` | L3 | 2.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); advisory-only when run as a hook, no longer registered in Claude settings — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
 | `hooks/sap-action-audit.ts` | L3 | 1.3.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts (PostToolUse registration removed) + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|

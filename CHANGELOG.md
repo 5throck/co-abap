@@ -9,6 +9,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- **[2026-10-10]**: fix(hooks): `scripts/hooks/pre-commit.ts` re-renders and stages platform command copies after stamping `config/commands/*.md` Last Updated dates; re-rendered stale `.gemini/commands/triage.toml` (#194 CI).
+
 ### Added
 - **[2026-10-10]**: feat(platforms): parity Phases 2, 4, 5 (#194) — all platform configs (Claude, Codex, Gemini, Antigravity) route `abap` through `scripts/sap-mcp-proxy.ts` and Hermes gets a user-level example (`config/platforms/hermes-mcp.example.yaml`, `docs/platform-setup/hermes.md`); Claude SAP hooks unregistered and manual profile retired; `scripts/dispatch-parallel.ts` 2.0.0 launches platform CLIs in parallel (read-only defaults); commands single-sourced in `config/commands/` and rendered to Claude/Codex md and Gemini TOML (Gemini now has all 20); `scripts/validate-platform-parity.ts` in baseline and CI; CLAUDE/CODEX/GEMINI/HERMES/AGENTS.md, SECURITY.md and setup docs aligned. Security review Critical findings (approval forgery, self-modifiable controls) pending — PR not mergeable until fixed.
 - **[2026-10-10]**: feat(platforms): cross-platform parity design approved (`docs/designs/2026-10-10-cross-platform-parity-design.md` — Claude Code CLI/Desktop, Codex CLI/IDE, Gemini CLI, Antigravity IDE/CLI, Hermes Agent; decisions D1-D7) with Phase 0 findings, and Phase 1: platform-neutral `scripts/sap-mcp-proxy.ts` (single SAP enforcement point wrapping vsp; resolves root and vsp by absolute path, loads `.env` itself, applies safe vsp defaults; ask → APPROVAL_REQUIRED) and `scripts/sap-approve.ts` (human single-use approval bound to tool/target/input hash, 15 min TTL); sap-action-lib 1.3.0; 19 gate fixtures replayed through the proxy (#194). Not yet wired into platform configs (Phase 2).
