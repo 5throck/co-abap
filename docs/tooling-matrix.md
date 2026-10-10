@@ -11,7 +11,7 @@ Cross-tool capability reference for the vsp/SAP ABAP Harness Engineering project
 
 ## SAP Safety Is Platform-Independent
 
-Every platform launches the `abap` MCP server through `scripts/sap-mcp-proxy.ts`. The proxy is the single enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. An `ask` returns `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` in their own terminal (agents never run it). Hooks are optional UX on every platform. The former manual profile is retired.
+Every platform launches the `abap` MCP server through `scripts/sap-mcp-proxy.ts`. The proxy is the single enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. An `ask` returns `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty` (agents never run it); approvals live outside the repo in `~/.config/co-abap/`, HMAC-signed. A human runs `bun scripts/sap-integrity.ts init` once and `sign` after reviewed enforcement changes (until then the proxy is read-only). Parallel write rows need a human `bun scripts/sap-approve.ts --grant <runId>`. Hooks are optional UX on every platform. The former manual profile is retired.
 
 ## 8-Platform Matrix
 
@@ -27,6 +27,18 @@ Every platform launches the `abap` MCP server through `scripts/sap-mcp-proxy.ts`
 | Hermes Agent | `~/.hermes/config.yaml` (user-level; template `config/platforms/hermes-mcp.example.yaml`) | `delegate_task` | `dispatch-parallel.ts --platform hermes` | skills as `/<name>` | `.hermes/skills/` | `pre_tool_call` | V7 |
 
 Commands have one source, `config/commands/*.md`, rendered by `bun scripts/render-commands.ts`. Parity is checked by `bun scripts/validate-platform-parity.ts`.
+
+## Agent-Shell Protection per Platform
+
+Canonical set: `config/platforms/protected-paths.json`; checked by `bun scripts/validate-platform-parity.ts` (`deny-rules`). Details and residual risk: [SECURITY.md](../SECURITY.md#agent-shell-hardening-all-platforms).
+
+| Platform | Command deny | Path deny | Mechanism |
+|----------|--------------|-----------|-----------|
+| Claude Code CLI / Desktop | yes (glob) | yes (write; `.env` read) | `.claude/settings.json` `permissions.deny` |
+| Codex CLI / IDE | yes (argv prefix) | no | `.codex/rules/default.rules`, `sandbox_mode`, `approval_policy` |
+| Gemini CLI | yes (prefix) via `tools.exclude` (the effective control; `terminal.denyList`, `terminal.executionPolicy` and `mcp.toolApproval` may be Antigravity-only) | read only (`.env`, `vsp`) | `.gemini/settings.json`, `.geminiignore` |
+| Antigravity IDE / CLI | manual | no | [setup](platform-setup/antigravity.md) |
+| Hermes Agent | manual approvals | no | [setup](platform-setup/hermes.md) |
 
 ## Post-Write Chain
 

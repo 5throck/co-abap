@@ -9,6 +9,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Security
+- **[2026-10-10]**: security(sap): approvals and dispatch grants HMAC-signed with a key in the user config dir and stored outside the repo; signed integrity manifest (`scripts/sap-integrity.ts`; proxy drops to R0 on mismatch; covers bunfig/package.json and bun preloads); HMAC evidence and hash-chained audit; strict JSON-RPC allowlist; `.env` can only narrow safe defaults; `sap-approve` requires /dev/tty plus id-prefix confirmation; parallel dispatch gets read/write rows, one human pre-dispatch grant (scope-bound, out-of-scope denied), child env allowlist, staged SIGTERM/grace/SIGKILL shutdown and per-row worktrees; deny rules for all 8 platforms rendered from `config/platforms/protected-paths.json` and checked by `validate-platform-parity.ts`. Residual same-UID risk documented in SECURITY.md (#194).
+
 ### Fixed
 - **[2026-10-10]**: fix(hooks): `scripts/hooks/pre-commit.ts` re-renders and stages platform command copies after stamping `config/commands/*.md` Last Updated dates; re-rendered stale `.gemini/commands/triage.toml` (#194 CI).
 

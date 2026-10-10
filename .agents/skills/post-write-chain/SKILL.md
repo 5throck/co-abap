@@ -81,8 +81,8 @@ Action required: Add ABAP Unit test cases covering the uncovered branches,
 
 ## Enforcement
 
-- **Every platform (proxy-enforced)**: the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` on Claude Code, Codex, Gemini CLI, Antigravity, and Hermes. The proxy records each chain step's result as evidence in `memory/audit/sap-evidence.json` (object status `pending` after a write, `passed` once all four steps pass after that write, `failed` otherwise). `ReleaseTransport` is denied unless every object in the transport has `passed` evidence, and it also needs a human approval (`APPROVAL_REQUIRED id=<id>` → the human runs `bun scripts/sap-approve.ts <id>`; agents never run it). Do not edit the evidence file by hand.
-- The former manual profile (`HARNESS_PROFILE=manual`) is retired; there is no hook-less SAP path.
+- **Every platform (proxy-enforced)**: the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` on Claude Code, Codex, Gemini CLI, Antigravity, and Hermes. The proxy records each chain step's result as evidence in `memory/audit/sap-evidence.json` (object status `pending` after a write, `passed` once all four steps pass after that write, `failed` otherwise). `ReleaseTransport` is denied unless every object in the transport has `passed` evidence, and it also needs a human approval (`APPROVAL_REQUIRED id=<id>` → the human runs `bun scripts/sap-approve.ts <id>` and types the first 6 characters of the id on `/dev/tty`; agents never run it). Do not edit the evidence file by hand.
+- The former manual profile is retired; there is no hook-less SAP path.
 - Following this skill is a process rule for the agent. Only the proxy-recorded evidence and the transport release gate are enforced controls (see [SECURITY.md](../../SECURITY.md#control-tiers)).
 
 ## Claude Code Desktop App Note

@@ -9,6 +9,8 @@
  *   (c) instruction files contain the required parity sections (data-driven, SECTIONS below)
  *   (d) skills mirrors are identical to skills/
  *   (e) docs/workspace-schema.json has high/medium/low model mappings for all platforms
+ *   (f) deny-rules: every platform config contains every entry of config/platforms/protected-paths.json
+ *       (or lists it under platforms.<p>.manual with a documented reason)
  *
  * Usage: bun scripts/validate-platform-parity.ts [--root <dir>]
  */
@@ -151,8 +153,89 @@ export function checkCommands(root: string): CheckResult {
   }
 }
 
+// ---- (f) deny-rules ---------------------------------------------------------------------------
+
+interface ProtectedSet {
+  commands: Array<{ id: string; claude: string[]; gemini: string[]; codex: string[][] }>;
+  paths: Array<{ id: string; pattern: string; noRead?: boolean }>;
+  platforms: Record<string, { files: string[]; manual: Record<string, string> }>;
+}
+
+/** A manual note applies to an entry by id, or to a whole class via `cmd:*` / `path:*`. */
+function manualNote(set: ProtectedSet, platform: string, kind: 'cmd' | 'path', id: string): string | undefined {
+  const m = set.platforms[platform]?.manual ?? {};
+  const note = m[id] ?? m[`${kind}:*`];
+  return note && note.trim().length >= 20 ? note : undefined;
+}
+
+export function checkDenyRules(root: string): CheckResult {
+  const problems: string[] = [];
+  const f = join(root, 'config', 'platforms', 'protected-paths.json');
+  if (!existsSync(f)) return { id: 'deny-rules', ok: false, problems: ['config/platforms/protected-paths.json: missing'] };
+  let set: ProtectedSet;
+  try { set = JSON.parse(readFileSync(f, 'utf-8')); } catch (e) { return { id: 'deny-rules', ok: false, problems: [`protected-paths.json: cannot parse (${e instanceof Error ? e.message : e})`] }; }
+  const read = (rel: string): string | undefined => { const a = join(root, rel); return existsSync(a) ? readFileSync(a, 'utf-8') : undefined; };
+  const need = (platform: string, kind: 'cmd' | 'path', id: string, ok: boolean, label: string, where: string) => {
+    if (!ok && !manualNote(set, platform, kind, id)) problems.push(`${platform}: ${where} lacks ${label} (entry ${id}; add it or document a manual step)`);
+  };
+
+  // Claude: permissions.deny
+  const ct = read('.claude/settings.json');
+  if (ct === undefined) problems.push('.claude/settings.json: missing');
+  else {
+    let have = new Set<string>();
+    try { have = new Set<string>((JSON.parse(ct).permissions?.deny ?? []).map(String)); } catch { problems.push('.claude/settings.json: cannot parse'); }
+    for (const c of set.commands) for (const e of c.claude) need('claude', 'cmd', c.id, have.has(e), e, '.claude/settings.json permissions.deny');
+    for (const p of set.paths) {
+      for (const tool of ['Edit', 'Write', 'MultiEdit']) need('claude', 'path', p.id, have.has(`${tool}(${p.pattern})`), `${tool}(${p.pattern})`, '.claude/settings.json permissions.deny');
+      if (p.noRead) need('claude', 'path', p.id, have.has(`Read(${p.pattern})`), `Read(${p.pattern})`, '.claude/settings.json permissions.deny');
+    }
+  }
+
+  // Gemini: settings.json + sample (denyList, tools.exclude, policy), .geminiignore for reads
+  for (const rel of ['.gemini/settings.json', '.gemini/settings.json.sample']) {
+    const text = read(rel);
+    if (text === undefined) { problems.push(`${rel}: missing`); continue; }
+    let j: any; try { j = JSON.parse(text); } catch { problems.push(`${rel}: cannot parse`); continue; }
+    const have = new Set<string>([...(j['terminal.denyList'] ?? []), ...(j.tools?.exclude ?? [])].map(String));
+    for (const c of set.commands) for (const e of c.gemini) need('gemini', 'cmd', c.id, have.has(e), e, `${rel} denyList/tools.exclude`);
+    if (j['terminal.executionPolicy'] === undefined || /^(auto|turbo)$/i.test(String(j['terminal.executionPolicy']))) problems.push(`${rel}: terminal.executionPolicy must not be Auto/Turbo (use Off)`);
+  }
+  const gi = read('.geminiignore');
+  for (const p of set.paths) {
+    const readable = !!p.noRead && !p.pattern.startsWith('~');
+    need('gemini', 'path', p.id, readable && gi !== undefined && gi.split('\n').includes(p.pattern), p.pattern, '.geminiignore (read side only)');
+  }
+
+  // Codex: execpolicy rules + sandbox/approval settings
+  const rules = read('.codex/rules/default.rules');
+  if (rules === undefined) problems.push('.codex/rules/default.rules: missing');
+  else for (const c of set.commands) for (const pre of c.codex) {
+    const line = `prefix_rule(pattern=${JSON.stringify(pre)}, decision="forbidden"`;
+    need('codex', 'cmd', c.id, rules.includes(line), line, '.codex/rules/default.rules');
+  }
+  const toml = read('.codex/config.toml') ?? '';
+  if (!/^sandbox_mode\s*=\s*"(read-only|workspace-write)"/m.test(toml)) problems.push('.codex/config.toml: sandbox_mode must be read-only or workspace-write');
+  if (!/^approval_policy\s*=\s*"(untrusted|on-request|on-failure)"/m.test(toml)) problems.push('.codex/config.toml: approval_policy must be untrusted, on-request or on-failure (not never)');
+  for (const p of set.paths) need('codex', 'path', p.id, false, 'a path deny', '.codex/');
+
+  // Hermes: approvals.mode manual in the example config
+  const hy = read('config/platforms/hermes-mcp.example.yaml') ?? '';
+  if (!/^approvals:\s*\n\s+mode:\s*manual\s*$/m.test(hy)) problems.push('config/platforms/hermes-mcp.example.yaml: approvals.mode must be manual');
+
+  // Manual-step platforms: every entry needs a documented note, and the doc must reference the json
+  for (const [platform, doc] of [['hermes', 'docs/platform-setup/hermes.md'], ['antigravity', 'docs/platform-setup/antigravity.md']] as const) {
+    const t = read(doc);
+    if (t === undefined) problems.push(`${doc}: missing`);
+    else if (!t.includes('protected-paths.json')) problems.push(`${doc}: must reference config/platforms/protected-paths.json`);
+    for (const c of set.commands) need(platform, 'cmd', c.id, false, 'a deny entry', 'platform config');
+    for (const p of set.paths) need(platform, 'path', p.id, false, 'a deny entry', 'platform config');
+  }
+  return { id: 'deny-rules', ok: problems.length === 0, problems };
+}
+
 export function runAll(root: string): CheckResult[] {
-  return [checkCommands(root), checkMcp(root), checkInstructions(root), checkSkills(root), checkSchema(root)];
+  return [checkCommands(root), checkMcp(root), checkInstructions(root), checkSkills(root), checkSchema(root), checkDenyRules(root)];
 }
 
 if (import.meta.main) {

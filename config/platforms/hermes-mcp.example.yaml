@@ -16,7 +16,17 @@ mcp_servers:
       - "--"
       - "--mode"
       - hyperfocused
-    # env: {}          # normally empty; credentials come from <repo>/.env
+    # Dispatch env forwarded to the proxy (UNVERIFIED on-device: Hermes may not expand ${VAR}; set literal values per run if not).
+    env:
+      SAP_PROXY_MAX_CLASS: ${SAP_PROXY_MAX_CLASS}
+      SAP_DISPATCH_GRANT: ${SAP_DISPATCH_GRANT}
+      SAP_DISPATCH_ROW: ${SAP_DISPATCH_ROW}
     timeout: 120
     # tools:
     #   include: []    # leave unset: the proxy already gates every call
+
+# Agent-shell hardening (config/platforms/protected-paths.json; docs/platform-setup/hermes.md).
+# Hermes has no per-command/per-path deny list, so keep dangerous-command approval on manual
+# and never use "off". Run Hermes in a container or as a separate OS user for real isolation.
+approvals:
+  mode: manual

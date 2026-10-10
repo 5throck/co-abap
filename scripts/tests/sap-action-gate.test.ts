@@ -1,11 +1,12 @@
-// @version 1.3.0
+// @version 2.0.0
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { evaluate } from "../hooks/sap-action-gate.ts";
 import { record } from "../hooks/sap-action-audit.ts";
-import { inspectQuery, normalizeObjectKey, readEvidence } from "../lib/sap-action-lib.ts";
+import { NEEDS_APPROVAL, inspectQuery, normalizeObjectKey, readEvidence } from "../lib/sap-action-lib.ts";
+import { secureHome } from "./fixtures/sap-secure-home.ts";
 
 const REPO = join(import.meta.dir, "..", "..");
 const FIX = join(REPO, "scripts", "hooks", "__fixtures__");
@@ -14,13 +15,15 @@ const OBJ = "/sap/bc/adt/oo/classes/zcl_foo";
 const ENV_KEYS = ["SAP_APPROVAL_TOKEN", "HARNESS_TASK_ID", "HARNESS_SPEC_ID"];
 
 let root: string;
+let home: ReturnType<typeof secureHome>;
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), "sap-gate-"));
   mkdirSync(join(root, "config"), { recursive: true });
   cpSync(join(REPO, "config", "sap-action-policy.json"), join(root, "config", "sap-action-policy.json"));
   for (const k of ENV_KEYS) delete process.env[k];
+  home = secureHome(root);
 });
-afterEach(() => { rmSync(root, { recursive: true, force: true }); for (const k of ENV_KEYS) delete process.env[k]; });
+afterEach(() => { home.restore(); rmSync(root, { recursive: true, force: true }); for (const k of ENV_KEYS) delete process.env[k]; });
 
 const call = (tool: string, ti: object, extra: object = {}) =>
   ({ session_id: "s1", tool_name: `mcp__abap__${tool}`, tool_input: ti, ...extra });
@@ -29,6 +32,7 @@ const logLines = () => {
   return readdirSync(d).filter((f) => f.endsWith(".jsonl")).flatMap((f) =>
     readFileSync(join(d, f), "utf-8").trim().split("\n").map((l) => JSON.parse(l)));
 };
+/** Legacy per-session approval file in the workspace: must be ignored (approvals are signed and owned by the proxy). */
 function approve(tool: string, target: string, extra: object = {}, expires = new Date(Date.now() + 3600e3).toISOString()) {
   const dir = join(root, "memory", "audit", "approvals");
   mkdirSync(dir, { recursive: true });
@@ -88,14 +92,13 @@ describe("RunQuery", () => {
 
 describe("R3 approval and release", () => {
   test("no approval denied", () => expect(evaluate(call("RunReport", { name: "ZR" }), root).decision).toBe("deny"));
-  test("approval file allows, audit consumes it (single use)", () => {
+  test("legacy workspace approval files are ignored", () => {
     approve("RunReport", "ZR");
     const c = call("RunReport", { name: "ZR" });
-    expect(evaluate(c, root).decision).toBe("allow");
+    expect(evaluate(c, root).reason).toBe(NEEDS_APPROVAL);
     record({ ...c, tool_response: "ok" }, root);
-    expect(logLines().at(-1).decision).toBe("approved");
-    expect(logLines().at(-1).approver).toBe("alice");
-    expect(evaluate(c, root).decision).toBe("deny");
+    expect(logLines().at(-1).decision).toBe("allow");
+    expect(logLines().at(-1).approver).toBeUndefined();
   });
   test("expired approval denied", () => {
     approve("RunReport", "ZR", {}, new Date(Date.now() - 1000).toISOString());
@@ -105,11 +108,10 @@ describe("R3 approval and release", () => {
     approve("RunReport", "OTHER");
     expect(evaluate(call("RunReport", { name: "ZR" }), root).decision).toBe("deny");
   });
-  test("token-bound approval needs matching env", () => {
+  test("SAP_APPROVAL_TOKEN no longer unlocks anything", () => {
     approve("RunReport", "ZR", { token: "t0k" });
-    expect(evaluate(call("RunReport", { name: "ZR" }), root).decision).toBe("deny");
     process.env.SAP_APPROVAL_TOKEN = "t0k";
-    expect(evaluate(call("RunReport", { name: "ZR" }), root).decision).toBe("allow");
+    expect(evaluate(call("RunReport", { name: "ZR" }), root).decision).toBe("deny");
   });
   test("session id cannot traverse paths", () => {
     approve("RunReport", "ZR");
@@ -128,9 +130,20 @@ describe("R3 approval and release", () => {
     passChain();
     expect(evaluate(fx("r3-release"), root).reason).toContain("without approval");
   });
-  test("release allowed with passed evidence and approval", () => {
+  test("release with passed evidence still needs a proxy approval", () => {
     passChain(); approve("ReleaseTransport", "A4HK900001");
-    expect(evaluate(fx("r3-release"), root).decision).toBe("allow");
+    expect(evaluate(fx("r3-release"), root).reason).toBe(NEEDS_APPROVAL);
+  });
+  test("hand-edited evidence without a valid MAC is not passed", () => {
+    mkdirSync(join(root, "memory", "audit"), { recursive: true });
+    writeFileSync(join(root, "memory", "audit", "sap-evidence.json"), JSON.stringify({ [OBJ]: { chain: {}, status: "passed", transport: "A4HK900001" } }));
+    expect(readEvidence(root)[OBJ].status).toBe("pending");
+    expect(evaluate(fx("r3-release"), root).reason).toContain("lack passed QA evidence");
+    passChain();
+    const f = join(root, "memory", "audit", "sap-evidence.json");
+    const ev = JSON.parse(readFileSync(f, "utf-8")); ev[OBJ].package = "SAPBC";
+    writeFileSync(f, JSON.stringify(ev));
+    expect(readEvidence(root)[OBJ].status).toBe("pending");
   });
 });
 
@@ -213,11 +226,11 @@ describe("hyperfocused SAP tool", () => {
     record(sap({ action: "edit", target: "CLAS ZCL_A", params: { source: "x", package: "$TMP" } }), root);
     expect(evaluate(sap({ action: "edit", target: "clas zcl_a", params: { source: "y" } }), root).reason).toContain("$TMP");
   });
-  test("delete, debug denied; approval allows delete once", () => {
+  test("delete, debug denied; legacy approval file does not allow", () => {
     expect(d({ action: "delete", target: "CLAS ZCL_A" })).toBe("deny");
     expect(d({ action: "debug", target: "RUN_REPORT", params: { report: "ZR" } })).toBe("deny");
     approve("delete", "CLAS ZCL_A");
-    expect(d({ action: "delete", target: "CLAS ZCL_A" })).toBe("allow");
+    expect(d({ action: "delete", target: "CLAS ZCL_A" })).toBe("deny");
   });
   test("rfc ops", () => {
     for (const op of ["info", "ping", "probe", "search"]) expect(d({ action: "rfc", params: { op } })).toBe("allow");
@@ -289,16 +302,13 @@ describe("hyperfocused SAP tool", () => {
       approve("ReleaseTransport", T);
       expect(evaluate(sap(rel), root).reason).toContain("tracked transport objects");
     });
-    test("release denied with pending evidence, allowed with passed evidence and approval, single use", () => {
+    test("release denied with pending evidence; with passed evidence it needs a proxy approval", () => {
       approve("ReleaseTransport", T);
       record(sap({ action: "edit", target: "CLAS ZCL_B", params: { source: "x", package: "$TMP", transport: T } }), root);
       expect(evaluate(sap(rel), root).reason).toContain("lack passed QA evidence");
       rmSync(join(root, "memory", "audit", "sap-evidence.json"));
       chain();
-      expect(evaluate(sap(rel), root).decision).toBe("allow");
-      record({ ...sap(rel), tool_response: "ok" }, root);
-      expect(logLines().at(-1).decision).toBe("approved");
-      expect(evaluate(sap(rel), root).decision).toBe("deny");
+      expect(evaluate(sap(rel), root).reason).toBe(NEEDS_APPROVAL);
     });
     test("release denied without approval / without transport", () => {
       chain();
@@ -337,10 +347,9 @@ describe("RAP / UI5 targets", () => {
       expect(r.decision).toBe("deny"); expect(r.cls).toBe("R3"); expect(r.reason).toContain("without approval");
     }
   });
-  test("publish approval is single-target and allows", () => {
+  test("publish is never allowed by a legacy approval file", () => {
     approve("edit.publish_service", "ZSB_T");
-    expect(ev({ action: "edit", target: "PUBLISH_SERVICE", params: { service_name: "ZSB_T" } }).decision).toBe("allow");
-    expect(ev({ action: "edit", target: "PUBLISH_SERVICE", params: { service_name: "ZSB_OTHER" } }).decision).toBe("deny");
+    expect(ev({ action: "edit", target: "PUBLISH_SERVICE", params: { service_name: "ZSB_T" } }).reason).toBe(NEEDS_APPROVAL);
   });
   test("SRVB edit with publish params is R3, plain SRVB create is R2", () => {
     expect(ev({ action: "edit", target: "SRVB ZSB_T", params: { publish: true, package: "$TMP" } }).cls).toBe("R3");
@@ -387,12 +396,10 @@ describe("RAP / UI5 targets", () => {
     expect(ev({ action: "system", params: { type: "deploy_from_file", file_path: "/w/zcl_a.clas.abap", package_name: "$TMP" } }).decision).toBe("ask");
     expect(ev({ action: "system", params: { type: "git_import_zip", package_name: "$TMP", file_path: "/w/a.zip" } }).cls).toBe("R2");
   });
-  test("UI5 deploy approved once with file path target", () => {
+  test("UI5 deploy needs a proxy approval", () => {
     const ti = { action: "system", params: { type: "deploy_from_file", file_path: "/w/app.zip", package_name: "$TMP" } };
     approve("system.deploy_from_file.ui5", "/w/app.zip");
-    expect(ev(ti).decision).toBe("allow");
-    record({ ...sap(ti), tool_response: "ok" }, root);
-    expect(ev(ti).decision).toBe("deny");
+    expect(ev(ti).reason).toBe(NEEDS_APPROVAL);
   });
   test("legacy named UI5/RAP tools are R3", () => {
     for (const n of ["UI5Deploy", "UI5UploadApp", "UI5ListApps", "PublishServiceBinding", "UnpublishServiceBinding", "UploadBSP"]) {
@@ -412,7 +419,7 @@ describe("RAP / UI5 targets", () => {
 
 describe("process-level (stdin/stdout): advisory only", () => {
   const run = async (stdin: string, cwd = root) => {
-    const p = Bun.spawn(["bun", join(REPO, "scripts/hooks/sap-action-gate.ts")], {
+    const p = Bun.spawn([process.execPath, join(REPO, "scripts/hooks/sap-action-gate.ts")], {
       stdin: new Blob([stdin]), stdout: "pipe", stderr: "pipe", cwd, env: { ...process.env },
     });
     const out = await new Response(p.stdout).text(); await p.exited;

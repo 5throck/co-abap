@@ -76,12 +76,15 @@
     "selectOnly": true
   },
   "approval": {
-    "envVar": "SAP_APPROVAL_TOKEN",
-    "dir": "memory/audit/approvals",
+    "_doc": "Approvals live outside the workspace in ~/.config/co-abap/approvals/<repo-hash>/ (hardcoded, HMAC-signed by sap-approve.ts). Only ttlMinutes is read here.",
     "ttlMinutes": 15
   },
   "release": {
     "requireEvidence": true
+  },
+  "vspFeatures": {
+    "_doc": "SAP_FEATURE_* keys that .env or the client env may turn on. Empty: every privileged vsp feature stays off. Changing this requires re-signing (bun scripts/sap-integrity.ts sign).",
+    "allowOn": []
   },
   "hyperfocused": {
     "_doc": "vsp v2.60.0 SAP_MODE=hyperfocused: one tool `SAP` {action,target,params}. Sub-type is params.type, params.op or a single-word target. Unknown action/sub-type => ask. Data only; logic in scripts/lib/sap-action-lib.ts.",

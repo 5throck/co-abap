@@ -7,19 +7,24 @@
  * Denied calls are logged here because PostToolUse does not fire for them.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 2.0.0 (advisory; enforcement moved to the MCP proxy)
+ * R3 calls never allow here: single-use approvals are owned by the MCP proxy (HMAC-verified, outside the
+ * workspace), so evaluate() reports NEEDS_APPROVAL and the proxy consumes a matching signed approval.
+ *
+ * @version 3.0.0 (advisory; enforcement in the MCP proxy; legacy session approval files removed)
  */
 
 import {
-  NEEDS_APPROVAL, TOOL_PREFIX, classify, derivePackage, effectiveInput, findApproval, firstString,
+  NEEDS_APPROVAL, TOOL_PREFIX, classify, derivePackage, effectiveInput, firstString,
   globMatch, inspectQuery, isHyperfocused, loadPolicy, readEvidence, resolveHyperfocused,
   resolveToolName,
-  targetOf, type Cls, type Decision, type HfResolved, type HookInput, type Evidence, type Policy,
+  type Cls, type Decision, type HfResolved, type HookInput, type Evidence, type Policy,
 } from '../lib/sap-action-lib.ts';
 
 export interface GateResult { decision: Decision; reason: string; cls: string; tool: string }
 
-export function evaluate(input: HookInput, root: string, now: Date = new Date()): GateResult {
+/** `preloaded` lets the proxy pass the policy it already integrity-checked (avoids a re-read race). */
+export function evaluate(input: HookInput, root: string, now: Date = new Date(), preloaded?: Policy): GateResult {
+  void now;
   const toolName = input.tool_name ?? '';
   if (!toolName.startsWith(TOOL_PREFIX)) {
     return { decision: 'ask', cls: '?', tool: toolName, reason: 'unexpected tool name for SAP gate' };
@@ -27,7 +32,7 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
   const ti = effectiveInput(input.tool_input);
   const tool = resolveToolName(toolName, ti);
   let policy: Policy;
-  try { policy = loadPolicy(root); } catch (e) {
+  try { policy = preloaded ?? loadPolicy(root); } catch (e) {
     return { decision: 'ask', cls: '?', tool, reason: `policy unavailable (${(e as Error).message})` };
   }
   if (isHyperfocused(toolName)) return evaluateHyperfocused(input, root, policy, now);
@@ -70,14 +75,12 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
           if (missing.length) return r('deny', `${missing.length} object(s) lack passed QA evidence`);
         }
       }
-      const found = findApproval(root, policy, input.session_id, tool, targetOf(ti), now);
-      if (!found) return r('deny', NEEDS_APPROVAL);
-      return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
+      return r('deny', NEEDS_APPROVAL);
     }
   }
 }
 
-function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, now: Date): GateResult {
+function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, _now: Date): GateResult {
   const h: HfResolved = resolveHyperfocused(input.tool_input, policy);
   const cls = h.cls ?? '?';
   const r = (decision: Decision, reason: string): GateResult => ({ decision, reason, cls, tool: h.tool });
@@ -108,9 +111,7 @@ function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, no
           if (missing.length) return r('deny', `${missing.length} object(s) lack passed QA evidence`);
         }
       }
-      const found = findApproval(root, policy, input.session_id, h.tool, h.approvalTarget, now);
-      if (!found) return r('deny', NEEDS_APPROVAL);
-      return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
+      return r('deny', NEEDS_APPROVAL);
     }
   }
 }

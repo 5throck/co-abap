@@ -56,7 +56,7 @@ Tool names follow the [vsp Tool Reference (Hyperfocused Mode)](../docs/co-abap.c
 
 - GUI scripting runs in SAP GUI, **outside the MCP gate**: the vsp risk classification and audit hook do not see it.
 - Read-only scripts (display transactions, no save/post) are allowed.
-- Any write or transaction-changing script requires a recorded human approval in `memory/audit/approvals` before running (the same approval mechanism as R3; see SECURITY.md and the design doc). Agents must not create approval files.
+- Any write or transaction-changing script requires a recorded human approval before running (the same HMAC-signed approval mechanism as R3, stored outside the repo in `~/.config/co-abap/approvals/`; see SECURITY.md and the design doc). Agents must not create approval files or read `~/.config/co-abap/`.
 - Log every run (script, transaction, target system/client, approval reference, outcome) in the report and the session memory log.
 
 ## Pre-flight Checklist (run before any scripting)

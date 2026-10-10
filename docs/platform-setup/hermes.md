@@ -36,7 +36,15 @@ If Hermes asks to consent to project shell hooks (for example `bun scripts/...` 
 
 ## 5. Approvals
 
-An R3 action (for example `ReleaseTransport`) returns `APPROVAL_REQUIRED`. A human, not the agent, runs `bun scripts/sap-approve.ts` in a separate terminal (approvals expire after 15 minutes and are single use), then the agent retries. Hermes has no deny-rule equivalent for the approve command, so do not grant the agent permission to run `sap-approve.ts`.
+An R3 action (for example `ReleaseTransport`) returns `APPROVAL_REQUIRED`. A human, not the agent, runs `bun scripts/sap-approve.ts <id>` in a separate terminal and types the first 6 characters of the id on `/dev/tty` (approvals expire after 15 minutes, are single use, and are stored outside the repo in `~/.config/co-abap/approvals/`), then the agent retries. Before first use a human runs `bun scripts/sap-integrity.ts init` (and `sign` after reviewed enforcement changes); until then the proxy is read-only. Hermes has no deny-rule equivalent for the approve command, so do not grant the agent permission to run `sap-approve.ts`.
+
+## 5a. Agent-shell hardening (manual)
+
+The canonical protected set is [`config/platforms/protected-paths.json`](../../config/platforms/protected-paths.json). Hermes has no user-configurable per-command or per-path deny list (assumed; `hermes` was not installed when this was written, so verify against your version):
+
+1. Keep dangerous-command approval on manual: `approvals: mode: manual` (included in `hermes-mcp.example.yaml`). Never set it to `off`; reject, do not approve, any prompt for `./vsp`, `bun -e`, `script`, `git stash`, `git checkout --`, `git restore`, `git clean`, or edits to `.env`, `.mcp.json`, `config/**`, the proxy scripts, `scripts/sap-integrity.ts`, `scripts/dispatch-parallel.ts`, `memory/audit/**` or `~/.config/co-abap/**`.
+2. Run Hermes in a container (terminal backend) or as a separate OS user so it cannot read `~/.config/co-abap/approval.key`; that is the only full closure.
+3. One worktree per parallel agent; never `git stash`.
 
 ## 6. Verify
 

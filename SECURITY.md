@@ -61,14 +61,34 @@ The proxy reuses the policy in `scripts/sap-action-lib.ts`, so the decision for 
   - **R3** data change, release, or privileged action (`ReleaseTransport`, `RunReport`, `RunOptions`, `InstallZADTVSP`, `InstallAbapGit`, any delete or data-modifying tool): denied by default. Allowed only with a human approval.
   - **Unknown** `abap` tools: asked, with the reason "unclassified tool".
   - **Hyperfocused mode** (`SAP` tool, vsp v2.60.0): the proxy classifies `action` plus `params.type`/`op` (for example `query` with non-SELECT SQL, `rfc` `call`, `delete`, `debug`, and `system` `release_transport` are denied unless approved; `edit`/`create` ask). Unknown actions or sub-types ask. Map: design doc section 2.0.
-- **Approval mechanism**: an `ask` call, or an R3 call without approval, is not sent to SAP; the proxy answers `APPROVAL_REQUIRED id=<id>`. The human runs `bun scripts/sap-approve.ts <id>` (or `--deny`) in their own terminal. The approval is single use, bound to the hash of the exact tool input, and expires after a short TTL; the proxy consumes it on the identical retry. Agents must never run `sap-approve.ts` or create approval files; the Claude settings deny writes to `memory/audit/approvals/**`.
-- **Known limitation (pending security review, design Phase 3)**: Codex, Gemini CLI, and Hermes do not have an equivalent per-path write deny for `memory/audit/approvals/**` or a block on running `sap-approve.ts` from the agent shell. On those platforms the rule that only a human approves, from their own terminal, is procedural until the Phase 3 review lands a stronger binding.
+- **Approval mechanism**: an `ask` call, or an R3 call without approval, is not sent to SAP; the proxy answers `APPROVAL_REQUIRED id=<id>`. The human runs `bun scripts/sap-approve.ts <id>` (or `--deny`) in their own terminal and types the first 6 characters of the id on `/dev/tty`; the approver is the OS user (no `--approver`, no token env var, no non-TTY override). The approval is single use, bound to the hash of the exact tool input, and expires after a short TTL; the proxy consumes it on the identical retry. Pending requests and approvals are stored outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/` and HMAC-signed with `~/.config/co-abap/approval.key` (mode 0600). Agents must never run `sap-approve.ts`, create approval files, or read `~/.config/co-abap/`; the platform deny lists block these where the platform allows (see below).
+- **Integrity seal**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy and enforcement scripts. Until the seal verifies, the proxy is R0 (read-only). `verify` and `verify-audit` are read-only.
+- **Parallel grants**: `scripts/dispatch-parallel.ts` plan rows have `mode: read|write`. Read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. On timeout the child gets SIGTERM, a 10 second grace period (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls.
+- **Agent-shell hardening**: see [Agent-shell hardening (all platforms)](#agent-shell-hardening-all-platforms). Every platform gets as much command/path blocking as it supports; the rest is documented residual risk.
 - **Evidence-gated transport release**: `ReleaseTransport` is denied unless every object in the transport has passed evidence (`SyntaxCheck`, `RunUnitTests`, `GetCodeCoverage`, `RunATCCheck`, each run after the last write).
 - **Failure behavior**: if the proxy cannot read its policy or hits an internal error, it asks instead of allowing.
 
+#### Agent-shell hardening (all platforms)
+
+The proxy cannot stop an agent that bypasses it (runs `./vsp`, edits the policy, or approves its own call). Each platform therefore blocks the protected set in [`config/platforms/protected-paths.json`](config/platforms/protected-paths.json) as far as it allows. `bun scripts/validate-platform-parity.ts` (check `deny-rules`) fails when a platform config lacks an entry that is not listed there as a documented manual step.
+
+| Platform | Command blocking | Path write blocking | `.env` read blocking | Status |
+|----------|------------------|---------------------|----------------------|--------|
+| Claude Code CLI / Desktop | `permissions.deny` `Bash(...)` | `permissions.deny` `Edit/Write/MultiEdit(...)` | `Read(.env*)` | Full per-pattern (glob; quote-splitting and wrappers can still evade) |
+| Codex CLI / IDE | `.codex/rules/default.rules` `prefix_rule(... "forbidden")`; `sandbox_mode`, `approval_policy` in `.codex/config.toml` | none (workspace sandbox only) | none | Argv-prefix only; no globs, wrappers evade; execpolicy syntax assumed (codex not installed here) |
+| Gemini CLI | `tools.exclude` (the effective Gemini control); `terminal.denyList`, `terminal.executionPolicy: Off` and `mcp.toolApproval` may be Antigravity-only keys and are kept as best effort | none (tools are not path-scoped) | `.geminiignore` | Prefix only; key names assumed (gemini not installed here) |
+| Antigravity IDE / CLI | manual: IDE terminal deny list and review policy ([setup](docs/platform-setup/antigravity.md)) | none | none | Manual, per user |
+| Hermes Agent | `approvals.mode: manual`; no deny list | none | none | Manual approval only ([setup](docs/platform-setup/hermes.md)) |
+
+**Plain statement of limits**: `Read(...)` and path denies stop only the agent's file tools. A shell can still read `.env` and `~/.config/co-abap/approval.key` (for example through interpreters, pty wrappers or quote-splitting), so the `key-access` and `env-read` command denies are speed bumps, not barriers. Full closure needs a separate OS user (or container) or an OS keychain for the approval key. The integrity seal (`sap-integrity.ts`) is self-verified by the same code it protects: it gives tamper-evidence, not tamper-prevention.
+
+**Dispatch env forwarding**: `SAP_PROXY_MAX_CLASS`, `SAP_DISPATCH_GRANT` and `SAP_DISPATCH_ROW` must reach the proxy process. Codex uses `env_vars`; Gemini CLI and `.agents/mcp.json` use `env` with `$VAR` references; Hermes uses `env` in `~/.hermes/config.yaml`. All of these are unverified on-device; if a client drops them, children run at R0.
+
+**Residual risk (accepted, option a)**: the approval key `~/.config/co-abap/approval.key` lives outside the repo, but an agent running as the same OS user with an unrestricted shell can read it and forge approvals; on platforms without path deny it can also edit the policy, proxy, `.env` and audit files. Full closure requires running the agent as a separate OS user (or container) that cannot read the key and the repo's enforcement files, with approvals performed by the human user only. Other agents' work is protected by procedure: one worktree per parallel agent, never `git stash`, `git checkout -- <paths>`, `git restore` or `git clean`.
+
 #### Manual profile (retired)
 
-The former `HARNESS_PROFILE=manual` profile is retired. Every platform reaches SAP only through the proxy, so there is no hook-less SAP path and no separate release rule per client.
+The former manual profile is retired. Every platform reaches SAP only through the proxy, so there is no hook-less SAP path and no separate release rule per client.
 
 #### Audit log
 
@@ -87,7 +107,7 @@ revision, `scripts/hooks/gui-script-gate.ts` does not exist, so item 1 is proced
    - These run outside the SAP MCP proxy.
    - Any script that writes data or changes a transaction requires a recorded human approval before it
      runs. Use the same single-use approval mechanism as R3 (see [Approval mechanism](#tier-3--sap-mcp-proxy-in-detail)).
-     Agents must not create approval files under `memory/audit/approvals/`.
+     Agents must not create approval files (they live outside the repo under `~/.config/co-abap/approvals/`).
    - Read-only scripts (navigation, display, and export without saving) are allowed without approval.
    - Every run, read-only or not, is logged to `memory/audit/` with the script name, target system, and
      decision. Script text and result data are not logged, per the audit log content rule.

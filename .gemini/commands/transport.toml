@@ -18,7 +18,7 @@ Calls `SAP(action="system", params={"type":"list_transports"})` (R0) and display
 ```
 /transport create <description>
 ```
-Calls `SAP(action="system", params={"type":"create_transport", ...})` (R2 gated: evidence + approval, blocked in manual profile; requires `SAP_ENABLE_TRANSPORTS` / `SAP_FEATURE_TRANSPORT` opted in) with the provided description.
+Calls `SAP(action="system", params={"type":"create_transport", ...})` (R2 gated: evidence + approval; requires `SAP_ENABLE_TRANSPORTS` / `SAP_FEATURE_TRANSPORT` opted in) with the provided description.
 Reports the new transport number (e.g. `NPL K000001`).
 
 ## `add` ??Add an object to a transport
@@ -37,7 +37,7 @@ Confirms the object is listed in the transport after the call.
 2. `test` (with coverage) passes (0 failures)
 3. `test` `type=atc` has 0 Priority-1 findings
 
-If all checks pass, calls `SAP(action="system", params={"type":"release_transport", ...})` (R3 gated: approval + `passed` evidence for every object, blocked in manual profile; requires `SAP_ENABLE_TRANSPORTS` / `SAP_FEATURE_TRANSPORT` opted in).
+If all checks pass, calls `SAP(action="system", params={"type":"release_transport", ...})` (R3 gated: approval + `passed` evidence for every object; requires `SAP_ENABLE_TRANSPORTS` / `SAP_FEATURE_TRANSPORT` opted in).
 If any check fails, reports the failure and **does not release**.
 
 ## `status` ??Show details of a specific transport

@@ -78,10 +78,10 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `sync-skills.ts` | L0 | 1.11.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
 | `dev-sync.ts` | L0 | 1.23.0 | active | —| —| L0+L1 | —|
-| `dispatch-parallel.ts` | L0 | 2.0.0 | active | v2.0.0: real CLI fan-out (--platform codex/gemini/claude/hermes, --plan, --max-parallel, per-row timeout, read-only flags, results to memory/dispatch/<runId>/) per cross-platform-parity design 5.1; antigravity-cli adapter pending verification | —| L0+L1 | —|
+| `dispatch-parallel.ts` | L0 | 2.4.1 | active | —| —| L0+L1 | —|
 | `render-commands.ts` | L3 | 1.0.0 | active | Renders config/commands/*.md into .claude/commands, .codex/prompts and .gemini/commands/*.toml (--check fails on drift) | —| L3 | —|
 | `validate-platform-parity.ts` | L3 | 1.0.0 | active | Cross-platform parity validator: rendered commands, MCP proxy routing, instruction sections, skills mirrors, schema models | —| L3 | —|
-| `tests/dispatch-parallel.test.ts` | L3 | 1.0.0 | active | Stub-CLI tests for fan-out, prompt identity, timeout, failure isolation | — | L3 | — |
+| `tests/dispatch-parallel.test.ts` | L3 | 1.5.0 | active | Stub-CLI tests for fan-out, prompt identity, timeout, failure isolation | — | L3 | — |
 | `tests/render-commands.test.ts` | L3 | 1.0.0 | active | Renderer and drift tests | — | L3 | — |
 | `tests/validate-platform-parity.test.ts` | L3 | 1.0.0 | active | Parity validator fixtures | — | L3 | — |
 | `dispatch-serial.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
@@ -122,19 +122,21 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/validate-docs-links.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
-| `tests/sap-action-gate.test.ts` | L3 | 1.3.0 | active | — | — | L3 | — |
+| `tests/sap-action-gate.test.ts` | L3 | 2.0.0 | active | Gate/audit tests (temp HOME); legacy approval files ignored, evidence MAC | — | L3 | — |
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.10.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
-| `hooks/sap-action-gate.ts` | L3 | 2.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); advisory-only when run as a hook, no longer registered in Claude settings — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
-| `hooks/sap-action-audit.ts` | L3 | 1.3.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts (PostToolUse registration removed) + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|
-| `lib/sap-action-lib.ts` | L3 | 1.4.0 | active | Shared policy/evidence/audit logic for the SAP action gate and audit hooks; hyperfocused SAP{action,target,params} resolver | —| L3 | —|
-| `sap-mcp-proxy.ts` | L3 | 1.0.0 | active | Platform-neutral stdio MCP proxy in front of vsp: single SAP enforcement point (allow/deny/approval-required), audit + QA evidence, loads .env and safe SAP_* defaults — design docs/designs/2026-10-10-cross-platform-parity-design.md | —| L3 | —|
-| `sap-approve.ts` | L3 | 1.0.0 | active | Human CLI converting a pending proxy request into a single-use, input-bound approval (--list, --deny) | —| L3 | —|
-| `tests/sap-mcp-proxy.test.ts` | L3 | 1.0.0 | active | Proxy contract tests: fixture replay vs gate, passthrough, approvals, env/cwd independence | — | L3 | — |
-| `tests/sap-approve.test.ts` | L3 | 1.0.0 | active | Approval store and sap-approve CLI tests | — | L3 | — |
-| `tests/fixtures/stub-vsp.ts` | L3 | 1.0.0 | active | Stub vsp (echo MCP server) used by the proxy tests | — | L3 | — |
+| `hooks/sap-action-gate.ts` | L3 | 3.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); R3 always needs a proxy approval (legacy session approval files removed); advisory-only when run as a hook — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
+| `hooks/sap-action-audit.ts` | L3 | 2.0.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts; HMAC-signed evidence entries, clientId/grant fields (hashes only) | —| L3 | —|
+| `lib/sap-action-lib.ts` | L3 | 2.1.0 | active | Shared policy/evidence/audit logic; secure store outside the workspace (~/.config/co-abap: HMAC key, signed approvals/pending, integrity manifest, dispatch grants), HMAC'd evidence and audit hash chain | —| L3 | —|
+| `sap-mcp-proxy.ts` | L3 | 2.1.0 | active | Stdio MCP proxy in front of vsp: single SAP enforcement point; strict JSON-RPC, MAC-verified client-bound approvals, integrity manifest (R0-only on mismatch), --max-class/SAP_PROXY_MAX_CLASS, dispatch grants, .env can only narrow, stderr redaction, graceful SIGTERM drain — design docs/designs/2026-10-10-cross-platform-parity-design.md | —| L3 | —|
+| `sap-approve.ts` | L3 | 2.1.0 | active | Human CLI: approve a pending call or sign a dispatch grant (--grant/--revoke-grant) via /dev/tty with typed id prefix; approver = OS user; HMAC-signed | —| L3 | —|
+| `tests/sap-mcp-proxy.test.ts` | L3 | 2.1.0 | active | Proxy contract tests (temp HOME + stub vsp): replay, approvals/MAC/client binding, integrity, max class, strict JSON-RPC, grants, shutdown | — | L3 | — |
+| `tests/sap-approve.test.ts` | L3 | 2.1.0 | active | Secure store, approval MAC, CLI confirmation, audit chain, integrity manifest, dispatch grant tests | — | L3 | — |
+| `tests/fixtures/stub-vsp.ts` | L3 | 1.1.0 | active | Stub vsp (echo MCP server, optional delay, logs EOF/SIGTERM) used by the proxy tests | — | L3 | — |
+| `tests/fixtures/sap-secure-home.ts` | L3 | 1.0.0 | active | Test helper: temp HOME with approval key and signed manifest | — | L3 | — |
+| `sap-integrity.ts` | L3 | 1.0.0 | active | Human CLI: init/sign the HMAC-signed integrity manifest (policy + enforcement code), verify, verify-audit | — | L3 | — |
 | `lib/secret-patterns.ts` | L3 | 1.0.0 | active | Shared secret pattern list (TOKEN_PATTERNS, ASSIGNMENT_PATTERN, SECRET_ERE) used by hooks/pre-commit.ts and hooks/pre-push.ts. LOCAL-PATCH: hooks are template-managed, so re-apply on upgrade | —| L3 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
@@ -486,8 +488,9 @@ waits for completion.
 #### `dispatch-parallel.ts`
 **Purpose**: Parallel multi-agent dispatch. Spawns multiple agents simultaneously and
 collects results when all complete.
-**Usage**: `bun scripts/dispatch-parallel.ts --platform codex|gemini|claude|hermes --plan plan.json [--max-parallel 4] [--timeout 600] [--dry-run]`
-**Plan rows**: role, task, tier (high|medium|low). Results: `memory/dispatch/<runId>/<row>.md` + `summary.json`. Read-only flags by default (codex `-s read-only`, gemini `--approval-mode plan`, claude `--permission-mode plan`; hermes has no verified read-only flag). `antigravity-cli` errors: adapter pending verification.
+**Usage**: `bun scripts/dispatch-parallel.ts --platform codex|gemini|claude|hermes --plan plan.json [--max-parallel 4] [--timeout 600] [--out-dir memory/dispatch/<sub>] [--kill-grace 10] [--grant-window 60] [--run-id <id>] [--wait-grant <min>] [--allow-hermes-write] [--dry-run]`
+**Hardening**: children get only an allowlisted env (PATH, HOME, USER, LANG, TERM, TMPDIR + per-platform auth vars; never SAP_*) with `SAP_PROXY_MAX_CLASS=R0`; plan text is fenced as untrusted data; children are spawned detached; on timeout or dispatcher SIGINT/SIGTERM/exit the process group gets SIGTERM, then SIGKILL after `--kill-grace` seconds (Windows: `taskkill /T`, then `/T /F`); each row file records `cleanup: graceful|forced`; `--out-dir` must resolve under `<root>/memory/dispatch`; hermes rows are refused without `--allow-hermes-write` (no verified read-only mode; prompt only via argv, unverified stdin).
+**Plan rows**: role, task, tier (high|medium|low), `mode` read (default) | write. Write rows require `sapScope` {packages, objects["TYPE NAME"], actions, maxClass R2|R3} (objects disjoint across rows) and may set `worktree: true` (own git worktree under memory/dispatch/<runId>/wt/, removed after the run). Write runs need a human grant: the dispatcher writes a grant request and stops; run `bun scripts/sap-approve.ts --grant <runId>`, then re-run with `--run-id <runId>` (or `--wait-grant`). Children get `SAP_DISPATCH_GRANT`/`SAP_DISPATCH_ROW` and `SAP_PROXY_MAX_CLASS`=row maxClass; the grant is revoked when the run ends. **Proxy argv**: env vars may be dropped by CLIs before reaching the MCP proxy, so each child also gets the abap proxy started as `bun <root>/scripts/sap-mcp-proxy.ts --root <canonical repo root> --dispatch-child --dispatch-mode read|write --max-class <C> [--dispatch-grant <id> --dispatch-row <row>] -- --mode hyperfocused` (the main repo root even for worktree rows). Overrides: codex `-c mcp_servers.abap.command/args`; claude generated `<row>.mcp.json` via `--mcp-config` + `--strict-mcp-config` (other MCP servers are dropped for the child); gemini generated settings file via `GEMINI_CLI_SYSTEM_SETTINGS_PATH`; hermes has no known per-invocation override (documented gap: relies on env plus the proxy's `--dispatch-child` fail-closed default). **Grant expiry** = `--grant-window` minutes for the human to sign (default 60) + run timeout + kill grace, capped below 12h. All hermes rows (read and write) are refused without `--allow-hermes-write`. Results: `memory/dispatch/<runId>/<row>.md` + `summary.json`. Read-only flags by default (codex `-s read-only`, gemini `--approval-mode plan`, claude `--permission-mode plan`; hermes has no verified read-only flag). `antigravity-cli` errors: adapter pending verification.
 
 #### `dispatch-serial.ts`
 **Purpose**: Serial multi-agent dispatch. Chains agents sequentially, passing each

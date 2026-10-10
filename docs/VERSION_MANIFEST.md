@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T08:50:07.231Z
+**Generated**: 2026-10-10T09:18:16.183Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 124 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 126 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -141,9 +141,9 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
 | dev-sync.ts | 1.23.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.test.ts | 1.0.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
+| dispatch-parallel.test.ts | 1.5.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
-| dispatch-parallel.ts | 2.0.0 | scripts/dispatch-parallel.ts | N/A |
+| dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
 | dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
@@ -180,11 +180,13 @@
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
 | review-baseline.test.ts | 1.5.0 | scripts/tests/review-baseline.test.ts | bun:test |
 | review-baseline.ts | 1.4.0 | scripts/review-baseline.ts | N/A |
-| sap-action-gate.test.ts | 1.3.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
-| sap-approve.test.ts | 1.0.0 | scripts/tests/sap-approve.test.ts | bun:test |
-| sap-approve.ts | 1.0.0 | scripts/sap-approve.ts | N/A |
-| sap-mcp-proxy.test.ts | 1.0.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
-| sap-mcp-proxy.ts | 1.0.0 | scripts/sap-mcp-proxy.ts | N/A |
+| sap-action-gate.test.ts | 2.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
+| sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
+| sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | N/A |
+| sap-mcp-proxy.test.ts | 2.1.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
+| sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | N/A |
+| sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
@@ -192,7 +194,7 @@
 | skill-lifecycle-audit.ts | 1.6.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
-| stub-vsp.ts | 1.0.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
+| stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |

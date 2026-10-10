@@ -3,7 +3,7 @@ import { describe, expect, test } from 'bun:test';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { checkInstructions, checkMcp, checkSchema, checkSkills, INSTRUCTION_FILES, SECTIONS } from '../validate-platform-parity.ts';
+import { checkDenyRules, checkInstructions, checkMcp, checkSchema, checkSkills, INSTRUCTION_FILES, SECTIONS } from '../validate-platform-parity.ts';
 
 function fx(files: Record<string, string>): string {
   const root = mkdtempSync(join(tmpdir(), 'parity-'));
@@ -61,5 +61,14 @@ describe('checkSkills / checkSchema', () => {
     const t = { high: 'a', medium: 'b', low: 'c' };
     const r = fx({ 'docs/workspace-schema.json': JSON.stringify({ models: { claude: t, codex: t, gemini: t, 'gemini-cli': t, antigravity: t } }) });
     try { expect(checkSchema(r).problems).toContain('models.hermes.high missing'); } finally { rmSync(r, { recursive: true, force: true }); }
+  });
+});
+
+describe('checkDenyRules', () => {
+  test('fails when the protected set is missing, and flags undocumented gaps', () => {
+    const empty = fx({}); try { expect(checkDenyRules(empty).ok).toBe(false); } finally { rmSync(empty, { recursive: true, force: true }); }
+    const set = JSON.stringify({ commands: [{ id: 'x', claude: ['Bash(./vsp*)'], gemini: [], codex: [] }], paths: [], platforms: { claude: { files: [], manual: {} } } });
+    const r = fx({ 'config/platforms/protected-paths.json': set, '.claude/settings.json': '{"permissions":{"deny":[]}}' });
+    try { expect(checkDenyRules(r).problems.join('\n')).toContain('claude: .claude/settings.json permissions.deny lacks Bash(./vsp*)'); } finally { rmSync(r, { recursive: true, force: true }); }
   });
 });

@@ -5,6 +5,8 @@
 - **Status**: approved (user approval 2026-10-10)
 - **Scope**: `.claude/settings.json` hooks, `scripts/hooks/sap-action-gate.ts`, `scripts/hooks/sap-action-audit.ts`, `config/sap-action-policy.json`, `memory/audit/`, `scripts/harness-metrics.ts`, `SECURITY.md`, `docs/setup-guide.md`, `skills/post-write-chain/SKILL.md`
 
+> **Status note (2026-10-10, later)**: The approval mechanism in section 4 and the manual profile were replaced. Superseded details below are kept as history. Current behavior: approvals and pending requests live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). The approver is the OS user, confirmed by typing the first 6 characters of the id on `/dev/tty`. `memory/audit/approvals`, `SAP_APPROVAL_TOKEN`, `SAP_APPROVE_ALLOW_NON_TTY`, `--approver` and `HARNESS_PROFILE=manual` no longer exist. A human runs `bun scripts/sap-integrity.ts init` once and `sign` after reviewed changes to the policy and enforcement scripts (until then the proxy is R0). Parallel write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`. See SECURITY.md.
+
 ## 1. Problem (verified)
 
 | Gap | Evidence |

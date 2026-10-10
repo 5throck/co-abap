@@ -7,6 +7,8 @@
 - **Builds on**: [2026-10-10-sap-write-safety-gate-design.md](2026-10-10-sap-write-safety-gate-design.md) (PR #194, unmerged)
 - **Scope**: `.mcp.json`, `.codex/config.toml`, `.codex/hooks.json`, `.gemini/settings.json`, `.agents/mcp.json`, `.gemini/commands/`, `.codex/prompts/`, `scripts/hooks/sap-action-*.ts`, `scripts/lib/sap-action-lib.ts`, `config/sap-action-policy.json`, new `scripts/sap-mcp-proxy.ts`, new parity validator, CLAUDE/CODEX/GEMINI/HERMES.md
 
+> **Status note (2026-10-10, later)**: The approval token file in B1 was replaced. Superseded details below are kept as history. Current behavior: approvals and pending requests live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). The approver is the OS user, confirmed by typing the first 6 characters of the id on `/dev/tty`. `memory/audit/approvals`, `SAP_APPROVAL_TOKEN`, `SAP_APPROVE_ALLOW_NON_TTY`, `--approver` and `HARNESS_PROFILE=manual` no longer exist. A human runs `bun scripts/sap-integrity.ts init` once and `sign` after reviewed changes to the policy and enforcement scripts (until then the proxy is R0). Parallel write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`. See SECURITY.md.
+
 ## 0. Decisions (2026-10-10)
 
 | # | Decision | Effect on this design |

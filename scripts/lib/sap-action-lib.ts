@@ -5,14 +5,25 @@
  * Audit records store hashes only: never source text, SQL rows, tokens or credentials.
  *
  * Also hosts the proxy approval store (pending requests, single-use approvals) shared by
- * sap-mcp-proxy.ts and sap-approve.ts.
+ * sap-mcp-proxy.ts and sap-approve.ts, and the secure store outside the workspace:
+ *   ~/.config/co-abap/approval.key                 HMAC key (0600), created by a human CLI on first use
+ *   ~/.config/co-abap/pending/<repo-hash>/<id>.json   MAC'd pending requests (written by the proxy)
+ *   ~/.config/co-abap/approvals/<repo-hash>/<id>.json MAC'd single-use approvals (written by sap-approve.ts)
+ *   ~/.config/co-abap/manifests/<repo-hash>.json      HMAC-signed integrity manifest (sap-integrity.ts)
+ * Evidence entries and audit lines are HMAC'd with the same key (audit lines form a hash chain).
+ * Residual risk: an agent running as the same OS user with unrestricted shell can read the key.
  *
- * @version 1.4.0
+ * @version 2.1.0
  */
 
-import { createHash } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import {
+  appendFileSync, chmodSync, closeSync, existsSync, fstatSync, mkdirSync, openSync, readFileSync, readSync,
+  readdirSync, realpathSync, renameSync, statSync, unlinkSync, writeFileSync,
+} from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { homedir } from 'node:os';
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
 export const TOOL_PREFIX = 'mcp__abap__';
 /** Gate deny reason for a privileged (R3) call that merely lacks an approval; the proxy turns it into APPROVAL_REQUIRED. */
@@ -27,8 +38,11 @@ export interface Policy {
   defaultUnknown: 'ask';
   allowedPackages: string[];
   runQuery: { selectOnly: boolean };
-  approval: { envVar: string; dir: string; ttlMinutes?: number };
+  /** Only ttlMinutes is honoured. The approval directory is hardcoded outside the workspace (never read from policy). */
+  approval: { ttlMinutes?: number };
   release: { requireEvidence: boolean };
+  /** SAP_FEATURE_* keys a local .env / client env may turn on (default: none; everything stays off). */
+  vspFeatures?: { allowOn: string[] };
   hyperfocused?: HfPolicy;
 }
 
@@ -69,6 +83,8 @@ export interface Evidence {
   transport?: string;
   chain: Record<string, { ts: string; result: 'pass' | 'fail' }>;
   status: 'pending' | 'passed' | 'failed';
+  /** Set by readEvidence when the stored entry's MAC did not verify (it is then treated as pending). */
+  unverified?: boolean;
 }
 
 export const CHAIN = ['SyntaxCheck', 'RunUnitTests', 'GetCodeCoverage', 'RunATCCheck'] as const;
@@ -90,9 +106,11 @@ export function validatePolicy(raw: unknown): Policy {
   if (p.defaultUnknown !== 'ask') fail('defaultUnknown');
   if (!isStrArr(p.allowedPackages) || p.allowedPackages.length === 0) fail('allowedPackages');
   if (typeof p.runQuery?.selectOnly !== 'boolean') fail('runQuery.selectOnly');
-  if (typeof p.approval?.envVar !== 'string' || typeof p.approval?.dir !== 'string') fail('approval');
-  if (p.approval.dir.startsWith('/') || p.approval.dir.split(/[\\/]/).includes('..')) fail('approval.dir');
+  if (!p.approval || typeof p.approval !== 'object') fail('approval');
+  if (p.approval.ttlMinutes !== undefined && (typeof p.approval.ttlMinutes !== 'number' || !(p.approval.ttlMinutes > 0) || p.approval.ttlMinutes > 60)) fail('approval.ttlMinutes');
+  if (p.approval.dir !== undefined || p.approval.envVar !== undefined) fail('approval.dir/envVar are no longer supported (approvals live outside the workspace)');
   if (typeof p.release?.requireEvidence !== 'boolean') fail('release');
+  if (p.vspFeatures !== undefined && !isStrArr(p.vspFeatures?.allowOn)) fail('vspFeatures.allowOn');
   if (p.hyperfocused !== undefined) {
     const h = p.hyperfocused;
     const isCls = (c: unknown) => c === 'R0' || c === 'R1' || c === 'R2' || c === 'R3';
@@ -152,7 +170,10 @@ export function firstString(input: Record<string, unknown>, keys: string[]): str
 export function effectiveInput(input: unknown): Record<string, unknown> {
   const base = input && typeof input === 'object' ? { ...(input as Record<string, unknown>) } : {};
   const params = base.params;
-  if (params && typeof params === 'object') Object.assign(base, params);
+  // params only fill keys the top level does not set: a nested key can never override the top-level action/target.
+  if (params && typeof params === 'object' && !Array.isArray(params)) {
+    for (const [k, v] of Object.entries(params as Record<string, unknown>)) if (!(k in base)) base[k] = v;
+  }
   return base;
 }
 
@@ -427,22 +448,160 @@ export function inspectQuery(sql: unknown): string | null {
 }
 
 // ---------------------------------------------------------------------------
-// Evidence store, audit log, approvals
+// Secure store outside the workspace: HMAC key, approvals, pending requests, manifest
+// ---------------------------------------------------------------------------
+
+/** Home directory (HOME wins so tests can point it at a temp dir). */
+export const homeDir = (): string => process.env.HOME || process.env.USERPROFILE || homedir();
+export const secureDir = (): string => join(homeDir(), '.config', 'co-abap');
+
+/** realpath that also works for paths that do not exist yet (resolves the nearest existing ancestor). */
+function realish(p: string): string {
+  const abs = resolve(p);
+  const rest: string[] = [];
+  let cur = abs;
+  for (;;) {
+    try { return join(realpathSync(cur), ...rest.reverse()); } catch { /* walk up */ }
+    const up = dirname(cur);
+    if (up === cur) return abs;
+    rest.push(basename(cur));
+    cur = up;
+  }
+}
+export function isInside(child: string, parent: string): boolean {
+  const r = relative(realish(parent), realish(child));
+  return r === '' || (!r.startsWith('..') && !isAbsolute(r));
+}
+const canonCache = new Map<string, string>();
+/**
+ * Canonical repository root: for a git worktree, the main checkout (parent of `git rev-parse --git-common-dir`),
+ * so worktree children share the main repo's key-scoped stores (manifest, approvals, grants). Non-git dirs map to themselves.
+ */
+export function canonicalRoot(dir: string): string {
+  const abs = realish(dir);
+  const hit = canonCache.get(abs);
+  if (hit) return hit;
+  let out = abs;
+  try {
+    const r = spawnSync('git', ['rev-parse', '--path-format=absolute', '--git-common-dir'], { cwd: abs, encoding: 'utf-8', timeout: 3000, env: { PATH: process.env.PATH ?? '', HOME: homeDir() } });
+    const common = r.status === 0 ? r.stdout.trim() : '';
+    if (common && basename(common) === '.git') {
+      const top = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd: abs, encoding: 'utf-8', timeout: 3000, env: { PATH: process.env.PATH ?? '', HOME: homeDir() } });
+      const here = top.status === 0 ? realish(top.stdout.trim()) : abs;
+      // only remap when `dir` is the top of a checkout (main or worktree), never for arbitrary subdirectories
+      if (here === abs) out = realish(dirname(common));
+    }
+  } catch { /* not git */ }
+  canonCache.set(abs, out);
+  return out;
+}
+export const repoHash = (root: string): string => sha256(canonicalRoot(root)).slice(0, 16);
+
+/** Throws when the secure store would live inside the workspace (agent-writable). */
+export function assertSecureStore(root: string): void {
+  if (isInside(secureDir(), root)) throw new Error(`secure store ${secureDir()} is inside the workspace ${root}; refusing`);
+}
+
+/** Key path: ~/.config/co-abap/approval.key, or CO_ABAP_APPROVAL_KEY when it is an absolute path under the home directory. */
+export function keyPath(root?: string): string {
+  const o = process.env.CO_ABAP_APPROVAL_KEY;
+  let p = join(secureDir(), 'approval.key');
+  if (o) {
+    if (!isAbsolute(o) || !isInside(o, homeDir())) throw new Error('CO_ABAP_APPROVAL_KEY must be an absolute path under the home directory');
+    p = resolve(o);
+  }
+  if (root && isInside(p, root)) throw new Error('approval key must not live inside the workspace');
+  return p;
+}
+
+export interface KeyState { key?: Buffer; error?: string }
+
+/** Loads the HMAC key without creating it. Never throws. */
+export function keyState(root?: string): KeyState {
+  try {
+    if (root) assertSecureStore(root);
+    const p = keyPath(root);
+    if (!existsSync(p)) return { error: `approval key ${p} not initialised (a human runs: bun scripts/sap-integrity.ts init)` };
+    const st = statSync(p);
+    if (process.platform !== 'win32') {
+      if ((st.mode & 0o077) !== 0) return { error: `approval key ${p} must be mode 0600` };
+      if (typeof process.getuid === 'function' && st.uid !== process.getuid()) return { error: `approval key ${p} is not owned by the current user` };
+    }
+    const hex = readFileSync(p, 'utf-8').trim();
+    if (!/^[0-9a-f]{64}$/.test(hex)) return { error: `approval key ${p} is malformed` };
+    return { key: Buffer.from(hex, 'hex') };
+  } catch (e) { return { error: (e as Error).message }; }
+}
+export const loadKey = (root?: string): Buffer | null => keyState(root).key ?? null;
+export function requireKey(root?: string): Buffer {
+  const s = keyState(root);
+  if (!s.key) throw new Error(s.error ?? 'approval key unavailable');
+  return s.key;
+}
+
+/** Human CLIs only (sap-approve.ts, sap-integrity.ts): create the key (0600) if it does not exist yet. */
+export function ensureKey(root?: string): Buffer {
+  const s = keyState(root);
+  if (s.key) return s.key;
+  if (root) assertSecureStore(root);
+  const p = keyPath(root);
+  if (existsSync(p)) throw new Error(s.error ?? `approval key ${p} unusable`);
+  mkdirSync(dirname(p), { recursive: true, mode: 0o700 });
+  writeFileSync(p, randomBytes(32).toString('hex') + '\n', { mode: 0o600, flag: 'wx' });
+  try { chmodSync(p, 0o600); } catch { /* best effort on win32 */ }
+  return requireKey(root);
+}
+
+export const hmac = (key: Buffer, msg: string): string => createHmac('sha256', key).update(msg).digest('hex');
+export function macEqual(a: unknown, b: string): boolean {
+  if (typeof a !== 'string' || a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
+const canonJson = (v: unknown): string => JSON.stringify(canonical(v));
+
+// ---------------------------------------------------------------------------
+// Evidence store (entries HMAC'd), audit log (HMAC hash chain)
 // ---------------------------------------------------------------------------
 
 export const auditDir = (root: string) => join(root, 'memory', 'audit');
 
+const evidenceMac = (key: Buffer, k: string, e: Evidence): string => {
+  const { mac: _m, unverified: _u, ...rest } = e as Evidence & { mac?: string };
+  return hmac(key, `e1|${k}|${canonJson(rest)}`);
+};
+
+/**
+ * Reads the evidence store. Entries whose MAC is missing or wrong (hand-edited, or no key) are downgraded to
+ * `pending` with an empty chain; their transport is kept so they still block a release.
+ */
 export function readEvidence(root: string): Record<string, Evidence> {
-  try {
-    const raw = JSON.parse(readFileSync(join(auditDir(root), 'sap-evidence.json'), 'utf-8'));
-    return raw && typeof raw === 'object' ? raw : {};
-  } catch { return {}; }
+  let raw: any;
+  try { raw = JSON.parse(readFileSync(join(auditDir(root), 'sap-evidence.json'), 'utf-8')); } catch { return {}; }
+  if (!raw || typeof raw !== 'object') return {};
+  const key = loadKey(root);
+  const out: Record<string, Evidence> = {};
+  for (const [k, e] of Object.entries<any>(raw)) {
+    if (!e || typeof e !== 'object') continue;
+    if (key && macEqual(e.mac, evidenceMac(key, k, e))) {
+      const { mac: _m, ...rest } = e;
+      out[k] = { ...rest, chain: rest.chain && typeof rest.chain === 'object' ? rest.chain : {} };
+    } else {
+      out[k] = { chain: {}, status: 'pending', unverified: true, ...(typeof e.transport === 'string' ? { transport: e.transport } : {}) };
+    }
+  }
+  return out;
 }
 
 export function writeEvidence(root: string, ev: Record<string, Evidence>): void {
   mkdirSync(auditDir(root), { recursive: true });
+  const key = loadKey(root);
+  const signed: Record<string, unknown> = {};
+  for (const [k, e] of Object.entries(ev)) {
+    const { unverified: _u, ...rest } = e;
+    signed[k] = key ? { ...rest, mac: evidenceMac(key, k, rest) } : rest;
+  }
   const f = join(auditDir(root), 'sap-evidence.json');
-  writeFileSync(f + '.tmp', JSON.stringify(ev, null, 2));
+  writeFileSync(f + '.tmp', JSON.stringify(signed, null, 2));
   renameSync(f + '.tmp', f);
 }
 
@@ -456,101 +615,121 @@ export interface AuditRecord {
   ts: string; sessionId: string; actor: string; tool: string; class: string; decision: string;
   object?: string; package?: string; inputHash: string; beforeHash?: string; afterHash?: string;
   qaResult?: string; approver?: string; transport?: string; profile: string; reason?: string;
-  taskId?: string; specId?: string;
+  taskId?: string; specId?: string; clientId?: string; grantId?: string; grantRow?: string;
 }
 
+function lastLine(file: string): string | undefined {
+  let fd: number | undefined;
+  try {
+    fd = openSync(file, 'r');
+    const size = fstatSync(fd).size;
+    if (!size) return undefined;
+    const n = Math.min(size, 256 * 1024);
+    const buf = Buffer.alloc(n);
+    readSync(fd, buf, 0, n, size - n);
+    const lines = buf.toString('utf-8').split('\n').filter((l) => l.trim());
+    return lines.at(-1);
+  } catch { return undefined; } finally { if (fd !== undefined) closeSync(fd); }
+}
+
+const auditMac = (key: Buffer, rec: Record<string, unknown>): string => hmac(key, `a1|${canonJson(rec)}`);
+
+/** Appends one audit line. Each line carries `prev` (sha256 of the previous raw line) and `mac` (HMAC over the line). */
 export function appendAudit(root: string, rec: AuditRecord): void {
   mkdirSync(auditDir(root), { recursive: true });
   const taskId = process.env.HARNESS_TASK_ID?.trim();
   const specId = process.env.HARNESS_SPEC_ID?.trim();
-  const full = { ...rec, ...(taskId ? { taskId } : {}), ...(specId ? { specId } : {}) };
-  appendFileSync(join(auditDir(root), `sap-actions-${rec.ts.slice(0, 7)}.jsonl`), JSON.stringify(full) + '\n');
+  const file = join(auditDir(root), `sap-actions-${rec.ts.slice(0, 7)}.jsonl`);
+  const prevLine = lastLine(file);
+  const full: Record<string, unknown> = {
+    ...rec, ...(taskId ? { taskId } : {}), ...(specId ? { specId } : {}), prev: prevLine ? sha256(prevLine) : 'genesis',
+  };
+  for (const k of Object.keys(full)) if (full[k] === undefined) delete full[k];
+  const key = loadKey(root);
+  if (key) full.mac = auditMac(key, full);
+  appendFileSync(file, JSON.stringify(full) + '\n');
+}
+
+/** Verifies one audit JSONL file's hash chain and MACs. Returns the 1-based first bad line, or 0 when intact. */
+export function verifyAuditFile(file: string, key: Buffer): { ok: boolean; badLine: number; reason?: string } {
+  const lines = readFileSync(file, 'utf-8').split('\n').filter((l) => l.trim());
+  let prev = 'genesis';
+  for (let i = 0; i < lines.length; i++) {
+    let rec: any;
+    try { rec = JSON.parse(lines[i]); } catch { return { ok: false, badLine: i + 1, reason: 'not JSON' }; }
+    if (rec.prev !== prev) return { ok: false, badLine: i + 1, reason: 'chain broken (line removed, inserted or reordered)' };
+    const { mac, ...rest } = rec;
+    if (!macEqual(mac, auditMac(key, rest))) return { ok: false, badLine: i + 1, reason: 'MAC mismatch' };
+    prev = sha256(lines[i]);
+  }
+  return { ok: true, badLine: 0 };
 }
 
 /** The manual profile is retired (D3): one policy applies to every client, so the profile is a constant label. */
 export const profileOf = (): string => 'hooked';
 export const actorOf = (i: HookInput): string => i.agent_name || i.agent_type || 'main';
 
-export interface Approval { tool: string; target: string; approver?: string; expires: string; token?: string }
-
-const safeSession = (s: string | undefined): string => (s ?? 'unknown').replace(/[^A-Za-z0-9_-]/g, '_');
-export const approvalFile = (root: string, policy: Policy, sessionId?: string) =>
-  join(root, policy.approval.dir, `${safeSession(sessionId)}.json`);
-
-export function readApprovals(root: string, policy: Policy, sessionId?: string): Approval[] {
-  try {
-    const raw = JSON.parse(readFileSync(approvalFile(root, policy, sessionId), 'utf-8'));
-    const list = Array.isArray(raw) ? raw : Array.isArray(raw?.approvals) ? raw.approvals : [raw];
-    return list.filter((a: any) => a && typeof a.tool === 'string' && typeof a.target === 'string' && typeof a.expires === 'string');
-  } catch { return []; }
-}
-
-export function findApproval(
-  root: string, policy: Policy, sessionId: string | undefined, tool: string, target: string | undefined, now: Date,
-): { approval: Approval; index: number } | null {
-  if (!target) return null;
-  const list = readApprovals(root, policy, sessionId);
-  const envTok = process.env[policy.approval.envVar];
-  for (let i = 0; i < list.length; i++) {
-    const a = list[i];
-    const exp = Date.parse(a.expires);
-    if (a.tool.toLowerCase() !== tool.toLowerCase() || a.target.toLowerCase() !== target.toLowerCase()) continue;
-    if (!Number.isFinite(exp) || exp <= now.getTime()) continue;
-    if (a.token && a.token !== envTok) continue;
-    return { approval: a, index: i };
-  }
-  return null;
-}
-
-export function consumeApproval(root: string, policy: Policy, sessionId: string | undefined, index: number): void {
-  const f = approvalFile(root, policy, sessionId);
-  if (!existsSync(f)) return;
-  const list = readApprovals(root, policy, sessionId);
-  list.splice(index, 1);
-  writeFileSync(f, JSON.stringify({ approvals: list }, null, 2));
-}
-
 // ---------------------------------------------------------------------------
-// Proxy approval store: memory/audit/pending/<id>.json (written by the proxy) and
-// <policy.approval.dir>/<id>.json (written only by the human CLI sap-approve.ts).
-// id = hash(tool, target, normalized input hash): an approval cannot be replayed for another input.
+// Proxy approval store (outside the workspace):
+//   ~/.config/co-abap/pending/<repo-hash>/<id>.json    written by the proxy, MAC'd
+//   ~/.config/co-abap/approvals/<repo-hash>/<id>.json  written only by the human CLI sap-approve.ts, MAC'd
+// id = hash(tool, target, normalized input hash, client): an approval cannot be replayed for another input or client.
+// The proxy verifies the MAC before the atomic rename that consumes it.
 // ---------------------------------------------------------------------------
 
 export const DEFAULT_APPROVAL_TTL_MIN = 15;
-export const pendingDir = (root: string) => join(auditDir(root), 'pending');
-export const approvalsDir = (root: string, policy: Policy) => join(root, policy.approval.dir);
+export const pendingDir = (root: string) => join(secureDir(), 'pending', repoHash(root));
+export const approvalsDir = (root: string) => join(secureDir(), 'approvals', repoHash(root));
 export const approvalTtlMs = (policy: Policy): number => {
   const m = policy.approval.ttlMinutes;
   return (typeof m === 'number' && m > 0 ? m : DEFAULT_APPROVAL_TTL_MIN) * 60_000;
 };
 
-export function approvalId(tool: string, target: string | undefined, hash: string): string {
-  return sha256(`${tool.toLowerCase()}\0${(target ?? '').toLowerCase()}\0${hash}`).slice(0, 16);
+export const normClient = (c: unknown): string =>
+  typeof c === 'string' && /^[A-Za-z0-9._@ -]{1,64}$/.test(c.trim()) ? c.trim() : 'unknown';
+
+export function approvalId(tool: string, target: string | undefined, hash: string, clientId: string): string {
+  return sha256(`${tool.toLowerCase()}\0${(target ?? '').toLowerCase()}\0${hash}\0${normClient(clientId)}`).slice(0, 16);
 }
 
 export interface PendingRequest {
-  id: string; tool: string; target: string; class: string; inputHash: string; reason: string;
-  object?: string; package?: string; requestedAt: string; expires: string; actor: string;
+  id: string; tool: string; target: string; class: string; inputHash: string; reason: string; clientId: string;
+  object?: string; package?: string; requestedAt: string; expires: string; actor: string; mac?: string;
 }
 export interface ProxyApproval {
-  id: string; tool: string; target: string; class: string; inputHash: string;
-  approver: string; approvedAt: string; expires: string;
+  id: string; tool: string; target: string; class: string; inputHash: string; clientId: string;
+  approver: string; approvedAt: string; expires: string; mac?: string;
 }
+
+const pendingMsg = (p: PendingRequest) => `p1|${canonJson({ ...p, mac: undefined })}`;
+/** MAC message for an approval: id|tool|target|inputHash|approver|expires|clientId (+ class). */
+export const approvalMsg = (a: ProxyApproval) =>
+  ['a1', a.id, a.tool, a.target, a.inputHash, a.approver, a.expires, a.clientId, a.class].join('|');
 
 const idOk = (id: string) => /^[0-9a-f]{16}$/.test(id);
 
-export function writePending(root: string, policy: Policy, req: Omit<PendingRequest, 'requestedAt' | 'expires'>, now: Date): PendingRequest {
-  const full: PendingRequest = { ...req, requestedAt: now.toISOString(), expires: new Date(now.getTime() + approvalTtlMs(policy)).toISOString() };
-  mkdirSync(pendingDir(root), { recursive: true });
+export function writePending(root: string, policy: Policy, req: Omit<PendingRequest, 'requestedAt' | 'expires' | 'mac'>, now: Date): PendingRequest {
+  assertSecureStore(root);
+  const key = requireKey(root);
+  const full: PendingRequest = { ...req, clientId: normClient(req.clientId), requestedAt: now.toISOString(), expires: new Date(now.getTime() + approvalTtlMs(policy)).toISOString() };
+  full.mac = hmac(key, pendingMsg(full));
+  mkdirSync(pendingDir(root), { recursive: true, mode: 0o700 });
   const f = join(pendingDir(root), `${req.id}.json`);
-  writeFileSync(f + '.tmp', JSON.stringify(full, null, 2));
+  writeFileSync(f + '.tmp', JSON.stringify(full, null, 2), { mode: 0o600 });
   renameSync(f + '.tmp', f);
   return full;
 }
 
+/** Reads a pending request; null when absent, malformed or its MAC does not verify. */
 export function readPending(root: string, id: string): PendingRequest | null {
   if (!idOk(id)) return null;
-  try { return JSON.parse(readFileSync(join(pendingDir(root), `${id}.json`), 'utf-8')); } catch { return null; }
+  const key = loadKey(root);
+  if (!key) return null;
+  try {
+    const p = JSON.parse(readFileSync(join(pendingDir(root), `${id}.json`), 'utf-8')) as PendingRequest;
+    if (!p || p.id !== id || !macEqual(p.mac, hmac(key, pendingMsg(p)))) return null;
+    return p;
+  } catch { return null; }
 }
 
 export function listPending(root: string): PendingRequest[] {
@@ -564,37 +743,286 @@ export function removePending(root: string, id: string): void {
   if (idOk(id)) try { unlinkSync(join(pendingDir(root), `${id}.json`)); } catch { /* already gone */ }
 }
 
-/** Human-side step: turn a pending request into a single-use approval. */
+/** Human-side step: turn a (MAC-verified) pending request into a signed single-use approval. */
 export function grantApproval(root: string, policy: Policy, id: string, approver: string, now: Date): ProxyApproval {
+  assertSecureStore(root);
+  const key = requireKey(root);
   const p = readPending(root, id);
-  if (!p) throw new Error(`no pending request ${id}`);
+  if (!p) throw new Error(`no valid pending request ${id}`);
   if (Date.parse(p.expires) <= now.getTime()) throw new Error(`pending request ${id} expired at ${p.expires}; repeat the call to create a new one`);
-  if (approvalId(p.tool, p.target, p.inputHash) !== p.id) throw new Error(`pending request ${id} is inconsistent (id does not match its content)`);
+  if (approvalId(p.tool, p.target, p.inputHash, p.clientId) !== p.id) throw new Error(`pending request ${id} is inconsistent (id does not match its content)`);
   const a: ProxyApproval = {
-    id: p.id, tool: p.tool, target: p.target, class: p.class, inputHash: p.inputHash, approver,
+    id: p.id, tool: p.tool, target: p.target, class: p.class, inputHash: p.inputHash, clientId: p.clientId, approver,
     approvedAt: now.toISOString(), expires: new Date(now.getTime() + approvalTtlMs(policy)).toISOString(),
   };
-  mkdirSync(approvalsDir(root, policy), { recursive: true });
-  writeFileSync(join(approvalsDir(root, policy), `${id}.json`), JSON.stringify(a, null, 2));
+  a.mac = hmac(key, approvalMsg(a));
+  mkdirSync(approvalsDir(root), { recursive: true, mode: 0o700 });
+  const f = join(approvalsDir(root), `${id}.json`);
+  writeFileSync(f + '.tmp', JSON.stringify(a, null, 2), { mode: 0o600 });
+  renameSync(f + '.tmp', f);
   removePending(root, id);
   return a;
 }
 
-/** Atomically consume a matching approval (rename into approvals/used/). Returns it, or null. */
+/** Verify the MAC, then atomically consume a matching approval (rename into used/). Returns it, or null. */
 export function consumeProxyApproval(
-  root: string, policy: Policy, tool: string, target: string | undefined, hash: string, now: Date,
+  root: string, tool: string, target: string | undefined, hash: string, clientId: string, now: Date,
 ): ProxyApproval | null {
-  const id = approvalId(tool, target, hash);
-  const f = join(approvalsDir(root, policy), `${id}.json`);
+  try { assertSecureStore(root); } catch { return null; }
+  const key = loadKey(root);
+  if (!key) return null;
+  const client = normClient(clientId);
+  const id = approvalId(tool, target, hash, client);
+  const f = join(approvalsDir(root), `${id}.json`);
   let a: ProxyApproval;
   try { a = JSON.parse(readFileSync(f, 'utf-8')); } catch { return null; }
-  if (!a || a.id !== id || a.inputHash !== hash || a.tool.toLowerCase() !== tool.toLowerCase()
+  if (!a || typeof a !== 'object' || !macEqual(a.mac, hmac(key, approvalMsg(a)))) return null;
+  if (a.id !== id || a.inputHash !== hash || a.clientId !== client || a.tool.toLowerCase() !== tool.toLowerCase()
     || (a.target ?? '').toLowerCase() !== (target ?? '').toLowerCase()) return null;
   if (!(Date.parse(a.expires) > now.getTime())) return null;
-  const usedDir = join(approvalsDir(root, policy), 'used');
+  const usedDir = join(approvalsDir(root), 'used');
   try {
-    mkdirSync(usedDir, { recursive: true });
+    mkdirSync(usedDir, { recursive: true, mode: 0o700 });
     renameSync(f, join(usedDir, `${id}.${now.getTime()}.json`));
   } catch { return null; } // lost the race or cannot consume: never allow
   return a;
+}
+
+// ---------------------------------------------------------------------------
+// Integrity manifest: SHA-256 of the policy and the enforcement code, HMAC-signed by a human (sap-integrity.ts)
+// ---------------------------------------------------------------------------
+
+/*
+ * NOTE (tamper-evidence only): integrity is self-verified. The proxy that runs the check is itself one of the
+ * covered files, and the HMAC key is readable by the same OS user. The manifest detects edits made after a human
+ * signed it (policy reclassification, lib edits, bun preload injection); it cannot stop a same-UID attacker who
+ * rewrites the proxy and re-signs with the key. Full closure needs a separate OS user for the proxy and key.
+ */
+/** Files under the workspace root (policy, bun config) and under the proxy's code directory (enforcement code). */
+export const INTEGRITY_ROOT_FILES = ['config/sap-action-policy.json', 'bunfig.toml', 'package.json'];
+export const INTEGRITY_CODE_FILES = [
+  'scripts/lib/sap-action-lib.ts', 'scripts/sap-mcp-proxy.ts', 'scripts/sap-approve.ts',
+  'scripts/hooks/sap-action-gate.ts', 'scripts/hooks/sap-action-audit.ts', 'scripts/sap-integrity.ts',
+  'bunfig.toml', 'package.json',
+];
+
+/** `preload` entries of a bunfig.toml (string or array form), resolved against its directory. */
+export function bunPreloads(bunfigPath: string): string[] {
+  let t: string;
+  try { t = readFileSync(bunfigPath, 'utf-8'); } catch { return []; }
+  const out: string[] = [];
+  for (const m of t.matchAll(/^\s*preload\s*=\s*(\[[^\]]*\]|"[^"]*"|'[^']*')/gm)) {
+    for (const q of m[1].matchAll(/["']([^"']+)["']/g)) out.push(resolve(dirname(bunfigPath), q[1]));
+  }
+  return out;
+}
+export const manifestPath = (root: string) => join(secureDir(), 'manifests', `${repoHash(root)}.json`);
+
+export interface Manifest { v: 1; root: string; codeDir: string; files: Record<string, string>; signedAt: string; signer: string; mac?: string }
+
+export function computeHashes(root: string, codeDir: string): { files: Record<string, string>; policyText?: string } {
+  const files: Record<string, string> = {};
+  let policyText: string | undefined;
+  for (const f of INTEGRITY_ROOT_FILES) {
+    try {
+      const t = readFileSync(join(root, f), 'utf-8');
+      if (f === 'config/sap-action-policy.json') policyText = t;
+      files[`root:${f}`] = sha256(t);
+    } catch { files[`root:${f}`] = 'missing'; }
+  }
+  for (const f of INTEGRITY_CODE_FILES) {
+    try { files[`code:${f}`] = sha256(readFileSync(join(codeDir, f), 'utf-8')); } catch { files[`code:${f}`] = 'missing'; }
+  }
+  for (const pre of new Set([...bunPreloads(join(root, 'bunfig.toml')), ...bunPreloads(join(codeDir, 'bunfig.toml'))])) {
+    try { files[`preload:${pre}`] = sha256(readFileSync(pre, 'utf-8')); } catch { files[`preload:${pre}`] = 'missing'; }
+  }
+  return { files, policyText };
+}
+
+const manifestMsg = (m: Manifest) => `m1|${canonJson({ ...m, mac: undefined })}`;
+
+export function signManifest(root: string, codeDir: string, signer: string, now: Date): Manifest {
+  assertSecureStore(root);
+  const key = requireKey(root);
+  const m: Manifest = { v: 1, root: canonicalRoot(root), codeDir: canonicalRoot(codeDir), files: computeHashes(root, codeDir).files, signedAt: now.toISOString(), signer };
+  m.mac = hmac(key, manifestMsg(m));
+  const p = manifestPath(root);
+  mkdirSync(dirname(p), { recursive: true, mode: 0o700 });
+  writeFileSync(p + '.tmp', JSON.stringify(m, null, 2), { mode: 0o600 });
+  renameSync(p + '.tmp', p);
+  return m;
+}
+
+export interface IntegrityResult { ok: boolean; reason: string; mismatched: string[]; policyText?: string }
+
+/** Verifies the signed manifest against the current files. Never throws. */
+export function verifyIntegrity(root: string, codeDir: string): IntegrityResult {
+  const { files, policyText } = computeHashes(root, codeDir);
+  const fail = (reason: string, mismatched: string[] = []): IntegrityResult => ({ ok: false, reason, mismatched, policyText });
+  try { assertSecureStore(root); } catch (e) { return fail((e as Error).message); }
+  const ks = keyState(root);
+  if (!ks.key) return fail(ks.error ?? 'approval key unavailable');
+  let m: Manifest;
+  try { m = JSON.parse(readFileSync(manifestPath(root), 'utf-8')); } catch {
+    return fail(`no signed integrity manifest for ${root} (a human runs: bun scripts/sap-integrity.ts init)`);
+  }
+  if (!m || !macEqual(m.mac, hmac(ks.key, manifestMsg(m)))) return fail('integrity manifest signature is invalid');
+  if (m.codeDir !== canonicalRoot(codeDir)) return fail(`integrity manifest was signed for code dir ${m.codeDir}`);
+  const mismatched = Object.keys({ ...files, ...m.files }).filter((k) => files[k] !== m.files?.[k]);
+  if (mismatched.length) return fail(`files changed since the manifest was signed: ${mismatched.map((k) => k.replace(/^(root|code|preload):/, '')).join(', ')}`, mismatched);
+  return { ok: true, reason: 'ok', mismatched: [], policyText };
+}
+
+// ---------------------------------------------------------------------------
+// Dispatch grants: a human approves a whole parallel run once (sap-approve.ts --grant <runId>); child proxies
+// (env SAP_DISPATCH_GRANT + SAP_DISPATCH_ROW) then allow calls inside their row's scope until expiry/revoke.
+//   ~/.config/co-abap/grants/<repo-hash>/request-<runId>.json  unsigned request (written by the dispatcher)
+//   ~/.config/co-abap/grants/<repo-hash>/<grantId>.json        HMAC-signed grant (written only by sap-approve.ts)
+//   ~/.config/co-abap/grants/<repo-hash>/<grantId>.revoked     revocation marker
+// ---------------------------------------------------------------------------
+
+export const GRANT_MAX_HOURS = 12;
+export interface GrantRow { row: string; packages: string[]; objects: string[]; actions: string[]; maxClass: Cls }
+export interface GrantRequest { v: 1; runId: string; grantId: string; rows: GrantRow[]; expiresAt: string; requestedAt: string }
+export interface Grant extends GrantRequest { approver: string; approvedAt: string; mac?: string }
+export interface GrantCall { tool: string; cls: string; packages: string[]; objects: string[] }
+
+const DEFAULT_CODE_ROOT = resolve(import.meta.dir, '..', '..');
+const hasGlob = (s: string) => s.includes('*');
+const runIdOk = (s: unknown): s is string => typeof s === 'string' && /^[A-Za-z0-9._-]{1,64}$/.test(s);
+const grantIdOk = (s: unknown): s is string => typeof s === 'string' && /^[0-9a-f]{16}$/.test(s);
+export const grantsDir = (root: string) => join(secureDir(), 'grants', repoHash(root));
+const CLS_RANK: Record<string, number> = { R0: 0, R1: 1, R2: 2, R3: 3 };
+
+function normRows(rows: unknown): GrantRow[] {
+  if (!Array.isArray(rows) || rows.length === 0) throw new Error('grant request needs at least one row');
+  return rows.map((r: any, i) => {
+    const row = String(r?.row ?? i + 1);
+    if (!/^[A-Za-z0-9._-]{1,32}$/.test(row)) throw new Error(`row ${i}: invalid row id`);
+    for (const k of ['packages', 'objects', 'actions']) if (r?.[k] !== undefined && !isStrArr(r[k])) throw new Error(`row ${row}: ${k} must be a string array`);
+    const maxClass = r?.maxClass ?? 'R0';
+    if (!(maxClass in CLS_RANK)) throw new Error(`row ${row}: maxClass must be R0..R3`);
+    const actions = (r.actions ?? []).map((a: string) => a.trim()).filter(Boolean);
+    if (!actions.length) throw new Error(`row ${row}: actions must list at least one action`);
+    const packages = (r.packages ?? []).map((s: string) => s.trim()).filter(Boolean);
+    const objects = (r.objects ?? []).map((s: string) => s.trim()).filter(Boolean);
+    const starOnly = (s: string) => /^[*\s]+$/.test(s);
+    if (actions.some(starOnly)) throw new Error(`row ${row}: a bare "*" action is not allowed; list actions`);
+    if (packages.some(starOnly)) throw new Error(`row ${row}: a bare "*" package is not allowed`);
+    if (objects.some(starOnly)) throw new Error(`row ${row}: a bare "*" object is not allowed`);
+    if (CLS_RANK[maxClass] > 1 && objects.some(hasGlob)) throw new Error(`row ${row}: object globs are not allowed when maxClass is above R1`);
+    return { row, packages, objects, actions, maxClass };
+  });
+}
+
+/** Dispatcher side: write an (unsigned) grant request for a human to approve. Returns the grant id. */
+export function createGrantRequest(
+  req: { runId: string; rows: Array<Partial<GrantRow> & { row: string | number }>; expiresAt: string },
+  root: string = DEFAULT_CODE_ROOT, now: Date = new Date(),
+): GrantRequest {
+  assertSecureStore(root);
+  if (!runIdOk(req?.runId)) throw new Error('runId must match [A-Za-z0-9._-]{1,64}');
+  const rows = normRows(req.rows);
+  const exp = Date.parse(req.expiresAt);
+  if (!Number.isFinite(exp) || exp <= now.getTime()) throw new Error('expiresAt must be in the future');
+  if (exp - now.getTime() > GRANT_MAX_HOURS * 3600_000) throw new Error(`expiresAt must be within ${GRANT_MAX_HOURS}h`);
+  const expiresAt = new Date(exp).toISOString();
+  const grantId = sha256(`g1|${req.runId}|${canonJson(rows)}|${expiresAt}|${now.toISOString()}`).slice(0, 16);
+  const g: GrantRequest = { v: 1, runId: req.runId, grantId, rows, expiresAt, requestedAt: now.toISOString() };
+  mkdirSync(grantsDir(root), { recursive: true, mode: 0o700 });
+  const f = join(grantsDir(root), `request-${req.runId}.json`);
+  writeFileSync(f + '.tmp', JSON.stringify(g, null, 2), { mode: 0o600 });
+  renameSync(f + '.tmp', f);
+  return g;
+}
+
+export function readGrantRequest(root: string, runId: string): GrantRequest | null {
+  if (!runIdOk(runId)) return null;
+  try {
+    const g = JSON.parse(readFileSync(join(grantsDir(root), `request-${runId}.json`), 'utf-8'));
+    if (g?.runId !== runId || !grantIdOk(g.grantId)) return null;
+    return { ...g, rows: normRows(g.rows) };
+  } catch { return null; }
+}
+
+const grantMsg = (g: Grant) => `g1|${canonJson({ ...g, mac: undefined })}`;
+
+/** Human side (sap-approve.ts --grant): sign the request. */
+export function signGrant(root: string, runId: string, approver: string, now: Date): Grant {
+  assertSecureStore(root);
+  const key = requireKey(root);
+  const r = readGrantRequest(root, runId);
+  if (!r) throw new Error(`no valid grant request for run ${runId}`);
+  if (Date.parse(r.expiresAt) <= now.getTime()) throw new Error(`grant request for run ${runId} already expired`);
+  const g: Grant = { ...r, approver, approvedAt: now.toISOString() };
+  g.mac = hmac(key, grantMsg(g));
+  const f = join(grantsDir(root), `${g.grantId}.json`);
+  writeFileSync(f + '.tmp', JSON.stringify(g, null, 2), { mode: 0o600 });
+  renameSync(f + '.tmp', f);
+  try { unlinkSync(join(grantsDir(root), `request-${runId}.json`)); } catch { /* gone */ }
+  return g;
+}
+
+export function revokeGrant(grantId: string, root: string = DEFAULT_CODE_ROOT): void {
+  if (!grantIdOk(grantId)) throw new Error('invalid grant id');
+  mkdirSync(grantsDir(root), { recursive: true, mode: 0o700 });
+  writeFileSync(join(grantsDir(root), `${grantId}.revoked`), new Date().toISOString());
+  try { unlinkSync(join(grantsDir(root), `${grantId}.json`)); } catch { /* gone */ }
+}
+
+
+/** Child proxy side: is this call inside the signed grant's row scope? */
+export function verifyGrant(
+  grantId: string, row: string, call: GrantCall, root: string = DEFAULT_CODE_ROOT, now: Date = new Date(),
+): { allow: boolean; reason: string } {
+  const no = (reason: string) => ({ allow: false, reason: `dispatch grant: ${reason}` });
+  try { assertSecureStore(root); } catch (e) { return no((e as Error).message); }
+  if (!grantIdOk(grantId)) return no('invalid grant id');
+  const key = loadKey(root);
+  if (!key) return no('approval key unavailable');
+  if (existsSync(join(grantsDir(root), `${grantId}.revoked`))) return no('revoked');
+  let g: Grant;
+  try { g = JSON.parse(readFileSync(join(grantsDir(root), `${grantId}.json`), 'utf-8')); } catch { return no('not found or not approved'); }
+  if (!g || g.grantId !== grantId || !macEqual(g.mac, hmac(key, grantMsg(g)))) return no('signature invalid');
+  if (!(Date.parse(g.expiresAt) > now.getTime())) return no(`expired at ${g.expiresAt}`);
+  const r = g.rows.find((x) => x.row === row);
+  if (!r) return no(`row ${row} is not in the grant`);
+  if (!(call.cls in CLS_RANK) || CLS_RANK[call.cls] > CLS_RANK[r.maxClass]) return no(`class ${call.cls} exceeds row ${row} max class ${r.maxClass}`);
+  const tool = call.tool.toLowerCase();
+  const listed = call.cls === 'R3'
+    ? r.actions.some((a) => !hasGlob(a) && a.toLowerCase() === tool)
+    : r.actions.some((a) => globMatch(a, call.tool));
+  if (!listed) return no(`action ${call.tool} is not listed for row ${row}${call.cls === 'R3' ? ' (R3 actions must be listed explicitly)' : ''}`);
+  const ids = call.objects.length + call.packages.length;
+  if (ids === 0) return call.cls === 'R0' ? { allow: true, reason: `dispatch grant ${grantId} row ${row}` } : no('call has no determinable object or package');
+  const pkgOk = (p: string) => r.packages.some((x) => globMatch(x, p));
+  const badPkg = call.packages.find((p) => !pkgOk(p));
+  if (badPkg) return no(`package ${badPkg} outside row ${row} scope`);
+  // Caller-supplied packages never authorise an existing object: every object must match row.objects.
+  // Package-only authorisation is limited to create-type actions (the object does not exist yet).
+  const createType = /^create(\.|$)/i.test(call.tool);
+  const objOk = (o: string) => r.objects.some((x) => globMatch(x, o)) || (createType && call.packages.length > 0 && call.packages.every(pkgOk));
+  const badObj = call.objects.find((o) => !objOk(o));
+  if (badObj) return no(`object ${badObj} outside row ${row} scope`);
+  return { allow: true, reason: `dispatch grant ${grantId} row ${row}` };
+}
+
+/** The signed grant for a run, only if it exists, its MAC verifies, it is unexpired and not revoked; else null. */
+export function findGrantByRun(root: string, runId: string, now: Date = new Date()): Grant | null {
+  if (!runIdOk(runId)) return null;
+  try { assertSecureStore(root); } catch { return null; }
+  const key = loadKey(root);
+  if (!key) return null;
+  let names: string[] = [];
+  try { names = readdirSync(grantsDir(root)).filter((f) => /^[0-9a-f]{16}\.json$/.test(f)); } catch { return null; }
+  for (const f of names) {
+    let g: Grant;
+    try { g = JSON.parse(readFileSync(join(grantsDir(root), f), 'utf-8')); } catch { continue; }
+    if (!g || g.runId !== runId || `${g.grantId}.json` !== f) continue;
+    if (!macEqual(g.mac, hmac(key, grantMsg(g)))) continue;
+    if (!(Date.parse(g.expiresAt) > now.getTime())) continue;
+    if (existsSync(join(grantsDir(root), `${g.grantId}.revoked`))) continue;
+    return g;
+  }
+  return null;
 }
