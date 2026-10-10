@@ -1,19 +1,13 @@
 {
   "mcpServers": {
     "abap": {
-      "command": "./vsp",
+      "command": "bun",
       "args": [
+        "scripts/sap-mcp-proxy.ts",
+        "--",
         "--mode",
         "hyperfocused"
-      ],
-      "env": {
-        "SAP_MODE": "hyperfocused",
-        "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "off",
-        "SAP_FEATURE_TRANSPORT": "off",
-        "SAP_FEATURE_UI5": "off",
-        "SAP_FEATURE_RAP": "off"
-      }
+      ]
     },
     "abap-docs": {
       "type": "http",

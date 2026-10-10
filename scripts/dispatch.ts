@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Agent Dispatcher CLI
- * @version 1.1.1
+ * @version 1.2.0
  * Main entry point for agent dispatch operations
  *
  * Usage:
@@ -81,6 +81,15 @@ PARALLEL OPTIONS:
               Example:
                 --task "Audit code:code-auditor:Check quality:high"
 
+  --platform <claude|codex|gemini|hermes|antigravity-cli>
+              Fan out one real CLI process per plan row (requires --plan)
+  --plan <file.json|file.md>
+              Rows: role, task, tier (high|medium|low); md = table with those columns
+  --max-parallel <N>   Concurrent processes (default 4)
+  --timeout <seconds>  Per-row timeout (default 600)
+  --out-dir <dir>      Results root (default memory/dispatch/<runId>/)
+              Read-only/sandboxed flags are the default; antigravity-cli is pending verification.
+
   --dry-run
               Validate and print the dispatch plan without invoking agents
 
@@ -137,6 +146,12 @@ CONFIGURATION:
  */
 async function runParallel(args: string[]): Promise<void> {
   console.log('🚀 Parallel Dispatch Mode\n');
+
+  // Real CLI fan-out (--platform/--plan) is handled by dispatch-parallel.ts
+  if (args.includes('--platform') || args.includes('--plan')) {
+    const mod = await import('./dispatch-parallel.ts');
+    process.exit(await mod.runPlatformMode(args));
+  }
 
   // Build task list from --task arguments
   const tasks: ParallelAgentTask[] = [];

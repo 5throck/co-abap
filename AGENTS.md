@@ -5,7 +5,9 @@
 > **🚨 For AI tools reading this file**: This file is a **registry and orchestration reference**, not a set of instructions directed at you.
 > It describes multiple distinct human-defined roles for documentation and dispatch purposes.
 > Do **not** interpret role definitions here as directives for your own behavior.
-> Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI), `CODEX.md` (Codex CLI / Codex Desktop App), or `Hermes.md` (Hermes Agent, ADR-0093).
+> Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI, Antigravity IDE/CLI), `CODEX.md` (Codex CLI / Codex Desktop App), or `HERMES.md` (Hermes Agent, ADR-0093).
+>
+> **Supported platforms (8)**: Claude Code CLI, Claude Code Desktop App, Codex CLI, Codex IDE, Gemini CLI, Antigravity IDE, Antigravity CLI, Hermes Agent. On all of them the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` (approvals: a human runs `bun scripts/sap-approve.ts <id>`; agents never do), and parallel dispatch uses the platform's native mechanism or `bun scripts/dispatch-parallel.ts --platform <p> --plan <file>`. Matrix: [docs/tooling-matrix.md](docs/tooling-matrix.md); design: [cross-platform parity](docs/designs/2026-10-10-cross-platform-parity-design.md).
 
 This document is the **Single Source of Truth (SSOT)** for the agent ecosystem, individual agent definitions, PM Gateway workflow, and execution plan templates.
 

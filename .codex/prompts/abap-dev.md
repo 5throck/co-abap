@@ -3,7 +3,6 @@ name: abap-dev
 description: Load SAP ABAP development workflows and optimization settings for the vsp MCP server. Trigger at session start or before any SAP/ABAP coding, debugging, or system analysis task.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the full ABAP Development Skill from `skills/abap-dev/SKILL.md`.

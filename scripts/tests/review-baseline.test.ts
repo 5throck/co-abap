@@ -1,5 +1,5 @@
 /**
- * @version 1.4.0
+ * @version 1.5.0
  */
 import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -64,6 +64,7 @@ describe('review-baseline checks', () => {
     const names = l3BaselineChecks().filter(c => c.command).map(c => c.name);
     expect(names).toContain('validate-docs-links --all');
     expect(names).toContain('check-project-meta');
+    expect(names).toContain('validate-platform-parity');
     expect(names).toContain('test:unit');
   });
 });

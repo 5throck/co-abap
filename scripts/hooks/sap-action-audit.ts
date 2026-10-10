@@ -6,7 +6,7 @@
  * Never throws and never blocks: a failure here must not break the session.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 1.2.0
+ * @version 1.3.0
  */
 
 import {

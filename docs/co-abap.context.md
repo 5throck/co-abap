@@ -7,8 +7,8 @@
 >   1. docs/context.md            — immutable shared architecture and standards
 >   2. docs/co-abap.context.md    — THIS FILE — tech stack, agents, skills, workflow
 >
-> Tool-specific overrides live in `../CLAUDE.md` (Claude Code CLI + Desktop App), `../.codex/config.toml` and `../.codex/hooks.json` (Codex), `../GEMINI.md` (Gemini CLI).
-> Claude Code Desktop App shares all config with CLI but PostToolUse hooks do not fire — run Post-Write chain manually.
+> Tool-specific overrides live in `../CLAUDE.md` (Claude Code CLI + Desktop App), `../CODEX.md` + `../.codex/config.toml` (Codex), `../GEMINI.md` (Gemini CLI, Antigravity), `../HERMES.md` (Hermes Agent). 8-platform matrix: [tooling-matrix.md](tooling-matrix.md).
+> SAP safety does not depend on hooks: every platform reaches `abap` through `scripts/sap-mcp-proxy.ts` (approvals: human runs `bun scripts/sap-approve.ts <id>`).
 > Agent roles and orchestration rules live in `../AGENTS.md`.
 > Per-session technical guidelines and custom skills live in `skills/` (auto-discovered from the `skills/` directory).
 > ABAP development history (date-archived) lives in `../memory/`.
@@ -248,7 +248,9 @@ See `.mcp.json` for the complete server list.
 
 ### vsp Tool Reference (Hyperfocused Mode)
 
-> **SSOT** for legacy vsp tool names. `.mcp.json` runs vsp v2.60.0 with `SAP_MODE=hyperfocused`, which exposes **one** MCP tool, `SAP` (hook name `mcp__abap__SAP`), called as `SAP(action, target "TYPE NAME", params)`. Agent files, skills, and templates still use the legacy names below; they must **cite this table** (`docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode`) and must not restate it. Gate classes (R0-R3) follow [the SAP write-safety gate design §2.0](designs/2026-10-10-sap-write-safety-gate-design.md) and the `hyperfocused` section of `config/sap-action-policy.json` (the policy file wins on conflict). Discover details with `SAP(action="help", target="<action>")`.
+> **SSOT** for legacy vsp tool names. `.mcp.json` runs vsp v2.60.0 with `SAP_MODE=hyperfocused`, which exposes **one** MCP tool, `SAP` (Claude name `mcp__abap__SAP`), called as `SAP(action, target "TYPE NAME", params)`. Agent files, skills, and templates still use the legacy names below; they must **cite this table** (`docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode`) and must not restate it. Gate classes (R0-R3) follow [the SAP write-safety gate design §2.0](designs/2026-10-10-sap-write-safety-gate-design.md) and the `hyperfocused` section of `config/sap-action-policy.json` (the policy file wins on conflict). Discover details with `SAP(action="help", target="<action>")`.
+>
+> **Safety**: on every platform the `abap` server is launched through `scripts/sap-mcp-proxy.ts`, which applies these gate classes before vsp sees the call. `ask` and unapproved R3 calls return `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` and the agent repeats the identical call once. Agents never run `sap-approve.ts`. See [SECURITY.md](../SECURITY.md#control-tiers).
 
 | Legacy name | Hyperfocused equivalent | Gate | Notes |
 |-------------|------------------------|:----:|-------|
@@ -295,7 +297,7 @@ See `.mcp.json` for the complete server list.
 - **Naming**: `ZCL_` (class), `ZIF_` (interface), `ZPROG_` (program).
 - **Isolation**: All local `.abap` files must be created ONLY in the `scratch/` directory.
 - **Write Operations**: Use `EditSource` for small changes. Always run `SyntaxCheck` before `WriteSource`.
-- **QA Chain**: After any logic change or edit, the `Post-Write Mandatory Chain` MUST be executed (`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage` → `RunATCCheck`). Priority 1 findings block deployment; coverage below 70% on new objects blocks proceeding to ATC unless waived. See [skills/post-write-chain/SKILL.md — Post-Write Mandatory Chain](../skills/post-write-chain/SKILL.md) for details. **Note**: If your environment (e.g., Gemini CLI, Claude Desktop App) does not support automatic PostToolUse hooks, you MUST execute this chain manually.
+- **QA Chain**: After any logic change or edit, the `Post-Write Mandatory Chain` MUST be executed (`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage` → `RunATCCheck`). Priority 1 findings block deployment; coverage below 70% on new objects blocks proceeding to ATC unless waived. See [skills/post-write-chain/SKILL.md — Post-Write Mandatory Chain](../skills/post-write-chain/SKILL.md) for details. **Note**: The proxy records chain evidence on every platform; where nothing triggers the chain automatically, run it with `/post-write <object>`.
 - **Final Audit**: Before any sync/commit, run the `sap:documentation-audit` skill.
 
 ### Data Access Rules (CDS-First & SQL Quality)

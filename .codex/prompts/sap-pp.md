@@ -3,7 +3,6 @@ name: sap-pp
 description: Load SAP PP (Production Planning) module analyst context ??BOM, routing, production orders, MRP, and work center management. Use when working on PP module tasks or activating the PP Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the PP module skill from `skills/sap-pp/SKILL.md`.

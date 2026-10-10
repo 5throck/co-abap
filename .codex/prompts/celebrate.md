@@ -3,7 +3,6 @@ name: celebrate
 description: Celebrate the successful completion of a task to boost team morale.
 argument-hint: "[celebration-message]"
 allowed-tools: ["Bash"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 # Celebrate

@@ -11,7 +11,7 @@ You ARE the PM agent for this session. Load and follow [`agents/pm.md`](agents/p
 
 **Governance Enforcement**: All multi-step tasks (2+ files or 2+ sequential steps) must strictly adhere to the PM Gateway workflow:
 1. Display execution plan table first (task | agent | tier | model | platform)
-2. Only then execute the work — Codex has **no native subagent tool**, so PM loads each specialist's [`agents/<name>.md`](agents/pm.md) definition as role context and performs the steps sequentially in-session
+2. Only then dispatch specialists — via Codex `multi_agent` when usable, otherwise `bun scripts/dispatch-parallel.ts --platform codex --plan <file>` (see [Parallel dispatch](#parallel-dispatch)); each child loads its [`agents/<name>.md`](agents/pm.md) role definition
 3. Never bypass PM workflow — skipping the execution plan table is forbidden
 
 > **Codex CLI & Desktop App**: This file governs both surfaces. Role Declaration and the Mandatory Execution Plan are the sole enforcement mechanisms for the PM Gateway on Codex — treat them as strictly binding.
@@ -22,7 +22,7 @@ You ARE the PM agent for this session. Load and follow [`agents/pm.md`](agents/p
 
 ### 1. Enforcement & Hook Status
 
-Codex does not run the workspace hook suite in Phase 1 (no `PreToolUse`/`PostToolUse` equivalents are wired). Governance rules are **prompt-enforced**: the agent self-enforces every gate a hook would otherwise apply, exactly as Antigravity sessions do (CONSTITUTION §11).
+SAP safety does not depend on hooks: every `abap` call passes through `scripts/sap-mcp-proxy.ts` (see [SAP safety (proxy) & approvals](#sap-safety-proxy--approvals)). Workspace (non-SAP) gates below are **prompt-enforced** unless `.codex/hooks.json` fires on your build (on-device items V1/V4): the agent self-enforces them (CONSTITUTION §11).
 
 | Gate | Codex CLI | Codex Desktop App | Manual fallback |
 |------|:---------:|:-----------------:|-----------------|
@@ -49,7 +49,7 @@ Before editing any file for the **FIRST time in a session**, the agent MUST:
 | Claude Code CLI | ✅ Hook (automatic) | PreToolUse `ask` mode |
 | Gemini CLI | ✅ Hook (automatic) | BeforeTool `deny` mode |
 | Antigravity | ✅ Prompt (manual) | self-enforced |
-| Codex CLI / Desktop App | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces |
+| Codex CLI / Desktop App | ✅ Prompt (manual) | Agent self-enforces (Codex hooks optional, unverified on-device) |
 
 ### 3. Slash Commands & Custom Prompts
 
@@ -127,13 +127,15 @@ For the **4-level enforcement model**, **mandatory criteria**, **execution plan 
 
 **Execution Plan Boilerplate**: the table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in [Execution Plan Templates §5.1](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template) and [§5.1.1](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions).
 
-> **Note (Codex-specific)**: Use the literal model ID (e.g. `gpt-5.6-sol`) in the `Model` column, not a Claude-style short alias. With no native subagent tool, each plan row is executed sequentially in-session under the row's named specialist role.
+<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
+> **Note (Codex-specific)**: Use the literal model ID (e.g. `gpt-5.6-sol`) in the `Model` column, not a Claude-style short alias. Independent plan rows are dispatched in parallel (`multi_agent` or `scripts/dispatch-parallel.ts --platform codex`); dependent rows run sequentially.
 
 ### 6. Execution Mechanics (Plan Mode, Task Tracking, 3-Tier)
 
 - **Plan Mode** ≙ Codex plan/approval mode: when the user requests a new feature or significant refactor, the change touches >2 files, or the approach is unclear — draft the plan, present it, and wait for explicit approval before touching code.
 - **Task Tracking** ≙ Codex `update_plan`: one plan item per atomic step, set `in_progress` before starting, `completed` immediately on verification; never leave items in progress at session end.
-- **No native subagents**: specialist "dispatch" means loading `agents/<name>.md` as role context and executing that row's work in-session. Parallelism is not available; order plan rows sequentially.
+<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
+- **Specialist dispatch**: use `multi_agent` when usable, else `bun scripts/dispatch-parallel.ts --platform codex --plan <file>`; each child loads `agents/<name>.md` as its role. Dependent rows run sequentially.
 
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Codex's model-ID mapping:
@@ -165,11 +167,27 @@ If a custom prompt or background script returns a non-zero exit code:
 - All `scripts/` operational scripts are TypeScript (`.ts`) — run via `bun scripts/<name>.ts`. No `.sh/.ps1` counterparts (ADR-0036).
 - If a hook fails on Windows with "command not found", run it via Git Bash: `"C:\Program Files\Git\bin\bash.exe" .githooks/pre-commit`
 
+<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
+### SAP safety (proxy) & approvals
+
+Same rules on every platform; only the config file differs. Platform: **Codex (CLI & IDE)**.
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.codex/config.toml`. The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Codex hooks are optional UX; SAP enforcement does not depend on them.
+- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal; then repeat the identical call once (single use, input-bound, short TTL).
+- **Agents must never run `sap-approve.ts`**, write approval files, or launch `vsp` outside the proxy. The former manual profile (`HARNESS_PROFILE=manual`) is retired.
+
+### Parallel dispatch
+
+- **Native mechanism**: the `multi_agent` feature when it is usable in your Codex build (on-device item V2); otherwise use the dispatcher below.
+- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform codex --plan <plan-file>` runs one CLI process per plan row (read-only by default); SAP calls from children still pass through the proxy.
+- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
+
 ## Git & PR Additions (Codex)
 
 All shared Git/PR rules are in [docs/context.md](docs/context.md). Codex-specific additions:
 
-- **Platform Hook Support**: Codex does not fire the workspace hook suite in Phase 1 — run `bun scripts/hooks/post-write-lifecycle-check.ts` manually before committing; `bun scripts/audit.ts` after each task. Phase 2 may wire CLI-only `.codex/hooks.json`.
+<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
+- **Platform Hook Support**: SAP enforcement is in `scripts/sap-mcp-proxy.ts`, not hooks. Until `.codex/hooks.json` is verified on-device, run `bun scripts/hooks/post-write-lifecycle-check.ts` manually before committing and `bun scripts/audit.ts` after each task.
 - **Commit Protection (SYNC_ACTIVE)**: Direct `git commit` or `git push` calls are **FORBIDDEN**. If you see `[FAIL] Direct git commits are restricted`, run `/sync "type: description"` instead. **`--no-verify` is forbidden.**
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 <!-- COMMON-CODEX:END -->

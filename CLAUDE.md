@@ -121,6 +121,21 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
+<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
+### SAP safety (proxy) & approvals
+
+Same rules on every platform; only the config file differs. Platform: **Claude Code (CLI & Desktop App)**.
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.mcp.json`. The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Claude SAP `PreToolUse`/`PostToolUse` hooks are no longer registered; any remaining SAP hook output is advisory UX only.
+- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal; then repeat the identical call once (single use, input-bound, short TTL).
+- **Agents must never run `sap-approve.ts`**, write approval files, or launch `vsp` outside the proxy. The former manual profile (`HARNESS_PROFILE=manual`) is retired.
+
+### Parallel dispatch
+
+- **Native mechanism**: the native `Agent` tool (multiple `Agent()` calls in one message run in parallel).
+- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform claude --plan <plan-file>` runs one CLI process per plan row (read-only by default); SAP calls from children still pass through the proxy.
+- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
+
 ## Execution Plan Boilerplate
 
 The execution plan table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in **[Execution Plan Templates §5.1 Standard Execution Plan Template](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template)** and **[§5.1.1 Design Gate Exemptions](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions)** — do not restate them here.

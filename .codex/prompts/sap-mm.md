@@ -3,7 +3,6 @@ name: sap-mm
 description: Load SAP MM (Materials Management) module analyst context ??purchasing, goods receipt, material master, inventory, and procure-to-pay processes. Use when working on MM module tasks or activating the MM Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the MM module skill from `skills/sap-mm/SKILL.md`.

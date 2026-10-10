@@ -23,31 +23,32 @@
 
 User (2026-10-10): the harness must support Anthropic (Claude Code CLI/Desktop), OpenAI (Codex CLI/IDE) and Google (Gemini CLI, Antigravity) tools, **and they must behave the same**. "Same" is interpreted as: the same SAP actions are allowed/denied with the same messages, the same audit/evidence is written, the same commands/skills exist, and the same commit pipeline applies.
 
-## 2. Parity inventory (verified in repo, PR #194 branch)
+## 2. Parity inventory (repo, PR #194 branch; tool capabilities from Phase 0 offline inspection, 2026-10-10)
 
 Legend: ✅ supported · 🟡 partial · ❌ missing · ❓ to verify
 
 | Capability | Claude Code CLI | Claude Desktop | Codex CLI/IDE | Gemini CLI | Antigravity IDE | Antigravity CLI | Hermes Agent | Evidence |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|---|
-| Instruction file | ✅ | ✅ | ✅ | ✅ | 🟡 shares GEMINI.md | ❓ to verify (Phase 0) | ✅ `HERMES.md` | `CLAUDE.md`, `CODEX.md`, `GEMINI.md` (§ Antigravity note l.155), `HERMES.md`, SSOT `AGENTS.md` |
-| abap MCP server (`./vsp`, same env) | ✅ | ✅ | ✅ | ✅ | ❓ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.mcp.json`, `.codex/config.toml [mcp_servers.abap]`, `.gemini/settings.json`; `.agents/mcp.json` has **only graft** |
-| Docs MCP (abap-docs, sap-docs) | ✅ | ✅ | ✅ | ✅ | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.agents/mcp.json` lacks them |
-| graft MCP args consistent | ✅ `graft mcp` | ✅ | 🟡 `bunx @nanonets/graft mcp` | 🟡 `graft mcp @nanonets/graft` | ✅ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | three different invocations |
-| Skills mirror | ✅ `.claude/skills` | ✅ | ✅ `.codex/skills` + `skills.config` | ✅ `.gemini/skills` | ✅ `.agents/skills` | ❓ to verify (Phase 0) | ✅ `.hermes/skills` (dir scan, no manifest — HERMES.md l.20) | dirs present |
-| Slash commands (20) | ✅ 20 | ✅ 20 | ✅ 20 `.codex/prompts` | 🟡 **9** | ❌ (skills only) | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.gemini/commands` lacks abap-dev, post-write, transport, triage, sap-co/fi/le/mm/pp/sd, celebrate |
-| SAP write gate (pre-call block/ask) | ✅ | ✅* | ❌ | ❌ | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.claude/settings.json` PreToolUse → `sap-action-gate.ts`; no equivalent in `.codex/hooks.json` / `.gemini/settings.json` |
-| SAP audit / post-write evidence | ✅ | ❌ (PostToolUse not fired) | ❌ | ❌ | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.claude/settings.json` PostToolUse `mcp__abap__.*` → `sap-action-audit.ts` |
-| GateGuard (first-edit fact force) | ✅ ask | ✅* | ❌ prompt-only | ✅ BeforeTool deny | ❌ prompt-only | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `CODEX.md` l.49-52; `.gemini/settings.json` BeforeTool |
-| Post-write lifecycle check | ✅ | ❌ | ❌ | ✅ AfterTool | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.gemini/settings.json` AfterTool |
-| Memory sync (sync-md) | ✅ | ❌ | 🟡 `.codex/hooks.json` PostToolUse `Write\|Edit` — matcher names are Claude tool names, likely never match Codex tools ❓ | ❌ | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `.codex/hooks.json`; `CODEX.md` l.25 says hooks "not wired" (contradiction) |
-| Commit/sync pipeline | ✅ | ✅ | ✅ | ✅ | ✅ | ❓ to verify (Phase 0) | ✅ (git hooks platform-neutral) | `.githooks/` + `scripts/hooks/pre-commit.ts` — platform-neutral |
-| Subagent dispatch | ✅ `Agent` tool | ✅ | ❌ no native subagents (→ parallel OS processes, D4) | ✅ `define_/invoke_subagent` | 🟡 Agent Manager | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | `CODEX.md` l.14, 136; `GEMINI.md` §3 |
-| Tier→model mapping | ✅ alias | ✅ | ✅ literal ID | ✅ | ✅ | ❓ to verify (Phase 0) | 🟡 model-agnostic, no registry entry (HERMES.md l.20, ADR-0088) — mapping to define | `docs/workspace-schema.json` (`gemini`, `antigravity`, `gemini-cli`, codex); Hermes model-agnostic |
-| Model gate hook | ✅ `agent-model-gate.ts` | ✅* | ❌ | ❌ | ❌ | ❓ to verify (Phase 0) | ❓ to verify (Phase 0) | CLAUDE.md §5 |
+| Instruction file | ✅ | ✅ | ✅ | ✅ | 🟡 shares GEMINI.md | ❓ to verify (on-device, V8) | ✅ `HERMES.md` | `CLAUDE.md`, `CODEX.md`, `GEMINI.md` (§ Antigravity note l.155), `HERMES.md`, SSOT `AGENTS.md` |
+| abap MCP server (`./vsp`, same env) | ✅ | ✅ | ✅ `[mcp_servers.<n>]` command/args/env (stdio) or url | 🟡 `mcpServers` command/args/env/cwd/timeout/trust/includeTools/excludeTools; env sanitized (secrets stripped unless explicit); untrusted folder ignores project settings | ❓ (V9) | ❓ to verify (on-device, V8) | 🟡 **user-level only** `~/.hermes/config.yaml` `mcp_servers.<n>` (command, args, env, timeout, tools.include/exclude); no cwd; env filtered to PATH/HOME/USER/LANG/LC_ALL/TERM/SHELL/TMPDIR/XDG_* + explicit | `.mcp.json`, `.codex/config.toml`, `.gemini/settings.json`; `.agents/mcp.json` has **only graft**; proxy absolute resolution + own `.env` (Phase 1) covers env/cwd gaps |
+| Docs MCP (abap-docs, sap-docs) | ✅ | ✅ | ✅ | ✅ | ❌ | ❓ to verify (on-device, V8) | ❌ not configured (user-level config needed, V7) | `.agents/mcp.json` lacks them |
+| graft MCP args consistent | ✅ `graft mcp` | ✅ | 🟡 `bunx @nanonets/graft mcp` | 🟡 `graft mcp @nanonets/graft` | ✅ | ❓ to verify (on-device, V8) | ❌ not configured | three different invocations |
+| Skills mirror | ✅ `.claude/skills` | ✅ | ✅ `.codex/skills` + `skills.config` | ✅ `.gemini/skills` | ✅ `.agents/skills` | ❓ to verify (on-device, V8) | ✅ `.hermes/skills` (dir scan, no manifest — HERMES.md l.20) | dirs present |
+| Slash commands (20) | ✅ 20 | ✅ 20 | 🟡 20 `.codex/prompts` — support in 0.162.1 unverified (V3) | ❌ **TOML only**: the 9 repo `.gemini/commands/*.md` are **not loaded** → all 20 must be rendered as `.toml` | ❌ (skills only) | ❓ to verify (on-device, V8) | ❓ to verify (on-device, V7) | Phase 0: Gemini 0.63.0 loads `.toml` only; `.gemini/commands` also lacks 11 SAP commands |
+| SAP write gate (pre-call block/ask) | ✅ | ✅* | 🟡 PreToolUse can block; MCP coverage unverified (V1); not wired | 🟡 BeforeTool can block `mcp_abap_.*`; not wired | ❌ | ❓ to verify (on-device, V8) | 🟡 `pre_tool_call` can block; not wired | superseded by proxy (D1) everywhere |
+| SAP audit / post-write evidence | ✅ | ❌ (PostToolUse not fired) | ❌ (PostToolUse exists, not wired) | ❌ (AfterTool exists, not wired) | ❌ | ❓ to verify (on-device, V8) | ❌ (`post_tool_call` exists, not wired) | `.claude/settings.json` PostToolUse `mcp__abap__.*` → `sap-action-audit.ts` |
+| GateGuard (first-edit fact force) | ✅ ask | ✅* | ❌ prompt-only | ✅ BeforeTool deny | ❌ prompt-only | ❓ to verify (on-device, V8) | ❌ prompt-only (`pre_tool_call` could host it) | `CODEX.md` l.49-52; `.gemini/settings.json` BeforeTool |
+| Post-write lifecycle check | ✅ | ❌ | ❌ | ✅ AfterTool | ❌ | ❓ to verify (on-device, V8) | ❌ | `.gemini/settings.json` AfterTool |
+| Memory sync (sync-md) | ✅ | ❌ | 🟡 `.codex/hooks.json` PostToolUse `Write\|Edit` — matcher names are Claude tool names, likely never match Codex tools (V4) | ❌ | ❌ | ❓ to verify (on-device, V8) | ❌ | `.codex/hooks.json`; `CODEX.md` l.25 says hooks "not wired" (contradiction) |
+| Commit/sync pipeline | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (git hooks platform-neutral) | ✅ (git hooks platform-neutral) | `.githooks/` + `scripts/hooks/pre-commit.ts` — platform-neutral |
+| Subagent dispatch | ✅ `Agent` tool | ✅ | ✅ native `multi_agent` feature (stable, on) — API unverified (V2); "no subagents / role-play" in `CODEX.md` is **stale** | ✅ `.gemini/agents/*.md`, `@name` | 🟡 Agent Manager | ❓ to verify (on-device, V8) | ✅ native parallel `delegate_task` (`delegation.max_concurrent_children`); "no native dispatch" in `HERMES.md` is **stale** | Phase 0 offline; `CODEX.md` l.14, 136 |
+| Non-interactive mode | ✅ `claude -p` | n/a | ✅ `codex exec` (`-s read-only\|workspace-write`, `--json`, `-o`, `-C`, `--ephemeral`) | ✅ `-p`, `-o json`, `--approval-mode default\|auto_edit\|yolo\|plan` | n/a | ❓ (V8) | ✅ `hermes -z` / `hermes chat -q`; `HERMES_HOME` override | Phase 0 offline |
+| Tier→model mapping | ✅ alias | ✅ | ✅ literal ID | ✅ | ✅ | ❓ to verify (on-device, V8) | 🟡 model-agnostic, no registry entry (HERMES.md l.20, ADR-0088) — mapping to define | `docs/workspace-schema.json` (`gemini`, `antigravity`, `gemini-cli`, codex); Hermes model-agnostic |
+| Model gate hook | ✅ `agent-model-gate.ts` | ✅* | ❌ | ❌ | ❌ | ❓ to verify (on-device, V8) | ❌ | CLAUDE.md §5 |
 
 \* Desktop: PreToolUse should fire via bundled CLI; PostToolUse does not (CLAUDE.md §1).
 
-**Summary**: governance text, skills, MCP server definition and the git pipeline are at parity. **SAP safety enforcement and evidence exist only on Claude Code CLI** — the single largest divergence, and the one that matters for SAP risk. Secondary gaps: 11 missing Gemini commands, Antigravity MCP config incomplete, inconsistent graft invocation, Codex hook doc/config contradiction.
+**Summary**: governance text, skills, MCP server definition and the git pipeline are at parity. **SAP safety enforcement and evidence exist only on Claude Code CLI** — the single largest divergence, and the one that matters for SAP risk. Secondary gaps: Gemini loads none of the repo commands (TOML only, 11 also missing), Antigravity MCP config incomplete, inconsistent graft invocation, Codex hook doc/config contradiction.
 
 ## 3. Hook capabilities per platform
 
@@ -55,14 +56,14 @@ Legend: ✅ supported · 🟡 partial · ❌ missing · ❓ to verify
 |---|---|---|---|---|---|
 | Claude Code CLI | `PreToolUse` (allow/deny/ask JSON) | ✅ matcher `mcp__abap__.*` | `PostToolUse` | ✅ | in-repo, working (PR #194) |
 | Claude Desktop | PreToolUse via bundled CLI | ✅* | ❌ | ✅ | CLAUDE.md §1 |
-| Codex CLI | `PreToolUse` behind `[features] codex_hooks = true` (already set) | ❓ to verify — early releases matched shell tool only | `PostToolUse` | ❓ | `.codex/config.toml`; upstream openai/codex docs — **to verify** |
-| Codex IDE ext. | ❓ | ❓ | ❓ | ❓ | to verify |
-| Gemini CLI | `BeforeTool` (deny works for file tools) | ❓ MCP tool naming in matcher to verify | `AfterTool` | 🟡 tool-confirmation UI, not hook-driven | `.gemini/settings.json`, `CODEX.md` l.50 |
-| Antigravity | none | ❌ | ❌ | 🟡 IDE approval only | CLAUDE.md §1 table, `docs/tooling-matrix.md` |
-| Antigravity CLI | ❓ to verify (Phase 0) | ❓ | ❓ | ❓ | not yet known; no names assumed |
-| Hermes Agent | ❓ to verify (Phase 0) (hook/approval controls) | ❓ | ❓ | ❓ | MCP config location to verify (Phase 0); no Hermes hook config in repo |
+| Codex CLI 0.162.1 | `PreToolUse` — hooks feature stable; events SessionStart, SessionEnd, UserPromptSubmit, PreToolUse, PermissionRequest, PostToolUse, Stop, SubagentStart; can block ("Tool call blocked by PreToolUse hook"); hooks need persisted trust | ❓ to verify (on-device, V1): fires for user MCP tools? matcher syntax? | `PostToolUse` | 🟡 `PermissionRequest` / sandbox approvals | Phase 0 offline inspection |
+| Codex IDE ext. | ❓ presumably same engine | ❓ (V3) | ❓ | ❓ | to verify (on-device) |
+| Gemini CLI 0.63.0 | `BeforeTool` blocks via `decision: deny`/`block` or exit 2 | ✅ regex matcher works on MCP names `mcp_<server>_<tool>` | `AfterTool` (+ other events) | 🟡 tool-confirmation UI; policy engine (TOML) | Phase 0 offline; project settings ignored in untrusted folder |
+| Antigravity IDE | none known | ❌ | ❌ | 🟡 IDE approval only | offline unverifiable (V9) |
+| Antigravity CLI (`agy`) | ❓ to verify (on-device, V8) | ❓ | ❓ | ❓ | curl install from antigravity.google (blocked here); no npm package; no MCP/hook/subagent docs offline |
+| Hermes Agent 0.19.0 | `pre_tool_call` (block via `decision: block`); shell hooks need consent allowlist; `approvals.deny` globs | 🟡 generic tool hook — confirm for MCP on-device (V7) | `post_tool_call` | 🟡 approvals | Phase 0 offline (PyPI, Nous Research; npm `hermes-agent` is an unofficial bridge — not used) |
 
-No web verification was possible in this session (outbound proxy blocks external docs); every ❓ item must be verified by devops-admin before Phase 2. Conclusion holds regardless: **at least Antigravity has no hook surface**, so hooks alone cannot deliver identical behavior.
+Phase 0 (2026-10-10) inspected the installed packages offline (web docs blocked); remaining items are listed as V1–V10 under the smoke checklist (§6). Conclusion holds: **Antigravity has no verified hook surface** and Codex MCP hook coverage is unverified, so hooks alone cannot deliver identical behavior — the proxy (D1) stays the enforcement point.
 
 ## 4. Enforcement architecture options
 
@@ -113,16 +114,16 @@ Proxy (B1) is the sole decision point; Claude PreToolUse may stay as an *advisor
 
 ### 5.1 Parallel subagent dispatch (D4)
 
-Plan tables are identical on every platform; only the mechanism column differs. Each dispatched role receives the same prompt: `agents/<name>.md` body + task row + context. Sequential role-play is not accepted.
+Plan tables are identical on every platform; only the mechanism column differs. Each dispatched role receives the same prompt: `agents/<name>.md` body + task row + context. Sequential role-play is not accepted. Each platform uses its **native** mechanism where verified (Claude `Agent`, Gemini subagents, Codex `multi_agent` if usable, Hermes `delegate_task`); `dispatch-parallel.ts` OS-process fan-out is the fallback only.
 
 | Platform | Mechanism | How invoked | How results are collected | Tier → model |
 |---|---|---|---|---|
 | Claude Code CLI / Desktop | Native `Agent` tool | Multiple `Agent()` calls in one assistant message (parallel), or `run_in_background` for long tasks; role file embedded in `prompt` | Tool result per call (background: completion notification); PM merges into plan table | High→`opus`, Medium→`sonnet`, Low→`haiku` (alias; `agent-model-gate.ts` enforces) |
-| Gemini CLI | Native subagents (`define_subagent` / `invoke_subagent`) | One subagent per role defined from `agents/<name>.md`; independent invocations issued together | Subagent return values to orchestrator session | Literal Gemini model IDs from `docs/workspace-schema.json` (`gemini-cli`) |
+| Gemini CLI | Native subagents (`.gemini/agents/*.md`, invoked `@name`) | One subagent file per role rendered from `agents/<name>.md`; independent invocations issued together (parallelism: V6) | Subagent return values to orchestrator session | Literal Gemini model IDs from `docs/workspace-schema.json` (`gemini-cli`) |
 | Antigravity IDE | Agent Manager | PM opens one agent per row in Agent Manager (same role prompt) | Agent Manager artifacts/outputs, copied into plan table by PM | `antigravity` IDs from `docs/workspace-schema.json` |
-| Codex CLI / IDE | No native subagents (verify in Phase 0; if Codex ships native subagents, use them instead) → parallel OS processes | `bun scripts/dispatch-parallel.ts --platform codex --plan <file>` spawns `codex exec` per row concurrently | stdout/last-message file per run → `memory/dispatch/<runId>/<row>.md` + `summary.json` | `codex` IDs from `docs/workspace-schema.json`, passed as `-m <id>` |
-| Antigravity CLI | Its native parallel/subagent mechanism — to verify (Phase 0) (if none: OS-process fan-out via `dispatch-parallel.ts --platform antigravity-cli`) | to verify (Phase 0) | to verify (Phase 0) | Model IDs per `docs/workspace-schema.json` once a key is added (to verify (Phase 0)) |
-| Hermes Agent | Native subagent/parallel mechanism to verify (Phase 0); only if verified absent → OS-process fan-out via `dispatch-parallel.ts --platform hermes` | to verify (Phase 0) | to verify (Phase 0) (fallback: same as Codex) | Model-agnostic today; Phase 0 defines a `hermes` high/medium/low entry in `docs/workspace-schema.json` (ADR-0088 D5 revisit) |
+| Codex CLI / IDE | Native `multi_agent` feature (stable, on in 0.162.1) if its API proves usable (V2); otherwise parallel `codex exec` processes | native: per V2; fallback: `bun scripts/dispatch-parallel.ts --platform codex --plan <file>` | native: child results to parent; fallback: `-o` last-message file → `memory/dispatch/<runId>/<row>.md` + `summary.json` | `codex` IDs from `docs/workspace-schema.json`, `-m <id>` |
+| Antigravity CLI | Unknown — to verify (on-device, V8); if none: `dispatch-parallel.ts --platform antigravity-cli` | to verify (on-device) | to verify (on-device) | key in `docs/workspace-schema.json` to add after V8 |
+| Hermes Agent | Native `delegate_task` (parallel children, cap `delegation.max_concurrent_children`); dispatcher fan-out (`hermes -z`) fallback only | One `delegate_task` per row with the role prompt | Child results returned to parent session | Model-agnostic today; add `hermes` high/medium/low in `docs/workspace-schema.json` (ADR-0088 D5 revisit) |
 
 **Current state of `scripts/dispatch-parallel.ts` (v1.1.1, verified)**: it launches **no** CLI. `dispatchAgent()` only prints the task; without `--dry-run` it returns `failed` with "CLI dispatch cannot invoke the host Agent tool". `Promise.all` over tasks exists, so concurrency scaffolding is there. `scripts/dispatch.ts` is a router (`serial` / `parallel`, `--dry-run`, `--task`) into this module and `dispatch-serial.ts`; neither spawns a process.
 
@@ -130,11 +131,12 @@ Plan tables are identical on every platform; only the mechanism column differs. 
 1. `--platform codex|gemini|claude` and `--plan <json|md>` (rows: role, task, context, tier, outputFormat); replace hard-coded `defaultTasks` as the default only when no plan is given.
 2. Prompt builder: read `agents/<role>.md`, strip frontmatter, append task/context/output format — byte-identical across platforms (snapshot-tested).
 3. Spawn adapters via `Bun.spawn` (argv array, no shell), non-interactive:
-   - codex: `codex exec -m <model> --sandbox read-only -C <repo> --output-last-message <out> -` (prompt on stdin)
-   - gemini: `gemini -m <model> -p -` (or stdin), non-interactive, read-only approval mode
+   - codex (fallback when `multi_agent` unusable, V2): `codex exec -m <model> -s read-only -C <repo> --ephemeral -o <out> -` (prompt on stdin; `--json` for events)
+   - gemini (headless/CI only): `gemini -m <model> -p <prompt> -o json --approval-mode plan`
    - claude (CI/headless only): `claude -p --model <alias>`
-   - antigravity-cli / hermes: adapter added only if Phase 0 finds no native mechanism; command/flags to verify (Phase 0)
-   Exact flags verified in Phase 0 and recorded in §3.
+   - hermes (fallback only): `hermes -z <prompt>` (or `hermes chat -q`), optional per-run `HERMES_HOME`
+   - antigravity-cli: adapter only if V8 finds no native mechanism; command/flags to verify (on-device)
+   Flags from Phase 0 offline inspection (Codex 0.162.1, Gemini 0.63.0, Hermes 0.19.0).
 4. Concurrency limit `--max-parallel N` (default 4), per-row timeout, exit code + stderr captured; one failed row does not cancel others (`Promise.allSettled`).
 5. Model from tier via `docs/workspace-schema.json`; unknown tier = error.
 6. Results: `memory/dispatch/<runId>/<row>.md` + `summary.json` (role, platform, model, status, duration, exit code); printed table for PM.
@@ -147,12 +149,12 @@ Plan tables are identical on every platform; only the mechanism column differs. 
 
 | Phase | Deliverable | Owner | Status / exit criterion |
 |---|---|---|---|
-| 0 | Verify ❓ items incl. Hermes Agent (MCP config location, commands, hooks/approval controls, native subagents, model selection) and Antigravity CLI (package/command, config path, MCP/hook/subagent support); install Codex CLI + Gemini CLI locally; Codex/Gemini MCP hook matching, non-interactive flags (`codex exec`, `gemini -p`), native-subagent availability in Codex, Antigravity MCP config path, Gemini command format | devops-admin | **in progress**; §3 updated with citations |
-| 1 | `scripts/sap-mcp-proxy.ts` + `scripts/sap-approve.ts` reusing `sap-action-lib.ts`; manual profile removed (D3) | devops-admin (impl), architect (review) | **in progress**; all fixtures pass through proxy |
-| 2 | Route `abap` in `.mcp.json`, `.codex/config.toml`, `.gemini/settings.json`, `.agents/mcp.json`, the Antigravity CLI config and the Hermes MCP config (paths to verify (Phase 0)) through proxy; Claude SAP PreToolUse → advisory; SAP PostToolUse audit removed | devops-admin | smoke passes on **all eight** platforms |
+| 0 | Verify ❓ items incl. Hermes Agent and Antigravity CLI; Codex/Gemini MCP hook matching, non-interactive flags, native subagents, command formats | devops-admin | **done (offline, 2026-10-10)**; findings in §2/§3/§5.1; on-device items V1–V10 listed under the smoke checklist |
+| 1 | `scripts/sap-mcp-proxy.ts` + `scripts/sap-approve.ts` reusing `sap-action-lib.ts`; manual profile removed (D3); proxy resolves root/vsp absolutely, loads its own `.env`, safe vsp defaults (covers clients that strip env or have no cwd: Gemini, Hermes) | devops-admin (impl), architect (review) | **done (#194 4764114)**; all fixtures pass through proxy |
+| 2 | Route `abap` in `.mcp.json`, `.codex/config.toml`, `.gemini/settings.json`, `.agents/mcp.json`, the Antigravity CLI config (path: V8) and the Hermes user-level `~/.hermes/config.yaml` `mcp_servers.abap` (absolute paths; installer/doc step, V7) through proxy; Claude SAP PreToolUse → advisory; SAP PostToolUse audit removed | devops-admin | smoke passes on **all eight** platforms |
 | 3 | Security review: token binding, TTL, approval-file tamper, direct-vsp bypass, denial logging, dispatcher read-only default | security-monitor | no High findings |
-| 4 | `dispatch-parallel.ts` multi-platform fan-out (§5.1); commands single-source renderer + 11 missing Gemini commands; Antigravity CLI and Hermes command/skill format (to verify (Phase 0)); parity validator in `audit.ts` | devops-admin | dispatcher tests + validator green |
-| 5 | Instruction files: identical SAP safety + dispatch sections in CLAUDE/CODEX/GEMINI/HERMES.md (remove role-play text, e.g. `CODEX.md` l.14/136), `docs/tooling-matrix.md`, template promotion | architect, docs | audit green |
+| 4 | `dispatch-parallel.ts` multi-platform fan-out (§5.1); commands single-source renderer + all 20 Gemini commands as `.toml` (`.md` not loaded); `.gemini/agents/*.md` from `agents/`; Antigravity CLI and Hermes command/skill format (on-device V7/V8); parity validator in `audit.ts` | devops-admin | dispatcher tests + validator green |
+| 5 | Instruction files: identical SAP safety + dispatch sections in CLAUDE/CODEX/GEMINI/HERMES.md (remove role-play text, e.g. `CODEX.md` l.14/136), `docs/tooling-matrix.md`, template promotion | architect, docs | **done (instruction files, SECURITY.md, tooling matrix, setup guides; 2026-10-10)**; template promotion pending upstream (LOCAL-PATCH markers) |
 | 6 | Full parity smoke on all eight platforms, recorded in `memory/` | devops-admin | all rows pass; then PR ready |
 
 ### Parity test plan
@@ -164,6 +166,21 @@ Plan tables are identical on every platform; only the mechanism column differs. 
 | Approval | ask → APPROVAL_REQUIRED → approve → retry allowed once → second retry denied; hash mismatch denied; expired denied | test-runner, security-monitor |
 | Static parity | Validator: all configs route `abap` via proxy; command sets equal; required sections present | test-runner |
 | Local smoke — **mandatory on all eight** (D5, D6, D7): Claude CLI, Claude Desktop, Codex CLI, Codex IDE, Gemini CLI, Antigravity IDE, Antigravity CLI, Hermes Agent | (1) read source → allowed; (2) edit in `$TMP` → allowed + evidence; (3) write outside `Z*` → denied with identical message; (4) transport release → APPROVAL_REQUIRED, `sap-approve.ts`, retry OK; (5) `/post-write` command exists; (6) audit lines identical modulo client field; (7) 3-row parallel dispatch via the platform's native mechanism (§5.1) returns 3 results | devops-admin, recorded in `memory/` |
+
+**On-device verification items (open after Phase 0 offline inspection)** — each checked and recorded before Phase 2 exit:
+
+| # | Platform | To verify (on-device) |
+|---|---|---|
+| V1 | Codex CLI 0.162.1 | Does `PreToolUse` fire for user MCP tools (`abap`)? Exact matcher syntax for MCP tool names; hook trust persists after first approval |
+| V2 | Codex CLI | `multi_agent` feature: invocation API, real parallelism, per-child model selection; if unusable → parallel `codex exec` |
+| V3 | Codex CLI / IDE | `.codex/prompts/*.md` still loaded as custom prompts (all 20); IDE extension reads the same `config.toml` + hooks |
+| V4 | Codex CLI | `.codex/hooks.json` `Write\|Edit` matcher vs Codex tool names (sync-md) |
+| V5 | Gemini CLI 0.63.0 | Folder trusted so project `.gemini/settings.json` loads; proxy gets SAP settings despite env sanitization (explicit `env` or proxy `.env`); `mcp_abap_*` names match BeforeTool regex |
+| V6 | Gemini CLI | All 20 commands load after TOML rendering; `.gemini/agents/*.md` subagents run in parallel via `@name` |
+| V7 | Hermes Agent 0.19.0 | `~/.hermes/config.yaml` `mcp_servers.abap` with absolute paths (no cwd) reaches proxy; `pre_tool_call` block + shell-hooks consent; `delegate_task` parallel children under `delegation.max_concurrent_children`; how commands surface |
+| V8 | Antigravity CLI (`agy`) | Install (curl from antigravity.google), config path, MCP format, hooks, subagents, non-interactive mode |
+| V9 | Antigravity IDE | `.agents/mcp.json` honoured (abap via proxy + docs servers); Agent Manager parallel agents |
+| V10 | Claude Desktop | Advisory PreToolUse fires via bundled CLI |
 
 ## 7. Open decisions
 

@@ -77,11 +77,11 @@
   },
   "approval": {
     "envVar": "SAP_APPROVAL_TOKEN",
-    "dir": "memory/audit/approvals"
+    "dir": "memory/audit/approvals",
+    "ttlMinutes": 15
   },
   "release": {
-    "requireEvidence": true,
-    "blockInManualProfile": true
+    "requireEvidence": true
   },
   "hyperfocused": {
     "_doc": "vsp v2.60.0 SAP_MODE=hyperfocused: one tool `SAP` {action,target,params}. Sub-type is params.type, params.op or a single-word target. Unknown action/sub-type => ask. Data only; logic in scripts/lib/sap-action-lib.ts.",

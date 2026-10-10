@@ -1,5 +1,14 @@
 {
   "mcpServers": {
+    "abap": {
+      "command": "bun",
+      "args": [
+        "scripts/sap-mcp-proxy.ts",
+        "--",
+        "--mode",
+        "hyperfocused"
+      ]
+    },
     "graft": {
       "command": "graft",
       "args": [

@@ -78,9 +78,14 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `sync-skills.ts` | L0 | 1.11.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
 | `dev-sync.ts` | L0 | 1.23.0 | active | —| —| L0+L1 | —|
-| `dispatch-parallel.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `dispatch-parallel.ts` | L0 | 2.0.0 | active | v2.0.0: real CLI fan-out (--platform codex/gemini/claude/hermes, --plan, --max-parallel, per-row timeout, read-only flags, results to memory/dispatch/<runId>/) per cross-platform-parity design 5.1; antigravity-cli adapter pending verification | —| L0+L1 | —|
+| `render-commands.ts` | L3 | 1.0.0 | active | Renders config/commands/*.md into .claude/commands, .codex/prompts and .gemini/commands/*.toml (--check fails on drift) | —| L3 | —|
+| `validate-platform-parity.ts` | L3 | 1.0.0 | active | Cross-platform parity validator: rendered commands, MCP proxy routing, instruction sections, skills mirrors, schema models | —| L3 | —|
+| `tests/dispatch-parallel.test.ts` | L3 | 1.0.0 | active | Stub-CLI tests for fan-out, prompt identity, timeout, failure isolation | — | L3 | — |
+| `tests/render-commands.test.ts` | L3 | 1.0.0 | active | Renderer and drift tests | — | L3 | — |
+| `tests/validate-platform-parity.test.ts` | L3 | 1.0.0 | active | Parity validator fixtures | — | L3 | — |
 | `dispatch-serial.ts` | L0 | 1.1.2 | active | —| —| L0+L1 | —|
-| `dispatch.ts` | L0 | 1.1.1 | active | —| —| L0+L1 | —|
+| `dispatch.ts` | L0 | 1.2.0 | active | v1.2.0: parallel mode forwards --platform/--plan to dispatch-parallel.ts | —| L0+L1 | —|
 | `gen-pr-body.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `generate-skill-graph.ts` | L0 | 1.15.0 | active | —| —| L0+L1 | —|
@@ -117,14 +122,14 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/validate-docs-links.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
-| `tests/sap-action-gate.test.ts` | L3 | 1.2.0 | active | — | — | L3 | — |
+| `tests/sap-action-gate.test.ts` | L3 | 1.3.0 | active | — | — | L3 | — |
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
-| `hooks/sap-action-gate.ts` | L3 | 1.3.0 | active | PreToolUse gate for mcp__abap__* tools (R0-R3 policy, fail-safe ask) — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
-| `hooks/sap-action-audit.ts` | L3 | 1.2.0 | active | PostToolUse audit log + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|
-| `lib/sap-action-lib.ts` | L3 | 1.3.0 | active | Shared policy/evidence/audit logic for the SAP action gate and audit hooks; hyperfocused SAP{action,target,params} resolver | —| L3 | —|
+| `hooks/sap-action-gate.ts` | L3 | 2.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); advisory-only when run as a hook, no longer registered in Claude settings — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
+| `hooks/sap-action-audit.ts` | L3 | 1.3.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts (PostToolUse registration removed) + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|
+| `lib/sap-action-lib.ts` | L3 | 1.4.0 | active | Shared policy/evidence/audit logic for the SAP action gate and audit hooks; hyperfocused SAP{action,target,params} resolver | —| L3 | —|
 | `sap-mcp-proxy.ts` | L3 | 1.0.0 | active | Platform-neutral stdio MCP proxy in front of vsp: single SAP enforcement point (allow/deny/approval-required), audit + QA evidence, loads .env and safe SAP_* defaults — design docs/designs/2026-10-10-cross-platform-parity-design.md | —| L3 | —|
 | `sap-approve.ts` | L3 | 1.0.0 | active | Human CLI converting a pending proxy request into a single-use, input-bound approval (--list, --deny) | —| L3 | —|
 | `tests/sap-mcp-proxy.test.ts` | L3 | 1.0.0 | active | Proxy contract tests: fixture replay vs gate, passthrough, approvals, env/cwd independence | — | L3 | — |
@@ -147,8 +152,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/check-project-meta.test.ts` | L3 | 1.1.0 | active | — | — | L3 | — |
 | `harness-metrics.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `tests/harness-metrics.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
-| `review-baseline.ts` | L3 | 1.3.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
-| `tests/review-baseline.test.ts` | L3 | 1.4.0 | active | — | — | L3 | — |
+| `review-baseline.ts` | L3 | 1.4.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
+| `tests/review-baseline.test.ts` | L3 | 1.5.0 | active | — | — | L3 | — |
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `skill-lifecycle-audit.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.1.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
@@ -377,6 +382,7 @@ changes. L0 authoring contexts continue to require lifecycle records.
 delivered checks and reports `validate-templates` and propagation drift as N/A because
 they depend on the absent L0 template source tree.
 **Usage**: `bun scripts/review-baseline.ts [--quiet]`
+**v1.4.0**: adds `validate-platform-parity`.
 **v1.3.0**: adds `validate-docs-links --all`, `check-project-meta`, and `test:unit`; each check runs with a 300 s timeout (TIMEOUT reported as FAIL).
 
 #### `check-project-meta.ts`
@@ -469,10 +475,19 @@ orphaned files not registered in `MEMORY.md` index.
 waits for completion.
 **Usage**: `bun scripts/dispatch.ts --agent <name> --prompt "task"`
 
+#### `render-commands.ts`
+**Purpose**: Single command source `config/commands/*.md` rendered to `.claude/commands/*.md`, `.codex/prompts/*.md` and `.gemini/commands/*.toml` (`$ARGUMENTS` becomes `{{args}}`). `--check` fails on drift.
+**Usage**: `bun scripts/render-commands.ts [--check]`
+
+#### `validate-platform-parity.ts`
+**Purpose**: Reports `[PASS]`/`[FAIL]` for rendered commands, MCP proxy routing on every platform config, instruction-file parity sections, skills mirrors and schema model mappings.
+**Usage**: `bun scripts/validate-platform-parity.ts [--root <dir>]`
+
 #### `dispatch-parallel.ts`
 **Purpose**: Parallel multi-agent dispatch. Spawns multiple agents simultaneously and
 collects results when all complete.
-**Usage**: `bun scripts/dispatch-parallel.ts --agents agent1,agent2 --prompt "task"`
+**Usage**: `bun scripts/dispatch-parallel.ts --platform codex|gemini|claude|hermes --plan plan.json [--max-parallel 4] [--timeout 600] [--dry-run]`
+**Plan rows**: role, task, tier (high|medium|low). Results: `memory/dispatch/<runId>/<row>.md` + `summary.json`. Read-only flags by default (codex `-s read-only`, gemini `--approval-mode plan`, claude `--permission-mode plan`; hermes has no verified read-only flag). `antigravity-cli` errors: adapter pending verification.
 
 #### `dispatch-serial.ts`
 **Purpose**: Serial multi-agent dispatch. Chains agents sequentially, passing each

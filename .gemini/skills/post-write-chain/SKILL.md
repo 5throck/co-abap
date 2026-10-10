@@ -1,7 +1,7 @@
 ---
 name: post-write-chain
 description: 'Use after ANY WriteSource, EditSource, or Activate operation on SAP ABAP objects. Enforces the mandatory quality gate: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck. Trigger automatically after every ABAP write operation.'
-version: 1.3.1
+version: 1.3.2
 last_reviewed: 2026-10-10
 status: active
 scope: co-abap
@@ -81,13 +81,13 @@ Action required: Add ABAP Unit test cases covering the uncovered branches,
 
 ## Enforcement
 
-- **Hook-capable environments (Claude Code CLI)**: the `sap-action-audit` hook records each chain step's result as evidence in `memory/audit/sap-evidence.json` (object status `pending` after a write, `passed` once all four steps pass after that write, `failed` otherwise). `ReleaseTransport` is denied unless every object in the transport has `passed` evidence. Do not edit the evidence file by hand.
-- **Manual profile (`HARNESS_PROFILE=manual`)**: no hook records evidence. Run the chain by hand with `/post-write`, and report the results in the task or QA report. **Transport release is blocked** in this profile; release only from the hooked CLI profile.
-- Following this skill is a process rule for the agent. Only the hook-recorded evidence and the transport release gate are enforced controls (see [SECURITY.md](../../SECURITY.md#control-tiers)).
+- **Every platform (proxy-enforced)**: the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` on Claude Code, Codex, Gemini CLI, Antigravity, and Hermes. The proxy records each chain step's result as evidence in `memory/audit/sap-evidence.json` (object status `pending` after a write, `passed` once all four steps pass after that write, `failed` otherwise). `ReleaseTransport` is denied unless every object in the transport has `passed` evidence, and it also needs a human approval (`APPROVAL_REQUIRED id=<id>` → the human runs `bun scripts/sap-approve.ts <id>`; agents never run it). Do not edit the evidence file by hand.
+- The former manual profile (`HARNESS_PROFILE=manual`) is retired; there is no hook-less SAP path.
+- Following this skill is a process rule for the agent. Only the proxy-recorded evidence and the transport release gate are enforced controls (see [SECURITY.md](../../SECURITY.md#control-tiers)).
 
 ## Claude Code Desktop App Note
 
-`PostToolUse` hooks do **not** fire automatically in the Desktop App. Run all three steps of this chain manually after each write in Desktop sessions using `/post-write <object-name>`.
+Hooks are not needed for evidence: the proxy records it in every client. Still run the chain after each write (use `/post-write <object-name>` where nothing triggers it automatically).
 
 ## Context
 
@@ -96,8 +96,7 @@ This skill enforces a mandatory four-step quality gate that runs after every ABA
 ## When to Use
 
 - After any `WriteSource`, `EditSource`, or `Activate` operation on SAP ABAP objects
-- Automatically triggered by PostToolUse hooks in CLI sessions
-- Manually invoked via `/post-write <object-name>` in Claude Code Desktop App sessions
+- Invoked via `/post-write <object-name>` on any platform
 - Before releasing a transport request
 
 ## Execution Steps

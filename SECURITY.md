@@ -48,30 +48,27 @@ an agent can ignore them, and a prompt can be manipulated into ignoring them.
 |------|---------|-------------|--------------|
 | 1 | SAP server authorizations | SAP kernel (authorization objects) | A dedicated, least-privilege AI dev user. `S_DEVELOP` restricted by `DEVCLASS` and `ACTVT`; `S_TRANSPRT` without release (`ACTVT 43`); `S_TABU_DIS` display only. No `SAP_ALL` or `SAP_NEW` outside local trial systems. Design: [SAP Write Safety Gate](docs/designs/2026-10-10-sap-write-safety-gate-design.md) section 6 |
 | 2 | vsp allowlist and feature flags | vsp MCP server process | `SAP_ALLOWED_PACKAGES` restricts write scope to packages; `SAP_FEATURE_*` hides whole tool categories (see [Package & Feature Whitelist Policy](#package--feature-whitelist-policy)) |
-| 3 | Harness hooks | Claude Code CLI hooks in `.claude/settings.json` | `sap-action-gate` classifies every `mcp__abap__*` call and allows, asks, or denies it. `sap-action-audit` records each action and its evidence. Transport release requires passed QA evidence |
+| 3 | SAP MCP proxy | `scripts/sap-mcp-proxy.ts`, the launch command of the `abap` MCP server on every platform (`.mcp.json`, `.codex/config.toml`, `.gemini/settings.json`, `.agents/mcp.json`, Hermes `~/.hermes/config.yaml`) | Classifies every `abap` tool call and allows, asks, or denies it before it reaches vsp. Records each action and its evidence. Transport release requires passed QA evidence and a human approval |
 
-#### Tier 3 — Harness hooks in detail
+#### Tier 3 — SAP MCP proxy in detail
+
+The proxy reuses the policy in `scripts/sap-action-lib.ts`, so the decision for a call is the same on every client. Claude Code SAP hooks are no longer registered; any client-side hook is optional UX, not a control.
 
 - **Tool risk classes** (defined in the design doc, section 2):
   - **R0** read or metadata: allowed.
   - **R1** QA or read-only execution (`SyntaxCheck`, `RunUnitTests`, `GetCodeCoverage`, `RunATCCheck`, `TraceExecution`): allowed, and the result is recorded as evidence.
   - **R2** source write or activate (`WriteSource`, `EditSource`, `Activate`, `CreateTransport`, `AddToTransport`): asks for confirmation. The target package must match the allowlist, or the call is denied. The object is marked `pending` until the QA chain passes.
   - **R3** data change, release, or privileged action (`ReleaseTransport`, `RunReport`, `RunOptions`, `InstallZADTVSP`, `InstallAbapGit`, any delete or data-modifying tool): denied by default. Allowed only with a human approval.
-  - **Unknown** `mcp__abap__*` tools: asked, with the reason "unclassified tool".
-  - **Hyperfocused mode** (`SAP` tool, vsp v2.60.0): the gate classifies `action` plus `params.type`/`op` (for example `query` with non-SELECT SQL, `rfc` `call`, `delete`, `debug`, and `system` `release_transport` are denied unless approved; `edit`/`create` ask). Unknown actions or sub-types ask. Map: design doc section 2.0.
-- **Approval mechanism**: the human creates a single-use approval outside the agent, either by setting `SAP_APPROVAL_TOKEN` to a value listed in the session approval file, or by writing the approval file for the exact tool and target. The audit hook consumes the approval after use. Agents must not create approval files; the settings deny writes to `memory/audit/approvals/**`.
+  - **Unknown** `abap` tools: asked, with the reason "unclassified tool".
+  - **Hyperfocused mode** (`SAP` tool, vsp v2.60.0): the proxy classifies `action` plus `params.type`/`op` (for example `query` with non-SELECT SQL, `rfc` `call`, `delete`, `debug`, and `system` `release_transport` are denied unless approved; `edit`/`create` ask). Unknown actions or sub-types ask. Map: design doc section 2.0.
+- **Approval mechanism**: an `ask` call, or an R3 call without approval, is not sent to SAP; the proxy answers `APPROVAL_REQUIRED id=<id>`. The human runs `bun scripts/sap-approve.ts <id>` (or `--deny`) in their own terminal. The approval is single use, bound to the hash of the exact tool input, and expires after a short TTL; the proxy consumes it on the identical retry. Agents must never run `sap-approve.ts` or create approval files; the Claude settings deny writes to `memory/audit/approvals/**`.
+- **Known limitation (pending security review, design Phase 3)**: Codex, Gemini CLI, and Hermes do not have an equivalent per-path write deny for `memory/audit/approvals/**` or a block on running `sap-approve.ts` from the agent shell. On those platforms the rule that only a human approves, from their own terminal, is procedural until the Phase 3 review lands a stronger binding.
 - **Evidence-gated transport release**: `ReleaseTransport` is denied unless every object in the transport has passed evidence (`SyntaxCheck`, `RunUnitTests`, `GetCodeCoverage`, `RunATCCheck`, each run after the last write).
-- **Failure behavior**: if the gate cannot read its policy or hits an internal error, it asks instead of allowing.
+- **Failure behavior**: if the proxy cannot read its policy or hits an internal error, it asks instead of allowing.
 
-#### Manual profile (`HARNESS_PROFILE=manual`)
+#### Manual profile (retired)
 
-Environments without working hooks (Desktop App if hooks do not fire, Antigravity, Gemini CLI) must
-set `HARNESS_PROFILE=manual`. In this profile:
-
-- The post-write chain is run by hand (see [Post-Write Chain](skills/post-write-chain/SKILL.md)).
-- **Transport release is blocked.** Release is performed only from the hooked Claude Code CLI profile.
-
-The default when `HARNESS_PROFILE` is absent is `hooked` on the Claude Code CLI.
+The former `HARNESS_PROFILE=manual` profile is retired. Every platform reaches SAP only through the proxy, so there is no hook-less SAP path and no separate release rule per client.
 
 #### Audit log
 
@@ -80,16 +77,16 @@ The default when `HARNESS_PROFILE` is absent is `hooked` on the Claude Code CLI.
 
 #### Outside the MCP gate
 
-The `sap-action-gate` hook covers `mcp__abap__*` calls only. The paths below run outside it and
+The SAP MCP proxy covers `abap` MCP calls only. The paths below run outside it and
 need their own rules. Where a Bash-level gate is installed (`scripts/hooks/gui-script-gate.ts`, wired in
 `.claude/settings.json`), it enforces the GUI rule in item 1. Where it is not installed, that rule is
 procedural: the agent must follow it, and nothing in the harness blocks a violation. As of this
 revision, `scripts/hooks/gui-script-gate.ts` does not exist, so item 1 is procedural.
 
 1. **SAP GUI scripting and BDC** (the `gui-scripter` agent, and any BDC or recorded-session script):
-   - These run outside the `mcp__abap__*` hooks.
+   - These run outside the SAP MCP proxy.
    - Any script that writes data or changes a transaction requires a recorded human approval before it
-     runs. Use the same single-use approval mechanism as R3 (see [Approval mechanism](#tier-3--harness-hooks-in-detail)).
+     runs. Use the same single-use approval mechanism as R3 (see [Approval mechanism](#tier-3--sap-mcp-proxy-in-detail)).
      Agents must not create approval files under `memory/audit/approvals/`.
    - Read-only scripts (navigation, display, and export without saving) are allowed without approval.
    - Every run, read-only or not, is logged to `memory/audit/` with the script name, target system, and
@@ -105,8 +102,8 @@ revision, `scripts/hooks/gui-script-gate.ts` does not exist, so item 1 is proced
 #### Guidance that is not enforced
 
 The approval rules in the sections below (for example, "wait for explicit user confirmation") are
-written as agent guidance. Where the Tier 3 hooks are active, the hooks enforce the matching
-classes. Where they are not (manual profile, or a tool outside the hook matcher), the rules rely on
+written as agent guidance. The Tier 3 proxy enforces the matching
+classes for `abap` MCP calls. For paths outside the proxy (see above), the rules rely on
 the agent following them and on the Tier 1 and Tier 2 controls to limit the damage.
 
 ### Assets at Risk
@@ -137,7 +134,7 @@ automatically as part of a larger task without pausing for confirmation:
 consequences, then wait for explicit user confirmation — the same standing rule that applies to
 destructive local git operations (`git push --force`, `git reset --hard`) applies here, scaled to
 a live SAP system. This rule is guidance. The enforced versions are the Tier 1 SAP authorizations
-and the Tier 3 hook classes (R2 ask, R3 deny-by-default, evidence-gated release) described in
+and the Tier 3 proxy classes (R2 ask, R3 deny-by-default, evidence-gated release) described in
 [Control Tiers](#control-tiers).
 
 ### Package & Feature Whitelist Policy

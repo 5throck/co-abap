@@ -1,20 +1,10 @@
 [features]
 codex_hooks = true
 
+# Routed through the SAP MCP proxy (policy gate, approvals, audit). Safe SAP_* defaults and .env are applied by the proxy.
 [mcp_servers.abap]
-args = [
-    "--mode",
-    "hyperfocused",
-]
-command = "./vsp"
-
-[mcp_servers.abap.env]
-SAP_ALLOWED_PACKAGES = "Z*,$TMP,$ZADT_VSP,$VSP_ADT"
-SAP_FEATURE_ABAPGIT = "off"
-SAP_FEATURE_RAP = "off"
-SAP_FEATURE_TRANSPORT = "off"
-SAP_FEATURE_UI5 = "off"
-SAP_MODE = "hyperfocused"
+command = "bun"
+args = ["scripts/sap-mcp-proxy.ts", "--", "--mode", "hyperfocused"]
 
 [mcp_servers.abap-docs]
 url = "https://mcp-abap.marianzeis.de/mcp"

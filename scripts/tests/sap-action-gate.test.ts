@@ -1,6 +1,6 @@
-// @version 1.2.0
+// @version 1.3.0
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { evaluate } from "../hooks/sap-action-gate.ts";
@@ -11,7 +11,7 @@ const REPO = join(import.meta.dir, "..", "..");
 const FIX = join(REPO, "scripts", "hooks", "__fixtures__");
 const fx = (n: string) => JSON.parse(readFileSync(join(FIX, `${n}.json`), "utf-8"));
 const OBJ = "/sap/bc/adt/oo/classes/zcl_foo";
-const ENV_KEYS = ["HARNESS_PROFILE", "SAP_APPROVAL_TOKEN", "HARNESS_TASK_ID", "HARNESS_SPEC_ID"];
+const ENV_KEYS = ["SAP_APPROVAL_TOKEN", "HARNESS_TASK_ID", "HARNESS_SPEC_ID"];
 
 let root: string;
 beforeEach(() => {
@@ -131,11 +131,6 @@ describe("R3 approval and release", () => {
   test("release allowed with passed evidence and approval", () => {
     passChain(); approve("ReleaseTransport", "A4HK900001");
     expect(evaluate(fx("r3-release"), root).decision).toBe("allow");
-  });
-  test("release denied in manual profile even if approved", () => {
-    passChain(); approve("ReleaseTransport", "A4HK900001");
-    process.env.HARNESS_PROFILE = "manual";
-    expect(evaluate(fx("r3-release"), root).reason).toContain("manual profile");
   });
 });
 
@@ -305,13 +300,10 @@ describe("hyperfocused SAP tool", () => {
       expect(logLines().at(-1).decision).toBe("approved");
       expect(evaluate(sap(rel), root).decision).toBe("deny");
     });
-    test("release denied without approval / without transport / in manual profile", () => {
+    test("release denied without approval / without transport", () => {
       chain();
       expect(evaluate(sap(rel), root).reason).toContain("without approval");
       expect(evaluate(sap({ action: "system", params: { type: "release_transport" } }), root).decision).toBe("deny");
-      approve("ReleaseTransport", T);
-      process.env.HARNESS_PROFILE = "manual";
-      expect(evaluate(sap(rel), root).reason).toContain("manual profile");
     });
     test("add_transport_object registers pending object that blocks release", () => {
       chain();
@@ -418,31 +410,29 @@ describe("RAP / UI5 targets", () => {
   });
 });
 
-describe("process-level (stdin/stdout)", () => {
+describe("process-level (stdin/stdout): advisory only", () => {
   const run = async (stdin: string, cwd = root) => {
     const p = Bun.spawn(["bun", join(REPO, "scripts/hooks/sap-action-gate.ts")], {
-      stdin: new Blob([stdin]), stdout: "pipe", stderr: "pipe", cwd, env: { ...process.env, HARNESS_TASK_ID: "T-2" },
+      stdin: new Blob([stdin]), stdout: "pipe", stderr: "pipe", cwd, env: { ...process.env },
     });
     const out = await new Response(p.stdout).text(); await p.exited;
     return { code: p.exitCode, out: JSON.parse(out).hookSpecificOutput };
   };
-  test("malformed stdin asks", async () => {
-    const r = await run("not json{"); expect(r.code).toBe(0); expect(r.out.permissionDecision).toBe("ask");
+  test("malformed stdin never asks or denies", async () => {
+    const r = await run("not json{"); expect(r.code).toBe(0); expect(r.out.permissionDecision).toBe("allow");
   });
-  test("invalid policy asks for everything", async () => {
+  test("invalid or missing policy still allows (proxy enforces)", async () => {
     writeFileSync(join(root, "config", "sap-action-policy.json"), '{"version":1}');
-    expect((await run(JSON.stringify({ ...fx("r0-getsource"), cwd: root }))).out.permissionDecision).toBe("ask");
-  });
-  test("missing policy asks", async () => {
+    expect((await run(JSON.stringify({ ...fx("r0-getsource"), cwd: root }))).out.permissionDecision).toBe("allow");
     rmSync(join(root, "config"), { recursive: true });
-    expect((await run(JSON.stringify({ ...fx("r0-getsource"), cwd: root }))).out.permissionDecision).toBe("ask");
+    expect((await run(JSON.stringify({ ...fx("r0-getsource"), cwd: root }))).out.permissionDecision).toBe("allow");
   });
-  test("deny output shape, and deny is logged with taskId", async () => {
+  test("would-be deny is reported as advisory allow and is not logged", async () => {
     const r = await run(JSON.stringify({ ...fx("runquery-update"), cwd: root }));
     expect(r.out.hookEventName).toBe("PreToolUse");
-    expect(r.out.permissionDecision).toBe("deny");
-    expect(r.out.permissionDecisionReason).toStartWith("R0:");
-    const l = logLines().at(-1);
-    expect(l.decision).toBe("deny"); expect(l.taskId).toBe("T-2");
+    expect(r.out.permissionDecision).toBe("allow");
+    expect(r.out.permissionDecisionReason).toContain("policy would deny");
+    expect(r.out.permissionDecisionReason).toContain("R0:");
+    expect(existsSync(join(root, "memory", "audit"))).toBe(false);
   });
 });

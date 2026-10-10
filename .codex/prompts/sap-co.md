@@ -3,7 +3,6 @@ name: sap-co
 description: Load SAP CO (Controlling) module analyst context ??cost center accounting, internal orders, CO-PA profitability analysis, and cost allocation. Use when working on CO module tasks or activating the CO Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the CO module skill from `skills/sap-co/SKILL.md`.

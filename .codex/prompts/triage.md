@@ -3,7 +3,6 @@ name: triage
 description: Automatically classify the incoming SAP ABAP request, create a task file, and generate the Phase 1 parallel dispatch block for sap-investigator, read-only-analyst, and schema-inspector agents.
 argument-hint: "<user request text>"
 allowed-tools: ["Bash"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 # /triage — Task Triage & Auto-Dispatch
@@ -140,4 +139,4 @@ Replace `<MODULE_TABLE_N>` with the module's standard tables from `schema-inspec
 
 ---
 
-*Last Updated: 2026-09-25*
+*Last Updated: 2026-10-10*

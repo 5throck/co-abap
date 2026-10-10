@@ -3,7 +3,6 @@ name: sap-fi
 description: Load SAP FI (Financial Accounting) module analyst context ??journal entries, account determination, G/L, accounts payable/receivable, and financial reporting. Use when working on FI module tasks or activating the FI Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the FI module skill from `skills/sap-fi/SKILL.md`.

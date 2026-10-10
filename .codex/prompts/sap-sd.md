@@ -3,7 +3,6 @@ name: sap-sd
 description: Load SAP SD (Sales & Distribution) module analyst context ??sales orders, deliveries, billing, pricing, and order-to-cash processes. Use when working on SD module tasks or activating the SD Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the SD module skill from `skills/sap-sd/SKILL.md`.

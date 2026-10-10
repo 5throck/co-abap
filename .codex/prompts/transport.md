@@ -3,7 +3,6 @@ name: transport
 description: Manage SAP Transport Requests (CTS) ??list, create, add objects, release, and check status of transport requests. Runs pre-release quality gate before releasing.
 argument-hint: "<action> [arguments]  (actions: list, create, add, release, status)"
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 # Transport

@@ -7,7 +7,7 @@
  * Also hosts the proxy approval store (pending requests, single-use approvals) shared by
  * sap-mcp-proxy.ts and sap-approve.ts.
  *
- * @version 1.3.0
+ * @version 1.4.0
  */
 
 import { createHash } from 'node:crypto';
@@ -28,7 +28,7 @@ export interface Policy {
   allowedPackages: string[];
   runQuery: { selectOnly: boolean };
   approval: { envVar: string; dir: string; ttlMinutes?: number };
-  release: { requireEvidence: boolean; blockInManualProfile: boolean };
+  release: { requireEvidence: boolean };
   hyperfocused?: HfPolicy;
 }
 
@@ -92,7 +92,7 @@ export function validatePolicy(raw: unknown): Policy {
   if (typeof p.runQuery?.selectOnly !== 'boolean') fail('runQuery.selectOnly');
   if (typeof p.approval?.envVar !== 'string' || typeof p.approval?.dir !== 'string') fail('approval');
   if (p.approval.dir.startsWith('/') || p.approval.dir.split(/[\\/]/).includes('..')) fail('approval.dir');
-  if (typeof p.release?.requireEvidence !== 'boolean' || typeof p.release?.blockInManualProfile !== 'boolean') fail('release');
+  if (typeof p.release?.requireEvidence !== 'boolean') fail('release');
   if (p.hyperfocused !== undefined) {
     const h = p.hyperfocused;
     const isCls = (c: unknown) => c === 'R0' || c === 'R1' || c === 'R2' || c === 'R3';
@@ -467,8 +467,8 @@ export function appendAudit(root: string, rec: AuditRecord): void {
   appendFileSync(join(auditDir(root), `sap-actions-${rec.ts.slice(0, 7)}.jsonl`), JSON.stringify(full) + '\n');
 }
 
-/** @deprecated The manual profile is retired: the proxy applies one policy to every client. Env tolerated only by the legacy Claude hooks. */
-export const profileOf = (): string => (process.env.HARNESS_PROFILE === 'manual' ? 'manual' : 'hooked');
+/** The manual profile is retired (D3): one policy applies to every client, so the profile is a constant label. */
+export const profileOf = (): string => 'hooked';
 export const actorOf = (i: HookInput): string => i.agent_name || i.agent_type || 'main';
 
 export interface Approval { tool: string; target: string; approver?: string; expires: string; token?: string }

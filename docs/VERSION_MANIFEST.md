@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T08:36:22.574Z
+**Generated**: 2026-10-10T08:47:00.367Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 119 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 124 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -74,7 +74,7 @@
 | performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | 1.3.1 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
+| post-write-chain | 1.3.2 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
 | project-review | 1.3.2 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -141,12 +141,13 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
 | dev-sync.ts | 1.23.0 | scripts/dev-sync.ts | bun |
+| dispatch-parallel.test.ts | 1.0.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
-| dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
+| dispatch-parallel.ts | 2.0.0 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
 | dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
-| dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
+| dispatch.ts | 1.2.0 | scripts/dispatch.ts | N/A |
 | evidence-backport-scan.ts | 1.1.0 | scripts/evidence-backport-scan.ts | N/A |
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
@@ -171,13 +172,15 @@
 | qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
 | readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
 | regenerate-agents-md.ts | 1.3.0 | scripts/regenerate-agents-md.ts | fs, path |
+| render-commands.test.ts | 1.0.0 | scripts/tests/render-commands.test.ts | bun:test |
+| render-commands.ts | 1.0.0 | scripts/render-commands.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
-| review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
-| review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
-| sap-action-gate.test.ts | 1.2.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| review-baseline.test.ts | 1.5.0 | scripts/tests/review-baseline.test.ts | bun:test |
+| review-baseline.ts | 1.4.0 | scripts/review-baseline.ts | N/A |
+| sap-action-gate.test.ts | 1.3.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
 | sap-approve.test.ts | 1.0.0 | scripts/tests/sap-approve.test.ts | bun:test |
 | sap-approve.ts | 1.0.0 | scripts/sap-approve.ts | N/A |
 | sap-mcp-proxy.test.ts | 1.0.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
@@ -207,6 +210,8 @@
 | validate-md-language.ts | 1.14.0 | scripts/validate-md-language.ts | fs |
 | validate-model-registry.ts | 1.4.1 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
+| validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
+| validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | N/A |
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
 | validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | js-yaml |
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
@@ -234,22 +239,22 @@
 |------|------|----------|-------------------|
 | abap-dev | .claude/commands/abap-dev.md | claude | N/A |
 | celebrate | .claude/commands/celebrate.md | claude | N/A |
-| changelog | .claude/commands/changelog.md | all | N/A |
-| commit-push-pr | .claude/commands/commit-push-pr.md | all | N/A |
-| gateguard | .claude/commands/gateguard.md | all | N/A |
-| meeting | .claude/commands/meeting.md | all | N/A |
-| memlog | .claude/commands/memlog.md | all | N/A |
-| new-task | .claude/commands/new-task.md | all | N/A |
+| changelog | .claude/commands/changelog.md | claude | N/A |
+| commit-push-pr | .claude/commands/commit-push-pr.md | claude | N/A |
+| gateguard | .claude/commands/gateguard.md | claude | N/A |
+| meeting | .claude/commands/meeting.md | claude | N/A |
+| memlog | .claude/commands/memlog.md | claude | N/A |
+| new-task | .claude/commands/new-task.md | claude | N/A |
 | post-write | .claude/commands/post-write.md | claude | N/A |
-| project-review | .claude/commands/project-review.md | all | N/A |
+| project-review | .claude/commands/project-review.md | claude | N/A |
 | sap-co | .claude/commands/sap-co.md | claude | N/A |
 | sap-fi | .claude/commands/sap-fi.md | claude | N/A |
 | sap-le | .claude/commands/sap-le.md | claude | N/A |
 | sap-mm | .claude/commands/sap-mm.md | claude | N/A |
 | sap-pp | .claude/commands/sap-pp.md | claude | N/A |
 | sap-sd | .claude/commands/sap-sd.md | claude | N/A |
-| security-check | .claude/commands/security-check.md | all | N/A |
-| sync | .claude/commands/sync.md | all | N/A |
+| security-check | .claude/commands/security-check.md | claude | N/A |
+| sync | .claude/commands/sync.md | claude | N/A |
 | transport | .claude/commands/transport.md | claude | N/A |
 | triage | .claude/commands/triage.md | claude | N/A |
 
@@ -259,8 +264,8 @@
 
 **Checked**: Claude (.claude/), Gemini (.gemini/), Antigravity (.agents/), Codex (.codex/ prompts mapping)
 
-- **Commands with parity (gemini mirror)**: 9 / 20
-- **Commands with codex prompts mapping**: 9 / 20
+- **Commands with parity (gemini mirror)**: 0 / 20
+- **Commands with codex prompts mapping**: 0 / 20
 - **Skills in all four mirrors**: 0 / 49
 - **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
 

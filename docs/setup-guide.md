@@ -24,6 +24,7 @@
 > **Other supported agent surfaces**: skills also mirror to Codex CLI (`.codex/`,
 > ADR-0077) and Hermes Agent (`.hermes/skills/`, ADR-0088). Hermes reads `AGENTS.md`
 > natively as its project instruction file and invokes skills as `/<skill-name>`.
+> SAP safety is identical on every surface (see [5-F](#5-f-sap-mcp-proxy-and-approvals)).
 > Hermes loads project skills only after you add this repository to its user-side
 > `skills.trusted_project_dirs` trust list — this step is intentional (prompt-injection
 > defense) and stays on the user side.
@@ -489,6 +490,8 @@ If you get an error, check:
 
 ### 5-D. Create .mcp.json
 
+> **Proxy route (all platforms)**: the tracked config launches `abap` as `bun scripts/sap-mcp-proxy.ts -- --mode hyperfocused`, not `./vsp`. The examples below show the vsp flags the proxy passes through; do not point `command` at `vsp` directly (the parity validator rejects it). See [5-F](#5-f-sap-mcp-proxy-and-approvals).
+
 > **Note**: This project standardizes on the standard `SAP_*` prefix format for connection and feature flags (e.g. `SAP_MODE`, `SAP_ALLOWED_PACKAGES`), ensuring 100% compatibility with the upstream `vsp` engine.
 
 **Windows** — create `%USERPROFILE%\abap\.mcp.json`:
@@ -581,7 +584,7 @@ Rules for cloud sessions:
 - Treat an `abap` connection failure (`ENOENT ... ./vsp`) as expected in the cloud, not as a broken project config.
 - Make and sync ABAP changes from the local CLI. Cloud sessions may draft docs and non-ABAP code.
 
-**Aligning the `./vsp` path.** The tracked `.mcp.json` runs `"command": "./vsp"`, a path relative to the project root. The install steps in 5-A place the binary differently by platform, so pick one fix locally:
+**Aligning the `vsp` path.** The proxy looks for `vsp` in the project root (`./vsp`, or `vsp.exe` on Windows) unless overridden in `.env`. The install steps in 5-A place the binary differently by platform, so pick one fix locally:
 
 | Platform | Install step | Fix |
 |----------|--------------|-----|
@@ -590,6 +593,22 @@ Rules for cloud sessions:
 | Any, binary elsewhere | e.g. `/usr/local/bin/vsp` | Symlink it into the repo root: `ln -s /usr/local/bin/vsp ./vsp`, or set the absolute path in `.mcp.local.json`. |
 
 Do not commit a platform-specific `command` change to `.mcp.json`. Keep it in `.mcp.local.json` or a local symlink.
+
+### 5-F. SAP MCP proxy and approvals
+
+Every platform (Claude Code, Codex, Gemini CLI, Antigravity, Hermes) starts the `abap` server through `scripts/sap-mcp-proxy.ts`. The proxy is the single SAP enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. Hooks are not required. The former `HARNESS_PROFILE=manual` profile is retired.
+
+1. Check that each config routes through the proxy: `bun scripts/validate-platform-parity.ts`.
+2. Hermes only: add `mcp_servers.abap` to your user-level `~/.hermes/config.yaml` with absolute paths, from `config/platforms/hermes-mcp.example.yaml` (details: `docs/platform-setup/hermes.md`).
+3. When an agent reports `APPROVAL_REQUIRED id=<id>`, review the request and, if you agree, run in **your own terminal**:
+
+   ```bash
+   bun scripts/sap-approve.ts <id>          # approve once
+   bun scripts/sap-approve.ts <id> --deny   # reject
+   bun scripts/sap-approve.ts --list        # pending requests
+   ```
+
+   Then let the agent repeat the identical call. Approvals are single use, bound to the exact input, and expire quickly. Agents must never run `sap-approve.ts`.
 
 ---
 
@@ -836,6 +855,8 @@ See `docs/tooling-matrix.md` for the full decision guide.
 ## 8. Configure Gemini CLI (Optional)
 
 ### 8-A. Create .gemini/settings.json
+
+> **Proxy route (all platforms)**: the tracked config launches `abap` as `bun scripts/sap-mcp-proxy.ts -- --mode hyperfocused`, not `./vsp`. The examples below show the vsp flags the proxy passes through; do not point `command` at `vsp` directly (the parity validator rejects it). See [5-F](#5-f-sap-mcp-proxy-and-approvals).
 
 **Windows** — create `%USERPROFILE%\abap\.gemini\settings.json`:
 

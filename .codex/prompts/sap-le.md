@@ -3,7 +3,6 @@ name: sap-le
 description: Load SAP LE (Logistics Execution) module analyst context ??shipping, transport, warehouse management, delivery processing, and handling units. Use when working on LE module tasks or activating the LE Analyst role.
 argument-hint: ""
 allowed-tools: ["mcp__abap__SAP"]
-gemini-parity: skip # intentional Claude-only command
 ---
 
 Load and apply the LE module skill from `skills/sap-le/SKILL.md`.
