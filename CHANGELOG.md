@@ -9,7 +9,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Documentation
+### Changed
 - **[2026-10-10]**: docs: ADR-0003..0007 (CDS-first data access, semantic-layer reference-only, cross-platform parity, SAP approval security model, parallel dispatch grants) with an ADR index; parity and semantic-layer designs status-updated; README/README_ko, setup guide, dispatch and security docs cover the 8 platforms, first-time integrity setup, approval flow and pre-dispatch grants; skill graph regenerated.
 
 ### Security
