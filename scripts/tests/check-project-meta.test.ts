@@ -1,8 +1,8 @@
 /**
- * @version 1.0.0
+ * @version 1.1.0
  */
 import { describe, expect, test } from 'bun:test';
-import { checkChangelogEntries, checkChangelogStructure, checkFileMeta, parseFrontmatter, stripDateLines } from '../check-project-meta.ts';
+import { checkChangelogEntries, checkChangelogStructure, checkFileMeta, checkVspVersionPin, extractPinnedVersion, findVspVersionClaims, parseFrontmatter, stripDateLines } from '../check-project-meta.ts';
 
 describe('changelog structure', () => {
   test('passes with one first Unreleased', () => {
@@ -60,5 +60,26 @@ describe('frontmatter metadata', () => {
   test('passes bumped and fresh; skips files without fields', () => {
     expect(checkFileMeta('agents/a.md', fm('1.1.0', '2026-10-10'), fm('1.0.0', '2026-09-01'), '2026-10-10')).toEqual([]);
     expect(checkFileMeta('agents/b.md', 'no frontmatter', 'x', '2026-10-10')).toEqual([]);
+  });
+});
+
+describe('vsp-version-pin', () => {
+  test('extracts pinned version', () => {
+    expect(extractPinnedVersion('const PINNED_VERSION = "v2.60.0";')).toBe('v2.60.0');
+    expect(extractPinnedVersion('nothing')).toBeNull();
+  });
+  test('finds claims with line numbers, ignores unrelated tokens', () => {
+    expect(findVspVersionClaims('a\nvsp v2.60.0 and `vsp` Go binary v2.38.1\nhttp://x/v2.1.0/y')).toEqual([[2, 'v2.60.0'], [2, 'v2.38.1']]);
+  });
+  test('passes when all claims match', () => {
+    expect(checkVspVersionPin('v2.60.0', { 'a.md': 'vsp v2.60.0' }).status).toBe('PASS');
+  });
+  test('fails on stale claim', () => {
+    const r = checkVspVersionPin('v2.60.0', { 'a.md': 'ok v2.60.0\nold v2.38.1' });
+    expect(r.status).toBe('FAIL');
+    expect(r.details[0]).toContain('a.md:2');
+  });
+  test('fails when pin missing', () => {
+    expect(checkVspVersionPin(null, {}).status).toBe('FAIL');
   });
 });

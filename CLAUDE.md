@@ -28,7 +28,7 @@ The workspace `.claude/settings.json` currently has **three active hook types**:
 - **SessionStart** — runs `git config core.hooksPath .githooks` (async) to ensure git hooks are configured at the start of each session.
 - **PostToolUse** — fires `bun scripts/sync-md.ts` (async) after every Write/Edit on the CLI (see [Hooks](#hooks) below for the ABAP-specific behavior).
 
-> **Desktop App Hook Status**: `PostToolUse` hooks do **not** fire in the Desktop App. After any `WriteSource`/`EditSource`, run the [Desktop App Manual Post-Write Chain](#desktop-app-manual-post-write-chain).
+> **Desktop App Hook Status**: `PostToolUse` hooks do **not** fire in the Desktop App. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run the [Desktop App Manual Post-Write Chain](#desktop-app-manual-post-write-chain).
 
 | Hook | Environment | Active? | Notes |
 |------|-------------|:-------:|-------|
@@ -56,7 +56,7 @@ Custom slash commands in `.claude/commands/` are natively recognized by Claude C
 | `/new-task "name"` | Create task block in today's memory log |
 | `/triage` | ABAP object triage workflow |
 | `/transport` | SAP transport request workflow |
-| `/post-write` | Manual Post-Write Mandatory Chain (SyntaxCheck/RunUnitTests/RunATCCheck) |
+| `/post-write` | Manual Post-Write Mandatory Chain (syntax check, unit tests, ATC; see [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)) |
 | `/celebrate` | Session-completion celebration |
 | `/commit-push-pr "..."` | Redirects direct commit/push/PR requests to the `/sync` pipeline |
 | `/gateguard <file>` | Pre-edit fact-forcing quality gate — investigate a file before editing it |
@@ -121,6 +121,22 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
+<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
+### SAP safety (proxy) & approvals
+
+Same rules on every platform; only the config file differs. Platform: **Claude Code (CLI & Desktop App)**.
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.mcp.json`. The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Claude SAP `PreToolUse`/`PostToolUse` hooks are no longer registered; any remaining SAP hook output is advisory UX only.
+- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty`; then repeat the identical call once (single use, input-bound, short TTL). Pending requests and approvals live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600); the approver is the OS user.
+- **Integrity**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy or enforcement scripts; until then the proxy is R0 (read-only). `verify` and `verify-audit` are read-only checks.
+- **Agents must never run `sap-approve.ts` or `sap-integrity.ts init|sign`**, write approval or pending files, read `~/.config/co-abap/`, or launch `vsp` outside the proxy. The former manual profile is retired.
+
+### Parallel dispatch
+
+- **Native mechanism**: the native `Agent` tool (multiple `Agent()` calls in one message run in parallel).
+- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform claude --plan <plan-file>` runs one CLI process per plan row. Each row has `mode: read|write`; read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. Timeouts: SIGTERM, 10s grace (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls. SAP calls from children always pass through the proxy.
+- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
+
 ## Execution Plan Boilerplate
 
 The execution plan table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in **[Execution Plan Templates §5.1 Standard Execution Plan Template](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template)** and **[§5.1.1 Design Gate Exemptions](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions)** — do not restate them here.
@@ -263,7 +279,7 @@ At the start of every Claude Code session, run this checklist:
 
 Both the CLI and the Desktop App share the same configuration files and MCP server setup. Key differences, especially regarding hook behavior and UI features, are detailed in [docs/tooling-matrix.md](docs/tooling-matrix.md).
 
-> **Hook limitation**: `PostToolUse` hooks configured in `.claude/settings.json` do **not** fire in the Desktop App. After any `WriteSource` / `EditSource`, run the Post-Write Mandatory Chain manually (see [skills/post-write-chain/SKILL.md](skills/post-write-chain/SKILL.md)) and sync via `bun scripts/dev-sync.ts`.
+> **Hook limitation**: `PostToolUse` hooks configured in `.claude/settings.json` do **not** fire in the Desktop App. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run the Post-Write Mandatory Chain manually (see [skills/post-write-chain/SKILL.md](skills/post-write-chain/SKILL.md)) and sync via `bun scripts/dev-sync.ts`.
 
 > **Linux developers**: Use CLI only — the Desktop App is not available on Linux.
 
@@ -285,13 +301,13 @@ A `PostToolUse` hook fires after every `Write` or `Edit` tool call and runs `bun
 
 ### Desktop App Manual Post-Write Chain
 
-When using Claude Code Desktop App, PostToolUse hooks do not fire. After any `WriteSource` or `EditSource`, run this chain manually:
+When using Claude Code Desktop App, PostToolUse hooks do not fire. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run this chain manually (names per the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
 
 ```
 1. bun scripts/sync-md.ts          # update memory index
-2. SyntaxCheck(<object_url>)        # verify ABAP syntax
-3. RunUnitTests(<object_url>)       # run unit tests
-4. RunATCCheck(<object_url>)        # ATC quality check
+2. SAP(action=analyze, type=syntax_check)   # verify ABAP syntax
+3. SAP(action=test)                        # run unit tests
+4. SAP(action=test, type=atc)               # ATC quality check
 5. bun scripts/dev-sync.ts "fix: description"  # sync & commit
 ```
 

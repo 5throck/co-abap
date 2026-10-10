@@ -40,17 +40,7 @@ Create a `.claude/settings.json` file in the root of your consumer repository to
 {
   "permissions": {
     "allow": [
-      "mcp__abap__GetSource",
-      "mcp__abap__SearchObject",
-      "mcp__abap__GrepObjects",
-      "mcp__abap__GrepPackages",
-      "mcp__abap__FindDefinition",
-      "mcp__abap__FindReferences",
-      "mcp__abap__GetTableContents",
-      "mcp__abap__RunQuery",
-      "mcp__abap__GetCDSDependencies",
-      "mcp__abap__SyntaxCheck",
-      "mcp__abap__RunUnitTests",
+      "mcp__abap__SAP",
       "mcp__abap-docs__*",
       "mcp__sap-docs__*"
     ]
@@ -101,7 +91,7 @@ Once successfully registered, you can use these premium slash-commands inside yo
 | Command | Usage | Description |
 |---------|-------|-------------|
 | `/triage "<request>"` | `/triage "Create a new flight flight agency report"` | Automatically scans keywords, creates a task file at `scratch/tasks/`, and outputs a parallel Phase 1 dispatch block. |
-| `/post-write <ObjectName>` | `/post-write ZCL_FLIGHT_REPORT` | Runs the mandatory ABAP quality gate chain: `SyntaxCheck` -> `RunUnitTests` -> `RunATCCheck`. |
+| `/post-write <ObjectName>` | `/post-write ZCL_FLIGHT_REPORT` | Runs the mandatory ABAP quality gate chain: syntax check (`SAP(action=analyze, type=syntax_check)`) -> unit tests (`SAP(action=test)`) -> ATC (`SAP(action=test, type=atc)`). |
 | `/sync "<commit message>"` | `/sync "feat: add flight validation"` | Runs documentation audit, synchronizes memory indexes, and commits staged files cleanly. |
 
 ---
@@ -116,4 +106,4 @@ For detailed guidelines regarding the complete Harness Governance, Agent role re
 - **MCP Server Details**: [docs/mcp_usage.md](https://github.com/5throck/co-abap/blob/main/docs/mcp_usage.md)
 
 ---
-*Last Updated: 2026-07-08*
+*Last Updated: 2026-10-10*

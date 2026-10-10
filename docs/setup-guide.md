@@ -24,6 +24,7 @@
 > **Other supported agent surfaces**: skills also mirror to Codex CLI (`.codex/`,
 > ADR-0077) and Hermes Agent (`.hermes/skills/`, ADR-0088). Hermes reads `AGENTS.md`
 > natively as its project instruction file and invokes skills as `/<skill-name>`.
+> SAP safety is identical on every surface (see [5-F](#5-f-sap-mcp-proxy-and-approvals)).
 > Hermes loads project skills only after you add this repository to its user-side
 > `skills.trusted_project_dirs` trust list — this step is intentional (prompt-injection
 > defense) and stays on the user side.
@@ -489,6 +490,8 @@ If you get an error, check:
 
 ### 5-D. Create .mcp.json
 
+> **Proxy route (all platforms)**: the tracked config launches `abap` as `bun scripts/sap-mcp-proxy.ts -- --mode hyperfocused`, not `./vsp`. The examples below show the vsp flags the proxy passes through; do not point `command` at `vsp` directly (the parity validator rejects it). See [5-F](#5-f-sap-mcp-proxy-and-approvals).
+
 > **Note**: This project standardizes on the standard `SAP_*` prefix format for connection and feature flags (e.g. `SAP_MODE`, `SAP_ALLOWED_PACKAGES`), ensuring 100% compatibility with the upstream `vsp` engine.
 
 **Windows** — create `%USERPROFILE%\abap\.mcp.json`:
@@ -545,10 +548,22 @@ If you get an error, check:
 > **`abap-docs`**: ABAP keyword and API reference (marianzeis.de).
 > **`sap-docs`**: SAP Help Portal documentation search.
 > **Focused mode** (named tools, standard development):
-> Change `"SAP_MODE": "focused"` — exposes ~100 individually named MCP tools instead of routing through `sap_execute`.
+> Change `"SAP_MODE": "focused"` — exposes 98 individually named MCP tools instead of the single `SAP` tool.
 > **Expert mode** (all tools, debugging / advanced operations):
-> Change `"SAP_MODE": "expert"` — exposes 147 individually named MCP tools.
-> **Note**: hyperfocused mode still provides access to all 101 MCP operations — they are routed via `sap_execute` rather than registered as individual tool names. See `docs/context.md § Deployed vsp Binary`.
+> Change `"SAP_MODE": "expert"` — exposes 148 individually named MCP tools.
+> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+
+**Safety options (optional, set in `.env`; verify with `./vsp --help`).** See `.env.sample` for the template.
+
+| Variable | Effect |
+|----------|--------|
+| `SAP_READ_ONLY` | Block all write operations (create, update, delete, activate) |
+| `SAP_BLOCK_FREE_SQL` | Block arbitrary SQL via the query action |
+| `SAP_EXPECT` | Pin the connection as `SID[.CLIENT][/USER]`; vsp refuses to work when the system differs |
+| `SAP_ENABLE_TRANSPORTS` | Opt in to transport management operations (off by default) |
+| `SAP_ALLOW_TRANSPORTABLE_EDITS` | Opt in to editing objects in transportable packages (needs a transport) |
+
+Gate classes and policy: see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 ---
 
@@ -569,7 +584,7 @@ Rules for cloud sessions:
 - Treat an `abap` connection failure (`ENOENT ... ./vsp`) as expected in the cloud, not as a broken project config.
 - Make and sync ABAP changes from the local CLI. Cloud sessions may draft docs and non-ABAP code.
 
-**Aligning the `./vsp` path.** The tracked `.mcp.json` runs `"command": "./vsp"`, a path relative to the project root. The install steps in 5-A place the binary differently by platform, so pick one fix locally:
+**Aligning the `vsp` path.** The proxy looks for `vsp` in the project root (`./vsp`, or `vsp.exe` on Windows) unless overridden in `.env`. The install steps in 5-A place the binary differently by platform, so pick one fix locally:
 
 | Platform | Install step | Fix |
 |----------|--------------|-----|
@@ -578,6 +593,24 @@ Rules for cloud sessions:
 | Any, binary elsewhere | e.g. `/usr/local/bin/vsp` | Symlink it into the repo root: `ln -s /usr/local/bin/vsp ./vsp`, or set the absolute path in `.mcp.local.json`. |
 
 Do not commit a platform-specific `command` change to `.mcp.json`. Keep it in `.mcp.local.json` or a local symlink.
+
+### 5-F. SAP MCP proxy and approvals
+
+Every platform (Claude Code, Codex, Gemini CLI, Antigravity, Hermes) starts the `abap` server through `scripts/sap-mcp-proxy.ts`. The proxy is the single SAP enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. Hooks are not required. The former manual profile is retired.
+
+1. Check that each config routes through the proxy: `bun scripts/validate-platform-parity.ts`.
+2. Hermes only: add `mcp_servers.abap` to your user-level `~/.hermes/config.yaml` with absolute paths, from `config/platforms/hermes-mcp.example.yaml` (details: `docs/platform-setup/hermes.md`).
+3. When an agent reports `APPROVAL_REQUIRED id=<id>`, review the request and, if you agree, run in **your own terminal**:
+
+   ```bash
+   bun scripts/sap-approve.ts <id>          # approve once
+   bun scripts/sap-approve.ts <id> --deny   # reject
+   bun scripts/sap-approve.ts --list        # pending requests
+   ```
+
+   You confirm by typing the first 6 characters of the id on `/dev/tty`; the approver is your OS user. Then let the agent repeat the identical call. Approvals are single use, bound to the exact input, and expire quickly. They are stored outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). Agents must never run `sap-approve.ts`.
+4. One-time integrity setup (human): `bun scripts/sap-integrity.ts init`. After a reviewed change to the policy or enforcement scripts, run `bun scripts/sap-integrity.ts sign`; until you do, the proxy is R0 (read-only). `bun scripts/sap-integrity.ts verify` and `verify-audit` are read-only checks.
+5. Parallel write dispatch: write rows in a dispatch plan declare `sapScope {packages, objects, actions, maxClass}`. The dispatcher writes a grant request and stops; run `bun scripts/sap-approve.ts --grant <runId>`, then re-run the dispatcher with `--run-id <runId>` (or use `--wait-grant`). The grant is revoked when the run ends.
 
 ---
 
@@ -745,7 +778,7 @@ In the Claude session, run:
 Expected output:
 ```
 Connected MCP servers:
-  abap      — vsp (hyperfocused mode) · 1 entry point (sap_execute, routes to 101 operations)
+  abap      — vsp (hyperfocused mode) · 1 entry point (`SAP` tool, action-routed)
   abap-docs — ABAP keyword & API reference · N tools
   sap-docs  — SAP Help Portal search · N tools
 ```
@@ -824,6 +857,8 @@ See `docs/tooling-matrix.md` for the full decision guide.
 ## 8. Configure Gemini CLI (Optional)
 
 ### 8-A. Create .gemini/settings.json
+
+> **Proxy route (all platforms)**: the tracked config launches `abap` as `bun scripts/sap-mcp-proxy.ts -- --mode hyperfocused`, not `./vsp`. The examples below show the vsp flags the proxy passes through; do not point `command` at `vsp` directly (the parity validator rejects it). See [5-F](#5-f-sap-mcp-proxy-and-approvals).
 
 **Windows** — create `%USERPROFILE%\abap\.gemini\settings.json`:
 
@@ -969,7 +1004,7 @@ Type `/tools` or ask:
 What MCP tools are available?
 ```
 
-Expected: `sap_execute` and abap-docs / sap-docs tools listed.
+Expected: `SAP` and abap-docs / sap-docs tools listed.
 
 ### 8-C. Recommended use cases for Gemini CLI
 
@@ -1150,7 +1185,7 @@ Inside Claude session:
 ```
 Show me the system info from SAP
 ```
-✅ Returns SAP system details via `sap_execute`
+✅ Returns SAP system details via the `SAP` tool
 
 ### Checkpoint 4 — Read ABAP Source
 
@@ -1347,9 +1382,9 @@ Use this list when onboarding a new team member.
 
 | Mode | Tools | Best for |
 |------|-------|---------|
-| `hyperfocused` | 101 ops via `sap_execute` | AI agents — all tools accessible, hallucination-resistant single entry point |
-| `focused` | ~100 named tools | Standard development sessions |
-| `expert` | 147 named tools | Debugging, advanced operations |
+| `hyperfocused` | single `SAP` tool, action-routed | AI agents — all tools accessible, hallucination-resistant single entry point |
+| `focused` | 98 named tools | Standard development sessions |
+| `expert` | 148 named tools | Debugging, advanced operations |
 
 Change mode in `.mcp.json` `env.SAP_MODE` and `.env` `SAP_MODE`.
 
@@ -1398,7 +1433,7 @@ bun scripts/dev-sync.ts "feat: summary of change"
 
 # Show vsp help
 ./vsp --help
-./vsp mcp --help
+./vsp --help
 ```
 
 ---

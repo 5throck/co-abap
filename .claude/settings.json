@@ -1,20 +1,5 @@
 {
   "mcpServers": {
-    "abap": {
-      "command": "./vsp",
-      "args": [
-        "--mode",
-        "hyperfocused"
-      ],
-      "env": {
-        "SAP_MODE": "hyperfocused",
-        "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
-      }
-    },
     "abap-docs": {
       "type": "http",
       "url": "https://mcp-abap.marianzeis.de/mcp"
@@ -26,16 +11,6 @@
   },
   "hooks": {
     "PostToolUse": [
-      {
-        "matcher": "mcp__abap__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun scripts/hooks/sap-action-audit.ts",
-            "timeout": 15
-          }
-        ]
-      },
       {
         "matcher": "Write|Edit",
         "hooks": [
@@ -114,17 +89,6 @@
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "mcp__abap__.*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun scripts/hooks/sap-action-gate.ts",
-            "timeout": 15,
-            "statusMessage": "SAP action gate..."
-          }
-        ]
-      },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
@@ -223,10 +187,116 @@
       "Bash(git push --force-with-lease*)",
       "Bash(*--no-verify*)",
       "Bash(rm -rf *)",
-      "Write(memory/audit/approvals/**)",
-      "Edit(memory/audit/approvals/**)",
-      "MultiEdit(memory/audit/approvals/**)",
-      "Bash(*memory/audit/approvals*)"
+      "Bash(bun scripts/sap-approve.ts*)",
+      "Bash(./vsp*)",
+      "Bash(*/vsp)",
+      "Bash(*/vsp *)",
+      "Bash(bun *sap-approve*)",
+      "Bash(node *sap-approve*)",
+      "Bash(bun *sap-integrity*)",
+      "Bash(node *sap-integrity*)",
+      "Bash(*sap-mcp-proxy*)",
+      "Bash(*grantApproval*)",
+      "Bash(*consumeProxyApproval*)",
+      "Bash(bun -e*)",
+      "Bash(bun --eval*)",
+      "Bash(node -e*)",
+      "Bash(node --eval*)",
+      "Bash(script *)",
+      "Bash(python -c*)",
+      "Bash(python3 -c*)",
+      "Bash(perl -e*)",
+      "Bash(expect*)",
+      "Bash(unbuffer*)",
+      "Bash(socat*)",
+      "Bash(deno eval*)",
+      "Bash(git stash*)",
+      "Bash(git checkout -- *)",
+      "Bash(git restore *)",
+      "Bash(git clean *)",
+      "Bash(rm *vsp*)",
+      "Bash(mv *vsp*)",
+      "Bash(cp *vsp*)",
+      "Bash(*approval.key*)",
+      "Bash(*.config/co-abap*)",
+      "Bash(cat *.env*)",
+      "Bash(less *.env*)",
+      "Bash(head *.env*)",
+      "Bash(tail *.env*)",
+      "Read(.env*)",
+      "Read(~/.config/co-abap/**)",
+      "Edit(.env*)",
+      "Write(.env*)",
+      "MultiEdit(.env*)",
+      "Edit(vsp)",
+      "Write(vsp)",
+      "MultiEdit(vsp)",
+      "Edit(.mcp.json)",
+      "Write(.mcp.json)",
+      "MultiEdit(.mcp.json)",
+      "Edit(.codex/config.toml)",
+      "Write(.codex/config.toml)",
+      "MultiEdit(.codex/config.toml)",
+      "Edit(.gemini/settings.json)",
+      "Write(.gemini/settings.json)",
+      "MultiEdit(.gemini/settings.json)",
+      "Edit(.agents/mcp.json)",
+      "Write(.agents/mcp.json)",
+      "MultiEdit(.agents/mcp.json)",
+      "Edit(config/sap-action-policy.json)",
+      "Write(config/sap-action-policy.json)",
+      "MultiEdit(config/sap-action-policy.json)",
+      "Edit(config/platforms/**)",
+      "Write(config/platforms/**)",
+      "MultiEdit(config/platforms/**)",
+      "Edit(scripts/lib/sap-action-lib.ts)",
+      "Write(scripts/lib/sap-action-lib.ts)",
+      "MultiEdit(scripts/lib/sap-action-lib.ts)",
+      "Edit(scripts/sap-mcp-proxy.ts)",
+      "Write(scripts/sap-mcp-proxy.ts)",
+      "MultiEdit(scripts/sap-mcp-proxy.ts)",
+      "Edit(scripts/sap-approve.ts)",
+      "Write(scripts/sap-approve.ts)",
+      "MultiEdit(scripts/sap-approve.ts)",
+      "Edit(scripts/sap-integrity.ts)",
+      "Write(scripts/sap-integrity.ts)",
+      "MultiEdit(scripts/sap-integrity.ts)",
+      "Edit(scripts/hooks/sap-action-gate.ts)",
+      "Write(scripts/hooks/sap-action-gate.ts)",
+      "MultiEdit(scripts/hooks/sap-action-gate.ts)",
+      "Edit(scripts/hooks/sap-action-audit.ts)",
+      "Write(scripts/hooks/sap-action-audit.ts)",
+      "MultiEdit(scripts/hooks/sap-action-audit.ts)",
+      "Edit(scripts/dispatch-parallel.ts)",
+      "Write(scripts/dispatch-parallel.ts)",
+      "MultiEdit(scripts/dispatch-parallel.ts)",
+      "Edit(.codex/rules/**)",
+      "Write(.codex/rules/**)",
+      "MultiEdit(.codex/rules/**)",
+      "Edit(.geminiignore)",
+      "Write(.geminiignore)",
+      "MultiEdit(.geminiignore)",
+      "Edit(.claude/settings.json)",
+      "Write(.claude/settings.json)",
+      "MultiEdit(.claude/settings.json)",
+      "Edit(.claude/settings.local.json)",
+      "Write(.claude/settings.local.json)",
+      "MultiEdit(.claude/settings.local.json)",
+      "Edit(.claude/hooks/**)",
+      "Write(.claude/hooks/**)",
+      "MultiEdit(.claude/hooks/**)",
+      "Edit(bunfig.toml)",
+      "Write(bunfig.toml)",
+      "MultiEdit(bunfig.toml)",
+      "Edit(package.json)",
+      "Write(package.json)",
+      "MultiEdit(package.json)",
+      "Edit(memory/audit/**)",
+      "Write(memory/audit/**)",
+      "MultiEdit(memory/audit/**)",
+      "Edit(~/.config/co-abap/**)",
+      "Write(~/.config/co-abap/**)",
+      "MultiEdit(~/.config/co-abap/**)"
     ]
   },
   "env": {

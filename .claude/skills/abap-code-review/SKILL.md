@@ -1,8 +1,8 @@
 ---
 name: abap-code-review
 description: Use when reviewing ABAP source for Clean ABAP conformance before object activation, transport release, or after importing foreign code. Covers the three ABAP-specific dimensions that general-purpose review skills do not - naming conventions, pretty-printer formatting, and anti-pattern compliance - against docs/clean-abap-checklist.md. Trigger on "review the ABAP code", "Clean ABAP check", "naming convention review", "pretty printer check", "anti-pattern scan".
-version: 1.0.0
-last_reviewed: 2026-08-25
+version: 1.0.1
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: code-writer
@@ -31,7 +31,7 @@ co-develop's general-purpose `code-review` skill covers language-agnostic review
 
 ## When to Use
 
-- **Before object activation** - author self-review by `code-writer` immediately after `WriteSource`/`EditSource`, ahead of the post-write chain (SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck)
+- **Before object activation** - author self-review by `code-writer` immediately after `WriteSource`/`EditSource` (`SAP(action="edit", ...)`), ahead of the post-write chain (SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck)
 - **Before the transport release gate** - verification by `test-runner` during the Phase 4 QA pass, and pre-release confirmation by `devops-admin` alongside `docs/transport-release-checklist.md`
 - **After receiving foreign code** - legacy imports, repair imports, or code copied from other systems that never passed this variant's gates
 - Not for non-ABAP artifacts - general-purpose code review stays with the co-develop `code-review` skill
@@ -71,7 +71,7 @@ Severity values: `blocker` / `should` / `note`. End with a verdict line: `Review
 
 ## Relationship to ATC
 
-This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/clean-abap-checklist.md`, so:
+This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (`SAP(action="test", params={"type":"atc"})`; Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/clean-abap-checklist.md`, so:
 
 - **Agreement expected** - a blocker this skill finds that maps to a rule-pack check should also surface as a Priority-1 ATC finding
 - **Disagreement means investigate** - ATC passing while this skill fails usually indicates a prose-only rule (naming clarity, comment quality, abstraction level) that ATC cannot check; this skill failing while ATC passes on a mapped check suggests the wrong change-type selection or a suppressed finding

@@ -2,7 +2,7 @@
 /**
  * pre-commit.ts — TS-based pre-commit hook.
  * Replaces the legacy bash/ps1 hooks.
- * @version 1.9.0
+ * @version 1.10.0
  *
  * v1.9.0 (2026-10-02): check 6b command counterpart check becomes L0-only —
  *  skipped when templates/common does not exist (recorded exclusion, D8 style
@@ -63,6 +63,12 @@ async function main() {
           await $`git add ${file}`;
         }
       } catch (e) { /* ignore */ }
+    }
+    // LOCAL-PATCH(upstream-request: pending): stamping config/commands sources makes the
+    // rendered platform copies stale — re-render and stage them in the same commit.
+    if (mdStaged.some(f => f.startsWith('config/commands/'))) {
+      await $`bun scripts/render-commands.ts`.quiet();
+      await $`git add .claude/commands .codex/prompts .gemini/commands`;
     }
   }
 

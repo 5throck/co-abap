@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * L3 Project Review Baseline
- * @version 1.3.0
+ * @version 1.4.0
  *
  * Runs only the deterministic checks delivered to a detached L3 project.
  * L0 source-tree checks (templates and propagation) are reported N/A rather
@@ -42,6 +42,7 @@ export function l3BaselineChecks(): BaselineCheck[] {
     { name: 'typecheck', command: ['run', 'typecheck'] },
     { name: 'validate-docs-links --all', command: ['scripts/validate-docs-links.ts', '--all'] },
     { name: 'check-project-meta', command: ['scripts/check-project-meta.ts'] },
+    { name: 'validate-platform-parity', command: ['scripts/validate-platform-parity.ts'] },
     { name: 'test:unit', command: ['run', 'test:unit'] },
     {
       name: 'validate-templates',

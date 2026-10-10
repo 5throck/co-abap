@@ -1,8 +1,8 @@
 ---
 name: performance-tuning
 description: Use when investigating slow ABAP programs, expensive SQL statements, or reviewing performance risk on large tables (VBAK, BSEG, ACDOCA, etc.). Provides a standardized workflow using TraceExecution, ListSQLTraces, and GetCallGraph to diagnose and document performance issues before they reach production.
-version: 1.0.0
-last_reviewed: 2026-08-15
+version: 1.0.1
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: dba
@@ -35,20 +35,22 @@ instead of ad-hoc `RunQuery` sampling. Owned by the **DBA** agent (`agents/dba.m
 
 ## Workflow
 
+> Legacy vsp tool names below are conceptual labels; the callable form is `SAP(action="analyze"|"read"|"query", ...)` (shown in brackets). Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
+
 ```
 1. Baseline trace
-   TraceExecution(object) → capture runtime, DB time %, top statements
+   TraceExecution(object) [SAP(action="analyze", params={"type":"trace_execution"})] → capture runtime, DB time %, top statements
 
 2. SQL statement analysis
-   ListSQLTraces() → GetSQLTraceState() → identify statements with high execution count
+   ListSQLTraces() → GetSQLTraceState() [analyze type=list_sql_traces / sql_trace_state] → identify statements with high execution count
    or full table scans (missing index usage)
 
 3. Call graph / dependency check
-   GetCallGraph(object) or AnalyzeCallGraph(object) → confirm no redundant nested SELECTs
+   GetCallGraph(object) or AnalyzeCallGraph(object) [analyze type=call_graph / analyze_call_graph] → confirm no redundant nested SELECTs
    inside loops (SELECT-in-LOOP anti-pattern)
 
 4. Index verification (hand off to DBA table-design duties)
-   GetTable(table) → check existing secondary indexes cover the WHERE/JOIN predicates
+   GetTable(table) [SAP(action="read", target="TABL <tab>")] → check existing secondary indexes cover the WHERE/JOIN predicates
    used by the traced statements
 
 5. Report

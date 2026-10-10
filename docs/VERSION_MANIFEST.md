@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T08:02:25.554Z
+**Generated**: 2026-10-10T09:18:16.183Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -9,8 +9,8 @@
 ## Summary
 
 - **Agents**: 21
-- **Skills**: 48
-- **Scripts**: 114 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Skills**: 49
+- **Scripts**: 126 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -20,26 +20,26 @@
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | inherit | 2026-10-10 |
-| co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-25 |
+| co-analyst | agents/co-analyst.md | medium | inherit | 2026-10-10 |
 | code-writer | agents/code-writer.md | low | inherit | 2026-10-10 |
-| dba | agents/dba.md | medium | inherit | 2026-09-25 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-25 |
-| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-25 |
-| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-25 |
-| form-expert | agents/form-expert.md | medium | inherit | 2026-09-25 |
-| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-25 |
+| dba | agents/dba.md | medium | inherit | 2026-10-10 |
+| devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-10 |
+| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-10-10 |
+| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-10-10 |
+| form-expert | agents/form-expert.md | medium | inherit | 2026-10-10 |
+| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-10-10 |
 | i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-29 |
-| interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
-| le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
-| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
+| interface-expert | agents/interface-expert.md | medium | inherit | 2026-10-10 |
+| le-analyst | agents/le-analyst.md | medium | inherit | 2026-10-10 |
+| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-10-10 |
 | pm | agents/pm.md | high | inherit | 2026-10-10 |
-| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
-| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
-| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
+| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-10-10 |
+| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-10-10 |
+| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-10 |
+| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-10-10 |
+| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-10-10 |
 | security-monitor | agents/security-monitor.md | low | inherit | 2026-10-10 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
+| test-runner | agents/test-runner.md | low | inherit | 2026-10-10 |
 
 ---
 
@@ -48,20 +48,21 @@
 
 | Name | Version | Status | Location | Platform | Triggers | Owner |
 |------|---------|--------|----------|----------|----------|-------|
-| abap-code-review | 1.0.0 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
-| abap-dev | 1.2.1 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
+| abap-code-review | 1.0.1 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
+| abap-dev | 1.2.2 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
 | accessibility-audit | 1.1.0 | active | skills/accessibility-audit/SKILL.md | workspace | accessibility-audit, /accessibility-audit, axe-core audit, wcag accessibility check, wcag 2.1 aa | pm |
 | agent-lifecycle-manager | 1.3.0 | active | skills/agent-lifecycle-manager/SKILL.md | workspace | create agent, new agent, validate agents, agent lifecycle, manage agents, hire agent, fire agent, deprecate agent | pm |
 | api-documentation | 1.0.2 | active | skills/api-documentation/SKILL.md | workspace | api documentation, document api, api reference, developer documentation, rest api docs, graphql docs, sdk documentation | pm |
 | ci-triage | 0.2.0 | active | skills/ci-triage/SKILL.md | workspace | ci failure, triage failure, audit gate failed, scaffold failed, fix the pipeline | pm |
 | decision-record | 1.1.0 | active | skills/decision-record/SKILL.md | workspace | decision record, gate ruling, go/no-go decision, escalation decision, record a decision | pm |
 | design-foundation | 1.1.0 | active | skills/design-foundation/SKILL.md | workspace | design foundation, design principles, design guide, design tokens setup, design decision record | architect |
-| desktop-app-fallback | 1.0.0 | active | skills/desktop-app-fallback/SKILL.md | workspace | desktop-app-fallback, manual QA, Desktop App | test-runner |
+| desktop-app-fallback | 1.0.1 | active | skills/desktop-app-fallback/SKILL.md | workspace | desktop-app-fallback, manual QA, Desktop App | test-runner |
 | documentation-writing | 1.0.3 | active | skills/documentation-writing/SKILL.md | workspace | write documentation, create guide, draft communication, write manual, create tutorial, documentation, technical writing | pm |
-| dump-monitor | 1.0.0 | active | skills/dump-monitor/SKILL.md | workspace | dump-monitor, ListDumps, GetDump, short dump, system health | devops-admin |
+| dump-monitor | 1.0.1 | active | skills/dump-monitor/SKILL.md | workspace | dump-monitor, ListDumps, GetDump, short dump, system health | devops-admin |
 | evidence-ledger | 1.1.0 | active | skills/evidence-ledger/SKILL.md | workspace | evidence ledger, citation ledger, claim verification, source verification, evidence tracking | pm |
 | explain-me | 1.0.0 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
 | finishing-a-development-branch | 1.0.1 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
+| fiori-rap-dev | 1.0.0 | active | skills/fiori-rap-dev/SKILL.md | workspace | fiori-rap-dev, Fiori, UI5, RAP, BDEF, SRVD, SRVB, Fiori Elements, OData V4 | fiori-developer |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
 | handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
@@ -70,10 +71,10 @@
 | i18n-layout | 1.0.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
 | meeting-facilitation | 1.4.4 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
-| performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
+| performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | 1.2.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
+| post-write-chain | 1.3.2 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
 | project-review | 1.3.2 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -124,8 +125,8 @@
 | check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | N/A |
 | check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | N/A |
 | check-lint.ts | 1.0.0 | scripts/handbook/check-lint.ts | N/A |
-| check-project-meta.test.ts | 1.0.0 | scripts/tests/check-project-meta.test.ts | bun:test |
-| check-project-meta.ts | 1.0.0 | scripts/check-project-meta.ts | N/A |
+| check-project-meta.test.ts | 1.1.0 | scripts/tests/check-project-meta.test.ts | bun:test |
+| check-project-meta.ts | 1.1.0 | scripts/check-project-meta.ts | N/A |
 | check-search.ts | 2.0.0 | scripts/handbook/check-search.ts | N/A |
 | check-spell.ts | 1.0.0 | scripts/handbook/check-spell.ts | N/A |
 | check-structure.test.ts | 1.0.0 | scripts/tests/check-structure.test.ts | bun:test |
@@ -140,12 +141,13 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
 | dev-sync.ts | 1.23.0 | scripts/dev-sync.ts | bun |
+| dispatch-parallel.test.ts | 1.5.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
-| dispatch-parallel.ts | 1.1.1 | scripts/dispatch-parallel.ts | N/A |
+| dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
 | dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | N/A |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
-| dispatch.ts | 1.1.1 | scripts/dispatch.ts | N/A |
+| dispatch.ts | 1.2.0 | scripts/dispatch.ts | N/A |
 | evidence-backport-scan.ts | 1.1.0 | scripts/evidence-backport-scan.ts | N/A |
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
@@ -170,13 +172,21 @@
 | qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
 | readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
 | regenerate-agents-md.ts | 1.3.0 | scripts/regenerate-agents-md.ts | fs, path |
+| render-commands.test.ts | 1.0.0 | scripts/tests/render-commands.test.ts | bun:test |
+| render-commands.ts | 1.0.0 | scripts/render-commands.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
-| review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
-| review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
-| sap-action-gate.test.ts | 1.1.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| review-baseline.test.ts | 1.5.0 | scripts/tests/review-baseline.test.ts | bun:test |
+| review-baseline.ts | 1.4.0 | scripts/review-baseline.ts | N/A |
+| sap-action-gate.test.ts | 2.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
+| sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
+| sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | N/A |
+| sap-mcp-proxy.test.ts | 2.1.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
+| sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | N/A |
+| sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
@@ -184,6 +194,7 @@
 | skill-lifecycle-audit.ts | 1.6.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
+| stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
@@ -201,6 +212,8 @@
 | validate-md-language.ts | 1.14.0 | scripts/validate-md-language.ts | fs |
 | validate-model-registry.ts | 1.4.1 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
+| validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
+| validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | N/A |
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
 | validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | js-yaml |
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
@@ -216,7 +229,7 @@
 | verify-scripts.ts | 1.12.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.7.0 | scripts/verify-skill-graph.ts | N/A |
 | verify-skills.ts | 1.5.1 | scripts/verify-skills.ts | N/A |
-| vsp-audit.ts | 1.1.0 | scripts/co-abap/vsp-audit.ts | N/A |
+| vsp-audit.ts | 1.2.0 | scripts/co-abap/vsp-audit.ts | N/A |
 | vsp-publish.ts | 1.1.0 | scripts/co-abap/vsp-publish.ts | bun |
 | vsp-task.ts | 1.0.1 | scripts/co-abap/vsp-task.ts | N/A |
 
@@ -228,22 +241,22 @@
 |------|------|----------|-------------------|
 | abap-dev | .claude/commands/abap-dev.md | claude | N/A |
 | celebrate | .claude/commands/celebrate.md | claude | N/A |
-| changelog | .claude/commands/changelog.md | all | N/A |
-| commit-push-pr | .claude/commands/commit-push-pr.md | all | N/A |
-| gateguard | .claude/commands/gateguard.md | all | N/A |
-| meeting | .claude/commands/meeting.md | all | N/A |
-| memlog | .claude/commands/memlog.md | all | N/A |
-| new-task | .claude/commands/new-task.md | all | N/A |
+| changelog | .claude/commands/changelog.md | claude | N/A |
+| commit-push-pr | .claude/commands/commit-push-pr.md | claude | N/A |
+| gateguard | .claude/commands/gateguard.md | claude | N/A |
+| meeting | .claude/commands/meeting.md | claude | N/A |
+| memlog | .claude/commands/memlog.md | claude | N/A |
+| new-task | .claude/commands/new-task.md | claude | N/A |
 | post-write | .claude/commands/post-write.md | claude | N/A |
-| project-review | .claude/commands/project-review.md | all | N/A |
+| project-review | .claude/commands/project-review.md | claude | N/A |
 | sap-co | .claude/commands/sap-co.md | claude | N/A |
 | sap-fi | .claude/commands/sap-fi.md | claude | N/A |
 | sap-le | .claude/commands/sap-le.md | claude | N/A |
 | sap-mm | .claude/commands/sap-mm.md | claude | N/A |
 | sap-pp | .claude/commands/sap-pp.md | claude | N/A |
 | sap-sd | .claude/commands/sap-sd.md | claude | N/A |
-| security-check | .claude/commands/security-check.md | all | N/A |
-| sync | .claude/commands/sync.md | all | N/A |
+| security-check | .claude/commands/security-check.md | claude | N/A |
+| sync | .claude/commands/sync.md | claude | N/A |
 | transport | .claude/commands/transport.md | claude | N/A |
 | triage | .claude/commands/triage.md | claude | N/A |
 
@@ -253,10 +266,10 @@
 
 **Checked**: Claude (.claude/), Gemini (.gemini/), Antigravity (.agents/), Codex (.codex/ prompts mapping)
 
-- **Commands with parity (gemini mirror)**: 9 / 20
-- **Commands with codex prompts mapping**: 9 / 20
-- **Skills in all four mirrors**: 0 / 48
-- **Skills in claude+gemini only (both)**: 0 / 48 (common-template skills are parity-exempt)
+- **Commands with parity (gemini mirror)**: 0 / 20
+- **Commands with codex prompts mapping**: 0 / 20
+- **Skills in all four mirrors**: 0 / 49
+- **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
 
 ---
 

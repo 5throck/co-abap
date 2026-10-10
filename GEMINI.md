@@ -167,6 +167,22 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- COMMON-GEMINI:END -->
 
 <!-- COMMON-GEMINI:START -->
+<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
+### SAP safety (proxy) & approvals
+
+Same rules on every platform; only the config file differs. Platform: **Gemini CLI & Antigravity**.
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.gemini/settings.json` (Gemini CLI) and `.agents/mcp.json` (Antigravity IDE). The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Gemini BeforeTool/AfterTool hooks are optional UX; SAP enforcement does not depend on them.
+- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty`; then repeat the identical call once (single use, input-bound, short TTL). Pending requests and approvals live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600); the approver is the OS user.
+- **Integrity**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy or enforcement scripts; until then the proxy is R0 (read-only). `verify` and `verify-audit` are read-only checks.
+- **Agents must never run `sap-approve.ts` or `sap-integrity.ts init|sign`**, write approval or pending files, read `~/.config/co-abap/`, or launch `vsp` outside the proxy. The former manual profile is retired.
+
+### Parallel dispatch
+
+- **Native mechanism**: Gemini CLI subagents in `.gemini/agents/*.md` invoked as `@name`; Antigravity IDE uses Agent Manager; Antigravity CLI is pending on-device item V8 (use the dispatcher).
+- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform gemini --plan <plan-file>` runs one CLI process per plan row. Each row has `mode: read|write`; read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. Timeouts: SIGTERM, 10s grace (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls. SAP calls from children always pass through the proxy.
+- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
+
 ## Git & PR Additions (Gemini)
 
 All shared Git/PR rules are in [docs/context.md](docs/context.md). Gemini-specific additions:
@@ -192,8 +208,8 @@ Before editing any file for the **FIRST time in a session**, the agent MUST:
 |----------|:-----------:|---------|
 | Gemini CLI | ✅ Hook (automatic) | BeforeTool `deny` mode — blocked until agent investigates |
 | Antigravity | ✅ Prompt (manual) | Hooks do not fire — agent self-enforces |
-| Codex CLI | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0077) |
-| Codex Desktop App | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0077) |
+| Codex CLI | ✅ Prompt (manual) | Agent self-enforces (Codex hooks optional; SAP safety via proxy) |
+| Codex Desktop App | ✅ Prompt (manual) | Agent self-enforces (SAP safety via proxy) |
 
 If the hook is not active (Antigravity), agents must still follow the 4-step process before making first edits.
 <!-- COMMON-GEMINI:END -->
@@ -242,10 +258,10 @@ Load project files at session start using the `@` syntax:
 
 ### Recommended Mode
 
-Use `--mode hyperfocused` for all Gemini sessions. In hyperfocused mode all 101 MCP operations are accessible via `sap_execute`; the single entry point reduces tool-selection hallucinations without restricting capability.
+Use `--mode hyperfocused` for all Gemini sessions. Hyperfocused mode exposes a single MCP tool, `SAP`, called as `SAP(action, target "TYPE NAME", params)`; the single entry point reduces tool-selection hallucinations. Actions: read, edit, create, delete, search, query, grep, test, analyze, debug, system, rfc, i18n, revisions, lint, info, help.
 
 ```bash
-vsp mcp --mode hyperfocused
+vsp --mode hyperfocused
 ```
 
 ### Settings File
@@ -255,15 +271,15 @@ contains `["--mode", "hyperfocused"]` before starting a session.
 
 ### Tool Usage in Hyperfocused Mode
 
-All operations are routed through `sap_execute` with an `action` parameter:
+All operations go through the `SAP` tool. Legacy tool names map to `SAP(...)` calls per the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT). Examples:
 
-```json
-{ "action": "GetSource", "object_type": "PROG", "name": "ZPROG_SBOOK_QUERY" }
-{ "action": "EditSource", "object_url": "/sap/bc/adt/...", "old_string": "...", "new_string": "..." }
-{ "action": "GrepPackages", "packages": ["$TMP"], "pattern": "ZPROG_" }
+```
+SAP(action="read", target="CLAS ZCL_X")
+SAP(action="grep", params={"package_name":"ZPKG","pattern":"SELECT"})
+SAP(action="help", target="edit")
 ```
 
-See [docs/mcp_usage.md](docs/mcp_usage.md) for the full tool catalog and parameter reference.
+See [docs/mcp_usage.md](docs/mcp_usage.md) for the full catalog.
 
 ---
 
@@ -274,14 +290,14 @@ The following capabilities extend those in [skills/abap-dev/SKILL.md](skills/aba
 - **Role-Based Execution**: Switch between Business and Technical roles defined in `AGENTS.md`
   by explicitly stating the active role at the start of a task.
 - **Multi-Agent Coordination**: Delegate long-running research to background sessions;
-  keep write operations (EditSource, WriteSource) in the primary session.
+  keep write operations (edit/create via `SAP`) in the primary session.
 - **Advanced Diagnostics**: Use `vsp health` to validate architecture and
   `vsp slim` for context optimization before large read sessions.
-- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via `sap_execute` as defined in `docs/context.md`.
-  ```json
-  { "action": "SyntaxCheck",   "object_url": "/sap/bc/adt/..." }
-  { "action": "RunUnitTests",  "object_url": "/sap/bc/adt/..." }
-  { "action": "RunATCCheck",   "object_url": "/sap/bc/adt/..." }
+- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via the `SAP` tool (see the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
+  ```
+  SAP(action="analyze", params={"type":"syntax_check", ...})
+  SAP(action="test", params={"object_url":"/sap/bc/adt/..."})
+  SAP(action="test", params={"type":"atc", ...})
   ```
 
 > **Common engineering rules** (memory logging, language, file isolation, post-write chain, git): [docs/context.md § Project-Wide Rules](docs/context.md#project-wide-rules-all-tools).

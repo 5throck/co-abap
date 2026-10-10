@@ -1,3 +1,10 @@
+---
+name: security-check
+description: Run security advisory scan (daily mode) or pre-PR advisory check (--pr flag).
+argument-hint: "[--pr]"
+allowed-tools: ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "WebSearch"]
+---
+
 # Security Check
 
 Arguments: $ARGUMENTS

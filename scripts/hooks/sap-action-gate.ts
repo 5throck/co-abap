@@ -7,19 +7,24 @@
  * Denied calls are logged here because PostToolUse does not fire for them.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 1.1.0
+ * R3 calls never allow here: single-use approvals are owned by the MCP proxy (HMAC-verified, outside the
+ * workspace), so evaluate() reports NEEDS_APPROVAL and the proxy consumes a matching signed approval.
+ *
+ * @version 3.0.0 (advisory; enforcement in the MCP proxy; legacy session approval files removed)
  */
 
 import {
-  TOOL_PREFIX, actorOf, appendAudit, classify, derivePackage, effectiveInput, findApproval, firstString,
-  globMatch, inputHash, inspectQuery, isHyperfocused, loadPolicy, objectKey, profileOf, readEvidence, resolveHyperfocused,
+  NEEDS_APPROVAL, TOOL_PREFIX, classify, derivePackage, effectiveInput, firstString,
+  globMatch, inspectQuery, isHyperfocused, loadPolicy, readEvidence, resolveHyperfocused,
   resolveToolName,
-  targetOf, type Cls, type Decision, type HfResolved, type HookInput, type Evidence, type Policy,
+  type Cls, type Decision, type HfResolved, type HookInput, type Evidence, type Policy,
 } from '../lib/sap-action-lib.ts';
 
 export interface GateResult { decision: Decision; reason: string; cls: string; tool: string }
 
-export function evaluate(input: HookInput, root: string, now: Date = new Date()): GateResult {
+/** `preloaded` lets the proxy pass the policy it already integrity-checked (avoids a re-read race). */
+export function evaluate(input: HookInput, root: string, now: Date = new Date(), preloaded?: Policy): GateResult {
+  void now;
   const toolName = input.tool_name ?? '';
   if (!toolName.startsWith(TOOL_PREFIX)) {
     return { decision: 'ask', cls: '?', tool: toolName, reason: 'unexpected tool name for SAP gate' };
@@ -27,7 +32,7 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
   const ti = effectiveInput(input.tool_input);
   const tool = resolveToolName(toolName, ti);
   let policy: Policy;
-  try { policy = loadPolicy(root); } catch (e) {
+  try { policy = preloaded ?? loadPolicy(root); } catch (e) {
     return { decision: 'ask', cls: '?', tool, reason: `policy unavailable (${(e as Error).message})` };
   }
   if (isHyperfocused(toolName)) return evaluateHyperfocused(input, root, policy, now);
@@ -57,9 +62,6 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
     }
     case 'R3': {
       if (tool.toLowerCase() === 'releasetransport') {
-        if (policy.release.blockInManualProfile && profileOf() === 'manual') {
-          return r('deny', 'transport release is blocked in the manual profile');
-        }
         if (policy.release.requireEvidence) {
           const objs = ti.objects;
           if (!Array.isArray(objs) || objs.length === 0 || !objs.every((o) => typeof o === 'string' && o.trim())) {
@@ -73,14 +75,12 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
           if (missing.length) return r('deny', `${missing.length} object(s) lack passed QA evidence`);
         }
       }
-      const found = findApproval(root, policy, input.session_id, tool, targetOf(ti), now);
-      if (!found) return r('deny', 'privileged action without approval');
-      return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
+      return r('deny', NEEDS_APPROVAL);
     }
   }
 }
 
-function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, now: Date): GateResult {
+function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, _now: Date): GateResult {
   const h: HfResolved = resolveHyperfocused(input.tool_input, policy);
   const cls = h.cls ?? '?';
   const r = (decision: Decision, reason: string): GateResult => ({ decision, reason, cls, tool: h.tool });
@@ -103,9 +103,6 @@ function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, no
     }
     case 'R3': {
       if (h.tool === 'ReleaseTransport') {
-        if (policy.release.blockInManualProfile && profileOf() === 'manual') {
-          return r('deny', 'transport release is blocked in the manual profile');
-        }
         if (policy.release.requireEvidence) {
           if (!h.transport) return r('deny', 'release requires params.transport');
           const objs = releaseObjects(h, evidence);
@@ -114,9 +111,7 @@ function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, no
           if (missing.length) return r('deny', `${missing.length} object(s) lack passed QA evidence`);
         }
       }
-      const found = findApproval(root, policy, input.session_id, h.tool, h.approvalTarget, now);
-      if (!found) return r('deny', 'privileged action without approval');
-      return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
+      return r('deny', NEEDS_APPROVAL);
     }
   }
 }
@@ -129,9 +124,17 @@ function releaseObjects(h: HfResolved, evidence: Record<string, Evidence>): stri
   return [...set];
 }
 
+/**
+ * Advisory output (D1): the SAP MCP proxy (scripts/sap-mcp-proxy.ts) is the single enforcement point for every
+ * client, so this hook never asks or denies on its own. It only reports what the policy would decide, and is no
+ * longer registered in .claude/settings.json (kept for manual diagnostics: `echo '{...}' | bun scripts/hooks/sap-action-gate.ts`).
+ */
 function emit(decision: Decision, reason: string): void {
+  const note = decision === 'allow'
+    ? `advisory: ${reason}`
+    : `advisory: policy would ${decision} this call (${reason}); the SAP MCP proxy enforces it`;
   process.stdout.write(JSON.stringify({
-    hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: decision, permissionDecisionReason: reason },
+    hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'allow', permissionDecisionReason: note },
   }) + '\n');
 }
 
@@ -139,26 +142,13 @@ async function main(): Promise<void> {
   let input: HookInput = {};
   let root = process.env.CLAUDE_PROJECT_DIR || process.cwd();
   try {
-    const raw = await Bun.stdin.text();
-    input = JSON.parse(raw);
+    input = JSON.parse(await Bun.stdin.text());
     if (!input || typeof input !== 'object') throw new Error('stdin is not an object');
     root = input.cwd || root;
     const res = evaluate(input, root);
-    if (res.decision === 'deny') {
-      try {
-        const ti = effectiveInput(input.tool_input);
-        const hf = isHyperfocused(input.tool_name ?? '') ? resolveHyperfocused(input.tool_input, loadPolicy(root)) : undefined;
-        appendAudit(root, {
-          ts: new Date().toISOString(), sessionId: input.session_id ?? 'unknown', actor: actorOf(input),
-          tool: res.tool, class: res.cls, decision: 'deny', object: hf?.keys[0] ?? objectKey(ti),
-          package: hf?.packages[0] ?? derivePackage(ti, readEvidence(root)), inputHash: inputHash(ti),
-          profile: profileOf(), reason: res.reason,
-        });
-      } catch { /* logging must not change the decision */ }
-    }
     emit(res.decision, `${res.cls}: ${res.reason}`);
   } catch (e) {
-    emit('ask', `gate error, failing safe: ${(e as Error).message}`);
+    emit('ask', `gate error: ${(e as Error).message}`);
   }
 }
 

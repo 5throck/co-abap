@@ -4,46 +4,50 @@ Cross-tool capability reference for the vsp/SAP ABAP Harness Engineering project
 
 > For agent roles and orchestration, see [AGENTS.md](../AGENTS.md).
 > For shared engineering rules, see [context.md](context.md).
-> For tool-specific setup, see [CLAUDE.md](https://raw.githubusercontent.com/5throck/ai-workspace-standards/main/CLAUDE.md) or [GEMINI.md](https://raw.githubusercontent.com/5throck/ai-workspace-standards/main/GEMINI.md).
+> For the parity design behind this matrix, see [Cross-platform parity design](designs/2026-10-10-cross-platform-parity-design.md).
+> For tool-specific setup, see [CLAUDE.md](../CLAUDE.md), [CODEX.md](../CODEX.md), [GEMINI.md](../GEMINI.md), and [HERMES.md](../HERMES.md).
 
 ---
+
+## SAP Safety Is Platform-Independent
+
+Every platform launches the `abap` MCP server through `scripts/sap-mcp-proxy.ts`. The proxy is the single enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. An `ask` returns `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty` (agents never run it); approvals live outside the repo in `~/.config/co-abap/`, HMAC-signed. A human runs `bun scripts/sap-integrity.ts init` once and `sign` after reviewed enforcement changes (until then the proxy is read-only). Parallel write rows need a human `bun scripts/sap-approve.ts --grant <runId>`. Hooks are optional UX on every platform. The former manual profile is retired.
+
+## 8-Platform Matrix
+
+| Platform | `abap` MCP config (via proxy) | Native parallel dispatch | Fallback fan-out | Commands | Skills mirror | Hooks (UX only) | On-device check |
+|----------|-------------------------------|--------------------------|------------------|----------|---------------|-----------------|-----------------|
+| Claude Code CLI | `.mcp.json` | `Agent` tool | `dispatch-parallel.ts --platform claude` | `.claude/commands/*.md` | `.claude/skills/` | PreToolUse/PostToolUse (non-SAP) | — |
+| Claude Code Desktop App | `.mcp.json` | `Agent` tool | `dispatch-parallel.ts --platform claude` | `.claude/commands/*.md` | `.claude/skills/` | via bundled CLI | V10 |
+| Codex CLI | `.codex/config.toml` | `multi_agent` (if usable) | `dispatch-parallel.ts --platform codex` | `.codex/prompts/*.md` | `.codex/skills/` | `.codex/hooks.json` | V1–V4 |
+| Codex IDE | `.codex/config.toml` | `multi_agent` (if usable) | `dispatch-parallel.ts --platform codex` | `.codex/prompts/*.md` | `.codex/skills/` | `.codex/hooks.json` | V3 |
+| Gemini CLI | `.gemini/settings.json` | `.gemini/agents/*.md` via `@name` | `dispatch-parallel.ts --platform gemini` | `.gemini/commands/*.toml` | `.gemini/skills/` | BeforeTool/AfterTool | V5, V6 |
+| Antigravity IDE | `.agents/mcp.json` | Agent Manager | — | emulated | `.agents/skills/` | none | V9 |
+| Antigravity CLI | pending V8 | pending V8 | `dispatch-parallel.ts --platform antigravity-cli` | pending V8 | `.agents/skills/` | pending V8 | V8 |
+| Hermes Agent | `~/.hermes/config.yaml` (user-level; template `config/platforms/hermes-mcp.example.yaml`) | `delegate_task` | `dispatch-parallel.ts --platform hermes` | skills as `/<name>` | `.hermes/skills/` | `pre_tool_call` | V7 |
+
+Commands have one source, `config/commands/*.md`, rendered by `bun scripts/render-commands.ts`. Parity is checked by `bun scripts/validate-platform-parity.ts`.
+
+## Agent-Shell Protection per Platform
+
+Canonical set: `config/platforms/protected-paths.json`; checked by `bun scripts/validate-platform-parity.ts` (`deny-rules`). Details and residual risk: [SECURITY.md](../SECURITY.md#agent-shell-hardening-all-platforms).
+
+| Platform | Command deny | Path deny | Mechanism |
+|----------|--------------|-----------|-----------|
+| Claude Code CLI / Desktop | yes (glob) | yes (write; `.env` read) | `.claude/settings.json` `permissions.deny` |
+| Codex CLI / IDE | yes (argv prefix) | no | `.codex/rules/default.rules`, `sandbox_mode`, `approval_policy` |
+| Gemini CLI | yes (prefix) via `tools.exclude` (the effective control; `terminal.denyList`, `terminal.executionPolicy` and `mcp.toolApproval` may be Antigravity-only) | read only (`.env`, `vsp`) | `.gemini/settings.json`, `.geminiignore` |
+| Antigravity IDE / CLI | manual | no | [setup](platform-setup/antigravity.md) |
+| Hermes Agent | manual approvals | no | [setup](platform-setup/hermes.md) |
+
+## Post-Write Chain
+
+The chain (syntax check → unit tests → coverage → ATC; `SAP(action=analyze, type=syntax_check)`, `SAP(action=test)`) is required on every platform. The proxy records its evidence wherever it runs; use `/post-write <object>` when nothing triggers it automatically. See [Post-Write Chain](../skills/post-write-chain/SKILL.md).
 
 ## Tool Selection Rule
 
-Agents must choose the appropriate tool for each task type. All tools share the same `abap` MCP server but differ in capability and platform support.
-
-| Task type | Claude Code CLI | Claude Code App | Antigravity | Gemini CLI |
-|-----------|:--------------:|:--------------:|:-----------:|:----------:|
-| PM multi-agent dispatch | —Plan mode + subagents | —Plan mode + subagents | —| —Native sub-task delegation |
-| Serial write chain (SyntaxCheck —RunUnitTests —RunATCCheck) | —Hook fires automatically | 🚨 Hook does NOT fire —run manually | 🚨 Hook unverified | —Supported |
-| ATC code quality check (RunATCCheck) | —| —| —| —Identical result |
-| ABAP object browse / edit | 🚨 Terminal only | —Visual diff + inline review | —File explorer + diff view | 🚨 Terminal only |
-| MCP read/query (GetSource, RunQuery, GrepObjects) | —| —Identical result | —Identical result | —Identical result |
-| Git commit / PR | —`commit-commands` skills | —PR monitoring + CI status | 🚨 Extension terminal only | —Bash tools |
-| Custom commands | —19 slash commands | —19 slash commands | ⚠️ Emulated via `.gemini/commands/` | ⚠️ Emulated via `.gemini/commands/` |
-| Skill discovery | `.claude/skills/` + `skills/` | `.claude/skills/` + `skills/` | `.gemini/skills/` + `.agents/skills/` + `skills/` | `.gemini/skills/` + `skills/` |
-| Web research | —| —| —| —Native capability |
-| Parallel sessions (visual worktrees) | —| —Automatic | —| —|
-| Computer use (GUI automation) | —| —Win/macOS | —| —|
-| Linux support | —| —| —| —|
-| Quick lookup / search | —| —| —Native search preferred | —|
-
-**Default rule**: Use Claude Code CLI or App for orchestration. Prefer CLI on Linux or when hook automation is required. Use Desktop App for visual diff review, PR monitoring, and parallel sessions. Use Antigravity for file-centric editing. Use Gemini CLI when web research or background research delegation is needed.
+**Default rule**: Use Claude Code CLI or App for orchestration. Use Desktop App for visual diff review, PR monitoring, and parallel sessions. Use Antigravity for file-centric editing. Use Gemini CLI when web research is needed. Codex and Hermes are full peers for SAP work because safety lives in the proxy. Linux: the Claude Desktop App is not available.
 
 ---
 
-## Hook Behavior by Environment
-
-| Environment | PostToolUse hook fires? | Notes |
-|-------------|:-----------------------:|-------|
-| Claude Code CLI | —| Automatic on every Write/Edit |
-| Claude Code Desktop App | —| Known issue —run Post-Write chain manually |
-| Gemini CLI | —| Disabled —run Post-Write chain manually |
-| Antigravity | —| No hook support in VS Code extension |
-| Codex | —| Via `.codex/hooks.json` |
-
----
-
-*Last Updated: 2026-07-09*
-
-
+*Last Updated: 2026-10-10 — 8-platform matrix; SAP safety via proxy (parity design Phase 5)*

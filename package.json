@@ -10,6 +10,8 @@
     "agent:verify": "bun scripts/agent-verify.ts",
     "dispatch:parallel": "bun scripts/dispatch.ts parallel",
     "dispatch:serial": "bun scripts/dispatch.ts serial",
+    "render:commands": "bun scripts/render-commands.ts",
+    "validate:parity": "bun scripts/validate-platform-parity.ts",
     "scratch-cleanup": "bun scripts/co-abap/scratch-cleanup.ts --status",
     "test": "bun test scripts",
     "test:unit": "bun test scripts",

@@ -11,7 +11,7 @@ VSP가 SAP 시스템에 연결하려면 다음 정보가 필요합니다:
 |----------|------|------|---------|
 | `SAP_URL` | SAP 시스템 URL | `http://vhcalnplci:50000` | ? |
 | `SAP_CLIENT` | SAP Client 번호 | `001` | `001` |
-| `SAP_USERNAME` | SAP 사용자 이름 | `DEVELOPER` | ? |
+| `SAP_USER` | SAP 사용자 이름 | `DEVELOPER` | ? |
 | `SAP_PASSWORD` | SAP 비밀번호 | `***` | ? |
 
 ### 연결 방법 1: 환경 변수 사용 (Environment Variables)
@@ -19,7 +19,7 @@ VSP가 SAP 시스템에 연결하려면 다음 정보가 필요합니다:
 ```bash
 export SAP_URL="http://vhcalnplci:50000"
 export SAP_CLIENT="001"
-export SAP_USERNAME="DEVELOPER"
+export SAP_USER="DEVELOPER"
 export SAP_PASSWORD="your_password"
 export VSP_MODE="hyperfocused"
 export VSP_ALLOWED_PACKAGES="Z*,\$TMP,\$ZADT_VSP,\$VSP_ADT"
@@ -120,19 +120,19 @@ ping vhcalnplci
 
 ```bash
 # 1. 테이블 생성
-./vsp write zinv_stock.tabl
+./vsp deploy zinv_stock.tabl '$TMP'
 
 # 2. 클래스 생성
-./vsp write zcl_inventory_manager.clas.abap
+./vsp deploy zcl_inventory_manager.clas.abap '$TMP'
 
 # 3. 프로그램 생성
-./vsp write zprog_inventory_manager.prog.abap
+./vsp deploy zprog_inventory_manager.prog.abap '$TMP'
 
 # 4. 메시지 클래스 생성
-./vsp write zinv_messages.tmsg.abap
+./vsp deploy zinv_messages.tmsg.abap '$TMP'
 
 # 5. 문법 체크
-./vsp check zcl_inventory_manager
+# 5. 문법 체크: MCP SAP(action="analyze", params={"type":"syntax_check", ...})
 
 # 6. 단위 테스트
 ./vsp test zcl_inventory_manager

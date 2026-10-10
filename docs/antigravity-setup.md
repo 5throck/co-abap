@@ -1,9 +1,11 @@
 # Antigravity MCP Setup Guide
 
-Antigravity 2.0 (and the Antigravity CLI) now supports project-level configurations through the `.gemini/settings.json` file. This means the MCP servers and tools can be configured for the entire project and shared among the team. For legacy versions or user-specific overrides, MCP servers can still be registered manually at the **user level** in VS Code settings.
+The Antigravity IDE reads the project-level `.agents/mcp.json`, which launches the `abap` server through `scripts/sap-mcp-proxy.ts` (to be confirmed on-device: item V9 in the [parity design](designs/2026-10-10-cross-platform-parity-design.md)). The Antigravity CLI (`agy`) config path and MCP format are not yet verified (item V8); until then, use the IDE or the fallback dispatcher `bun scripts/dispatch-parallel.ts --platform antigravity-cli --plan <file>`.
 
 > **Important**:
-> - Antigravity does **not** support `PostToolUse` hooks. You must run the Post-Write chain (`/post-write`) manually after every ABAP code change.
+> - SAP safety is enforced by the proxy, not by hooks. `ask` calls return `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` in their own terminal (typing the first 6 characters of the id on `/dev/tty`), then the agent repeats the identical call. Agents never run `sap-approve.ts`.
+> - Antigravity does **not** fire hooks. Run the Post-Write chain (`/post-write`) after every ABAP code change; the proxy records the evidence.
+> - Never point an MCP entry at `vsp` directly — the parity validator (`bun scripts/validate-platform-parity.ts`) rejects it.
 
 ---
 
@@ -18,41 +20,22 @@ Antigravity 2.0 (and the Antigravity CLI) now supports project-level configurati
 
 ## 2. Registering the MCP Servers
 
-MCP servers for Antigravity are registered in VS Code's **user** `settings.json`.
-
-**Open VS Code user settings (JSON):**
-- Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`) → `Preferences: Open User Settings (JSON)`
-
-**Add the following block:**
+MCP servers for the Antigravity IDE come from the tracked project file `.agents/mcp.json`. The `abap` entry must route through the proxy:
 
 ```json
 {
-  "antigravity.mcpServers": {
+  "mcpServers": {
     "abap": {
-      "command": "C:\\Users\\<your-username>\\abap\\vsp.exe",
-      "args": ["--mode", "hyperfocused"],
-      "env": {
-        "SAP_MODE": "hyperfocused",
-        "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
-      }
-    },
-    "abap-docs": {
-      "type": "http",
-      "url": "https://mcp-abap.marianzeis.de/mcp"
-    },
-    "sap-docs": {
-      "type": "http",
-      "url": "https://mcp-sap-docs.marianzeis.de/mcp"
+      "command": "bun",
+      "args": ["scripts/sap-mcp-proxy.ts", "--", "--mode", "hyperfocused"]
     }
   }
 }
 ```
 
-> **macOS / Linux**: Replace the `command` path with the absolute path to the `vsp` binary in your local clone, e.g. `/home/<username>/abap/vsp`.
+The proxy resolves the project root and the `vsp` binary absolutely and loads its own `.env`, so no SAP credentials or package allowlist belong in this file. If you must register servers at the **user** level in VS Code settings (`antigravity.mcpServers`), use the same proxy command with the absolute path to `scripts/sap-mcp-proxy.ts`.
+
+> **Absolute paths**: when a client starts the server without the project as working directory, use `bun /absolute/path/to/co-abap/scripts/sap-mcp-proxy.ts -- --mode hyperfocused`.
 
 ---
 
@@ -87,9 +70,9 @@ Antigravity does not fire `PostToolUse` hooks. After any ABAP code change, **alw
 
 | Step | Tool | Pass Condition |
 |------|------|---------------|
-| 1 | `SyntaxCheck` | 0 errors |
-| 2 | `RunUnitTests` | 0 failures |
-| 3 | `RunATCCheck` | 0 Priority-1 findings |
+| 1 | syntax check (`SAP(action=analyze, type=syntax_check)`) | 0 errors |
+| 2 | unit tests (`SAP(action=test)`) | 0 failures |
+| 3 | ATC (`SAP(action=test, type=atc)`) | 0 Priority-1 findings |
 
 You can trigger these by asking Antigravity directly, or by switching to Claude Code CLI and running `/post-write <ObjectName>`.
 
@@ -152,15 +135,14 @@ After editing any skill in `skills/`, run `bun scripts/sync-skills.ts` to propag
 
 ## 7. Platform Comparison
 
-| Capability | Claude Code CLI | Claude Code App | Gemini CLI | Antigravity |
-|------------|:---------------:|:---------------:|:----------:|:-----------:|
-| MCP auto-connect | ✅ | ✅ | ✅ | ✅ (manual reg.) |
-| PostToolUse hook | ✅ | ❌ | ❌ | ❌ |
-| Post-Write chain | Automatic | Manual (`/post-write`) | Manual | Manual |
-| Git commit | `/sync` | `/sync` | Manual | Manual |
-| Custom commands | ✅ (19 commands) | ✅ (19 commands) | ⚠️ Emulated | ⚠️ Emulated |
-| Parallel agent dispatch | ✅ `Agent` tool | ✅ `Agent` tool | ❌ Sequential | ❌ Sequential |
-| Project-level config | ✅ `.mcp.json` | ✅ `.mcp.json` | ✅ `.gemini/settings.json` | ✅ `.gemini/settings.json` |
+The full 8-platform matrix is in [tooling-matrix.md](tooling-matrix.md). Antigravity summary:
+
+| Capability | Antigravity IDE | Antigravity CLI |
+|------------|:---------------:|:---------------:|
+| `abap` via proxy | ✅ `.agents/mcp.json` (verify V9) | pending V8 |
+| Hooks | ❌ | pending V8 |
+| Post-Write chain | `/post-write`; proxy records evidence | same |
+| Parallel agent dispatch | Agent Manager | pending V8; fallback `dispatch-parallel.ts --platform antigravity-cli` |
 
 ---
 

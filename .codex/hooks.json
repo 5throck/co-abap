@@ -1,15 +1,3 @@
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bun scripts/sync-md.ts"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

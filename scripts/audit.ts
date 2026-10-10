@@ -1139,9 +1139,11 @@ if (!LIFECYCLE_ONLY && fs.existsSync(claudeCommandsDir)) {
         const content = readUTF8File(filePath);
         if (/^gemini-parity:\s*skip/m.test(content)) continue;
 
-        const geminiCmd = path.join('.gemini', 'commands', file);
+        // Gemini custom commands are TOML-only; scripts/render-commands.ts renders them.
+        // LOCAL-PATCH(upstream-request: pending): Gemini CLI loads TOML commands only
+        const geminiCmd = path.join('.gemini', 'commands', file.replace(/\.md$/, '.toml'));
         if (!fs.existsSync(geminiCmd)) {
-            Warn(`Command parity gap: .claude/commands/${file} has no matching .gemini/commands/${file} (add 'gemini-parity: skip' to frontmatter for intentional Claude-only commands)`);
+            Warn(`Command parity gap: .claude/commands/${file} has no matching .gemini/commands/${file.replace(/\.md$/, '.toml')} (run bun scripts/render-commands.ts; add 'gemini-parity: skip' to frontmatter for intentional Claude-only commands)`);
             parityWarnings++;
         }
     }

@@ -47,6 +47,9 @@ jobs:
       - name: Check project meta
         run: bun scripts/check-project-meta.ts
 
+      - name: Validate platform parity
+        run: bun scripts/validate-platform-parity.ts
+
   dependency-audit:
     name: Dependency Audit
     runs-on: ubuntu-latest

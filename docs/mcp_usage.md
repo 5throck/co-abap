@@ -4,6 +4,8 @@
 
 **Purpose:** Machine-friendly reference for optimal tool usage patterns, workflows, and best practices.
 
+> **Tool names:** The named tools below (GetSource, EditSource, GrepObjects, ...) are the focused/expert-mode names. This project runs vsp in hyperfocused mode, where the single `SAP(action, target, params)` tool replaces them; map each legacy name via the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT).
+
 ---
 
 ## Critical Limitations (Read First!)
@@ -91,7 +93,7 @@ flowchart TD
         T --> UT[RunUnitTests]
     end
 
-    subgraph Expert["Expert Mode - 147 Tools"]
+    subgraph Expert["Expert Mode - 148 Tools"]
         direction TB
         F[All Focused Tools]
         A[+ Atomic Operations]
@@ -114,7 +116,7 @@ flowchart TD
 
     subgraph Hyperfocused["Hyperfocused Mode (AI Optimized)"]
         U2[Universal Tool]
-        U2 --> SAP[sap_execute]
+        U2 --> SAP[SAP tool]
     end
 
     Focused -.->|--mode=expert| Expert
@@ -127,7 +129,7 @@ flowchart TD
 |----------|------|--------|
 | Standard development | Focused | Simpler, fewer choices |
 | Existing workflow scripts | Expert | Backward compatibility |
-| AI Agent Optimization | Hyperfocused | **Recommended.** Best for Gemini/Claude. All 101 ops accessible via `sap_execute`; single entry point reduces tool-selection hallucinations. |
+| AI Agent Optimization | Hyperfocused | **Recommended.** Best for Gemini/Claude. One `SAP` tool, routed by action (read, edit, create, delete, search, query, grep, test, analyze, debug, system, rfc, i18n, revisions, lint, info, help; see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode)); single entry point reduces tool-selection hallucinations. |
 | Debugging lock issues | Expert | Direct LockObject access |
 | Learning the API | Expert | See all atomic operations |
 
@@ -558,12 +560,12 @@ flowchart TD
 | `GrepPackages` | Target is a single known object — `GrepObjects` is faster |
 | `RunQuery` | You need table structure, not data — use `GetTable` |
 | `AnalyzeCallGraph` | Object has no callers yet (new code) — no graph exists; start with `GrepPackages` |
-| `vsp source context` | Object is under 200 lines — full `GetSource` is faster and complete |
+| `vsp context` | Object is under 200 lines — full `GetSource` is faster and complete |
 
 
 ---
 
 **Last Updated:** 2026-09-26
-**Last Verified:** 2026-05-18 (tool counts confirmed from vibing-steampunk v2.38.1 README: focused=100, expert=147)
+**Last Verified:** 2026-05-18 (tool counts confirmed from vibing-steampunk v2.38.1 README: focused=100, expert=147; vsp v2.60.0 reports focused=98, expert=148)
 **MCP Server Version:** v2.38.1
 **Maintained by:** vsp project

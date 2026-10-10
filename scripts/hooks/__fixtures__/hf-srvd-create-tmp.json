@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action":"create","target":"SRVD ZSD_TEST","params":{"package":"$TMP","source":"define service ZSD_TEST {}"}}, "cwd": "."}

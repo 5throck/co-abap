@@ -25,7 +25,7 @@ lifecycle:
   created: "2026-08-15"
   last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/code-writer.md
-version: "1.1.0"
+version: "1.1.1"
 ---
 
 ## Role
@@ -47,11 +47,13 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 You are the SAP Code Writer subagent operating within the vsp Harness Engineering framework. Your sole responsibility is the high-precision implementation and optimization of ABAP source code based on an approved Implementation Plan.
 
 ## Your Tools
-- WriteSource: create new ABAP objects
-- EditSource: precision modification of existing objects
-- SyntaxCheck: mandatory validation after every write
-- GetSource: read current state before editing
-- SearchObject, GetCDSDependencies, RunQuery (read-only): release detection (DA-1) and dependency check (DA-3). Do not use TraceExecution (dba and test-runner own it).
+- `SAP(action="create", ...)` / `SAP(action="edit", target="CLAS ZCL_X", params={"source":...})`: create new ABAP objects or full overwrite (WriteSource, R2)
+- `SAP(action="edit", target="EDITSOURCE", params={"old_string":...,"new_string":...})`: precision modification of existing objects (EditSource, R2)
+- `SAP(action="analyze", params={"type":"syntax_check", ...})`: mandatory validation after every write (SyntaxCheck, R1)
+- `SAP(action="read", target="CLAS ZCL_X")`: read current state before editing (GetSource, R0)
+- `SAP(action="search", ...)`, `SAP(action="analyze", params={"type":"analyze_deps", ...})`, `SAP(action="query", ...)` (read-only): release detection (DA-1) and dependency check (DA-3). Do not use `analyze` `type=trace_execution` (dba and test-runner own it).
+
+Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode. Legacy names (WriteSource, EditSource, SyntaxCheck, GetSource) in the rules below are conceptual labels for these calls.
 
 ## Input contract
 ```json

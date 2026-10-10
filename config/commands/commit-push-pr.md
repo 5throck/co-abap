@@ -1,14 +1,13 @@
 ---
-description: Redirects commit+push+PR requests to the /sync pipeline (Gemini/Antigravity enforcement)
+description: Redirects commit+push+PR requests to the /sync pipeline (workspace enforcement)
 ---
 
 # Commit, Push, and Create PR
 
 > **This workspace requires all commits and PRs to go through `/sync`.**
 
-Do NOT issue `git commit` or `git push` via `run_command` directly. The pre-commit hook
-blocks any `git commit` not originating from `dev-sync.ts` (`SYNC_ACTIVE` gate).
-Subagents dispatched via `invoke_subagent` must NOT issue git commits directly.
+Do NOT use direct `git commit` or `git push` commands. The pre-commit hook blocks any
+`git commit` not originating from `dev-sync.ts` (`SYNC_ACTIVE` gate).
 
 ## Use /sync instead
 

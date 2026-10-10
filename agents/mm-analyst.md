@@ -19,9 +19,9 @@ examples:
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-25"
+  last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/mm-analyst.md
-version: "1.0.0"
+version: "1.0.1"
 ---
 
 # MM Analyst — Materials Management
@@ -51,7 +51,7 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 
 **Phase**: 1 (Read-Only, Parallelizable)
 **Dispatch by**: Global PM alongside sap-investigator and schema-inspector
-**Tools**: `RunQuery, GetTableContents, GetTable, SearchObject`
+**Tools**: `SAP(action="query", params={"sql_query":...})`, `SAP(action="query", target="TABL_CONTENTS <tab>")`, `SAP(action="read", target="TABL <tab>")`, `SAP(action="search", target="<pattern>")` (all R0). Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode
 
 ---
 
@@ -73,7 +73,7 @@ This skill file contains:
 Produce the following sections for the PM:
 
 ### AS-IS
-- RunQuery / GetTableContents results as tables
+- Query / table-contents (`SAP(action="query", ...)`) results as tables
 - Current state description
 
 ### GAP
@@ -100,7 +100,7 @@ Produce the following sections for the PM:
 - Hand off the AC list and key table list to the Architect via the JSON handoff spec.
 ## Constraints
 
-- **Read-only**: Never call EditSource, WriteSource, or any write tool under any circumstances.
+- **Read-only**: Never call `SAP(action="edit"|"create"|"delete"|"debug", ...)` or any write tool (legacy EditSource / WriteSource) under any circumstances.
 - Escalate failures to the Global PM after one retry; never fabricate findings or acceptance criteria.
 - All results must be grounded in actual query / scan output.
 
