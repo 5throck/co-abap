@@ -6,7 +6,7 @@
  * Never throws and never blocks: a failure here must not break the session.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 import {
@@ -23,7 +23,10 @@ export function qaResultOf(response: unknown): 'pass' | 'fail' {
   return FAIL_RE.test(text) ? 'fail' : 'pass';
 }
 
-function recordHyperfocused(input: HookInput, root: string, now: Date): void {
+/** Overrides used by the MCP proxy, which owns approvals and runs for every client. */
+export interface RecordOpts { decision?: string; approver?: string; profile?: string }
+
+function recordHyperfocused(input: HookInput, root: string, now: Date, opts: RecordOpts = {}): void {
   const policy = loadPolicy(root);
   const h = resolveHyperfocused(input.tool_input, policy);
   const ti = effectiveInput(input.tool_input);
@@ -76,17 +79,17 @@ function recordHyperfocused(input: HookInput, root: string, now: Date): void {
   const resp = input.tool_response as any;
   const respSrc = typeof resp?.source === 'string' ? resp.source : undefined;
   appendAudit(root, {
-    ts, sessionId: input.session_id ?? 'unknown', actor: actorOf(input), tool: h.tool, class: cls, decision,
+    ts, sessionId: input.session_id ?? 'unknown', actor: actorOf(input), tool: h.tool, class: cls, decision: opts.decision ?? decision,
     object: h.keys[0], package: pkg, inputHash: inputHash(ti),
     beforeHash: before ? sha256(before) : undefined,
     afterHash: src ? sha256(src) : respSrc ? sha256(respSrc) : undefined,
-    qaResult, approver, transport: h.transport, profile: profileOf(),
+    qaResult, approver: opts.approver ?? approver, transport: h.transport, profile: opts.profile ?? profileOf(),
   });
 }
 
-export function record(input: HookInput, root: string, now: Date = new Date()): void {
+export function record(input: HookInput, root: string, now: Date = new Date(), opts: RecordOpts = {}): void {
   if (!(input.tool_name ?? '').startsWith(TOOL_PREFIX)) return;
-  if (isHyperfocused(input.tool_name!)) return recordHyperfocused(input, root, now);
+  if (isHyperfocused(input.tool_name!)) return recordHyperfocused(input, root, now, opts);
   const ti = effectiveInput(input.tool_input);
   const tool = resolveToolName(input.tool_name!, ti);
   const policy = loadPolicy(root);
@@ -136,11 +139,11 @@ export function record(input: HookInput, root: string, now: Date = new Date()): 
   const resp = input.tool_response as any;
   const respSrc = typeof resp?.source === 'string' ? resp.source : undefined;
   appendAudit(root, {
-    ts, sessionId: input.session_id ?? 'unknown', actor: actorOf(input), tool, class: cls, decision,
+    ts, sessionId: input.session_id ?? 'unknown', actor: actorOf(input), tool, class: cls, decision: opts.decision ?? decision,
     object: key, package: pkg, inputHash: inputHash(ti),
     beforeHash: before ? sha256(before) : undefined,
     afterHash: src ? sha256(src) : respSrc ? sha256(respSrc) : undefined,
-    qaResult, approver, transport, profile: profileOf(),
+    qaResult, approver: opts.approver ?? approver, transport, profile: opts.profile ?? profileOf(),
   });
 }
 

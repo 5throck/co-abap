@@ -4,14 +4,19 @@
  * Used by hooks/sap-action-gate.ts (PreToolUse) and hooks/sap-action-audit.ts (PostToolUse).
  * Audit records store hashes only: never source text, SQL rows, tokens or credentials.
  *
- * @version 1.2.0
+ * Also hosts the proxy approval store (pending requests, single-use approvals) shared by
+ * sap-mcp-proxy.ts and sap-approve.ts.
+ *
+ * @version 1.3.0
  */
 
 import { createHash } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const TOOL_PREFIX = 'mcp__abap__';
+/** Gate deny reason for a privileged (R3) call that merely lacks an approval; the proxy turns it into APPROVAL_REQUIRED. */
+export const NEEDS_APPROVAL = 'privileged action without approval';
 export type Cls = 'R0' | 'R1' | 'R2' | 'R3';
 export type Decision = 'allow' | 'ask' | 'deny';
 
@@ -22,7 +27,7 @@ export interface Policy {
   defaultUnknown: 'ask';
   allowedPackages: string[];
   runQuery: { selectOnly: boolean };
-  approval: { envVar: string; dir: string };
+  approval: { envVar: string; dir: string; ttlMinutes?: number };
   release: { requireEvidence: boolean; blockInManualProfile: boolean };
   hyperfocused?: HfPolicy;
 }
@@ -462,6 +467,7 @@ export function appendAudit(root: string, rec: AuditRecord): void {
   appendFileSync(join(auditDir(root), `sap-actions-${rec.ts.slice(0, 7)}.jsonl`), JSON.stringify(full) + '\n');
 }
 
+/** @deprecated The manual profile is retired: the proxy applies one policy to every client. Env tolerated only by the legacy Claude hooks. */
 export const profileOf = (): string => (process.env.HARNESS_PROFILE === 'manual' ? 'manual' : 'hooked');
 export const actorOf = (i: HookInput): string => i.agent_name || i.agent_type || 'main';
 
@@ -502,4 +508,93 @@ export function consumeApproval(root: string, policy: Policy, sessionId: string 
   const list = readApprovals(root, policy, sessionId);
   list.splice(index, 1);
   writeFileSync(f, JSON.stringify({ approvals: list }, null, 2));
+}
+
+// ---------------------------------------------------------------------------
+// Proxy approval store: memory/audit/pending/<id>.json (written by the proxy) and
+// <policy.approval.dir>/<id>.json (written only by the human CLI sap-approve.ts).
+// id = hash(tool, target, normalized input hash): an approval cannot be replayed for another input.
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_APPROVAL_TTL_MIN = 15;
+export const pendingDir = (root: string) => join(auditDir(root), 'pending');
+export const approvalsDir = (root: string, policy: Policy) => join(root, policy.approval.dir);
+export const approvalTtlMs = (policy: Policy): number => {
+  const m = policy.approval.ttlMinutes;
+  return (typeof m === 'number' && m > 0 ? m : DEFAULT_APPROVAL_TTL_MIN) * 60_000;
+};
+
+export function approvalId(tool: string, target: string | undefined, hash: string): string {
+  return sha256(`${tool.toLowerCase()}\0${(target ?? '').toLowerCase()}\0${hash}`).slice(0, 16);
+}
+
+export interface PendingRequest {
+  id: string; tool: string; target: string; class: string; inputHash: string; reason: string;
+  object?: string; package?: string; requestedAt: string; expires: string; actor: string;
+}
+export interface ProxyApproval {
+  id: string; tool: string; target: string; class: string; inputHash: string;
+  approver: string; approvedAt: string; expires: string;
+}
+
+const idOk = (id: string) => /^[0-9a-f]{16}$/.test(id);
+
+export function writePending(root: string, policy: Policy, req: Omit<PendingRequest, 'requestedAt' | 'expires'>, now: Date): PendingRequest {
+  const full: PendingRequest = { ...req, requestedAt: now.toISOString(), expires: new Date(now.getTime() + approvalTtlMs(policy)).toISOString() };
+  mkdirSync(pendingDir(root), { recursive: true });
+  const f = join(pendingDir(root), `${req.id}.json`);
+  writeFileSync(f + '.tmp', JSON.stringify(full, null, 2));
+  renameSync(f + '.tmp', f);
+  return full;
+}
+
+export function readPending(root: string, id: string): PendingRequest | null {
+  if (!idOk(id)) return null;
+  try { return JSON.parse(readFileSync(join(pendingDir(root), `${id}.json`), 'utf-8')); } catch { return null; }
+}
+
+export function listPending(root: string): PendingRequest[] {
+  try {
+    return readdirSync(pendingDir(root)).filter((f) => f.endsWith('.json'))
+      .map((f) => readPending(root, f.slice(0, -5))).filter((x): x is PendingRequest => !!x);
+  } catch { return []; }
+}
+
+export function removePending(root: string, id: string): void {
+  if (idOk(id)) try { unlinkSync(join(pendingDir(root), `${id}.json`)); } catch { /* already gone */ }
+}
+
+/** Human-side step: turn a pending request into a single-use approval. */
+export function grantApproval(root: string, policy: Policy, id: string, approver: string, now: Date): ProxyApproval {
+  const p = readPending(root, id);
+  if (!p) throw new Error(`no pending request ${id}`);
+  if (Date.parse(p.expires) <= now.getTime()) throw new Error(`pending request ${id} expired at ${p.expires}; repeat the call to create a new one`);
+  if (approvalId(p.tool, p.target, p.inputHash) !== p.id) throw new Error(`pending request ${id} is inconsistent (id does not match its content)`);
+  const a: ProxyApproval = {
+    id: p.id, tool: p.tool, target: p.target, class: p.class, inputHash: p.inputHash, approver,
+    approvedAt: now.toISOString(), expires: new Date(now.getTime() + approvalTtlMs(policy)).toISOString(),
+  };
+  mkdirSync(approvalsDir(root, policy), { recursive: true });
+  writeFileSync(join(approvalsDir(root, policy), `${id}.json`), JSON.stringify(a, null, 2));
+  removePending(root, id);
+  return a;
+}
+
+/** Atomically consume a matching approval (rename into approvals/used/). Returns it, or null. */
+export function consumeProxyApproval(
+  root: string, policy: Policy, tool: string, target: string | undefined, hash: string, now: Date,
+): ProxyApproval | null {
+  const id = approvalId(tool, target, hash);
+  const f = join(approvalsDir(root, policy), `${id}.json`);
+  let a: ProxyApproval;
+  try { a = JSON.parse(readFileSync(f, 'utf-8')); } catch { return null; }
+  if (!a || a.id !== id || a.inputHash !== hash || a.tool.toLowerCase() !== tool.toLowerCase()
+    || (a.target ?? '').toLowerCase() !== (target ?? '').toLowerCase()) return null;
+  if (!(Date.parse(a.expires) > now.getTime())) return null;
+  const usedDir = join(approvalsDir(root, policy), 'used');
+  try {
+    mkdirSync(usedDir, { recursive: true });
+    renameSync(f, join(usedDir, `${id}.${now.getTime()}.json`));
+  } catch { return null; } // lost the race or cannot consume: never allow
+  return a;
 }

@@ -122,9 +122,14 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
-| `hooks/sap-action-gate.ts` | L3 | 1.2.0 | active | PreToolUse gate for mcp__abap__* tools (R0-R3 policy, fail-safe ask) — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
-| `hooks/sap-action-audit.ts` | L3 | 1.1.0 | active | PostToolUse audit log + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|
-| `lib/sap-action-lib.ts` | L3 | 1.2.0 | active | Shared policy/evidence/audit logic for the SAP action gate and audit hooks; hyperfocused SAP{action,target,params} resolver | —| L3 | —|
+| `hooks/sap-action-gate.ts` | L3 | 1.3.0 | active | PreToolUse gate for mcp__abap__* tools (R0-R3 policy, fail-safe ask) — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
+| `hooks/sap-action-audit.ts` | L3 | 1.2.0 | active | PostToolUse audit log + QA evidence store for mcp__abap__* tools (hashes only) | —| L3 | —|
+| `lib/sap-action-lib.ts` | L3 | 1.3.0 | active | Shared policy/evidence/audit logic for the SAP action gate and audit hooks; hyperfocused SAP{action,target,params} resolver | —| L3 | —|
+| `sap-mcp-proxy.ts` | L3 | 1.0.0 | active | Platform-neutral stdio MCP proxy in front of vsp: single SAP enforcement point (allow/deny/approval-required), audit + QA evidence, loads .env and safe SAP_* defaults — design docs/designs/2026-10-10-cross-platform-parity-design.md | —| L3 | —|
+| `sap-approve.ts` | L3 | 1.0.0 | active | Human CLI converting a pending proxy request into a single-use, input-bound approval (--list, --deny) | —| L3 | —|
+| `tests/sap-mcp-proxy.test.ts` | L3 | 1.0.0 | active | Proxy contract tests: fixture replay vs gate, passthrough, approvals, env/cwd independence | — | L3 | — |
+| `tests/sap-approve.test.ts` | L3 | 1.0.0 | active | Approval store and sap-approve CLI tests | — | L3 | — |
+| `tests/fixtures/stub-vsp.ts` | L3 | 1.0.0 | active | Stub vsp (echo MCP server) used by the proxy tests | — | L3 | — |
 | `lib/secret-patterns.ts` | L3 | 1.0.0 | active | Shared secret pattern list (TOKEN_PATTERNS, ASSIGNMENT_PATTERN, SECRET_ERE) used by hooks/pre-commit.ts and hooks/pre-push.ts. LOCAL-PATCH: hooks are template-managed, so re-apply on upgrade | —| L3 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|

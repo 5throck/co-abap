@@ -7,11 +7,11 @@
  * Denied calls are logged here because PostToolUse does not fire for them.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 1.2.0
+ * @version 1.3.0
  */
 
 import {
-  TOOL_PREFIX, actorOf, appendAudit, classify, derivePackage, effectiveInput, findApproval, firstString,
+  NEEDS_APPROVAL, TOOL_PREFIX, actorOf, appendAudit, classify, derivePackage, effectiveInput, findApproval, firstString,
   globMatch, inputHash, inspectQuery, isHyperfocused, loadPolicy, objectKey, profileOf, readEvidence, resolveHyperfocused,
   resolveToolName,
   targetOf, type Cls, type Decision, type HfResolved, type HookInput, type Evidence, type Policy,
@@ -74,7 +74,7 @@ export function evaluate(input: HookInput, root: string, now: Date = new Date())
         }
       }
       const found = findApproval(root, policy, input.session_id, tool, targetOf(ti), now);
-      if (!found) return r('deny', 'privileged action without approval');
+      if (!found) return r('deny', NEEDS_APPROVAL);
       return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
     }
   }
@@ -115,7 +115,7 @@ function evaluateHyperfocused(input: HookInput, root: string, policy: Policy, no
         }
       }
       const found = findApproval(root, policy, input.session_id, h.tool, h.approvalTarget, now);
-      if (!found) return r('deny', 'privileged action without approval');
+      if (!found) return r('deny', NEEDS_APPROVAL);
       return r('allow', `approved${found.approval.approver ? ' by ' + found.approval.approver : ''} (single use)`);
     }
   }

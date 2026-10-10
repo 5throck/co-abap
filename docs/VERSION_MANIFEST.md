@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T08:22:12.841Z
+**Generated**: 2026-10-10T08:36:22.574Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 114 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 119 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -178,6 +178,10 @@
 | review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
 | review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
 | sap-action-gate.test.ts | 1.2.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| sap-approve.test.ts | 1.0.0 | scripts/tests/sap-approve.test.ts | bun:test |
+| sap-approve.ts | 1.0.0 | scripts/sap-approve.ts | N/A |
+| sap-mcp-proxy.test.ts | 1.0.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
+| sap-mcp-proxy.ts | 1.0.0 | scripts/sap-mcp-proxy.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
@@ -185,6 +189,7 @@
 | skill-lifecycle-audit.ts | 1.6.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
+| stub-vsp.ts | 1.0.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
