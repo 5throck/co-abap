@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * L3 Project Review Baseline
- * @version 1.2.0
+ * @version 1.3.0
  *
  * Runs only the deterministic checks delivered to a detached L3 project.
  * L0 source-tree checks (templates and propagation) are reported N/A rather
@@ -13,6 +13,7 @@ import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
 const ROOT = join(import.meta.dir, '..');
+const CHECK_TIMEOUT_MS = 300_000;
 const quiet = process.argv.includes('--quiet');
 
 // LOCAL-PATCH(upstream-request: pending): this file was dropped by template upgrade v0.7.0
@@ -39,6 +40,9 @@ export function l3BaselineChecks(): BaselineCheck[] {
     { name: 'agent-lifecycle-audit', command: ['scripts/agent-lifecycle-audit.ts'] },
     { name: 'skill-lifecycle-audit', command: ['scripts/skill-lifecycle-audit.ts'] },
     { name: 'typecheck', command: ['run', 'typecheck'] },
+    { name: 'validate-docs-links --all', command: ['scripts/validate-docs-links.ts', '--all'] },
+    { name: 'check-project-meta', command: ['scripts/check-project-meta.ts'] },
+    { name: 'test:unit', command: ['run', 'test:unit'] },
     {
       name: 'validate-templates',
       naReason: 'L0-only template source tree is intentionally absent from this detached L3 project.',
@@ -66,9 +70,11 @@ function run(): number {
       cwd: ROOT,
       encoding: 'utf-8',
       stdio: quiet ? 'pipe' : 'inherit',
+      timeout: CHECK_TIMEOUT_MS,
     });
+    const timedOut = (result.error as NodeJS.ErrnoException | undefined)?.code === 'ETIMEDOUT';
     const passed = result.status === 0 && !result.error;
-    console.log(`[${passed ? 'PASS' : 'FAIL'}] ${check.name}`);
+    console.log(`[${passed ? 'PASS' : 'FAIL'}] ${check.name}${timedOut ? ' (TIMEOUT)' : ''}`);
     if (!passed) failures++;
   }
   console.log(`L3 review baseline: ${failures === 0 ? 'PASS' : 'FAIL'} (${failures} failing applicable check(s))`);

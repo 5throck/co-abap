@@ -3,18 +3,20 @@ extends: ../../../agents/pm.md
 name: pm
 role: Project Manager
 status: active
+model: inherit
 tier:
   claude: high
+  gemini: high
   antigravity: high
   gemini-cli: high
 description: 'Orchestrates multi-agent workflows. Enforces quality gates. Decides agent hiring/firing and approves agent skill requests. Use when: "Managing workflow", "Coordinating multi-phase tasks", "PM orchestration needed"'
 variant: co-abap
-version: "1.0.0"
-last_updated: "2026-09-26"
+version: "1.3.0"
+last_updated: "2026-10-10"
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-26"
+  last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/pm.md
 ---
 

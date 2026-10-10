@@ -119,6 +119,7 @@ This checklist derives from the [SAP Clean ABAP Style Guide](https://github.com/
 | Z wrapper CDS has DCL | Does every new CDS view exposing Z/Y or business data carry `#CHECK` and an active DCL per DA-5? | must | `code-writer` | 3 | Prose-only |
 | CDS conversion regression | Is DA-6 evidence (row count, totals, before/after trace) attached for any CDS conversion? `code-writer` requests the run. | must | `test-runner` | 4 | Prose-only |
 | Avoid deep CDS stacks | Has a DA-7 heuristic review trigger (stack > 4 levels, row inflation, no pushdown) been reviewed with `dba`? | should | `dba` | 2 | Prose-only |
+| CDS naming convention | Do new CDS views and DCLs follow the DA-8 naming rules (`docs/co-abap.context.md`)? | should | `code-writer` | 3 | Prose-only |
 | Use backticks for literals | Are string constants declared with backticks (`` `constant` ``) not quotes? | should | `code-writer` | 3 | Prose-only |
 | Use vertical bars for text assembly | Is string template syntax (`|text { var }|`) used for complex concatenations? | should | `code-writer` | 3 | Prose-only |
 

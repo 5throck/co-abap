@@ -4,8 +4,8 @@
 - **Facilitator**: PM
 - **Format**: inline, 2 rounds, role-played by PM (no sub-agent dispatch)
 - **Participants**: architect, dba, code-writer, co-analyst / fi-analyst, security-monitor, test-runner, **red-team (dissent seat)**
-- **Scope**: `agents/code-writer.md` rule 8, `agents/architect.md` rule 6, `docs/clean-abap-checklist.md` CDS item, `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md` (PR #190), pending proposal to relax CDS-first for existing Z/Y programs
-- **Outcome status**: PROPOSAL — approved by the user on 2026-10-10 and applied in PR #190; rules now live in `docs/co-abap.context.md` DA-1..DA-8
+- **Scope**: `agents/code-writer.md` rule 8, `agents/architect.md` rule 6, `docs/clean-abap-checklist.md` CDS item, `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md` (PR #190); the relax-CDS-first-for-existing-Z/Y-programs proposal was adopted (DA-2, `docs/co-abap.context.md`)
+- **Outcome status**: APPLIED — approved by the user on 2026-10-10 and applied in PR #190; rules now live in `docs/co-abap.context.md` DA-1..DA-8
 
 ## Agenda
 

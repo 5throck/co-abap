@@ -6,7 +6,7 @@
 - **Participants**: fi-analyst (sonnet), co-analyst (sonnet), sd-analyst (sonnet), test-runner (haiku), dba (sonnet), **red-team dissent seat** (sonnet)
 - **Input decisions (user, 2026-10-10)**: target landscape = S/4HANA + BW + Datasphere; query mode = structured intent primary, free-form SQL secondary
 - **Design doc**: `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md`
-- **Outcome status**: PROPOSAL — synthesis approved by the user on 2026-10-10 and applied to the design doc (PR #191); bare-"revenue" default left to Finance; red-team withdrawal conditions not adopted
+- **Outcome status**: APPLIED — synthesis approved by the user on 2026-10-10 and applied to the design doc (PR #191); bare-"revenue" default left to Finance; red-team withdrawal conditions not adopted
 
 ## Agenda
 

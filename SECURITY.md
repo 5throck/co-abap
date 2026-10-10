@@ -83,14 +83,16 @@ server does not expose, regardless of what the conversation asks for.
 
 ### Secrets Handling
 
-- SAP credentials live only in `.env` (gitignored); `.env.sample` documents required keys with
-  placeholder values — never realistic-looking examples.
+- SAP credentials live only in `.env` in the project root (gitignored, `chmod 600`) or in the OS
+  keychain. Never store `SAP_PASSWORD` in shell profiles, Windows user environment variables, or
+  any tracked config file. `.env.sample` documents required keys with placeholder values — never
+  realistic-looking examples.
 - `.mcp.json` is tracked in git as a config template and must **never** contain credentials —
   enforced by the pre-commit hook's secret scan (gitleaks + regex fallback) and by CI's
   dedicated secret-scan job.
 - Tracked `memory/` content is scanned by gitleaks. The gitleaks configuration must not
   broadly exclude it.
-- CI uses Bun `1.4.2` and a digest-pinned gitleaks container image for reproducible
+- CI uses Bun `1.4.x` and a digest-pinned gitleaks container image for reproducible
   secret scanning.
 - `scripts/dev-sync.ts` scans both untracked and **staged** files/diffs for sensitive filenames
   and inline credential patterns before every commit.

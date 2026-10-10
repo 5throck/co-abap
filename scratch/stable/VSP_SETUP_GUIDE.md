@@ -28,31 +28,33 @@ export VSP_ALLOWED_PACKAGES="Z*,\$TMP,\$ZADT_VSP,\$VSP_ADT"
 ./vsp system info
 ```
 
-### 연결 방법 2: Config 파일 사용 (Config File)
+### 연결 방법 2: 프로젝트 `.env` 파일 사용 (권장)
 
-VSP config 파일 생성: `~/.config/vsp/config.toml`
+프로젝트 루트에 `.env` 파일을 만들고 권한을 `600`으로 설정합니다. `.env`는 `.gitignore`에 포함되어 있습니다.
 
-```toml
-[npl]
-url = "http://vhcalnplci:50000"
-client = "001"
-username = "DEVELOPER"
-password = "your_password"
-```
-
-사용:
 ```bash
-./vsp -s npl system info
+chmod 600 .env
 ```
 
-### 연결 방법 3: 명령행 플래그 사용 (Command Line Flags)
+`.env` 내용 (`.env.sample`을 복사해 값만 채웁니다):
+```bash
+SAP_URL=http://vhcalnplci:50000
+SAP_CLIENT=001
+SAP_USER=DEVELOPER
+SAP_PASSWORD=<YOUR_PASSWORD>
+```
+
+비밀번호를 `config.toml`이나 셸 프로필(`~/.bashrc`)에 평문으로 저장하지 마십시오. OS 키체인(macOS Keychain, Windows Credential Manager, Linux `secret-tool`)을 사용하는 것도 허용됩니다.
+
+### 연결 방법 3: 명령행 플래그 사용 (Command Line Flags) — 비밀번호 제외
+
+명령행에 비밀번호를 넣으면 셸 기록과 프로세스 목록에 남으므로 사용하지 마십시오. 연결 정보는 `.env`(방법 2)에 두고, 명령에는 URL과 클라이언트만 지정합니다.
 
 ```bash
 ./vsp system info \
   --url "http://vhcalnplci:50000" \
   --client "001" \
-  --username "DEVELOPER" \
-  --password "your_password"
+  --username "DEVELOPER"
 ```
 
 ---

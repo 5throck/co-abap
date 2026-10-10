@@ -64,13 +64,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bun scripts/sync-md.ts"
+            "command": "bun scripts/sync-md.ts",
+            "timeout": 30
           }
         ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "command": "bun scripts/sync-md.ts"
       }
     ],
     "SessionStart": [

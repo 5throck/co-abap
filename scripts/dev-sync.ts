@@ -155,6 +155,7 @@ import { $ } from 'bun';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
+import * as os from 'node:os';
 import { withRetry, DEFAULT_CONFIG } from './retry-handler.ts';
 import { hasNonEnglish } from './lib/language-guard.ts';
 import { parseCachedNameStatus, parseStatusPorcelain } from './lib/git-status.ts';
@@ -1298,7 +1299,7 @@ try {
 
 const pushRetry = await withRetry(
     () => $`git push -u origin ${branch}`.nothrow(),
-    { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
+    { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
     'git push'
 );
 const pushProc = pushRetry.result as { exitCode: number; stderr: { toString(): string } } | undefined;
@@ -1389,8 +1390,27 @@ if (!remoteMainExists) {
 // on a reused branch name whose earlier PR was already MERGED/CLOSED, that lookup
 // still "succeeds" and this step would wrongly report "no new PR needed" while the
 // new commits sit with zero PR coverage. Must check state explicitly.
+// LOCAL-PATCH(upstream-request: pending) — REST fallback for GraphQL-blocked
+// environments (cloud sessions return 403 on `gh pr view/create`, which use GraphQL).
+const originUrlRes = await $`git remote get-url origin`.quiet().nothrow();
+const restSlugMatch = originUrlRes.stdout.toString().trim().match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/);
+const restSlug = restSlugMatch ? restSlugMatch[1] : '';
+const isGraphqlBlocked = (r: unknown): boolean => {
+    const x = r as { exitCode?: number; stderr?: { toString(): string } } | null;
+    return !!x && x.exitCode !== 0 && /403|GraphQL/i.test(x.stderr?.toString() ?? '');
+};
+const findOpenPrViaRest = async (): Promise<string> => {
+    if (!restSlug) return '';
+    const owner = restSlug.split('/')[0];
+    const res = await $`gh api ${`repos/${restSlug}/pulls?head=${owner}:${branch}&state=open`} --jq ${'.[0].html_url // ""'}`.quiet().nothrow();
+    return res.exitCode === 0 ? res.stdout.toString().trim() : '';
+};
 const existingPrRes = await $`gh pr view ${branch} --json url,state --jq "if .state == \"OPEN\" then .url else \"\" end"`.quiet().nothrow();
-const existingPrUrl = existingPrRes.exitCode === 0 ? existingPrRes.stdout.toString().trim() : '';
+let existingPrUrl = existingPrRes.exitCode === 0 ? existingPrRes.stdout.toString().trim() : '';
+if (!existingPrUrl && isGraphqlBlocked(existingPrRes)) {
+    console.log(`${YELLOW}⚠️  gh pr view blocked (403/GraphQL) — using REST fallback${RESET}`);
+    existingPrUrl = await findOpenPrViaRest();
+}
 
 if (existingPrUrl) {
     console.log(`${GREEN}✓ PR already exists for '${branch}' — commit pushed, no new PR needed:${RESET}`);
@@ -1447,31 +1467,59 @@ if (existingPrUrl) {
     if (bodySourceFile) {
         prCreateRetry = await withRetry(
             () => $`gh pr create --title ${msg} --body-file ${bodySourceFile}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
             'gh pr create'
         );
     } else if (prBody) {
         prCreateRetry = await withRetry(
             () => $`gh pr create --title ${msg} --body ${prBody}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
             'gh pr create'
         );
     } else if (fs.existsSync(path.join('.github', 'pull_request_template.md'))) {
         const prTpl = fs.readFileSync(path.join('.github', 'pull_request_template.md'), 'utf-8');
         prCreateRetry = await withRetry(
             () => $`gh pr create --title ${msg} --body ${prTpl}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
             'gh pr create'
         );
     } else {
         prCreateRetry = await withRetry(
             () => $`gh pr create --fill`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
             'gh pr create'
         );
     }
 
-    if (!prCreateRetry.success) {
+    // A GraphQL-blocked result stops retries (isSuccess above) but is not a real success.
+    const lastCreateResult = (prCreateRetry as { result?: unknown }).result;
+    const createBlocked = isGraphqlBlocked(lastCreateResult);
+    if (createBlocked) {
+        console.log(`${YELLOW}⚠️  gh pr create blocked (403/GraphQL) — falling back to REST: gh api repos/${restSlug}/pulls${RESET}`);
+        let restOk = false;
+        if (restSlug) {
+            const restBody = bodySourceFile ? fs.readFileSync(bodySourceFile, 'utf-8') : (prBody || msg);
+            const bodyTmp = path.join(os.tmpdir(), `dev-sync-pr-body-${process.pid}.md`);
+            fs.writeFileSync(bodyTmp, restBody);
+            const restRes = await $`gh api ${`repos/${restSlug}/pulls`} -X POST -f title=${msg} -f head=${branch} -f base=main -F body=@${bodyTmp} --jq .html_url`.quiet().nothrow();
+            try { fs.unlinkSync(bodyTmp); } catch { /* best effort */ }
+            if (restRes.exitCode === 0) {
+                console.log(`${GREEN}✓ PR created via REST:${RESET} ${restRes.stdout.toString().trim()}`);
+                restOk = true;
+            } else {
+                const already = await findOpenPrViaRest();
+                if (already) {
+                    console.log(`${GREEN}✓ PR already exists:${RESET} ${already}`);
+                    restOk = true;
+                }
+            }
+        }
+        if (!restOk) {
+            // Push already succeeded — do not fail the pipeline.
+            console.log(`${YELLOW}⚠️  REST PR creation also failed. Push succeeded; open the PR manually:${RESET}`);
+            console.log(`  https://github.com/${restSlug}/compare/${branch}?expand=1`);
+        }
+    } else if (!prCreateRetry.success) {
         const errMsg = prCreateRetry.lastError?.message || 'unknown error';
         console.log(`${RED}❌ gh pr create failed: ${errMsg}${RESET}`);
         if (import.meta.main) {

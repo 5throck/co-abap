@@ -663,30 +663,6 @@
       }
     },
     {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-co",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 9
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-fi",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 8
-      }
-    },
-    {
       "type": "follows",
       "from": "abap-dev",
       "to": "sap-fi",
@@ -712,18 +688,6 @@
     {
       "type": "composes_with",
       "from": "abap-dev",
-      "to": "sap-le",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 12
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
       "to": "sap-mm",
       "source": "relates_to",
       "symmetric": true,
@@ -731,18 +695,6 @@
         "file": "skills/abap-dev/SKILL.md",
         "field": "relates_to",
         "index": 3
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-mm",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 11
       }
     },
     {
@@ -760,18 +712,6 @@
     {
       "type": "composes_with",
       "from": "abap-dev",
-      "to": "sap-pp",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 13
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
       "to": "sap-sd",
       "source": "relates_to",
       "symmetric": true,
@@ -779,18 +719,6 @@
         "file": "skills/abap-dev/SKILL.md",
         "field": "relates_to",
         "index": 2
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-sd",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 10
       }
     },
     {

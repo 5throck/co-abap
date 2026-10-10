@@ -2,7 +2,7 @@
 
 **Spec ID**: 2026-09-25-project-review-remediation
 **Date**: 2026-09-25
-**Status**: implemented
+- **Status**: superseded — implemented, then superseded by [2026-09-26 Project Review Remediation](2026-09-26-project-review-remediation-design.md)
 **Source**: project-review (full scope) — `docs/reports/2026-09-25-project-review-full.md`
 **Accessibility**: N/A — tooling, governance docs, and CI plumbing only; no user-facing UI (ADR-0065 exempt by scope).
 **Preview Verification**: N/A — non-UI change (ADR-0070 exempt by scope).

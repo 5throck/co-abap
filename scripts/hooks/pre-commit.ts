@@ -21,6 +21,7 @@ import { $ } from "bun";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { hasNonEnglish } from "../lib/language-guard.ts";
 import { localDateISO } from "../lib/local-date.ts";
+import { SECRET_PATTERNS } from "../lib/secret-patterns.ts";
 
 async function main() {
   const stagedOutput = await $`git diff --cached --name-only`.text();
@@ -334,17 +335,7 @@ async function main() {
   const regexScanPassed = (() => {
     const diff = $`git diff --cached -U0`.nothrow().quiet();
     // We need the text synchronously; use sync-safe approach
-    const patterns = [
-      /(password|passwd|secret|api_key|apikey|access_token|auth_token)\s*=\s*['"][^'"]{8,}['"]/i,
-      /AKIA[0-9A-Z]{16}/,
-      /ghp_[0-9a-zA-Z]{36}/,
-      /sk-[0-9a-zA-Z]{48}/,
-      /sk-ant-[a-zA-Z0-9\-_]{95,}/,    // H-07: Anthropic API keys (sk-ant-api03-...)
-      /sk-proj-[a-zA-Z0-9\-_]{48,}/,   // H-07: Anthropic project keys
-      /gho_[A-Za-z0-9]{30,}/,          // GitHub OAuth tokens (shorter than ghp_)
-      /github_pat_[A-Za-z0-9_]{20,}/,  // GitHub fine-grained PATs
-      /xox[baprs]-[A-Za-z0-9-]{10,}/,  // Slack tokens
-    ];
+    const patterns = SECRET_PATTERNS; // shared list: scripts/lib/secret-patterns.ts
     return async () => {
       const diffText = await diff.text();
       const added = diffText.split('\n').filter(l => l.startsWith('+') && !l.startsWith('+++')).join('\n');

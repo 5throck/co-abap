@@ -23,9 +23,9 @@ required_skills: [abap-code-review]
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-25"
+  last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/code-writer.md
-version: "1.0.0"
+version: "1.1.0"
 ---
 
 ## Role

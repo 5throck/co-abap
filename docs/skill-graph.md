@@ -9,7 +9,7 @@
 | Skill | Layer | Required-by Agents | Phases | Relates-to | Inputs | Outputs |
 |-------|-------|-------------------|--------|------------|--------|---------|
 | `abap-code-review` | L3 | code-writer, test-runner | — | abap-dev (composes_with), abap-dev (follows) | — | — |
-| `abap-dev` | L3 | — | — | dump-monitor (composes_with), research-analysis (composes_with), sap-co (composes_with), sap-co (composes_with), sap-fi (composes_with), sap-fi (follows), sap-le (composes_with), sap-le (composes_with), sap-mm (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-pp (composes_with), sap-sd (composes_with), sap-sd (composes_with) | — | — |
+| `abap-dev` | L3 | — | — | dump-monitor (composes_with), research-analysis (composes_with), sap-co (composes_with), sap-fi (follows), sap-le (composes_with), sap-mm (composes_with), sap-pp (composes_with), sap-sd (composes_with) | — | — |
 | `accessibility-audit` | L3 | — | — | — | — | — |
 | `agent-lifecycle-manager` | L3 | — | — | skill-lifecycle-manager (composes_with) | — | — |
 | `api-documentation` | L3 | — | — | — | — | — |

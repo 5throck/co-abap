@@ -1,8 +1,8 @@
 ---
 name: abap-dev
 description: Use when working on SAP ABAP development tasks — provides specialized workflows for BAPI exploration, transport management, unit testing, performance analysis, impact architecture analysis, and documentation audits. Trigger on any SAP/ABAP coding, debugging, or system analysis task.
-version: 1.2.0
-last_reviewed: 2026-08-15
+version: 1.2.1
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: code-writer
@@ -23,18 +23,6 @@ relates_to:
   - skill: dump-monitor
     type: composes_with
   - skill: research-analysis
-    type: composes_with
-  - skill: sap-fi
-    type: composes_with
-  - skill: sap-co
-    type: composes_with
-  - skill: sap-sd
-    type: composes_with
-  - skill: sap-mm
-    type: composes_with
-  - skill: sap-le
-    type: composes_with
-  - skill: sap-pp
     type: composes_with
 metadata:
   type: core

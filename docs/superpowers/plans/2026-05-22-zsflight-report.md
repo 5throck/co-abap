@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED: Use superpowers:subagent-driven-development (if subagents available) or superpowers:executing-plans to implement this plan. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** SFLIGHT 테이블을 Selection Screen 조건(항공사·항공편번호·출발일)으로 필터링하여 ALV Grid로 표시하는 ABAP 리포트 프로그램 `ZSFLIGHT_REPORT`를 생성한다.
+**Goal:** Create the ABAP report program `ZSFLIGHT_REPORT`, which filters the SFLIGHT table by Selection Screen conditions (airline, flight number, departure date) and displays the result in an ALV Grid.
 
-**Architecture:** 단일 REPORT 프로그램. Selection Screen → SELECT → 빈 결과 guard → CL_SALV_TABLE factory/display 순서로 실행. TRY/CATCH가 factory와 display를 모두 감싼다.
+**Architecture:** A single REPORT program. Execution order: Selection Screen → SELECT → empty-result guard → CL_SALV_TABLE factory/display. TRY/CATCH wraps both factory and display.
 
 **Tech Stack:** ABAP (Classic Report), CL_SALV_TABLE OO API, SAP NetWeaver AS ABAP (vhcalnplci:50000), vsp MCP (WriteSource / SyntaxCheck / Activate)
 
@@ -12,19 +12,19 @@
 
 ---
 
-### Task 1: 프로그램 소스 작성 및 저장
+### Task 1: Write and Save the Program Source
 
 **Object:**
 - Create: ABAP Program `ZSFLIGHT_REPORT` (package `$TMP`)
 
-- [ ] **Step 1: WriteSource로 프로그램 소스 작성**
+- [ ] **Step 1: Write the program source with WriteSource**
 
-`mcp__abap__WriteSource` 호출:
+Call `mcp__abap__WriteSource`:
 - object_type: `PROG`
 - object_name: `ZSFLIGHT_REPORT`
 - package: `$TMP`
 
-소스 내용:
+Source content:
 
 ```abap
 REPORT zsflight_report.
@@ -73,7 +73,7 @@ START-OF-SELECTION.
       AND fldate IN so_date.
 
   IF gt_sflight IS INITIAL.
-    MESSAGE i001(00) WITH '조회된 데이터가 없습니다.'.
+    MESSAGE i001(00) WITH 'No data found.'.
     RETURN.
   ENDIF.
 
@@ -84,15 +84,15 @@ START-OF-SELECTION.
 
       " Column header settings
       lo_cols = go_alv->get_columns( ).
-      lo_cols->get_column( 'CARRID'     )->set_short_text( '항공사'    ).
-      lo_cols->get_column( 'CONNID'     )->set_short_text( '편번호'    ).
-      lo_cols->get_column( 'FLDATE'     )->set_short_text( '출발일'    ).
-      lo_cols->get_column( 'PLANETYPE'  )->set_short_text( '기종'      ).
-      lo_cols->get_column( 'PRICE'      )->set_short_text( '운임'      ).
-      lo_cols->get_column( 'CURRENCY'   )->set_short_text( '통화'      ).
-      lo_cols->get_column( 'SEATSMAX'   )->set_short_text( '최대좌석'  ).
-      lo_cols->get_column( 'SEATSOCC'   )->set_short_text( '예약좌석'  ).
-      lo_cols->get_column( 'PAYMENTSUM' )->set_short_text( '총매출'    ).
+      lo_cols->get_column( 'CARRID'     )->set_short_text( 'Airline'    ).
+      lo_cols->get_column( 'CONNID'     )->set_short_text( 'Flight No.' ).
+      lo_cols->get_column( 'FLDATE'     )->set_short_text( 'Dep. date'  ).
+      lo_cols->get_column( 'PLANETYPE'  )->set_short_text( 'Plane type').
+      lo_cols->get_column( 'PRICE'      )->set_short_text( 'Fare'       ).
+      lo_cols->get_column( 'CURRENCY'   )->set_short_text( 'Currency'   ).
+      lo_cols->get_column( 'SEATSMAX'   )->set_short_text( 'Max seats'  ).
+      lo_cols->get_column( 'SEATSOCC'   )->set_short_text( 'Booked seats').
+      lo_cols->get_column( 'PAYMENTSUM' )->set_short_text( 'Revenue'    ).
 
       go_alv->display( ).
 
@@ -101,23 +101,23 @@ START-OF-SELECTION.
   ENDTRY.
 ```
 
-- [ ] **Step 2: SyntaxCheck 실행**
+- [ ] **Step 2: Run SyntaxCheck**
 
-`mcp__abap__SyntaxCheck` 호출:
+Call `mcp__abap__SyntaxCheck`:
 - object_type: `PROG`
 - object_name: `ZSFLIGHT_REPORT`
 
-기대 결과: 오류 0건. 경고가 있으면 내용 확인 후 무시 가능 여부 판단.
+Expected result: 0 errors. If there are warnings, review them and decide whether they can be ignored.
 
-- [ ] **Step 3: Activate 실행**
+- [ ] **Step 3: Run Activate**
 
-`mcp__abap__Activate` 호출:
+Call `mcp__abap__Activate`:
 - object_type: `PROG`
 - object_name: `ZSFLIGHT_REPORT`
 
-기대 결과: 활성화 성공.
+Expected result: activation succeeds.
 
-- [ ] **Step 4: 커밋**
+- [ ] **Step 4: Commit**
 
 ```bash
 git add -A
@@ -128,52 +128,52 @@ Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 
 ---
 
-### Task 2: 동작 검증
+### Task 2: Functional Verification
 
-- [ ] **Step 1: 전체 조회 테스트**
+- [ ] **Step 1: Full retrieval test**
 
-`mcp__abap__RunReport` 호출:
+Call `mcp__abap__RunReport`:
 - program_name: `ZSFLIGHT_REPORT`
-- 파라미터 없음 (전체 조회)
+- No parameters (full retrieval)
 
-기대 결과: SFLIGHT 전체 데이터 반환 (50건 이상).
+Expected result: all SFLIGHT data is returned (50 or more rows).
 
-- [ ] **Step 2: 항공사 필터 테스트**
+- [ ] **Step 2: Airline filter test**
 
-`mcp__abap__RunReport` 호출:
+Call `mcp__abap__RunReport`:
 - SO_CARR: `LH`
 
-기대 결과: CARRID = 'LH' 인 행만 반환.
+Expected result: only rows with CARRID = 'LH' are returned.
 
-- [ ] **Step 3: 날짜 범위 필터 테스트**
+- [ ] **Step 3: Date range filter test**
 
-`mcp__abap__RunReport` 호출:
-- SO_DATE: `20180101` ~ `20181231`
+Call `mcp__abap__RunReport`:
+- SO_DATE: `20180101` to `20181231`
 
-기대 결과: 2018년 출발 편만 반환.
+Expected result: only flights departing in 2018 are returned.
 
-- [ ] **Step 4: 빈 결과 테스트**
+- [ ] **Step 4: Empty result test**
 
-`mcp__abap__RunReport` 호출:
-- SO_CARR: `XX` (존재하지 않는 항공사)
+Call `mcp__abap__RunReport`:
+- SO_CARR: `XX` (non-existent airline)
 
-기대 결과: `'조회된 데이터가 없습니다.'` 메시지 출력, 오류 없음.
+Expected result: the message `'No data found.'` is output, with no errors.
 
-- [ ] **Step 5: ATCCheck 실행**
+- [ ] **Step 5: Run ATCCheck**
 
-`mcp__abap__RunATCCheck` 호출:
+Call `mcp__abap__RunATCCheck`:
 - object_type: `PROG`
 - object_name: `ZSFLIGHT_REPORT`
 
-기대 결과: Critical/Error 0건. (Priority 2 이하 경고는 허용)
+Expected result: 0 Critical/Error findings. (Warnings of Priority 2 or lower are allowed.)
 
 ---
 
-## 완료 기준
+## Completion Criteria
 
-- [ ] SyntaxCheck 오류 0건
-- [ ] Activate 성공
-- [ ] 전체 조회 시 데이터 표시 확인
-- [ ] 조건 필터 정상 동작 확인
-- [ ] 빈 결과 메시지 정상 출력 확인
-- [ ] ATCCheck Critical 0건
+- [ ] SyntaxCheck: 0 errors
+- [ ] Activate succeeds
+- [ ] Data is displayed on full retrieval
+- [ ] Condition filters work correctly
+- [ ] Empty-result message is output correctly
+- [ ] ATCCheck: 0 Critical findings

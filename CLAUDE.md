@@ -132,6 +132,9 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
+<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
+### 5. Agent Dispatch Rules
+
 Use the native `Agent` tool to spawn sub-agents for parallel or isolated tasks. Sub-agents load their role-based configurations from `agents/<name>.md`.
 
 > **Agent Architecture**: See [docs/context.md](docs/context.md) for governance rules.
@@ -163,6 +166,9 @@ Each implementation task follows the **Phase 4 execution loop** (see [AGENTS.md 
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
+<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
+### 6. Native Sub-agents (Agent Tool)
+
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Claude Code's model-ID mapping (overridden per agent invocation when appropriate):
 - **High-tier** → `claude-opus-5-5`
@@ -230,7 +236,7 @@ All shared Git/PR rules are in [docs/context.md](docs/context.md). Claude Code-s
 
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 
-*Last Updated: 2026-10-08 — annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
+*Last Updated: 2026-10-10 — annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
 <!-- COMMON-CLAUDE:END -->
 
 ---
@@ -293,7 +299,7 @@ See `skills/desktop-app-fallback/SKILL.md` for the complete fallback workflow.
 
 ---
 
-*Last Updated: 2026-10-08 — resynced Claude Code-Specific Behaviors (§1-11) with the current
+*Last Updated: 2026-10-10 — resynced Claude Code-Specific Behaviors (§1-11) with the current
 templates/common/CLAUDE.md baseline (Role Declaration, full Automated Hooks/Slash Commands/
 Language Policy/Skill Resolution/Agent Dispatch/Plan Mode/Task Tracking sections had drifted
 out of sync); consolidated the orphaned teammateMode block into §6; kept all ABAP-specific
