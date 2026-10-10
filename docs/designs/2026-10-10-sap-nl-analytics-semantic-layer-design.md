@@ -29,7 +29,7 @@ The LLM never receives the whole database. It receives only the concepts, views,
 | A. User interface | Question, result table, chart, follow-up questions | Shows source, as-of time, and applied defaults with every answer |
 | B. Intent parsing | Analysis type, period, organization, measures, ambiguity detection | Asks back or applies a declared default (e.g., fiscal vs. calendar quarter, comparison basis, billing vs. FI revenue, standard vs. actual cost) |
 | C. Metadata and semantic model | Term dictionary, CDS/view catalog, join graph, sample queries | Vector search for terms, explicit graph for joins (see below) |
-| D. Query generation and validation | Parse, schema check, authorization check, execution plan, result check | Prefer a structured query intent (measures, dimensions, filters, period) compiled from templates over free-form SQL |
+| D. Query generation and validation | Parse, schema check, authorization check, execution plan, result check | Two paths (see [Query paths](#query-paths-layer-d)): primary structured query intent compiled from templates; secondary free-form SQL against allowlisted views only |
 | E. Read-only data access | Approved CDS views, analytic views, restricted execution interface (SELECT-only) | CDS DCL / user-context authorization at runtime; no shared technical super-user; see [Runtime authorization](#runtime-authorization) |
 
 ### Retrieval unit: metric bundles, not columns
@@ -56,6 +56,15 @@ Vector results only nominate candidates. Final joins must follow graph-approved 
 | Org keys | Refuse the query when the user lacks a role covering a required org key (company code, sales org, plant, operating concern). No partial results. |
 | New CDS views | Follow `docs/co-abap.context.md` DA-5: `#CHECK` with DCL; no `#NOT_REQUIRED`. |
 
+### Query paths (layer D)
+
+| Path | Role | Generation | Controls |
+|------|------|------------|----------|
+| Structured intent | **Primary** | The LLM emits a structured intent (measures, dimensions, filters, period) chosen only from the allowlisted catalog; layer D compiles it from approved templates per source | Template compiler resolves joins from graph-approved paths only; [query limits](#query-limits-layer-d) apply |
+| Free-form SQL | **Secondary** (questions the catalog templates cannot express) | The LLM writes SQL text | All of the following, otherwise rejected: (1) target only allowlisted views of the routed source (CDS/analytic views on S/4, released BW query views/InfoProvider or CompositeProvider SQL views, Datasphere analytic models or exposed SQL views); **never raw tables**; (2) mandatory parse into an AST and schema allowlist check of every referenced object, field, function, and operator; (3) single `SELECT` statement only (no DML, DDL, procedure calls, multiple statements, or comments carrying hints); (4) same [query limits](#query-limits-layer-d) and cost gate as the primary path; (5) every free-form query logged in the audit log with a `free_form` flag and flagged in the answer ("generated SQL, not a certified template") |
+
+The structured path is tried first; the free-form path is used only when intent compilation fails, and its result is never presented as a certified metric.
+
 ### Query limits (layer D)
 
 | Control | Default |
@@ -73,8 +82,9 @@ The 10,000-row cap and 30 s timeout are unvalidated starting values. Calibrate t
 ## Untrusted input
 
 - Questions, retrieved field values, and result rows are **data, never instructions**. Embedded prompts are not followed.
-- Phase 1: the LLM chooses only from an **allowlisted catalog** of metrics, dimensions, and filters, emitting a structured intent.
-- No LLM output is executed as SQL, ABAP, or DDL without allowlist validation of every referenced object, field, and operator.
+- Primary path: the LLM chooses only from an **allowlisted catalog** of metrics, dimensions, and filters, emitting a structured intent.
+- Secondary path: LLM-generated SQL text is untrusted. It executes only after parsing, a schema allowlist check of every referenced object, field, function, and operator, and a SELECT-only check (see [Query paths](#query-paths-layer-d)); it never targets raw tables.
+- No LLM output is ever executed as ABAP or DDL.
 
 ## Read-only scope
 
@@ -147,9 +157,19 @@ A successful query does not mean a correct answer. Required checks:
 
 ## Multi-source landscapes (ERP / S/4HANA / BW / Datasphere)
 
-- **System of record per metric**: the same metric in S/4 CDS and BW/Datasphere can differ because of load timing and transformation logic. Fix one source per metric.
-- **Latency disclosure**: BW/Datasphere lag by the load cycle. Tell the user when an open period such as "this quarter" is queried.
-- **No cross-source joins initially**: do not let the LLM join S/4 and BW data. Start with a single integrated layer, such as Datasphere.
+Target landscape (decided 2026-10-10): S/4HANA, BW (BW/4HANA), and Datasphere are all in scope.
+
+| Source | Access path | Runtime authorization |
+|--------|-------------|-----------------------|
+| S/4HANA | Released VDM CDS views (interface, cube, query) and governed `Z*` CDS | CDS DCL (DA-5) plus PFCG authorization objects |
+| BW / BW/4HANA | BW queries on InfoProviders and CompositeProviders (via released query views / OData / generated SQL views) | BW analysis authorizations (RSECADMIN) for the requesting user |
+| Datasphere | Analytic models and exposed SQL views in approved spaces | Datasphere data access controls and space membership |
+
+- **System of record per metric**: the same metric in S/4 CDS, BW, and Datasphere can differ because of load timing and transformation logic. Each metric in the dictionary names exactly one source (optionally per period range, e.g. closed periods from BW, open period from S/4).
+- **Source routing (layers B/C)**: intent parsing resolves metric and period; the semantic model then routes each metric/period pair to its system of record. The routing decision is part of the resolved metric bundle and is shown with the answer.
+- **Latency disclosure**: BW and Datasphere lag by the load cycle. Every answer states the source's data as-of time (last successful load), and warns explicitly when an open period such as "this quarter" is answered from a lagging source.
+- **No cross-source SQL joins**: no query, template, or free-form SQL joins S/4, BW, and Datasphere objects. When a question spans sources, each source is queried separately under its own authorization and limits, and the results are composed at the result layer (aggregate first, then merge on shared conformed keys such as customer, company code, and period), with each part's source and as-of time disclosed.
+- **Authorization per source**: refusal rules in [Runtime authorization](#runtime-authorization) apply per source; if any required source refuses, the composed answer is refused rather than returned partially.
 
 ## Customizing onboarding checklist
 
@@ -178,8 +198,8 @@ CDS views and analytic models settle much in advance, but not every business rul
 
 ## Open questions
 
-1. Target landscape: S/4HANA only, or S/4HANA plus BW/Datasphere?
-2. Free-form SQL with validation, or structured query intent only (recommended for phase 1)?
+1. ~~Target landscape: S/4HANA only, or S/4HANA plus BW/Datasphere?~~ **Decided 2026-10-10**: S/4HANA, BW, and Datasphere are all in scope (see [Multi-source landscapes](#multi-source-landscapes-erp--s4hana--bw--datasphere)).
+2. ~~Free-form SQL with validation, or structured query intent only?~~ **Decided 2026-10-10**: structured query intent is the primary path; validated free-form SQL is supported as a secondary path (see [Query paths](#query-paths-layer-d)).
 3. Who owns and approves metric definitions in the term dictionary?
 4. Golden question set: initial size and owners per module.
 5. Query-limit calibration: which golden-question percentile and safety factor set the cost threshold, and does the target analytics layer expose an `EXPLAIN PLAN` equivalent?
