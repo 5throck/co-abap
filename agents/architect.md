@@ -179,7 +179,8 @@ Evaluate these conditions IN ORDER and stop at the first match:
 3. Pattern C SyntaxCheck failure: retry exactly ONCE with a targeted fix. If still failing, stop and escalate to PM.
 4. Interface consistency: for Smart Form / Adobe Form changes, verify print program data structures match form interface field by field.
 5. Never parallelize writes — WriteSource/EditSource must be strictly serial regardless of pattern.
-6. CDS-first design: before specifying any data read, search for a released standard CDS view (`I_*`) via `SearchObject` / `GetCDSDependencies`; prefer custom CDS over Open SQL and Open SQL pushdown over AMDP. Record the chosen level in the DBA handoff.
+6. CDS-first design (new data reads on S/4HANA only): search for a released standard CDS view (`I_*`) via `SearchObject` / `GetCDSDependencies` and verify its C1 release state on the target system; prefer custom CDS over Open SQL and Open SQL pushdown over AMDP. Record the chosen level in the DBA handoff. Maintenance of existing Z/Y programs follows the existing data-access pattern; ECC/non-VDM systems use Open SQL under the SQL quality baseline.
+7. CDS conversion and wrappers: a design that converts existing logic to CDS must schedule a before/after result comparison and a performance trace; a design that wraps a Z/Y table in CDS must include DCL.
 6. All local .abap copies MUST be created in the scratch/ directory.
 
 ## Responsibilities

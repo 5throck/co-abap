@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T06:40:41.480Z
+**Generated**: 2026-10-10T06:42:58.038Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -49,7 +49,7 @@
 | Name | Version | Status | Location | Platform | Triggers | Owner |
 |------|---------|--------|----------|----------|----------|-------|
 | abap-code-review | 1.0.0 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
-| abap-dev | 1.1.0 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
+| abap-dev | 1.2.0 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
 | accessibility-audit | 1.1.0 | active | skills/accessibility-audit/SKILL.md | workspace | accessibility-audit, /accessibility-audit, axe-core audit, wcag accessibility check, wcag 2.1 aa | pm |
 | agent-lifecycle-manager | 1.3.0 | active | skills/agent-lifecycle-manager/SKILL.md | workspace | create agent, new agent, validate agents, agent lifecycle, manage agents, hire agent, fire agent, deprecate agent | pm |
 | api-documentation | 1.0.2 | active | skills/api-documentation/SKILL.md | workspace | api documentation, document api, api reference, developer documentation, rest api docs, graphql docs, sdk documentation | pm |

@@ -4,6 +4,7 @@
 - **Date**: 2026-10-10
 - **Status**: proposed
 - **Scope**: architecture reference for LLM-driven analytics on SAP ERP / S/4HANA / BW / Datasphere; no code or SAP objects in this change
+- **Relationship to ABAP dev rules**: this design covers read-only analytics only. It does not change ABAP development rules; existing Z/Y programs keep working unchanged. Z/Y data without a governed CDS wrapper is simply out of analytics scope.
 
 ## Problem
 
@@ -57,12 +58,34 @@ Vector results only nominate candidates. Final joins must follow graph-approved 
 
 The last two cannot be solved by SQL syntax validation. They need semantic validation rules plus a result-validation step.
 
+## Customer Z/Y objects
+
+The standard VDM does not cover customer Z/Y tables and programs. They enter the semantic layer only through governed wrappers:
+
+| Object | Situation | Handling |
+|--------|-----------|----------|
+| Z/Y table | Any | Wrap in `ZI_` CDS: business field names, `@Semantics.amount.currencyCode` / unit annotations, keys, associations to standard VDM (`I_Customer`, `I_CompanyCode`, ...), **mandatory DCL**. Unwrapped tables are out of scope. |
+| Z/Y program | Simple logic (joins, filters, aggregation) | Re-implement as `Z` CDS; optionally switch the report to consume it (single definition) |
+| Z/Y program | Complex multi-step logic | Persist results via batch into a Z result table, wrap it in CDS; the LLM reads stored results only |
+| Z/Y program | Must stay in ABAP, real-time needed | Extract into a class, expose via CDS table function (AMDP) or RAP/OData as a fixed tool; never a SQL-generation target |
+
+Onboarding steps: inventory (`schema-inspector`, `sap-investigator`), classify each object and assign a business owner, data-quality check by `dba` (duplicate keys, missing currency fields, append-only growth), then onboard in the order the metric dictionary and golden questions need them.
+
+## Profitability analysis branch
+
+Margin definitions depend on the CO-PA type and must be modeled separately:
+
+- **Account-based / Margin Analysis** (S/4HANA default): margin from ACDOCA cost and revenue accounts; cost-of-goods-sold split per cost component where configured.
+- **Costing-based CO-PA**: value fields (CE1xxxx); not reconcilable line-by-line with FI; state the basis in every answer.
+
 ## Result validation
 
 A successful query does not mean a correct answer. Required checks:
 
 - Golden question set with expected results, run on every semantic-model change.
 - Reconciliation: totals tie out to FI balances for the same scope and period.
+- Reconciliation against existing Z report outputs, which users treat as the business truth; differences need an explained cause before go-live.
+- Audit log for every NL query: user, question, resolved metric definitions, generated query or intent, views touched, row count.
 - Every answer states which metric definition, source system, and data as-of time it used.
 
 ## Multi-source landscapes (ERP / S/4HANA / BW / Datasphere)
