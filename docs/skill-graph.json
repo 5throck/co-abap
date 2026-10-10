@@ -1,22 +1,7 @@
 {
-  "version": 1,
-  "graph_profile": "deg/v1",
+  "version": 2,
+  "graph_profile": "deg/v2",
   "nodes": [
-    {
-      "id": "abap-code-review",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "abap-dev",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "accessibility-audit",
-      "type": "skill",
-      "layer": "L3"
-    },
     {
       "id": "adr:0001",
       "type": "adr",
@@ -28,63 +13,281 @@
       "layer": "L3"
     },
     {
-      "id": "agent-lifecycle-manager",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "api-documentation",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "architect",
+      "id": "agent:root/architect",
       "type": "agent",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "architect",
+      "scope": "root",
+      "capability": "architect",
+      "content_hash": "f3779c409c82caab",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/architect.md"
+      ]
     },
     {
-      "id": "ci-triage",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "co-analyst",
+      "id": "agent:root/co-analyst",
       "type": "agent",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "co-analyst",
+      "scope": "root",
+      "capability": "co-analyst",
+      "content_hash": "0b18169f8e244388",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/co-analyst.md"
+      ]
     },
     {
-      "id": "code-writer",
+      "id": "agent:root/code-writer",
       "type": "agent",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "code-writer",
+      "scope": "root",
+      "capability": "code-writer",
+      "content_hash": "cd5eefefdcd0a65e",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/code-writer.md"
+      ]
     },
     {
-      "id": "dba",
+      "id": "agent:root/dba",
       "type": "agent",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "dba",
+      "scope": "root",
+      "capability": "dba",
+      "content_hash": "35d45c8f50c44d97",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/dba.md"
+      ]
+    },
+    {
+      "id": "agent:root/devops-admin",
+      "type": "agent",
+      "layer": "L3",
+      "name": "devops-admin",
+      "scope": "root",
+      "capability": "devops-admin",
+      "content_hash": "385fd4745c4450c2",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/devops-admin.md"
+      ]
+    },
+    {
+      "id": "agent:root/fi-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "fi-analyst",
+      "scope": "root",
+      "capability": "fi-analyst",
+      "content_hash": "1e411a5c43963b2e",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/fi-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/fiori-developer",
+      "type": "agent",
+      "layer": "L3",
+      "name": "fiori-developer",
+      "scope": "root",
+      "capability": "fiori-developer",
+      "content_hash": "bbd2c4a653c8e905",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/fiori-developer.md"
+      ]
+    },
+    {
+      "id": "agent:root/form-expert",
+      "type": "agent",
+      "layer": "L3",
+      "name": "form-expert",
+      "scope": "root",
+      "capability": "form-expert",
+      "content_hash": "70553ffe83821024",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/form-expert.md"
+      ]
+    },
+    {
+      "id": "agent:root/gui-scripter",
+      "type": "agent",
+      "layer": "L3",
+      "name": "gui-scripter",
+      "scope": "root",
+      "capability": "gui-scripter",
+      "content_hash": "c22ede1c9fd86b53",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/gui-scripter.md"
+      ]
+    },
+    {
+      "id": "agent:root/i18n-specialist",
+      "type": "agent",
+      "layer": "L3",
+      "name": "i18n-specialist",
+      "scope": "root",
+      "capability": "i18n-specialist",
+      "content_hash": "3a00e1061aba3926",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/i18n-specialist.md"
+      ]
+    },
+    {
+      "id": "agent:root/interface-expert",
+      "type": "agent",
+      "layer": "L3",
+      "name": "interface-expert",
+      "scope": "root",
+      "capability": "interface-expert",
+      "content_hash": "272df0106f3a969d",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/interface-expert.md"
+      ]
+    },
+    {
+      "id": "agent:root/le-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "le-analyst",
+      "scope": "root",
+      "capability": "le-analyst",
+      "content_hash": "131568b792ae7252",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/le-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/mm-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "mm-analyst",
+      "scope": "root",
+      "capability": "mm-analyst",
+      "content_hash": "0bef552c0a399297",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/mm-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/pm",
+      "type": "agent",
+      "layer": "L3",
+      "name": "pm",
+      "scope": "root",
+      "capability": "pm",
+      "content_hash": "7e71de43e21db654",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/pm.md"
+      ]
+    },
+    {
+      "id": "agent:root/pp-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "pp-analyst",
+      "scope": "root",
+      "capability": "pp-analyst",
+      "content_hash": "42a96acd1902306b",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/pp-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/read-only-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "read-only-analyst",
+      "scope": "root",
+      "capability": "read-only-analyst",
+      "content_hash": "bf7a92e3f0579cde",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/read-only-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/sap-investigator",
+      "type": "agent",
+      "layer": "L3",
+      "name": "sap-investigator",
+      "scope": "root",
+      "capability": "sap-investigator",
+      "content_hash": "9ee043139ffebe0c",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/sap-investigator.md"
+      ]
+    },
+    {
+      "id": "agent:root/schema-inspector",
+      "type": "agent",
+      "layer": "L3",
+      "name": "schema-inspector",
+      "scope": "root",
+      "capability": "schema-inspector",
+      "content_hash": "baccf40df3d7070f",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/schema-inspector.md"
+      ]
+    },
+    {
+      "id": "agent:root/sd-analyst",
+      "type": "agent",
+      "layer": "L3",
+      "name": "sd-analyst",
+      "scope": "root",
+      "capability": "sd-analyst",
+      "content_hash": "97403572854d91ef",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/sd-analyst.md"
+      ]
+    },
+    {
+      "id": "agent:root/security-monitor",
+      "type": "agent",
+      "layer": "L3",
+      "name": "security-monitor",
+      "scope": "root",
+      "capability": "security-monitor",
+      "content_hash": "8075fb27d1765363",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/security-monitor.md"
+      ]
+    },
+    {
+      "id": "agent:root/test-runner",
+      "type": "agent",
+      "layer": "L3",
+      "name": "test-runner",
+      "scope": "root",
+      "capability": "test-runner",
+      "content_hash": "4bbb53690c3a46ff",
+      "version": "1.0.0",
+      "mirrors": [
+        "agents/test-runner.md"
+      ]
     },
     {
       "id": "dec:DEC-20260926-01",
       "type": "decision",
-      "layer": "L3"
-    },
-    {
-      "id": "decision-record",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "design-foundation",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "desktop-app-fallback",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "devops-admin",
-      "type": "agent",
       "layer": "L3"
     },
     {
@@ -105,111 +308,6 @@
     {
       "id": "doc:GEMINI.md",
       "type": "doc",
-      "layer": "L3"
-    },
-    {
-      "id": "documentation-writing",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "dump-monitor",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "evidence-ledger",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "explain-me",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "fi-analyst",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "finishing-a-development-branch",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "fiori-developer",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "form-expert",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "gateguard",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "gui-scripter",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "handbook",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "handbook-sync-audit",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "i18n-audit",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "i18n-formatting",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "i18n-layout",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "i18n-locale-config",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "i18n-specialist",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "interface-expert",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "le-analyst",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "meeting-facilitation",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "mm-analyst",
-      "type": "agent",
       "layer": "L3"
     },
     {
@@ -298,36 +396,6 @@
       "layer": "L3"
     },
     {
-      "id": "performance-tuning",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "platform-command-lifecycle-manager",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "platform-skill-lifecycle-manager",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "pm",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "post-write-chain",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "pp-analyst",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
       "id": "procedure.co-abap.custom-dev-delivery",
       "type": "procedure",
       "layer": "L3"
@@ -358,99 +426,868 @@
       "layer": "L3"
     },
     {
-      "id": "project-review",
+      "id": "skill:root/abap-code-review",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "abap-code-review",
+      "scope": "root",
+      "capability": "abap-code-review",
+      "content_hash": "bd5a3b4a29f40dd5",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/abap-code-review/SKILL.md",
+        ".claude/skills/abap-code-review/SKILL.md",
+        ".gemini/skills/abap-code-review/SKILL.md",
+        ".agents/skills/abap-code-review/SKILL.md",
+        ".codex/skills/abap-code-review/SKILL.md",
+        ".hermes/skills/abap-code-review/SKILL.md"
+      ]
     },
     {
-      "id": "read-only-analyst",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "research-analysis",
+      "id": "skill:root/abap-dev",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "abap-dev",
+      "scope": "root",
+      "capability": "abap-dev",
+      "content_hash": "71b8c0e2017a0970",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/abap-dev/SKILL.md",
+        ".claude/skills/abap-dev/SKILL.md",
+        ".gemini/skills/abap-dev/SKILL.md",
+        ".agents/skills/abap-dev/SKILL.md",
+        ".codex/skills/abap-dev/SKILL.md",
+        ".hermes/skills/abap-dev/SKILL.md"
+      ]
     },
     {
-      "id": "sap-co",
+      "id": "skill:root/accessibility-audit",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "accessibility-audit",
+      "scope": "root",
+      "capability": "accessibility-audit",
+      "content_hash": "aa244933ce706aa7",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/accessibility-audit/SKILL.md",
+        ".claude/skills/accessibility-audit/SKILL.md",
+        ".gemini/skills/accessibility-audit/SKILL.md",
+        ".agents/skills/accessibility-audit/SKILL.md",
+        ".codex/skills/accessibility-audit/SKILL.md",
+        ".hermes/skills/accessibility-audit/SKILL.md"
+      ]
     },
     {
-      "id": "sap-fi",
+      "id": "skill:root/agent-lifecycle-manager",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "agent-lifecycle-manager",
+      "scope": "root",
+      "capability": "agent-lifecycle-manager",
+      "content_hash": "5f3763d3efa41c1b",
+      "version": "1.3.0",
+      "mirrors": [
+        "skills/agent-lifecycle-manager/SKILL.md",
+        ".claude/skills/agent-lifecycle-manager/SKILL.md",
+        ".gemini/skills/agent-lifecycle-manager/SKILL.md",
+        ".agents/skills/agent-lifecycle-manager/SKILL.md",
+        ".codex/skills/agent-lifecycle-manager/SKILL.md",
+        ".hermes/skills/agent-lifecycle-manager/SKILL.md"
+      ]
     },
     {
-      "id": "sap-investigator",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "sap-le",
+      "id": "skill:root/api-documentation",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "api-documentation",
+      "scope": "root",
+      "capability": "api-documentation",
+      "content_hash": "e080e5852535bf67",
+      "version": "1.0.2",
+      "mirrors": [
+        "skills/api-documentation/SKILL.md",
+        ".claude/skills/api-documentation/SKILL.md",
+        ".gemini/skills/api-documentation/SKILL.md",
+        ".agents/skills/api-documentation/SKILL.md",
+        ".codex/skills/api-documentation/SKILL.md",
+        ".hermes/skills/api-documentation/SKILL.md"
+      ]
     },
     {
-      "id": "sap-mm",
+      "id": "skill:root/ci-triage",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "ci-triage",
+      "scope": "root",
+      "capability": "ci-triage",
+      "content_hash": "c10cba25e7560168",
+      "version": "0.2.0",
+      "mirrors": [
+        "skills/ci-triage/SKILL.md",
+        ".claude/skills/ci-triage/SKILL.md",
+        ".gemini/skills/ci-triage/SKILL.md",
+        ".agents/skills/ci-triage/SKILL.md",
+        ".codex/skills/ci-triage/SKILL.md",
+        ".hermes/skills/ci-triage/SKILL.md"
+      ]
     },
     {
-      "id": "sap-pp",
+      "id": "skill:root/decision-record",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "decision-record",
+      "scope": "root",
+      "capability": "decision-record",
+      "content_hash": "af9dd89ccdeec7b2",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/decision-record/SKILL.md",
+        ".claude/skills/decision-record/SKILL.md",
+        ".gemini/skills/decision-record/SKILL.md",
+        ".agents/skills/decision-record/SKILL.md",
+        ".codex/skills/decision-record/SKILL.md",
+        ".hermes/skills/decision-record/SKILL.md"
+      ]
     },
     {
-      "id": "sap-sd",
+      "id": "skill:root/design-foundation",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "design-foundation",
+      "scope": "root",
+      "capability": "design-foundation",
+      "content_hash": "0f50cf02ea552572",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/design-foundation/SKILL.md",
+        ".claude/skills/design-foundation/SKILL.md",
+        ".gemini/skills/design-foundation/SKILL.md",
+        ".agents/skills/design-foundation/SKILL.md",
+        ".codex/skills/design-foundation/SKILL.md",
+        ".hermes/skills/design-foundation/SKILL.md"
+      ]
     },
     {
-      "id": "schema-inspector",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "script-lifecycle-manager",
+      "id": "skill:root/desktop-app-fallback",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "desktop-app-fallback",
+      "scope": "root",
+      "capability": "desktop-app-fallback",
+      "content_hash": "f054cc548cd55530",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/desktop-app-fallback/SKILL.md",
+        ".claude/skills/desktop-app-fallback/SKILL.md",
+        ".gemini/skills/desktop-app-fallback/SKILL.md",
+        ".agents/skills/desktop-app-fallback/SKILL.md",
+        ".codex/skills/desktop-app-fallback/SKILL.md",
+        ".hermes/skills/desktop-app-fallback/SKILL.md"
+      ]
     },
     {
-      "id": "sd-analyst",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "security-monitor",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "security-scan",
+      "id": "skill:root/documentation-writing",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "documentation-writing",
+      "scope": "root",
+      "capability": "documentation-writing",
+      "content_hash": "d0f7731ae22fc0ad",
+      "version": "1.0.3",
+      "mirrors": [
+        "skills/documentation-writing/SKILL.md",
+        ".claude/skills/documentation-writing/SKILL.md",
+        ".gemini/skills/documentation-writing/SKILL.md",
+        ".agents/skills/documentation-writing/SKILL.md",
+        ".codex/skills/documentation-writing/SKILL.md",
+        ".hermes/skills/documentation-writing/SKILL.md"
+      ]
     },
     {
-      "id": "service-design",
+      "id": "skill:root/dump-monitor",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "dump-monitor",
+      "scope": "root",
+      "capability": "dump-monitor",
+      "content_hash": "2e5c5d43036a13b6",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/dump-monitor/SKILL.md",
+        ".claude/skills/dump-monitor/SKILL.md",
+        ".gemini/skills/dump-monitor/SKILL.md",
+        ".agents/skills/dump-monitor/SKILL.md",
+        ".codex/skills/dump-monitor/SKILL.md",
+        ".hermes/skills/dump-monitor/SKILL.md"
+      ]
     },
     {
-      "id": "skill-lifecycle-manager",
+      "id": "skill:root/evidence-ledger",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "evidence-ledger",
+      "scope": "root",
+      "capability": "evidence-ledger",
+      "content_hash": "7c15e880b454b203",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/evidence-ledger/SKILL.md",
+        ".claude/skills/evidence-ledger/SKILL.md",
+        ".gemini/skills/evidence-ledger/SKILL.md",
+        ".agents/skills/evidence-ledger/SKILL.md",
+        ".codex/skills/evidence-ledger/SKILL.md",
+        ".hermes/skills/evidence-ledger/SKILL.md"
+      ]
     },
     {
-      "id": "source-command-celebrate",
+      "id": "skill:root/explain-me",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "explain-me",
+      "scope": "root",
+      "capability": "explain-me",
+      "content_hash": "7bff142975a1c6c7",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/explain-me/SKILL.md",
+        ".claude/skills/explain-me/SKILL.md",
+        ".gemini/skills/explain-me/SKILL.md",
+        ".agents/skills/explain-me/SKILL.md",
+        ".codex/skills/explain-me/SKILL.md",
+        ".hermes/skills/explain-me/SKILL.md"
+      ]
     },
     {
-      "id": "source-command-commit-push-pr",
+      "id": "skill:root/finishing-a-development-branch",
       "type": "skill",
-      "layer": "L3"
+      "layer": "L3",
+      "name": "finishing-a-development-branch",
+      "scope": "root",
+      "capability": "finishing-a-development-branch",
+      "content_hash": "61e3ebdcba9b726b",
+      "version": "1.0.1",
+      "mirrors": [
+        "skills/finishing-a-development-branch/SKILL.md",
+        ".claude/skills/finishing-a-development-branch/SKILL.md",
+        ".gemini/skills/finishing-a-development-branch/SKILL.md",
+        ".agents/skills/finishing-a-development-branch/SKILL.md",
+        ".codex/skills/finishing-a-development-branch/SKILL.md",
+        ".hermes/skills/finishing-a-development-branch/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/gateguard",
+      "type": "skill",
+      "layer": "L3",
+      "name": "gateguard",
+      "scope": "root",
+      "capability": "gateguard",
+      "content_hash": "bde1c264aec7b18c",
+      "version": "1.0.2",
+      "mirrors": [
+        "skills/gateguard/SKILL.md",
+        ".claude/skills/gateguard/SKILL.md",
+        ".gemini/skills/gateguard/SKILL.md",
+        ".agents/skills/gateguard/SKILL.md",
+        ".codex/skills/gateguard/SKILL.md",
+        ".hermes/skills/gateguard/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/handbook",
+      "type": "skill",
+      "layer": "L3",
+      "name": "handbook",
+      "scope": "root",
+      "capability": "handbook",
+      "content_hash": "a9bd82eded8b1661",
+      "version": "0.6.0",
+      "mirrors": [
+        "skills/handbook/SKILL.md",
+        ".claude/skills/handbook/SKILL.md",
+        ".gemini/skills/handbook/SKILL.md",
+        ".agents/skills/handbook/SKILL.md",
+        ".codex/skills/handbook/SKILL.md",
+        ".hermes/skills/handbook/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/handbook-sync-audit",
+      "type": "skill",
+      "layer": "L3",
+      "name": "handbook-sync-audit",
+      "scope": "root",
+      "capability": "handbook-sync-audit",
+      "content_hash": "fc3909fb71e5d0a2",
+      "version": "1.0.5",
+      "mirrors": [
+        "skills/handbook-sync-audit/SKILL.md",
+        ".claude/skills/handbook-sync-audit/SKILL.md",
+        ".gemini/skills/handbook-sync-audit/SKILL.md",
+        ".agents/skills/handbook-sync-audit/SKILL.md",
+        ".codex/skills/handbook-sync-audit/SKILL.md",
+        ".hermes/skills/handbook-sync-audit/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/i18n-audit",
+      "type": "skill",
+      "layer": "L3",
+      "name": "i18n-audit",
+      "scope": "root",
+      "capability": "i18n-audit",
+      "content_hash": "5029572bc159b21d",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/i18n-audit/SKILL.md",
+        ".claude/skills/i18n-audit/SKILL.md",
+        ".gemini/skills/i18n-audit/SKILL.md",
+        ".agents/skills/i18n-audit/SKILL.md",
+        ".codex/skills/i18n-audit/SKILL.md",
+        ".hermes/skills/i18n-audit/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/i18n-formatting",
+      "type": "skill",
+      "layer": "L3",
+      "name": "i18n-formatting",
+      "scope": "root",
+      "capability": "i18n-formatting",
+      "content_hash": "db8381f1fbb2ed31",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/i18n-formatting/SKILL.md",
+        ".claude/skills/i18n-formatting/SKILL.md",
+        ".gemini/skills/i18n-formatting/SKILL.md",
+        ".agents/skills/i18n-formatting/SKILL.md",
+        ".codex/skills/i18n-formatting/SKILL.md",
+        ".hermes/skills/i18n-formatting/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/i18n-layout",
+      "type": "skill",
+      "layer": "L3",
+      "name": "i18n-layout",
+      "scope": "root",
+      "capability": "i18n-layout",
+      "content_hash": "7a078ebadc5c908f",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/i18n-layout/SKILL.md",
+        ".claude/skills/i18n-layout/SKILL.md",
+        ".gemini/skills/i18n-layout/SKILL.md",
+        ".agents/skills/i18n-layout/SKILL.md",
+        ".codex/skills/i18n-layout/SKILL.md",
+        ".hermes/skills/i18n-layout/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/i18n-locale-config",
+      "type": "skill",
+      "layer": "L3",
+      "name": "i18n-locale-config",
+      "scope": "root",
+      "capability": "i18n-locale-config",
+      "content_hash": "3878ed90d1fad170",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/i18n-locale-config/SKILL.md",
+        ".claude/skills/i18n-locale-config/SKILL.md",
+        ".gemini/skills/i18n-locale-config/SKILL.md",
+        ".agents/skills/i18n-locale-config/SKILL.md",
+        ".codex/skills/i18n-locale-config/SKILL.md",
+        ".hermes/skills/i18n-locale-config/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/meeting-facilitation",
+      "type": "skill",
+      "layer": "L3",
+      "name": "meeting-facilitation",
+      "scope": "root",
+      "capability": "meeting-facilitation",
+      "content_hash": "4514fc0c89279ad1",
+      "version": "1.4.4",
+      "mirrors": [
+        "skills/meeting-facilitation/SKILL.md",
+        ".claude/skills/meeting-facilitation/SKILL.md",
+        ".gemini/skills/meeting-facilitation/SKILL.md",
+        ".agents/skills/meeting-facilitation/SKILL.md",
+        ".codex/skills/meeting-facilitation/SKILL.md",
+        ".hermes/skills/meeting-facilitation/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/performance-tuning",
+      "type": "skill",
+      "layer": "L3",
+      "name": "performance-tuning",
+      "scope": "root",
+      "capability": "performance-tuning",
+      "content_hash": "fa7a4bd1f76f4543",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/performance-tuning/SKILL.md",
+        ".claude/skills/performance-tuning/SKILL.md",
+        ".gemini/skills/performance-tuning/SKILL.md",
+        ".agents/skills/performance-tuning/SKILL.md",
+        ".codex/skills/performance-tuning/SKILL.md",
+        ".hermes/skills/performance-tuning/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/platform-command-lifecycle-manager",
+      "type": "skill",
+      "layer": "L3",
+      "name": "platform-command-lifecycle-manager",
+      "scope": "root",
+      "capability": "platform-command-lifecycle-manager",
+      "content_hash": "392bf490b9ef6b44",
+      "version": "1.0.3",
+      "mirrors": [
+        "skills/platform-command-lifecycle-manager/SKILL.md",
+        ".claude/skills/platform-command-lifecycle-manager/SKILL.md",
+        ".gemini/skills/platform-command-lifecycle-manager/SKILL.md",
+        ".agents/skills/platform-command-lifecycle-manager/SKILL.md",
+        ".codex/skills/platform-command-lifecycle-manager/SKILL.md",
+        ".hermes/skills/platform-command-lifecycle-manager/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/platform-skill-lifecycle-manager",
+      "type": "skill",
+      "layer": "L3",
+      "name": "platform-skill-lifecycle-manager",
+      "scope": "root",
+      "capability": "platform-skill-lifecycle-manager",
+      "content_hash": "08e425f43401cabc",
+      "version": "1.0.2",
+      "mirrors": [
+        "skills/platform-skill-lifecycle-manager/SKILL.md",
+        ".claude/skills/platform-skill-lifecycle-manager/SKILL.md",
+        ".gemini/skills/platform-skill-lifecycle-manager/SKILL.md",
+        ".agents/skills/platform-skill-lifecycle-manager/SKILL.md",
+        ".codex/skills/platform-skill-lifecycle-manager/SKILL.md",
+        ".hermes/skills/platform-skill-lifecycle-manager/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/post-write-chain",
+      "type": "skill",
+      "layer": "L3",
+      "name": "post-write-chain",
+      "scope": "root",
+      "capability": "post-write-chain",
+      "content_hash": "6ffb0778fead72c2",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/post-write-chain/SKILL.md",
+        ".claude/skills/post-write-chain/SKILL.md",
+        ".gemini/skills/post-write-chain/SKILL.md",
+        ".agents/skills/post-write-chain/SKILL.md",
+        ".codex/skills/post-write-chain/SKILL.md",
+        ".hermes/skills/post-write-chain/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/project-review",
+      "type": "skill",
+      "layer": "L3",
+      "name": "project-review",
+      "scope": "root",
+      "capability": "project-review",
+      "content_hash": "0193167933931b10",
+      "version": "1.3.2",
+      "mirrors": [
+        "skills/project-review/SKILL.md",
+        ".claude/skills/project-review/SKILL.md",
+        ".gemini/skills/project-review/SKILL.md",
+        ".agents/skills/project-review/SKILL.md",
+        ".codex/skills/project-review/SKILL.md",
+        ".hermes/skills/project-review/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/research-analysis",
+      "type": "skill",
+      "layer": "L3",
+      "name": "research-analysis",
+      "scope": "root",
+      "capability": "research-analysis",
+      "content_hash": "1e9a79fcdf108919",
+      "version": "1.0.2",
+      "mirrors": [
+        "skills/research-analysis/SKILL.md",
+        ".claude/skills/research-analysis/SKILL.md",
+        ".gemini/skills/research-analysis/SKILL.md",
+        ".agents/skills/research-analysis/SKILL.md",
+        ".codex/skills/research-analysis/SKILL.md",
+        ".hermes/skills/research-analysis/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-co",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-co",
+      "scope": "root",
+      "capability": "sap-co",
+      "content_hash": "e390cc519ade12a8",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-co/SKILL.md",
+        ".claude/skills/sap-co/SKILL.md",
+        ".gemini/skills/sap-co/SKILL.md",
+        ".agents/skills/sap-co/SKILL.md",
+        ".codex/skills/sap-co/SKILL.md",
+        ".hermes/skills/sap-co/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-fi",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-fi",
+      "scope": "root",
+      "capability": "sap-fi",
+      "content_hash": "93a61c577b504fde",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-fi/SKILL.md",
+        ".claude/skills/sap-fi/SKILL.md",
+        ".gemini/skills/sap-fi/SKILL.md",
+        ".agents/skills/sap-fi/SKILL.md",
+        ".codex/skills/sap-fi/SKILL.md",
+        ".hermes/skills/sap-fi/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-le",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-le",
+      "scope": "root",
+      "capability": "sap-le",
+      "content_hash": "d59a002e11fbae14",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-le/SKILL.md",
+        ".claude/skills/sap-le/SKILL.md",
+        ".gemini/skills/sap-le/SKILL.md",
+        ".agents/skills/sap-le/SKILL.md",
+        ".codex/skills/sap-le/SKILL.md",
+        ".hermes/skills/sap-le/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-mm",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-mm",
+      "scope": "root",
+      "capability": "sap-mm",
+      "content_hash": "9f1f47337b73df22",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-mm/SKILL.md",
+        ".claude/skills/sap-mm/SKILL.md",
+        ".gemini/skills/sap-mm/SKILL.md",
+        ".agents/skills/sap-mm/SKILL.md",
+        ".codex/skills/sap-mm/SKILL.md",
+        ".hermes/skills/sap-mm/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-pp",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-pp",
+      "scope": "root",
+      "capability": "sap-pp",
+      "content_hash": "ad721957f0b65841",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-pp/SKILL.md",
+        ".claude/skills/sap-pp/SKILL.md",
+        ".gemini/skills/sap-pp/SKILL.md",
+        ".agents/skills/sap-pp/SKILL.md",
+        ".codex/skills/sap-pp/SKILL.md",
+        ".hermes/skills/sap-pp/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sap-sd",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sap-sd",
+      "scope": "root",
+      "capability": "sap-sd",
+      "content_hash": "790301c7bc0b9cfe",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/sap-sd/SKILL.md",
+        ".claude/skills/sap-sd/SKILL.md",
+        ".gemini/skills/sap-sd/SKILL.md",
+        ".agents/skills/sap-sd/SKILL.md",
+        ".codex/skills/sap-sd/SKILL.md",
+        ".hermes/skills/sap-sd/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/script-lifecycle-manager",
+      "type": "skill",
+      "layer": "L3",
+      "name": "script-lifecycle-manager",
+      "scope": "root",
+      "capability": "script-lifecycle-manager",
+      "content_hash": "ff4bf06dcbc99aac",
+      "version": "1.2.2",
+      "mirrors": [
+        "skills/script-lifecycle-manager/SKILL.md",
+        ".claude/skills/script-lifecycle-manager/SKILL.md",
+        ".gemini/skills/script-lifecycle-manager/SKILL.md",
+        ".agents/skills/script-lifecycle-manager/SKILL.md",
+        ".codex/skills/script-lifecycle-manager/SKILL.md",
+        ".hermes/skills/script-lifecycle-manager/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/security-scan",
+      "type": "skill",
+      "layer": "L3",
+      "name": "security-scan",
+      "scope": "root",
+      "capability": "security-scan",
+      "content_hash": "3e12b15970e57e69",
+      "version": "1.2.0",
+      "mirrors": [
+        "skills/security-scan/SKILL.md",
+        ".claude/skills/security-scan/SKILL.md",
+        ".gemini/skills/security-scan/SKILL.md",
+        ".agents/skills/security-scan/SKILL.md",
+        ".codex/skills/security-scan/SKILL.md",
+        ".hermes/skills/security-scan/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/service-design",
+      "type": "skill",
+      "layer": "L3",
+      "name": "service-design",
+      "scope": "root",
+      "capability": "service-design",
+      "content_hash": "771b77446626ad51",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/service-design/SKILL.md",
+        ".claude/skills/service-design/SKILL.md",
+        ".gemini/skills/service-design/SKILL.md",
+        ".agents/skills/service-design/SKILL.md",
+        ".codex/skills/service-design/SKILL.md",
+        ".hermes/skills/service-design/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/skill-lifecycle-manager",
+      "type": "skill",
+      "layer": "L3",
+      "name": "skill-lifecycle-manager",
+      "scope": "root",
+      "capability": "skill-lifecycle-manager",
+      "content_hash": "883308f6fa2d77b7",
+      "version": "1.5.0",
+      "mirrors": [
+        "skills/skill-lifecycle-manager/SKILL.md",
+        ".claude/skills/skill-lifecycle-manager/SKILL.md",
+        ".gemini/skills/skill-lifecycle-manager/SKILL.md",
+        ".agents/skills/skill-lifecycle-manager/SKILL.md",
+        ".codex/skills/skill-lifecycle-manager/SKILL.md",
+        ".hermes/skills/skill-lifecycle-manager/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/source-command-celebrate",
+      "type": "skill",
+      "layer": "L3",
+      "name": "source-command-celebrate",
+      "scope": "root",
+      "capability": "source-command-celebrate",
+      "content_hash": "5fda46d8216721cf",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/source-command-celebrate/SKILL.md",
+        ".claude/skills/source-command-celebrate/SKILL.md",
+        ".gemini/skills/source-command-celebrate/SKILL.md",
+        ".agents/skills/source-command-celebrate/SKILL.md",
+        ".codex/skills/source-command-celebrate/SKILL.md",
+        ".hermes/skills/source-command-celebrate/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/source-command-commit-push-pr",
+      "type": "skill",
+      "layer": "L3",
+      "name": "source-command-commit-push-pr",
+      "scope": "root",
+      "capability": "source-command-commit-push-pr",
+      "content_hash": "4fa915cd81a96c7b",
+      "version": "1.0.3",
+      "mirrors": [
+        "skills/source-command-commit-push-pr/SKILL.md",
+        ".claude/skills/source-command-commit-push-pr/SKILL.md",
+        ".gemini/skills/source-command-commit-push-pr/SKILL.md",
+        ".agents/skills/source-command-commit-push-pr/SKILL.md",
+        ".codex/skills/source-command-commit-push-pr/SKILL.md",
+        ".hermes/skills/source-command-commit-push-pr/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/standup-synthesizer",
+      "type": "skill",
+      "layer": "L3",
+      "name": "standup-synthesizer",
+      "scope": "root",
+      "capability": "standup-synthesizer",
+      "content_hash": "c74ddbdf4afc867f",
+      "version": "1.0.0",
+      "mirrors": [
+        "skills/standup-synthesizer/SKILL.md",
+        ".claude/skills/standup-synthesizer/SKILL.md",
+        ".gemini/skills/standup-synthesizer/SKILL.md",
+        ".agents/skills/standup-synthesizer/SKILL.md",
+        ".codex/skills/standup-synthesizer/SKILL.md",
+        ".hermes/skills/standup-synthesizer/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/sync",
+      "type": "skill",
+      "layer": "L3",
+      "name": "sync",
+      "scope": "root",
+      "capability": "sync",
+      "content_hash": "661843888f616b5a",
+      "version": "1.8.0",
+      "mirrors": [
+        "skills/sync/SKILL.md",
+        ".claude/skills/sync/SKILL.md",
+        ".gemini/skills/sync/SKILL.md",
+        ".agents/skills/sync/SKILL.md",
+        ".codex/skills/sync/SKILL.md",
+        ".hermes/skills/sync/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/team-builder",
+      "type": "skill",
+      "layer": "L3",
+      "name": "team-builder",
+      "scope": "root",
+      "capability": "team-builder",
+      "content_hash": "b2d442108c2f0c78",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/team-builder/SKILL.md",
+        ".claude/skills/team-builder/SKILL.md",
+        ".gemini/skills/team-builder/SKILL.md",
+        ".agents/skills/team-builder/SKILL.md",
+        ".codex/skills/team-builder/SKILL.md",
+        ".hermes/skills/team-builder/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/token-usage-lint",
+      "type": "skill",
+      "layer": "L3",
+      "name": "token-usage-lint",
+      "scope": "root",
+      "capability": "token-usage-lint",
+      "content_hash": "e7762c79dcc9a7f2",
+      "version": "1.1.0",
+      "mirrors": [
+        "skills/token-usage-lint/SKILL.md",
+        ".claude/skills/token-usage-lint/SKILL.md",
+        ".gemini/skills/token-usage-lint/SKILL.md",
+        ".agents/skills/token-usage-lint/SKILL.md",
+        ".codex/skills/token-usage-lint/SKILL.md",
+        ".hermes/skills/token-usage-lint/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/translate",
+      "type": "skill",
+      "layer": "L3",
+      "name": "translate",
+      "scope": "root",
+      "capability": "translate",
+      "content_hash": "130763d32d8932dc",
+      "version": "1.0.3",
+      "mirrors": [
+        "skills/translate/SKILL.md",
+        ".claude/skills/translate/SKILL.md",
+        ".gemini/skills/translate/SKILL.md",
+        ".agents/skills/translate/SKILL.md",
+        ".codex/skills/translate/SKILL.md",
+        ".hermes/skills/translate/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/ui-ux-design-intelligence",
+      "type": "skill",
+      "layer": "L3",
+      "name": "ui-ux-design-intelligence",
+      "scope": "root",
+      "capability": "ui-ux-design-intelligence",
+      "content_hash": "584f569c20014122",
+      "version": "1.0.1",
+      "mirrors": [
+        "skills/ui-ux-design-intelligence/SKILL.md",
+        ".claude/skills/ui-ux-design-intelligence/SKILL.md",
+        ".gemini/skills/ui-ux-design-intelligence/SKILL.md",
+        ".agents/skills/ui-ux-design-intelligence/SKILL.md",
+        ".codex/skills/ui-ux-design-intelligence/SKILL.md",
+        ".hermes/skills/ui-ux-design-intelligence/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/update-bun-packages",
+      "type": "skill",
+      "layer": "L3",
+      "name": "update-bun-packages",
+      "scope": "root",
+      "capability": "update-bun-packages",
+      "content_hash": "d051c963862b0514",
+      "version": "1.3.1",
+      "mirrors": [
+        "skills/update-bun-packages/SKILL.md",
+        ".claude/skills/update-bun-packages/SKILL.md",
+        ".gemini/skills/update-bun-packages/SKILL.md",
+        ".agents/skills/update-bun-packages/SKILL.md",
+        ".codex/skills/update-bun-packages/SKILL.md",
+        ".hermes/skills/update-bun-packages/SKILL.md"
+      ]
+    },
+    {
+      "id": "skill:root/zod-contract-gate",
+      "type": "skill",
+      "layer": "L3",
+      "name": "zod-contract-gate",
+      "scope": "root",
+      "capability": "zod-contract-gate",
+      "content_hash": "81deab19c0e351e7",
+      "version": "1.0.2",
+      "mirrors": [
+        "skills/zod-contract-gate/SKILL.md",
+        ".claude/skills/zod-contract-gate/SKILL.md",
+        ".gemini/skills/zod-contract-gate/SKILL.md",
+        ".agents/skills/zod-contract-gate/SKILL.md",
+        ".codex/skills/zod-contract-gate/SKILL.md",
+        ".hermes/skills/zod-contract-gate/SKILL.md"
+      ]
     },
     {
       "id": "stage.co-abap.S1",
@@ -461,940 +1298,234 @@
       "id": "stage.co-abap.S2",
       "type": "stage",
       "layer": "L3"
-    },
-    {
-      "id": "standup-synthesizer",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "sync",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "team-builder",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "test-runner",
-      "type": "agent",
-      "layer": "L3"
-    },
-    {
-      "id": "token-usage-lint",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "translate",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "ui-ux-design-intelligence",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "update-bun-packages",
-      "type": "skill",
-      "layer": "L3"
-    },
-    {
-      "id": "zod-contract-gate",
-      "type": "skill",
-      "layer": "L3"
     }
   ],
   "edges": [
     {
-      "type": "composes_with",
-      "from": "abap-code-review",
-      "to": "abap-dev",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-code-review/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "follows",
-      "from": "abap-code-review",
-      "to": "abap-dev",
-      "source": "relates_to",
-      "provenance": {
-        "file": "skills/abap-code-review/SKILL.md",
-        "field": "relates_to",
-        "index": 1
-      }
-    },
-    {
-      "type": "used_by",
-      "from": "abap-code-review",
-      "to": "code-writer",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/code-writer.md",
-        "field": "required_skills",
-        "index": 0
-      }
-    },
-    {
       "type": "references",
-      "from": "abap-code-review",
-      "to": "dump-monitor",
-      "source": "prose"
-    },
-    {
-      "type": "produces",
-      "from": "abap-code-review",
-      "to": "output_type.review_findings",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "references",
-      "from": "abap-code-review",
-      "to": "performance-tuning",
-      "source": "prose"
-    },
-    {
-      "type": "used_by",
-      "from": "abap-code-review",
-      "to": "test-runner",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/test-runner.md",
-        "field": "required_skills",
-        "index": 0
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "dump-monitor",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 6
-      }
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.acceptance_report",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.automation_scripts",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.data_layer_design",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.data_model_report",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.form_outputs",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.interface_design",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.technical_analysis",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.test_report",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "produces",
-      "from": "abap-dev",
-      "to": "output_type.ui_enhancement",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "research-analysis",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 7
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-co",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 1
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-co",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 9
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-fi",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 8
-      }
-    },
-    {
-      "type": "follows",
-      "from": "abap-dev",
-      "to": "sap-fi",
-      "source": "relates_to",
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-le",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 4
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-le",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 12
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-mm",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 3
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-mm",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 11
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-pp",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 5
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-pp",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 13
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-sd",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 2
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "abap-dev",
-      "to": "sap-sd",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/abap-dev/SKILL.md",
-        "field": "relates_to",
-        "index": 10
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "agent-lifecycle-manager",
-      "to": "skill-lifecycle-manager",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/agent-lifecycle-manager/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "references",
-      "from": "agent-lifecycle-manager",
-      "to": "skill-lifecycle-manager",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/i18n-audit",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "ci-triage",
-      "to": "project-review",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/i18n-formatting",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/i18n-layout",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/i18n-locale-config",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/translate",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/pm",
+      "to": "skill:root/agent-lifecycle-manager",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/pm",
+      "to": "skill:root/decision-record",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/pm",
+      "to": "skill:root/skill-lifecycle-manager",
       "source": "prose"
     },
     {
       "type": "cites_skill",
       "from": "dec:DEC-20260926-01",
-      "to": "decision-record",
+      "to": "skill:root/decision-record",
       "source": "skills_used"
     },
     {
       "type": "cites_skill",
       "from": "dec:DEC-20260926-01",
-      "to": "project-review",
+      "to": "skill:root/project-review",
       "source": "skills_used"
     },
     {
-      "type": "references",
-      "from": "decision-record",
-      "to": "evidence-ledger",
-      "source": "prose"
-    },
-    {
-      "type": "composes_with",
-      "from": "design-foundation",
-      "to": "accessibility-audit",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/design-foundation/SKILL.md",
-        "field": "relates_to",
-        "index": 2
-      }
-    },
-    {
-      "type": "references",
-      "from": "design-foundation",
-      "to": "accessibility-audit",
-      "source": "prose"
-    },
-    {
-      "type": "composes_with",
-      "from": "design-foundation",
-      "to": "token-usage-lint",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/design-foundation/SKILL.md",
-        "field": "relates_to",
-        "index": 1
-      }
-    },
-    {
-      "type": "references",
-      "from": "design-foundation",
-      "to": "token-usage-lint",
-      "source": "prose"
-    },
-    {
-      "type": "enables",
-      "from": "design-foundation",
-      "to": "ui-ux-design-intelligence",
-      "source": "relates_to",
-      "provenance": {
-        "file": "skills/design-foundation/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "references",
-      "from": "design-foundation",
-      "to": "ui-ux-design-intelligence",
-      "source": "prose"
-    },
-    {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "agent-lifecycle-manager",
+      "to": "skill:root/agent-lifecycle-manager",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "decision-record",
+      "to": "skill:root/decision-record",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "evidence-ledger",
+      "to": "skill:root/evidence-ledger",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "explain-me",
+      "to": "skill:root/explain-me",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "handbook",
+      "to": "skill:root/handbook",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "handbook-sync-audit",
+      "to": "skill:root/handbook-sync-audit",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "i18n-audit",
+      "to": "skill:root/i18n-audit",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "i18n-formatting",
+      "to": "skill:root/i18n-formatting",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "i18n-layout",
+      "to": "skill:root/i18n-layout",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "i18n-locale-config",
+      "to": "skill:root/i18n-locale-config",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "meeting-facilitation",
+      "to": "skill:root/meeting-facilitation",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "project-review",
+      "to": "skill:root/project-review",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "security-scan",
+      "to": "skill:root/security-scan",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "skill-lifecycle-manager",
+      "to": "skill:root/skill-lifecycle-manager",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:AGENTS.md",
-      "to": "sync",
+      "to": "skill:root/sync",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:CLAUDE.md",
-      "to": "abap-dev",
+      "to": "skill:root/abap-dev",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:CLAUDE.md",
-      "to": "desktop-app-fallback",
+      "to": "skill:root/desktop-app-fallback",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:CLAUDE.md",
-      "to": "post-write-chain",
+      "to": "skill:root/post-write-chain",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:CODEX.md",
-      "to": "meeting-facilitation",
+      "to": "skill:root/meeting-facilitation",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:GEMINI.md",
-      "to": "abap-dev",
+      "to": "skill:root/abap-dev",
       "source": "workflow-doc"
     },
     {
       "type": "cites_skill",
       "from": "doc:GEMINI.md",
-      "to": "post-write-chain",
+      "to": "skill:root/post-write-chain",
       "source": "workflow-doc"
     },
     {
-      "type": "composes_with",
-      "from": "documentation-writing",
-      "to": "team-builder",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/documentation-writing/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "follows",
-      "from": "dump-monitor",
-      "to": "abap-dev",
-      "source": "relates_to",
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 5
-      }
-    },
-    {
-      "type": "produces",
-      "from": "dump-monitor",
-      "to": "output_type.system_state_report",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "research-analysis",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 6
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "sap-co",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 1
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "sap-fi",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 0
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "sap-le",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 4
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "sap-mm",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 3
-      }
-    },
-    {
-      "type": "composes_with",
-      "from": "dump-monitor",
-      "to": "sap-sd",
-      "source": "relates_to",
-      "symmetric": true,
-      "provenance": {
-        "file": "skills/dump-monitor/SKILL.md",
-        "field": "relates_to",
-        "index": 2
-      }
-    },
-    {
-      "type": "references",
-      "from": "evidence-ledger",
-      "to": "decision-record",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "handbook",
-      "to": "handbook-sync-audit",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "handbook-sync-audit",
-      "to": "handbook",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "handbook-sync-audit",
-      "to": "project-review",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-audit",
-      "to": "i18n-formatting",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-audit",
-      "to": "i18n-layout",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-audit",
-      "to": "i18n-locale-config",
-      "source": "prose"
-    },
-    {
-      "type": "used_by",
-      "from": "i18n-audit",
-      "to": "i18n-specialist",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/i18n-specialist.md",
-        "field": "required_skills",
-        "index": 3
-      }
-    },
-    {
-      "type": "references",
-      "from": "i18n-formatting",
-      "to": "i18n-layout",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-formatting",
-      "to": "i18n-locale-config",
-      "source": "prose"
-    },
-    {
-      "type": "used_by",
-      "from": "i18n-formatting",
-      "to": "i18n-specialist",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/i18n-specialist.md",
-        "field": "required_skills",
-        "index": 1
-      }
-    },
-    {
-      "type": "references",
-      "from": "i18n-formatting",
-      "to": "translate",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-layout",
-      "to": "i18n-formatting",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-layout",
-      "to": "i18n-locale-config",
-      "source": "prose"
-    },
-    {
-      "type": "used_by",
-      "from": "i18n-layout",
-      "to": "i18n-specialist",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/i18n-specialist.md",
-        "field": "required_skills",
-        "index": 2
-      }
-    },
-    {
-      "type": "references",
-      "from": "i18n-layout",
-      "to": "translate",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-locale-config",
-      "to": "i18n-formatting",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-locale-config",
-      "to": "i18n-layout",
-      "source": "prose"
-    },
-    {
-      "type": "used_by",
-      "from": "i18n-locale-config",
-      "to": "i18n-specialist",
-      "source": "required_skills",
-      "provenance": {
-        "file": "agents/i18n-specialist.md",
-        "field": "required_skills",
-        "index": 0
-      }
-    },
-    {
-      "type": "references",
-      "from": "i18n-locale-config",
-      "to": "translate",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-specialist",
-      "to": "i18n-audit",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-specialist",
-      "to": "i18n-formatting",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-specialist",
-      "to": "i18n-layout",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-specialist",
-      "to": "i18n-locale-config",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "i18n-specialist",
-      "to": "translate",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "meeting-facilitation",
-      "to": "project-review",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "meeting-facilitation",
-      "to": "team-builder",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "pm",
-      "to": "agent-lifecycle-manager",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "pm",
-      "to": "decision-record",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "pm",
-      "to": "skill-lifecycle-manager",
-      "source": "prose"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-code-review",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "follows",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "code-writer",
+      "to": "agent:root/code-writer",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "code-writer",
+      "to": "agent:root/fiori-developer",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "fiori-developer",
+      "to": "agent:root/form-expert",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "form-expert",
+      "to": "agent:root/gui-scripter",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "gui-scripter",
+      "to": "agent:root/sap-investigator",
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "step_by_agent",
+      "from": "procedure.co-abap.custom-dev-delivery",
+      "to": "agent:root/test-runner",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
@@ -1405,11 +1536,22 @@
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
+      "type": "step_uses_skill",
       "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "sap-investigator",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "to": "skill:root/abap-code-review",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "follows",
+      "from": "procedure.co-abap.custom-dev-delivery",
+      "to": "skill:root/abap-dev",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "step_uses_skill",
+      "from": "procedure.co-abap.custom-dev-delivery",
+      "to": "skill:root/abap-dev",
+      "source": "procedure_schema"
     },
     {
       "type": "in_stage",
@@ -1419,68 +1561,64 @@
     },
     {
       "type": "step_by_agent",
-      "from": "procedure.co-abap.custom-dev-delivery",
-      "to": "test-runner",
-      "source": "procedure_schema",
-      "actor_type": "agent"
-    },
-    {
-      "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_by_agent",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "architect",
+      "to": "agent:root/architect",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "co-analyst",
+      "to": "agent:root/co-analyst",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "co-analyst",
-      "source": "procedure_schema",
-      "actor_type": "agent"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "dump-monitor",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_by_agent",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "fi-analyst",
+      "to": "agent:root/fi-analyst",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "le-analyst",
+      "to": "agent:root/le-analyst",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "mm-analyst",
+      "to": "agent:root/mm-analyst",
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "step_by_agent",
+      "from": "procedure.co-abap.requirements-analysis",
+      "to": "agent:root/pp-analyst",
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "step_by_agent",
+      "from": "procedure.co-abap.requirements-analysis",
+      "to": "agent:root/read-only-analyst",
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "step_by_agent",
+      "from": "procedure.co-abap.requirements-analysis",
+      "to": "agent:root/schema-inspector",
+      "source": "procedure_schema",
+      "actor_type": "agent"
+    },
+    {
+      "type": "step_by_agent",
+      "from": "procedure.co-abap.requirements-analysis",
+      "to": "agent:root/sd-analyst",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
@@ -1491,80 +1629,64 @@
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "pp-analyst",
-      "source": "procedure_schema",
-      "actor_type": "agent"
-    },
-    {
       "type": "enables",
       "from": "procedure.co-abap.requirements-analysis",
       "to": "procedure.co-abap.solution-blueprint",
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
-      "from": "procedure.co-abap.requirements-analysis",
-      "to": "read-only-analyst",
-      "source": "procedure_schema",
-      "actor_type": "agent"
-    },
-    {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "research-analysis",
+      "to": "skill:root/abap-dev",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-co",
+      "to": "skill:root/dump-monitor",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-fi",
+      "to": "skill:root/research-analysis",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-le",
+      "to": "skill:root/sap-co",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-mm",
+      "to": "skill:root/sap-fi",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-pp",
+      "to": "skill:root/sap-le",
       "source": "procedure_schema"
     },
     {
       "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sap-sd",
+      "to": "skill:root/sap-mm",
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
+      "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "schema-inspector",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "to": "skill:root/sap-pp",
+      "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
+      "type": "step_uses_skill",
       "from": "procedure.co-abap.requirements-analysis",
-      "to": "sd-analyst",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "to": "skill:root/sap-sd",
+      "source": "procedure_schema"
     },
     {
       "type": "in_stage",
@@ -1573,10 +1695,11 @@
       "source": "process_schema"
     },
     {
-      "type": "step_uses_skill",
+      "type": "step_by_agent",
       "from": "procedure.co-abap.security-closeout-review",
-      "to": "abap-code-review",
-      "source": "procedure_schema"
+      "to": "agent:root/security-monitor",
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1591,11 +1714,10 @@
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
+      "type": "step_uses_skill",
       "from": "procedure.co-abap.security-closeout-review",
-      "to": "security-monitor",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "to": "skill:root/abap-code-review",
+      "source": "procedure_schema"
     },
     {
       "type": "in_stage",
@@ -1604,10 +1726,11 @@
       "source": "process_schema"
     },
     {
-      "type": "step_uses_skill",
+      "type": "step_by_agent",
       "from": "procedure.co-abap.security-readiness-baseline",
-      "to": "abap-code-review",
-      "source": "procedure_schema"
+      "to": "agent:root/security-monitor",
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "produces",
@@ -1622,11 +1745,10 @@
       "source": "procedure_schema"
     },
     {
-      "type": "step_by_agent",
+      "type": "step_uses_skill",
       "from": "procedure.co-abap.security-readiness-baseline",
-      "to": "security-monitor",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "to": "skill:root/abap-code-review",
+      "source": "procedure_schema"
     },
     {
       "type": "in_stage",
@@ -1635,41 +1757,23 @@
       "source": "process_schema"
     },
     {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.solution-blueprint",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.solution-blueprint",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.solution-blueprint",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
-      "to": "architect",
+      "to": "agent:root/architect",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
-      "to": "dba",
+      "to": "agent:root/dba",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.solution-blueprint",
-      "to": "interface-expert",
+      "to": "agent:root/interface-expert",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
@@ -1692,27 +1796,28 @@
       "source": "procedure_schema"
     },
     {
+      "type": "step_uses_skill",
+      "from": "procedure.co-abap.solution-blueprint",
+      "to": "skill:root/abap-dev",
+      "source": "procedure_schema"
+    },
+    {
       "type": "in_stage",
       "from": "procedure.co-abap.solution-blueprint",
       "to": "stage.co-abap.S1",
       "source": "process_schema"
     },
     {
-      "type": "step_uses_skill",
+      "type": "step_by_agent",
       "from": "procedure.co-abap.transport-release",
-      "to": "abap-dev",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "step_uses_skill",
-      "from": "procedure.co-abap.transport-release",
-      "to": "abap-dev",
-      "source": "procedure_schema"
+      "to": "agent:root/devops-admin",
+      "source": "procedure_schema",
+      "actor_type": "agent"
     },
     {
       "type": "step_by_agent",
       "from": "procedure.co-abap.transport-release",
-      "to": "devops-admin",
+      "to": "agent:root/test-runner",
       "source": "procedure_schema",
       "actor_type": "agent"
     },
@@ -1729,22 +1834,587 @@
       "source": "procedure_schema"
     },
     {
+      "type": "step_uses_skill",
+      "from": "procedure.co-abap.transport-release",
+      "to": "skill:root/abap-dev",
+      "source": "procedure_schema"
+    },
+    {
       "type": "in_stage",
       "from": "procedure.co-abap.transport-release",
       "to": "stage.co-abap.S2",
       "source": "process_schema"
     },
     {
-      "type": "step_by_agent",
-      "from": "procedure.co-abap.transport-release",
-      "to": "test-runner",
-      "source": "procedure_schema",
-      "actor_type": "agent"
+      "type": "used_by",
+      "from": "skill:root/abap-code-review",
+      "to": "agent:root/code-writer",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/code-writer.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/abap-code-review",
+      "to": "agent:root/test-runner",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/test-runner.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-code-review",
+      "to": "output_type.review_findings",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-code-review",
+      "to": "skill:root/abap-dev",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-code-review/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "follows",
+      "from": "skill:root/abap-code-review",
+      "to": "skill:root/abap-dev",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/abap-code-review/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/abap-code-review",
+      "to": "skill:root/dump-monitor",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/abap-code-review",
+      "to": "skill:root/performance-tuning",
+      "source": "prose"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.acceptance_report",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.automation_scripts",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.data_layer_design",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.data_model_report",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.form_outputs",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.interface_design",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.technical_analysis",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.test_report",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/abap-dev",
+      "to": "output_type.ui_enhancement",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/dump-monitor",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 6
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/research-analysis",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 7
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-co",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-fi",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 8
+      }
+    },
+    {
+      "type": "follows",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-fi",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-le",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 4
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-mm",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 3
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-pp",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 5
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/abap-dev",
+      "to": "skill:root/sap-sd",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/abap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 2
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/agent-lifecycle-manager",
+      "to": "skill:root/skill-lifecycle-manager",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/agent-lifecycle-manager/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/agent-lifecycle-manager",
+      "to": "skill:root/skill-lifecycle-manager",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/ci-triage",
+      "to": "skill:root/project-review",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/decision-record",
+      "to": "skill:root/evidence-ledger",
+      "source": "prose"
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/accessibility-audit",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/design-foundation/SKILL.md",
+        "field": "relates_to",
+        "index": 2
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/accessibility-audit",
+      "source": "prose"
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/token-usage-lint",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/design-foundation/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/token-usage-lint",
+      "source": "prose"
     },
     {
       "type": "enables",
-      "from": "research-analysis",
-      "to": "documentation-writing",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/ui-ux-design-intelligence",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/design-foundation/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/design-foundation",
+      "to": "skill:root/ui-ux-design-intelligence",
+      "source": "prose"
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/documentation-writing",
+      "to": "skill:root/team-builder",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/documentation-writing/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/dump-monitor",
+      "to": "output_type.system_state_report",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "follows",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/abap-dev",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 5
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/research-analysis",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 6
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/sap-co",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/sap-fi",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/sap-le",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 4
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/sap-mm",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 3
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/dump-monitor",
+      "to": "skill:root/sap-sd",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/dump-monitor/SKILL.md",
+        "field": "relates_to",
+        "index": 2
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/evidence-ledger",
+      "to": "skill:root/decision-record",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/handbook",
+      "to": "skill:root/handbook-sync-audit",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/handbook-sync-audit",
+      "to": "skill:root/handbook",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/handbook-sync-audit",
+      "to": "skill:root/project-review",
+      "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/i18n-audit",
+      "to": "agent:root/i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-audit",
+      "to": "skill:root/i18n-formatting",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-audit",
+      "to": "skill:root/i18n-layout",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-audit",
+      "to": "skill:root/i18n-locale-config",
+      "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/i18n-formatting",
+      "to": "agent:root/i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-formatting",
+      "to": "skill:root/i18n-layout",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-formatting",
+      "to": "skill:root/i18n-locale-config",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-formatting",
+      "to": "skill:root/translate",
+      "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/i18n-layout",
+      "to": "agent:root/i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-layout",
+      "to": "skill:root/i18n-formatting",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-layout",
+      "to": "skill:root/i18n-locale-config",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-layout",
+      "to": "skill:root/translate",
+      "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/i18n-locale-config",
+      "to": "agent:root/i18n-specialist",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/i18n-specialist.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-locale-config",
+      "to": "skill:root/i18n-formatting",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-locale-config",
+      "to": "skill:root/i18n-layout",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/i18n-locale-config",
+      "to": "skill:root/translate",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/meeting-facilitation",
+      "to": "skill:root/project-review",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/meeting-facilitation",
+      "to": "skill:root/team-builder",
+      "source": "prose"
+    },
+    {
+      "type": "produces",
+      "from": "skill:root/research-analysis",
+      "to": "output_type.feasibility_findings",
+      "source": "procedure_schema"
+    },
+    {
+      "type": "enables",
+      "from": "skill:root/research-analysis",
+      "to": "skill:root/documentation-writing",
       "source": "relates_to",
       "provenance": {
         "file": "skills/research-analysis/SKILL.md",
@@ -1754,44 +2424,38 @@
     },
     {
       "type": "produces",
-      "from": "research-analysis",
-      "to": "output_type.feasibility_findings",
-      "source": "procedure_schema"
-    },
-    {
-      "type": "references",
-      "from": "sap-co",
-      "to": "abap-dev",
-      "source": "prose"
-    },
-    {
-      "type": "produces",
-      "from": "sap-co",
+      "from": "skill:root/sap-co",
       "to": "output_type.module_impact_notes",
       "source": "procedure_schema"
     },
     {
       "type": "references",
-      "from": "sap-co",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-co",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/performance-tuning",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-co",
-      "to": "sap-fi",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/post-write-chain",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-fi",
       "source": "prose"
     },
     {
       "type": "composes_with",
-      "from": "sap-co",
-      "to": "sap-le",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-le",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1802,8 +2466,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-co",
-      "to": "sap-mm",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-mm",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1814,8 +2478,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-co",
-      "to": "sap-pp",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-pp",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1826,14 +2490,14 @@
     },
     {
       "type": "references",
-      "from": "sap-co",
-      "to": "sap-pp",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-pp",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-co",
-      "to": "sap-sd",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-sd",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-co/SKILL.md",
@@ -1843,38 +2507,38 @@
     },
     {
       "type": "references",
-      "from": "sap-co",
-      "to": "sap-sd",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "sap-fi",
-      "to": "abap-dev",
+      "from": "skill:root/sap-co",
+      "to": "skill:root/sap-sd",
       "source": "prose"
     },
     {
       "type": "produces",
-      "from": "sap-fi",
+      "from": "skill:root/sap-fi",
       "to": "output_type.module_impact_notes",
       "source": "procedure_schema"
     },
     {
       "type": "references",
-      "from": "sap-fi",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-fi",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/performance-tuning",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/post-write-chain",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-fi",
-      "to": "sap-co",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-co",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-fi/SKILL.md",
@@ -1884,14 +2548,14 @@
     },
     {
       "type": "references",
-      "from": "sap-fi",
-      "to": "sap-co",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-co",
       "source": "prose"
     },
     {
       "type": "composes_with",
-      "from": "sap-fi",
-      "to": "sap-le",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-le",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1902,8 +2566,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-fi",
-      "to": "sap-mm",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-mm",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1914,14 +2578,14 @@
     },
     {
       "type": "references",
-      "from": "sap-fi",
-      "to": "sap-mm",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-mm",
       "source": "prose"
     },
     {
       "type": "composes_with",
-      "from": "sap-fi",
-      "to": "sap-pp",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-pp",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1932,8 +2596,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-fi",
-      "to": "sap-sd",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-sd",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -1944,50 +2608,50 @@
     },
     {
       "type": "references",
-      "from": "sap-fi",
-      "to": "sap-sd",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "sap-le",
-      "to": "abap-dev",
+      "from": "skill:root/sap-fi",
+      "to": "skill:root/sap-sd",
       "source": "prose"
     },
     {
       "type": "produces",
-      "from": "sap-le",
+      "from": "skill:root/sap-le",
       "to": "output_type.module_impact_notes",
       "source": "procedure_schema"
     },
     {
       "type": "references",
-      "from": "sap-le",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-le",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/performance-tuning",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-le",
-      "to": "sap-fi",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/post-write-chain",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-le",
-      "to": "sap-mm",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/sap-fi",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/sap-mm",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-le",
-      "to": "sap-pp",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/sap-pp",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-le/SKILL.md",
@@ -1997,8 +2661,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-le",
-      "to": "sap-sd",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/sap-sd",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -2009,50 +2673,50 @@
     },
     {
       "type": "references",
-      "from": "sap-le",
-      "to": "sap-sd",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "sap-mm",
-      "to": "abap-dev",
+      "from": "skill:root/sap-le",
+      "to": "skill:root/sap-sd",
       "source": "prose"
     },
     {
       "type": "produces",
-      "from": "sap-mm",
+      "from": "skill:root/sap-mm",
       "to": "output_type.module_impact_notes",
       "source": "procedure_schema"
     },
     {
       "type": "references",
-      "from": "sap-mm",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-mm",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/performance-tuning",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-mm",
-      "to": "sap-co",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/post-write-chain",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-mm",
-      "to": "sap-fi",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/sap-co",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/sap-fi",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-mm",
-      "to": "sap-le",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/sap-le",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-mm/SKILL.md",
@@ -2062,8 +2726,8 @@
     },
     {
       "type": "composes_with",
-      "from": "sap-mm",
-      "to": "sap-pp",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/sap-pp",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -2074,20 +2738,26 @@
     },
     {
       "type": "references",
-      "from": "sap-mm",
-      "to": "sap-pp",
+      "from": "skill:root/sap-mm",
+      "to": "skill:root/sap-pp",
       "source": "prose"
     },
     {
+      "type": "produces",
+      "from": "skill:root/sap-pp",
+      "to": "output_type.module_impact_notes",
+      "source": "procedure_schema"
+    },
+    {
       "type": "references",
-      "from": "sap-pp",
-      "to": "abap-dev",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-pp",
-      "to": "dump-monitor",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/dump-monitor",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-pp/SKILL.md",
@@ -2096,39 +2766,33 @@
       }
     },
     {
-      "type": "produces",
-      "from": "sap-pp",
-      "to": "output_type.module_impact_notes",
-      "source": "procedure_schema"
-    },
-    {
       "type": "references",
-      "from": "sap-pp",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/performance-tuning",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-pp",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/post-write-chain",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-pp",
-      "to": "sap-co",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/sap-co",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-pp",
-      "to": "sap-mm",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/sap-mm",
       "source": "prose"
     },
     {
       "type": "composes_with",
-      "from": "sap-pp",
-      "to": "sap-sd",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/sap-sd",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -2139,50 +2803,50 @@
     },
     {
       "type": "references",
-      "from": "sap-pp",
-      "to": "sap-sd",
-      "source": "prose"
-    },
-    {
-      "type": "references",
-      "from": "sap-sd",
-      "to": "abap-dev",
+      "from": "skill:root/sap-pp",
+      "to": "skill:root/sap-sd",
       "source": "prose"
     },
     {
       "type": "produces",
-      "from": "sap-sd",
+      "from": "skill:root/sap-sd",
       "to": "output_type.module_impact_notes",
       "source": "procedure_schema"
     },
     {
       "type": "references",
-      "from": "sap-sd",
-      "to": "performance-tuning",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/abap-dev",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-sd",
-      "to": "post-write-chain",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/performance-tuning",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-sd",
-      "to": "sap-fi",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/post-write-chain",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "sap-sd",
-      "to": "sap-le",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/sap-fi",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/sap-le",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "sap-sd",
-      "to": "sap-mm",
+      "from": "skill:root/sap-sd",
+      "to": "skill:root/sap-mm",
       "source": "relates_to",
       "provenance": {
         "file": "skills/sap-sd/SKILL.md",
@@ -2192,14 +2856,14 @@
     },
     {
       "type": "references",
-      "from": "security-scan",
-      "to": "update-bun-packages",
+      "from": "skill:root/security-scan",
+      "to": "skill:root/update-bun-packages",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "service-design",
-      "to": "accessibility-audit",
+      "from": "skill:root/service-design",
+      "to": "skill:root/accessibility-audit",
       "source": "relates_to",
       "provenance": {
         "file": "skills/service-design/SKILL.md",
@@ -2209,8 +2873,8 @@
     },
     {
       "type": "follows",
-      "from": "service-design",
-      "to": "token-usage-lint",
+      "from": "skill:root/service-design",
+      "to": "skill:root/token-usage-lint",
       "source": "relates_to",
       "provenance": {
         "file": "skills/service-design/SKILL.md",
@@ -2220,8 +2884,8 @@
     },
     {
       "type": "follows",
-      "from": "service-design",
-      "to": "ui-ux-design-intelligence",
+      "from": "skill:root/service-design",
+      "to": "skill:root/ui-ux-design-intelligence",
       "source": "relates_to",
       "provenance": {
         "file": "skills/service-design/SKILL.md",
@@ -2231,14 +2895,14 @@
     },
     {
       "type": "references",
-      "from": "skill-lifecycle-manager",
-      "to": "agent-lifecycle-manager",
+      "from": "skill:root/skill-lifecycle-manager",
+      "to": "skill:root/agent-lifecycle-manager",
       "source": "prose"
     },
     {
       "type": "composes_with",
-      "from": "skill-lifecycle-manager",
-      "to": "script-lifecycle-manager",
+      "from": "skill:root/skill-lifecycle-manager",
+      "to": "skill:root/script-lifecycle-manager",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -2249,20 +2913,20 @@
     },
     {
       "type": "references",
-      "from": "team-builder",
-      "to": "agent-lifecycle-manager",
+      "from": "skill:root/team-builder",
+      "to": "skill:root/agent-lifecycle-manager",
       "source": "prose"
     },
     {
       "type": "references",
-      "from": "team-builder",
-      "to": "skill-lifecycle-manager",
+      "from": "skill:root/team-builder",
+      "to": "skill:root/skill-lifecycle-manager",
       "source": "prose"
     },
     {
       "type": "follows",
-      "from": "token-usage-lint",
-      "to": "ui-ux-design-intelligence",
+      "from": "skill:root/token-usage-lint",
+      "to": "skill:root/ui-ux-design-intelligence",
       "source": "relates_to",
       "provenance": {
         "file": "skills/token-usage-lint/SKILL.md",
@@ -2272,8 +2936,8 @@
     },
     {
       "type": "composes_with",
-      "from": "translate",
-      "to": "documentation-writing",
+      "from": "skill:root/translate",
+      "to": "skill:root/documentation-writing",
       "source": "relates_to",
       "symmetric": true,
       "provenance": {
@@ -2284,8 +2948,8 @@
     },
     {
       "type": "follows",
-      "from": "ui-ux-design-intelligence",
-      "to": "documentation-writing",
+      "from": "skill:root/ui-ux-design-intelligence",
+      "to": "skill:root/documentation-writing",
       "source": "relates_to",
       "provenance": {
         "file": "skills/ui-ux-design-intelligence/SKILL.md",

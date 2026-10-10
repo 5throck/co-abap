@@ -4,14 +4,15 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-11](2026-10-11.md) | chore: upgrade template to 0.16.0 |
 | [2026-10-08](2026-10-08.md) | chore: upgrade template to 0.14.0 |
 | [2026-10-07](2026-10-07.md) | chore: upgrade template to 0.13.1 |
 | [2026-10-05](2026-10-05.md) | chore: upgrade template to 0.12.0 |
-| [2026-10-03](2026-10-03.md) | chore: upgrade template to 0.10.0 |
-| [2026-10-03](2026-10-03.md) | chore(upgrade): template sync v0.10.0 delivery (2026-10-03) |
-| [2026-10-02](2026-10-02.md) | chore(upgrade): template sync v0.9.0 fleet rollout (T-20261001-021) |
-| [2026-10-01](2026-10-01.md) | chore(upgrade): template sync v0.8.3 delivery (2026-10-01) |
-| [2026-10-01](2026-10-01.md) | chore: update |
+| 2026-10-03 | chore: upgrade template to 0.10.0 |
+| 2026-10-03 | chore(upgrade): template sync v0.10.0 delivery (2026-10-03) |
+| 2026-10-02 | chore(upgrade): template sync v0.9.0 fleet rollout (T-20261001-021) |
+| 2026-10-01 | chore(upgrade): template sync v0.8.3 delivery (2026-10-01) |
+| 2026-10-01 | chore: update |
 | 2026-09-30 | chore(upgrade): template sync v0.8.2 delivery (2026-09-30) |
 | 2026-09-29 | chore(upgrade): template sync v0.8.0 (auto-release 2026-09-29) |
 | 2026-09-28 | docs(reflection): upgrade-wave record (v0.7.0 PRs #163–#165) + scratch cleanup |

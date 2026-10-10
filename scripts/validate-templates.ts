@@ -1,8 +1,26 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.51.0
+ * @version 1.54.0
  *
+ * v1.54.0 (2026-10-09, T-20261009-002, design docs/designs/2026-10-09-scaffold-package-merge-and-baseline-surfacing-design.md D2):
+ *          new VA-08 scaffold-package-contract — common package.json retains the Tier 2 trio
+ *          (audit/dev-sync/sync-md); every variant package.json parses and simulates the
+ *          v1.35.0 scaffold merge into a trio-superset. Complements the nightly E2E
+ *          (Test 11) whose conclusion review-baseline battery #8 now surfaces.
+ * v1.53.0 (2026-10-08, skill-graph v2 E2, design docs/designs/2026-10-08-skill-graph-v2-scoped-identity-design.md §7):
+ *          new WARN arm `skill-graph-version-drift` — reads docs/skill-graph.json through the compat
+ *          loader and reports skill capabilities whose scoped nodes share a version but differ in
+ *          content hash (the version no longer identifies the content), using the same helper as
+ *          verify-skill-graph.ts (lib/skill-graph-compat.ts findCapabilityDivergence). WARN only.
+ *
+ * v1.52.0 (2026-10-08, T-20261007-015 urgent): variant-mirror-parity gains the
+ *          inVariant stale-copy arm — a variant-owned mirror SKILL.md older than
+ *          its skills/ SSOT now FAILS (the co-deck html-build 1.5.0-vs-1.6.0
+ *          class passed every gate because the inVariant arm hit `continue`);
+ *          VA07_MIRROR_DIRS gains `.hermes` (existence-guarded per variant) so
+ *          the version-sync check covers all five platform mirrors; the
+ *          platform-mirror-freshness pass message says five.
  * v1.50.5 (2026-10-03, design 2026-10-03-validator-warning-fixes-design):
  *          repoint size-budget Fix string to HERMES.md "Hermes Platform Mechanics" +
  *          context.md §11; v1.50.4 (2026-10-02): pointer-integrity strips the
@@ -312,6 +330,8 @@ import {
   auditFixedTargets,
 } from './lib/propagation-map-schema.ts';
 import { scrubConstitutionRefs } from './lib/constitution-scrub.ts';
+import { loadSkillGraph, findCapabilityDivergence } from './lib/skill-graph-compat.ts';
+import { evaluateScaffoldPackageContract } from './lib/package-merge.ts';
 import { extractKeyedBlocks, compareKeyedBlocks, isExtendsStub, extractCommonAgentsBlock, compareCommonAgentsBlock } from './lib/managed-block-parity.ts';
 import { MERGE_MANAGED_FILES, SCAFFOLD_COMMON_OWNED_FILES } from './lib/upgrade-policy.ts';
 import {
@@ -386,6 +406,42 @@ function fail(variant: string, check: string, msg: string, fix?: string) {
   if (!JSON_MODE) {
     console.log(`${colors.red}[FAIL]${colors.reset} ${msg}`);
     if (fix) console.log(`       ${colors.dim}Fix: ${fix}${colors.reset}`);
+  }
+}
+
+// VA-08 (T-20261009-002, design 2026-10-09-scaffold-package-merge-and-baseline-surfacing D2):
+// the scaffold package contract — templates/common/package.json retains the Tier 2 trio
+// (audit, dev-sync, sync-md) and every variant package.json (optional since v1.35.0
+// scaffold-time merge) parses and merges into a trio-superset. Static simulation of the
+// new-project.ts §2 merge; the runtime guarantee is the nightly E2E (surfaced by
+// review-baseline battery #8).
+let packageContractCommonChecked = false;
+function checkVariantPackageContract(variant: string): void {
+  if (!packageContractCommonChecked) {
+    packageContractCommonChecked = true;
+    try {
+      const commonPkg = JSON.parse(readFileSync(join('templates', 'common', 'package.json'), 'utf8'));
+      const commonVerdict = evaluateScaffoldPackageContract(commonPkg, null);
+      if (!commonVerdict.ok) {
+        fail('common', 'scaffold-package-contract', `scaffold package contract violated: ${commonVerdict.reason}`, 'Restore the Tier 2 scripts — templates/common/package.json is the SSOT every project package.json is generated from');
+      }
+    } catch (err) {
+      fail('common', 'scaffold-package-contract', `templates/common/package.json unparseable: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+  const variantPkgPath = join('templates', variant, 'package.json');
+  let variantPkg: { scripts?: unknown } | null = null;
+  if (existsSync(variantPkgPath)) {
+    try {
+      variantPkg = JSON.parse(readFileSync(variantPkgPath, 'utf8'));
+    } catch (err) {
+      fail(variant, 'scaffold-package-contract', `templates/${variant}/package.json is not valid JSON: ${err instanceof Error ? err.message : String(err)}`, 'Fix or remove the variant package.json — scaffolds merge it over the generated one (variant wins per key)');
+      return;
+    }
+  }
+  const verdict = evaluateScaffoldPackageContract(JSON.parse(readFileSync(join('templates', 'common', 'package.json'), 'utf8')), variantPkg);
+  if (!verdict.ok) {
+    fail(variant, 'scaffold-package-contract', `scaffold package contract violated: ${verdict.reason}`, 'See design 2026-10-09-scaffold-package-merge-and-baseline-surfacing D2 — the scaffold merges common ∪ variant (variant wins per key)');
   }
 }
 
@@ -2120,7 +2176,7 @@ function checkPlatformMirrorFreshness(): void {
   }
   const drift = collectMirrorFreshnessDrift({ ssotSkillsDir, commonDir, mirrorDirs: PLATFORM_MIRROR_DIRS });
   if (drift.length === 0) {
-    pass('platform-mirror-freshness: all four platform skill mirrors carry SSOT versions');
+    pass('platform-mirror-freshness: all five platform skill mirrors carry SSOT versions');
     return;
   }
   for (const d of drift) {
@@ -2231,6 +2287,21 @@ function checkVariantMirrorParity(): void {
               fail(entry.name, 'variant-mirror-parity',
                 `${mirror}/${name}/ is a stale platform-mirror copy of common skill "${name}" (mirror v${mirrorVersion} vs common v${commonVersion}) with no variant declaration, no skills/ SSOT copy, and no peer carrying it — regrown D1/D2-class drift`,
                 `Delete templates/${entry.name}/${mirror}/${name}/ (stale copy of common v${commonVersion}) or declare the variant-specific copy in variant.json`);
+              errors++;
+              continue;
+            }
+          } else if (inVariant) {
+            // T-20261007-015: a variant-owned mirror copy must carry the SSOT's
+            // version. The co-deck html-build class (mirror 1.5.0 vs skills/
+            // SSOT 1.6.0) passed every gate because this arm hit `continue`
+            // without any comparison — mirrors survive upgrades untouched, so
+            // drift here means a hand-edit bypassed the SSOT.
+            const ssotVersion = readFmVersion(join(vSkills, name, 'SKILL.md'));
+            const mirrorVersion = readFmVersion(join(mirrorDir, name, 'SKILL.md'));
+            if (ssotVersion && mirrorVersion && semverOlder(mirrorVersion, ssotVersion)) {
+              fail(entry.name, 'variant-mirror-parity',
+                `${mirror}/${name}/ is a stale platform-mirror copy of variant-owned skill "${name}" (mirror v${mirrorVersion} vs skills/ SSOT v${ssotVersion})`,
+                `Byte-copy templates/${entry.name}/skills/${name}/SKILL.md over templates/${entry.name}/${mirror}/${name}/SKILL.md (or re-run sync-skills for ${entry.name})`);
               errors++;
               continue;
             }
@@ -3693,6 +3764,25 @@ function checkCommonContractReverseCoverage(): void {
   }
 }
 
+// Check: skill-graph-version-drift (skill-graph v2 E2) — same skill capability, same version,
+// different content hash across scopes. Reads the committed graph; v1 graphs carry no hashes and
+// are skipped (divergence is only computable where hashes exist). WARN only.
+function checkSkillGraphVersionDrift(): void {
+  if (!JSON_MODE) console.log('\n=== Check skill-graph-version-drift: same version, different content across scopes (E2) ===');
+  const graph = loadSkillGraph(join(ROOT, 'docs', 'skill-graph.json'));
+  if (!graph) {
+    if (!JSON_MODE) console.log('  (no docs/skill-graph.json — skipped)');
+    return;
+  }
+  const drift = findCapabilityDivergence(graph, ['skill']).filter(d => d.kind === 'version-drift');
+  for (const d of drift) {
+    warn('common', 'skill-graph-version-drift',
+      `skill '${d.capability}' has the same version but different content in: ${d.entries.map(e => `${e.scope}@${e.version ?? '?'}`).join(', ')}`,
+      `Bump the version of the copy that changed, or reconcile the copies (see docs/skill-graph.md "Same-Name Divergence")`);
+  }
+  if (!JSON_MODE && drift.length === 0) console.log('  ✓ no same-version-different-content skills in the graph');
+}
+
 // Check: mirror-hygiene (R6, spec 2026-09-25-verifier-platform-expansion-design)
 // — a platform skill mirror contains ONLY skill directories. Stray files
 // (SKILLS.md, README*.md — the 2026-09-25 Finding-B class: 11 files in 9
@@ -3895,7 +3985,11 @@ export interface MirrorVersionMismatch {
   message: string;
 }
 
-const VA07_MIRROR_DIRS = ['.claude', '.gemini', '.agents', '.codex'] as const;
+// T-20261007-015: `.hermes` joins the version-sync comparison — the co-deck
+// html-build staleness (1.5.0 vs 1.6.0) was invisible because .hermes was
+// outside this list. The loop below existence-guards each mirror dir, so
+// variants without a .hermes tree are unaffected.
+const VA07_MIRROR_DIRS = ['.claude', '.gemini', '.agents', '.codex', '.hermes'] as const;
 
 /**
  * Pure core of VA-07 (T-004 convention): enumerate the union of skill dirs
@@ -5584,6 +5678,7 @@ function main(): number {
       // Script parity check removed (dead code after ADR-0036 TypeScript migration)
       checkContextSync(variant);
       checkReadmePresence(variant);
+      checkVariantPackageContract(variant);   // VA-08: scaffold package contract (T-20261009-002)
       variantsChecked++;
     }
   }
@@ -5710,6 +5805,7 @@ function checkAgentsMdPointerIntegrity(): void {
   checkProjectCountryConfigDeclarations(); // T-20260927-012: project-side half of the ADR-0091 R3 uniform declaration
   checkAgentsMdSizeBudget();          // ADR-0090 W0: thin-dispatcher ≤15k budget (WARN; FAIL promotion at W4)
   checkAgentsMdPointerIntegrity();    // ADR-0090 W0: pointer-table references resolve on disk
+  checkSkillGraphVersionDrift();      // skill-graph v2 E2: same-version-different-content across scopes (WARN)
 
   // B-07: Sync validated variant info back to VERSION_REGISTRY.json
   if (!JSON_MODE) console.log('\n=== B-07: VERSION_REGISTRY.json sync ===');
