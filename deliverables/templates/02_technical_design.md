@@ -63,7 +63,17 @@ erDiagram
 | `KEY_ID` | PK | `char(10)` | N | Unique Key | `ZADT_DE_KEY` |
 | `VALUE` | | `varchar(50)` | Y | Value field | `TEXT50` |
 
-### 2.3 Proposed Indexes
+### 2.3 Data Access Strategy (CDS-First)
+<!-- Evaluate in order; stop at the first level that fits. Rationale required for levels 3-4. -->
+
+| Level | Option | Candidate Object(s) | Used? | Rationale |
+|-------|--------|---------------------|-------|-----------|
+| 1 | Released standard CDS (`I_*`) | | | |
+| 2 | Custom CDS (`Z*`) | | | |
+| 3 | Open SQL with DB pushdown | | | |
+| 4 | AMDP | | | |
+
+### 2.4 Proposed Indexes
 - **Index Name**: `ZADT_NNN_IDX1`
   - **Fields**: `MANDT`, `VALUE`
   - **Rationale**: Optimization for search queries filtering by value.

@@ -170,6 +170,7 @@ Evaluate these conditions IN ORDER and stop at the first match:
 #### Handoff to DBA
 - SQL changes required: <YES — describe / NO>
 - CDS changes required: <YES — describe / NO>
+- Data access level (CDS-first): <1 released CDS / 2 custom CDS / 3 Open SQL / 4 AMDP> — rationale if 3-4
 - New indexes recommended: <YES — describe / NO>
 
 ## Behavior rules
@@ -178,6 +179,7 @@ Evaluate these conditions IN ORDER and stop at the first match:
 3. Pattern C SyntaxCheck failure: retry exactly ONCE with a targeted fix. If still failing, stop and escalate to PM.
 4. Interface consistency: for Smart Form / Adobe Form changes, verify print program data structures match form interface field by field.
 5. Never parallelize writes — WriteSource/EditSource must be strictly serial regardless of pattern.
+6. CDS-first design: before specifying any data read, search for a released standard CDS view (`I_*`) via `SearchObject` / `GetCDSDependencies`; prefer custom CDS over Open SQL and Open SQL pushdown over AMDP. Record the chosen level in the DBA handoff.
 6. All local .abap copies MUST be created in the scratch/ directory.
 
 ## Responsibilities

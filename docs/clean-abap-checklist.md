@@ -114,6 +114,7 @@ This checklist derives from the [SAP Clean ABAP Style Guide](https://github.com/
 | Prefer READ TABLE to LOOP AT | Is single-record access via `READ TABLE` rather than `LOOP AT` with early EXIT? | should | `code-writer` | 3 | Prose-only |
 | Prefer LOOP AT WHERE to nested IF | Are WHERE conditions used in loops instead of nested IF statements? | should | `code-writer` | 3 | Prose-only |
 | Avoid unnecessary table reads | Are table reads minimized via proper JOINs and CDS views? | should | `dba` | 2,3 | Partial (performance analysis) |
+| Prefer CDS views for data access | Does new data-access logic use released standard CDS → custom CDS → Open SQL pushdown → AMDP in that order, with a rationale recorded for any fallback below custom CDS? | must | `code-writer` | 2,3 | Prose-only |
 | Use backticks for literals | Are string constants declared with backticks (`` `constant` ``) not quotes? | should | `code-writer` | 3 | Prose-only |
 | Use vertical bars for text assembly | Is string template syntax (`|text { var }|`) used for complex concatenations? | should | `code-writer` | 3 | Prose-only |
 
@@ -445,4 +446,4 @@ See `docs/variant-benchmark-backlog.md` §11 row 9 (this checklist) and row 10 (
 
 ---
 
-*Last Updated: 2026-10-08 — Clean ABAP Conformance Checklist v1.0.0*
+*Last Updated: 2026-10-10 — Clean ABAP Conformance Checklist v1.0.0*

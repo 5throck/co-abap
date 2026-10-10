@@ -57,7 +57,17 @@ erDiagram
 |-------|------|-----|-------------|
 | | | | |
 
-### 3.3. Index Recommendations
+### 3.3. Data Access Strategy (CDS-First)
+<!-- Evaluate in order; stop at the first level that fits. Rationale required for levels 3-4. -->
+
+| Level | Option | Candidate Object(s) | Used? | Rationale |
+|-------|--------|---------------------|-------|-----------|
+| 1 | Released standard CDS (`I_*`) | | | |
+| 2 | Custom CDS (`Z*`) | | | |
+| 3 | Open SQL with DB pushdown | | | |
+| 4 | AMDP | | | |
+
+### 3.4. Index Recommendations
 
 | Index | Fields | Rationale |
 |-------|--------|-----------|
