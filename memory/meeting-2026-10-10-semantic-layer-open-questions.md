@@ -6,7 +6,7 @@
 - **Participants**: fi-analyst (sonnet), co-analyst (sonnet), sd-analyst (sonnet), test-runner (haiku), dba (sonnet), **red-team dissent seat** (sonnet)
 - **Input decisions (user, 2026-10-10)**: target landscape = S/4HANA + BW + Datasphere; query mode = structured intent primary, free-form SQL secondary
 - **Design doc**: `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md`
-- **Outcome status**: PROPOSAL for user approval (the meeting does not decide)
+- **Outcome status**: PROPOSAL — synthesis approved by the user on 2026-10-10 and applied to the design doc (PR #191); bare-"revenue" default left to Finance; red-team withdrawal conditions not adopted
 
 ## Agenda
 
@@ -49,7 +49,7 @@
 | test-runner | Parameterize templates over periods and org keys to get ~300 runs per query class; threshold = upper bound of bootstrap CI of the percentile × safety factor; recalibrate on material volume growth. |
 | red-team | Percentile on golden runs encodes their bias and blocks legitimate year-end queries; needs per-source/per-class thresholds, an audited rate-limited break-glass path for closing periods, and sources without an estimator labelled "no cost gate" with stricter limits, never a silent pass. |
 
-## Synthesis — Proposals (for user approval)
+## Synthesis — Proposals (approved and applied)
 
 | # | Proposal | Basis |
 |---|----------|-------|
