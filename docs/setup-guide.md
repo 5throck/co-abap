@@ -598,6 +598,7 @@ Do not commit a platform-specific `command` change to `.mcp.json`. Keep it in `.
 
 Every platform (Claude Code, Codex, Gemini CLI, Antigravity, Hermes) starts the `abap` server through `scripts/sap-mcp-proxy.ts`. The proxy is the single SAP enforcement point: it classifies each call (allow / ask / deny), records audit lines and QA evidence, and gates transport release. Hooks are not required. The former manual profile is retired.
 
+0. First-time setup (human): install vsp with `bun scripts/co-abap/install-vsp.ts`, create `.env` from `.env.sample` and run `chmod 600 .env`, then do step 4 below (`init`, `sign`). SAP stays read-only (R0) until signed.
 1. Check that each config routes through the proxy: `bun scripts/validate-platform-parity.ts`.
 2. Hermes only: add `mcp_servers.abap` to your user-level `~/.hermes/config.yaml` with absolute paths, from `config/platforms/hermes-mcp.example.yaml` (details: `docs/platform-setup/hermes.md`).
 3. When an agent reports `APPROVAL_REQUIRED id=<id>`, review the request and, if you agree, run in **your own terminal**:
@@ -608,7 +609,7 @@ Every platform (Claude Code, Codex, Gemini CLI, Antigravity, Hermes) starts the 
    bun scripts/sap-approve.ts --list        # pending requests
    ```
 
-   You confirm by typing the first 6 characters of the id on `/dev/tty`; the approver is your OS user. Then let the agent repeat the identical call. Approvals are single use, bound to the exact input, and expire quickly. They are stored outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). Agents must never run `sap-approve.ts`.
+   You confirm by typing the first 6 characters of the id on `/dev/tty`; the approver is your OS user. Then let the agent repeat the identical call. Approvals are single use, bound to the exact input, and expire after 15 minutes. They are stored outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). Agents must never run `sap-approve.ts`.
 4. One-time integrity setup (human): `bun scripts/sap-integrity.ts init`. After a reviewed change to the policy or enforcement scripts, run `bun scripts/sap-integrity.ts sign`; until you do, the proxy is R0 (read-only). `bun scripts/sap-integrity.ts verify` and `verify-audit` are read-only checks.
 5. Parallel write dispatch: write rows in a dispatch plan declare `sapScope {packages, objects, actions, maxClass}`. The dispatcher writes a grant request and stops; run `bun scripts/sap-approve.ts --grant <runId>`, then re-run the dispatcher with `--run-id <runId>` (or use `--wait-grant`). The grant is revoked when the run ends.
 

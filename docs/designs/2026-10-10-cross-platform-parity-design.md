@@ -2,7 +2,7 @@
 
 - **Spec ID**: 2026-10-10-cross-platform-parity
 - **Date**: 2026-10-10
-- **Status**: approved (2026-10-10, user decisions in §0)
+- **Status**: implemented (2026-10-10) except Phase 6 on-device smoke (V1-V10 pending). ADRs: [0005](../adr/0005-cross-platform-parity.md), [0006](../adr/0006-sap-approval-security-model.md), [0007](../adr/0007-parallel-dispatch-grants.md)
 - **Author**: architect
 - **Builds on**: [2026-10-10-sap-write-safety-gate-design.md](2026-10-10-sap-write-safety-gate-design.md) (PR #194, unmerged)
 - **Scope**: `.mcp.json`, `.codex/config.toml`, `.codex/hooks.json`, `.gemini/settings.json`, `.agents/mcp.json`, `.gemini/commands/`, `.codex/prompts/`, `scripts/hooks/sap-action-*.ts`, `scripts/lib/sap-action-lib.ts`, `config/sap-action-policy.json`, new `scripts/sap-mcp-proxy.ts`, new parity validator, CLAUDE/CODEX/GEMINI/HERMES.md
