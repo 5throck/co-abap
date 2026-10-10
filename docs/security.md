@@ -33,3 +33,9 @@ Before every commit, always review staged files to ensure no sensitive data is l
 The workspace .githooks/pre-commit hook automatically scans for .env files and runs gitleaks if installed.
 
 Rule of thumb: "would a stranger reading this file be able to identify our private servers, customer identities, or bypass our authentication?" If yes, redact and move under gitignored paths.
+
+---
+
+## SAP Access Controls
+
+SAP access is enforced by `scripts/sap-mcp-proxy.ts` on every platform: human-only approvals (`bun scripts/sap-approve.ts <id>`), a signed integrity manifest (`bun scripts/sap-integrity.ts init` / `sign`; read-only until signed), and per-platform deny rules from `config/platforms/protected-paths.json`. Agents must never approve or sign. Threat model, residual risk and per-platform status: [SECURITY.md](../SECURITY.md).

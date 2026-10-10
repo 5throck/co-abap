@@ -2,7 +2,7 @@
 
 - **Spec ID**: 2026-10-10-sap-nl-analytics-semantic-layer
 - **Date**: 2026-10-10
-- **Status**: proposed
+- **Status**: proposed (reference only; see [ADR-0004](../adr/0004-sap-nl-analytics-semantic-layer-reference.md) and [ADR-0003](../adr/0003-cds-first-data-access.md))
 - **Scope**: architecture reference for LLM-driven analytics on SAP ERP / S/4HANA / BW / Datasphere; no code or SAP objects in this change
 - **Relationship to ABAP dev rules**: this design covers read-only analytics only. It does not change ABAP development rules; existing Z/Y programs keep working unchanged. Z/Y data without a governed CDS wrapper is simply out of analytics scope.
 

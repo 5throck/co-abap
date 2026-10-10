@@ -9,6 +9,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **[2026-10-10]**: docs: ADR-0003..0007 (CDS-first data access, semantic-layer reference-only, cross-platform parity, SAP approval security model, parallel dispatch grants) with an ADR index; parity and semantic-layer designs status-updated; README/README_ko, setup guide, dispatch and security docs cover the 8 platforms, first-time integrity setup, approval flow and pre-dispatch grants; skill graph regenerated.
+
 ### Security
 - **[2026-10-10]**: security(sap): approvals and dispatch grants HMAC-signed with a key in the user config dir and stored outside the repo; signed integrity manifest (`scripts/sap-integrity.ts`; proxy drops to R0 on mismatch; covers bunfig/package.json and bun preloads); HMAC evidence and hash-chained audit; strict JSON-RPC allowlist; `.env` can only narrow safe defaults; `sap-approve` requires /dev/tty plus id-prefix confirmation; parallel dispatch gets read/write rows, one human pre-dispatch grant (scope-bound, out-of-scope denied), child env allowlist, staged SIGTERM/grace/SIGKILL shutdown and per-row worktrees; deny rules for all 8 platforms rendered from `config/platforms/protected-paths.json` and checked by `validate-platform-parity.ts`. Residual same-UID risk documented in SECURITY.md (#194).
 

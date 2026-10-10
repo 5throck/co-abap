@@ -1,5 +1,5 @@
 ---
-content_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa814b1d
+content_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
 ---
 # Harness Engineering for SAP ABAP
 
@@ -25,8 +25,10 @@ Key principles of Harness Engineering include:
 ## 🚀 Quick Start
 
 1. **[Install prerequisites](docs/setup-guide.md)** - MCP server, SAP ADT access, abapGit
-2. **Explore [AGENTS.md](AGENTS.md)** - Understand agent roles and workflows
-3. **Run `/triage`** - Start your first task with automatic agent dispatch
+2. **Install vsp and configure `.env`** - `bun scripts/co-abap/install-vsp.ts`, then copy `.env.sample` to `.env` and `chmod 600 .env`
+3. **Seal the SAP safety policy (human, once)** - `bun scripts/sap-integrity.ts init`, then `bun scripts/sap-integrity.ts sign`. Until signed, SAP access is read-only (R0). Re-sign after you review changes to the policy, the enforcement scripts, `package.json` or `bunfig.toml`.
+4. **Explore [AGENTS.md](AGENTS.md)** - Understand agent roles and workflows
+5. **Run `/triage`** - Start your first task with automatic agent dispatch
 
 ---
 
@@ -34,9 +36,43 @@ Key principles of Harness Engineering include:
 
 The system operates as a bridge between modern AI interfaces and SAP environments:
 
-1. **Agent Tier**: AI agents (Claude Code CLI, Gemini CLI, Antigravity, Codex CLI, Hermes Agent) act as the "brain," orchestrating tasks based on predefined Harness roles.
+1. **Agent Tier**: AI agents (see [Supported Platforms](#supported-platforms)) act as the "brain," orchestrating tasks based on predefined Harness roles.
 2. **Protocol Tier**: Standardized protocols (such as Model Context Protocol) are used to safely expose SAP ADT (ABAP Development Tools) capabilities to the agents.
 3. **SAP Tier**: Direct interaction with SAP systems via REST APIs and WebSockets for stateful operations like debugging, query execution, and object management.
+
+## Supported Platforms
+
+Eight surfaces are supported. Every one routes the `abap` MCP server through the same enforcement point, `bun scripts/sap-mcp-proxy.ts`, never through `./vsp` directly.
+
+| Platform | `abap` MCP config |
+|----------|-------------------|
+| Claude Code CLI / Desktop App | `.mcp.json` |
+| Codex CLI / IDE | `.codex/config.toml` |
+| Gemini CLI | `.gemini/settings.json` |
+| Antigravity IDE / CLI | `.agents/mcp.json` ([setup](docs/platform-setup/antigravity.md); CLI pending on-device verification) |
+| Hermes Agent | `~/.hermes/config.yaml` (user-level; template `config/platforms/hermes-mcp.example.yaml`, [setup](docs/platform-setup/hermes.md)) |
+
+Slash commands have one source, `config/commands/*.md`; run `bun scripts/render-commands.ts` to regenerate the per-platform copies. Verify routing and parity with `bun scripts/validate-platform-parity.ts`. Full matrix: [docs/tooling-matrix.md](docs/tooling-matrix.md).
+
+## SAP Safety and Approvals
+
+- The proxy classifies each SAP call as allow, ask or deny, and records a hash-chained audit and QA evidence. Transport release needs passed QA evidence.
+- When a call needs approval, the agent receives `APPROVAL_REQUIRED id=<id>` and stops. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id. Approvals are single-use, bound to the exact call and client, and expire after 15 minutes. They are stored outside the repo in `~/.config/co-abap`. Agents must never approve.
+- Each platform also denies shell access to the protected paths and commands listed in `config/platforms/protected-paths.json`. A shell running as the same OS user remains a residual risk, and on-device verification of some platforms is still pending; see [SECURITY.md](SECURITY.md#agent-shell-hardening-all-platforms).
+
+## Parallel Dispatch
+
+Inside a session, use the native sub-agent mechanism. To fan out real CLI processes instead:
+
+```bash
+bun scripts/dispatch-parallel.ts --platform <claude|codex|gemini|antigravity-cli|hermes> --plan <plan-file> [--dry-run]
+```
+
+Each plan row sets `mode: read` or `mode: write`. Write rows declare `sapScope {packages, objects, actions, maxClass}` and run in git worktrees. The dispatcher then writes a grant request and stops; a human runs `bun scripts/sap-approve.ts --grant <runId>`, and the dispatcher is re-run with `--run-id <runId>` (or started with `--wait-grant <minutes>`). Other flags: `--max-parallel`, `--timeout`, `--kill-grace`, `--grant-window`, `--out-dir`. Hermes rows are refused unless you pass `--allow-hermes-write`. See [docs/dispatch-parallel.md](docs/dispatch-parallel.md).
+
+## Data Access Rules
+
+New data reads on S/4HANA are CDS-first (released standard CDS, then custom CDS, then Open SQL, then AMDP). The rules DA-1 to DA-8 live in [docs/co-abap.context.md](docs/co-abap.context.md).
 
 ## Agent Framework (AGENTS.md)
 
@@ -79,6 +115,7 @@ For detailed roles, trigger keywords, and handoff protocols, see [AGENTS.md](AGE
 | **[docs/user-guide.md](docs/user-guide.md)** | Task-level guide — how to hand SAP work to the agent team (한국어: [user-guide_ko.md](docs/user-guide_ko.md)). |
 | **[deliverables/index.md](deliverables/index.md)** | Requirements Traceability Matrix (RTM) — Stage 1–5 tracking for every requirement. |
 | **[SECURITY.md](SECURITY.md)** | Vulnerability reporting and the MCP-driven SAP access threat model. |
+| **[docs/tooling-matrix.md](docs/tooling-matrix.md)** | 8-platform matrix: configs, dispatch, hooks, deny rules. |
 | **[memory/MEMORY.md](memory/MEMORY.md)** | Index of development history and architectural decisions. |
 
 ## Operational Workflow

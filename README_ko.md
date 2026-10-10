@@ -1,5 +1,5 @@
 ---
-translated_from_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa814b1d
+translated_from_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -25,8 +25,10 @@ translated_from_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa
 ## 🚀 빠른 시작
 
 1. **[선행 조건 설치](docs/setup-guide.md)** - MCP 서버, SAP ADT 접근, abapGit
-2. **[AGENTS.md](AGENTS.md) 탐색** - 에이전트 역할 및 워크플로우 이해
-3. **`/triage` 실행** - 자동 에이전트 디스패치로 첫 번째 태스크 시작
+2. **vsp 설치와 `.env` 설정** - `bun scripts/co-abap/install-vsp.ts` 실행 후 `.env.sample`을 `.env`로 복사하고 `chmod 600 .env`
+3. **SAP 안전 정책 봉인(사람이, 한 번만)** - `bun scripts/sap-integrity.ts init` 다음 `bun scripts/sap-integrity.ts sign`. 서명 전에는 SAP 접근이 읽기 전용(R0)입니다. 정책, 집행 스크립트, `package.json`, `bunfig.toml`을 검토해 바꾼 뒤에는 다시 서명하세요.
+4. **[AGENTS.md](AGENTS.md) 탐색** - 에이전트 역할 및 워크플로우 이해
+5. **`/triage` 실행** - 자동 에이전트 디스패치로 첫 번째 태스크 시작
 
 ---
 
@@ -34,9 +36,43 @@ translated_from_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa
 
 이 시스템은 현대적인 AI 인터페이스와 SAP 환경 사이의 브리지 역할을 합니다:
 
-1. **에이전트 계층**: AI 에이전트(Claude Code CLI, Gemini CLI, Antigravity, Codex CLI, Hermes Agent)가 사전 정의된 Harness 역할에 따라 작업을 조율하는 "두뇌" 역할을 합니다.
+1. **에이전트 계층**: AI 에이전트([지원 플랫폼](#지원-플랫폼) 참조)가 사전 정의된 Harness 역할에 따라 작업을 조율하는 "두뇌" 역할을 합니다.
 2. **프로토콜 계층**: MCP(Model Context Protocol)와 같은 표준화된 프로토콜을 사용하여 SAP ADT(ABAP Development Tools) 기능을 에이전트에게 안전하게 노출합니다.
 3. **SAP 계층**: REST API와 WebSocket을 통해 SAP 시스템과 직접 상호작용하며, 디버깅, 쿼리 실행, 객체 관리 등 상태 기반 작업을 수행합니다.
+
+## 지원 플랫폼
+
+여덟 가지 환경을 지원합니다. 모두 `abap` MCP 서버를 같은 집행 지점인 `bun scripts/sap-mcp-proxy.ts`로 연결하며, `./vsp`를 직접 부르지 않습니다.
+
+| 플랫폼 | `abap` MCP 설정 |
+|--------|-----------------|
+| Claude Code CLI / 데스크톱 앱 | `.mcp.json` |
+| Codex CLI / IDE | `.codex/config.toml` |
+| Gemini CLI | `.gemini/settings.json` |
+| Antigravity IDE / CLI | `.agents/mcp.json` ([설정](docs/platform-setup/antigravity.md), CLI는 실기기 확인 대기 중) |
+| Hermes Agent | `~/.hermes/config.yaml` (사용자 수준, 견본 `config/platforms/hermes-mcp.example.yaml`, [설정](docs/platform-setup/hermes.md)) |
+
+슬래시 명령은 `config/commands/*.md` 한 곳에서 관리하며, `bun scripts/render-commands.ts`로 플랫폼별 사본을 다시 만듭니다. 연결과 동등성은 `bun scripts/validate-platform-parity.ts`로 확인합니다. 전체 표: [docs/tooling-matrix.md](docs/tooling-matrix.md).
+
+## SAP 안전과 승인
+
+- 프록시는 SAP 호출마다 허용, 확인 요청, 거부를 가르고 해시로 이어진 감사 기록과 QA 증거를 남깁니다. 트랜스포트 릴리스에는 통과한 QA 증거가 필요합니다.
+- 승인이 필요하면 에이전트는 `APPROVAL_REQUIRED id=<id>`를 받고 멈춥니다. **사람이** 자기 터미널에서 `bun scripts/sap-approve.ts <id>`를 실행해 id의 앞 6글자를 입력합니다. 승인은 한 번만 쓸 수 있고, 해당 호출과 클라이언트에 묶이며, 15분 뒤 만료됩니다. 저장 위치는 저장소 밖 `~/.config/co-abap`입니다. 에이전트는 절대 승인하면 안 됩니다.
+- 각 플랫폼은 `config/platforms/protected-paths.json`에 적힌 보호 경로와 명령에 대한 셸 접근도 막습니다. 같은 OS 사용자로 도는 셸은 남은 위험이며, 일부 플랫폼은 실기기 확인이 아직 남아 있습니다. [SECURITY.md](SECURITY.md#agent-shell-hardening-all-platforms)를 보세요.
+
+## 병렬 디스패치
+
+세션 안에서는 기본 제공 서브에이전트 기능을 씁니다. 실제 CLI 프로세스로 나누어 실행하려면 다음을 사용합니다.
+
+```bash
+bun scripts/dispatch-parallel.ts --platform <claude|codex|gemini|antigravity-cli|hermes> --plan <plan-file> [--dry-run]
+```
+
+계획 행마다 `mode: read` 또는 `mode: write`를 지정합니다. 쓰기 행은 `sapScope {packages, objects, actions, maxClass}`를 선언하며 git 작업 트리에서 실행됩니다. 디스패처는 권한 요청을 기록하고 멈추며, 사람이 `bun scripts/sap-approve.ts --grant <runId>`를 실행한 뒤 `--run-id <runId>`로 다시 실행합니다(또는 `--wait-grant <분>`으로 시작). 그 밖의 옵션: `--max-parallel`, `--timeout`, `--kill-grace`, `--grant-window`, `--out-dir`. Hermes 행은 `--allow-hermes-write`를 주지 않으면 거부됩니다. [docs/dispatch-parallel.md](docs/dispatch-parallel.md) 참조.
+
+## 데이터 접근 규칙
+
+S/4HANA의 새 데이터 읽기는 CDS 우선입니다(공개 표준 CDS, 맞춤 CDS, Open SQL, AMDP 순). 규칙 DA-1~DA-8은 [docs/co-abap.context.md](docs/co-abap.context.md)에 있습니다.
 
 ## 에이전트 프레임워크 (AGENTS.md)
 
@@ -79,6 +115,7 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 | **[docs/user-guide.md](docs/user-guide.md)** | 태스크 단위 가이드 — SAP 업무를 에이전트 팀에 맡기는 방법(한국어: [user-guide_ko.md](docs/user-guide_ko.md)) |
 | **[deliverables/index.md](deliverables/index.md)** | 요구사항 추적 매트릭스(RTM) — 모든 요구사항의 Stage 1–5 추적 |
 | **[SECURITY.md](SECURITY.md)** | 취약점 신고 절차 및 MCP 기반 SAP 접근 위협 모델 |
+| **[docs/tooling-matrix.md](docs/tooling-matrix.md)** | 8개 플랫폼 표: 설정, 디스패치, 훅, 거부 규칙 |
 | **[memory/MEMORY.md](memory/MEMORY.md)** | 개발 이력 및 아키텍처 결정 인덱스 |
 
 ## 운영 워크플로우
