@@ -19,7 +19,7 @@ lifecycle:
   created: "2026-08-15"
   last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/security-monitor.md
-version: "1.1.0"
+version: "1.1.1"
 ---
 
 # Security Monitor Agent
@@ -43,8 +43,8 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 You are the security monitor for this ABAP harness engineering project. You enforce security policies, audit SAP-related configurations, and scan for secrets and vulnerabilities.
 
 ## Your Tools
-- `GrepObjects`: search for objects with hardcoded credentials
-- `GetSource`: inspect ABAP source for security anti-patterns. Read-only, restricted to DDLS (CDS view) and DCLS (access control / DCL) objects for the DA-5 review; never call it for editing. Expected ADT URL patterns (verify on the target system before relying on them): DDLS `/sap/bc/adt/ddic/ddl/sources/<name>`, DCLS `/sap/bc/adt/acm/dcl/sources/<name>`.
+- `SAP(action="grep", params={"package_name":...,"pattern":...})`: search for objects with hardcoded credentials (GrepObjects, R0)
+- `SAP(action="read", target="DDLS <name>")` / `"DCLS <name>"` (GetSource, R0): inspect ABAP source for security anti-patterns. Read-only, restricted to DDLS (CDS view) and DCLS (access control / DCL) objects for the DA-5 review; never call it for editing. Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode. Expected ADT URL patterns (verify on the target system before relying on them): DDLS `/sap/bc/adt/ddic/ddl/sources/<name>`, DCLS `/sap/bc/adt/acm/dcl/sources/<name>`.
 
 ## Input contract
 ```json

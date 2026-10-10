@@ -73,3 +73,38 @@ flowchart TD
 - [ ] Form interface fields match driver program structures field-by-field.
 - [ ] Output device (Spool printer configuration) is verified on SAP NetWeaver.
 - [ ] Standard fonts (e.g., Arial, Courier) are confirmed to exist on the ADS (Adobe Document Services) server.
+
+---
+
+## 5. Capability, Output Management & Localization
+
+> Tool names follow [vsp Tool Reference (Hyperfocused Mode)](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+
+### 5.1 Tooling Capability Note
+- Form **layouts** (SAPscript SE71, Smart Forms, Adobe Forms SFP/LiveCycle Designer) are **not editable via ADT/vsp**; they are a human GUI step. Owner: [...]
+- Print/driver programs, classes, and interface-feeding code are editable via `SAP(action="edit")` (R2) and follow the post-write chain.
+- SAP GUI scripting is outside the MCP gate and must not be used to automate layout changes.
+
+### 5.2 Output Management
+- **Framework in use** (check on target): NACE / NAST condition-based output | BRF+-based Output Management (OPD, S/4HANA) | both
+- **How verified**: [e.g. `SAP(action="query", target="TABL_CONTENTS TNAPR")` for NACE form/program assignments; OPD output type config for BRF+]
+- **Output type / application**: [...]; **processing routine / callback**: [...]
+
+### 5.3 Interface Definition Source
+- Generated FM resolved at runtime: `FP_FUNCTION_MODULE_NAME` (Adobe) / `SSF_FUNCTION_MODULE_NAME` (Smart Forms) - never hardcode `/1BCDWB/...`.
+- Capture the signature with `SAP(action="rfc", target="<generated FM>")` (`op=describe`, R0) and attach it here: [...]
+
+### 5.4 Korean (and multi-language) Output
+- [ ] SAPscript/Smart Forms: TrueType font uploaded via SE73 (e.g. Korean font), Unicode-capable device type (e.g. `SWINCF` / Unicode PDF) assigned to the output device.
+- [ ] Adobe Forms: font installed and **embedded** on the ADS; PDF shows embedded fonts.
+- [ ] Texts maintained per language (logon/output language); no mojibake in spool and PDF.
+
+### 5.5 Test & Sign-off
+
+| Test case | Data / document | Expected | Result | Evidence |
+| :--- | :--- | :--- | :--- | :--- |
+| Print preview | [...] | [...] | | |
+| Spool / PDF / e-mail output | [...] | [...] | | |
+| Korean characters & page breaks | [...] | [...] | | |
+
+- **Business sign-off**: [Name / date]

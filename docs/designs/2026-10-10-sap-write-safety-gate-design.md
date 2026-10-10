@@ -22,10 +22,10 @@ Tool names derived from `agents/*.md`, `skills/*/SKILL.md`, `docs/co-abap.contex
 
 | Class | Meaning | Decision | Tools |
 |-------|---------|----------|-------|
-| R0 | Read / metadata | allow | GetSource, GetRevisionSource, SearchObject, GetTable, GetTableContents, GetCDSDependencies, GetCDSImpactAnalysis, GetCDSExposure, GetODataMetadata, GetFunctionGroup, GetContext, GetArguments, GetAPIReleaseState, GetConnectionInfo, GetSystemInfo, ListDumps, GetDump, ListTransports, GetTransport, ListTraces, GetTrace, ListSQLTraces, GetSQLTraceState, GetCallGraph, RunQuery (single SELECT only, see 2.1) |
+| R0 | Read / metadata | allow | (legacy, non-hyperfocused mode names; `GetAPIReleaseState` does not exist in vsp v2.60.0 and is kept only for legacy-mode safety, see co-abap.context.md "vsp Tool Reference (Hyperfocused Mode)") GetSource, GetRevisionSource, SearchObject, GetTable, GetTableContents, GetCDSDependencies, GetCDSImpactAnalysis, GetCDSExposure, GetODataMetadata, GetFunctionGroup, GetContext, GetArguments, GetAPIReleaseState, GetConnectionInfo, GetSystemInfo, ListDumps, GetDump, ListTransports, GetTransport, ListTraces, GetTrace, ListSQLTraces, GetSQLTraceState, GetCallGraph, RunQuery (single SELECT only, see 2.1) |
 | R1 | QA / read-only execution | allow + record evidence | SyntaxCheck, RunUnitTests, GetCodeCoverage, RunATCCheck, TraceExecution |
 | R2 | Source write / activate | ask; target package must match allowlist (else deny); mark object `pending` | WriteSource, EditSource, Activate, CreateTransport, AddToTransport |
-| R3 | Data change / release / privileged | deny by default; allow only with approval (2.2); ReleaseTransport additionally requires `passed` evidence for every object in the transport | ReleaseTransport, RunReport, RunOptions, InstallZADTVSP, InstallAbapGit, any abapGit/UI5/RAP deploy tool, any delete/data-modifying tool |
+| R3 | Data change / release / privileged | deny by default; allow only with approval (2.2); ReleaseTransport additionally requires `passed` evidence for every object in the transport | ReleaseTransport, RunReport, RunOptions, InstallZADTVSP, InstallAbapGit, any abapGit/UI5/RAP deploy or publish tool (legacy name patterns `^UI5`, `Deploy`, `Publish`, `Unpublish`, `^Upload`, `ServiceBinding`), any delete/data-modifying tool |
 | — | Unknown `mcp__abap__*` | ask (fail safe), reason "unclassified tool" | — |
 
 ### 2.0 Hyperfocused mode (vsp v2.60.0)
@@ -62,6 +62,21 @@ Tool names derived from `agents/*.md`, `skills/*/SKILL.md`, `docs/co-abap.contex
 Object identity for the evidence store is the normalized "TYPE NAME" (uppercase, subtype such as `/OC` dropped). ADT URLs (`/sap/bc/adt/oo/classes/zcl_a`) and `R3TR`/`LIMU` transport entries map to the same key, so `edit` by target, `analyze`/`test` by `object_url` and `add_transport_object` meet in one record. Mapping to the post-write chain: `syntax_check` is `SyntaxCheck`, `test` is `RunUnitTests`, `test` with `coverage:true` is `GetCodeCoverage`, `test type=atc` is `RunATCCheck`. The help texts do not say that `test` returns coverage, so until a live system confirms a coverage parameter, `GetCodeCoverage` stays missing and release stays denied (fail safe).
 
 `release_transport` has no `objects` parameter in vsp, so the gate collects the objects from the call (if given) and from every evidence record whose `transport` equals `params.transport` (set by `edit`/`create` with `params.transport` and by `add_transport_object`). It denies when none are tracked or any lacks passed evidence. The manual-profile block and the single-use approval apply unchanged.
+
+**RAP and UI5 targets.** `urlTypes` also maps BDEF (`bo/behaviordefinitions`), SRVD (`ddic/srvd/sources`), SRVB (`businessservices/bindings`, `odatav2`, `odatav4`), DDLX, DCLS and the UI5 BSP repository (`filestore/ui5-bsp/objects`, WAPA), so package resolution and evidence keys work for them. Reads of these types are R0; `create`/`edit` are R2 with the package allowlist. R3 (deny unless approved) applies to:
+
+| Call | Class | Approval tool name / target |
+|------|-------|-----------------------------|
+| `edit` target `PUBLISH_SERVICE` / `UNPUBLISH_SERVICE` (documented in vsp help) | R3 (sub-type, no QA reset) | `edit.publish_service` / `edit.unpublish_service`, `params.service_name` |
+| `edit`/`create` of an SRVB with `publish`, `unpublish`, `publish_service`, `unpublish_service` truthy, or `op`/`operation`/`mode`/`type`/`action` starting with publish/unpublish | R3 (escalation `srvb_publish`) | `<action>.srvb_publish`, object key |
+| plain SRVB `create`/`edit` | R2 | ask, package check |
+| `edit`/`create`/`system` on a WAPA object (target, URL, `object_type`) | R3 (escalation `ui5`) | `<action>.ui5` |
+| `system deploy_from_file` whose target or file/path params match `.zip`, `manifest.json`, `/webapp/`, `ui5`/`bsp` path segments, `.wapa.`/`.ui5.`/`.bsp.` or type WAPA/UI5/BSP | R3 (escalation `ui5`) | `system.deploy_from_file.ui5`, `params.file_path` |
+| legacy-named tools `UI5*`, `*Deploy*`, `*Publish*`, `*Unpublish*`, `Upload*`, `*ServiceBinding*` | R3 | tool name |
+
+Escalations are data (`hyperfocused.escalations`), only ever raise an R2 call to R3, and an invalid rule makes the policy invalid (gate answers `ask`). `git_import_zip` and ordinary `deploy_from_file` of source files stay R2.
+
+**GUI scripting (gui-scripter).** Outside harness control for execution. `agents/gui-scripter.md` lists only vsp read tools and produces ABAP BDC programs (`CALL TRANSACTION ... USING`); VBS is a documented exception, and the repository has no GUI-scripting runner under `scripts/`. A BDC program reaches SAP only through `create`/`edit` (R2) and runs only through `RunReport` / `rfc run` (R3), both gated here. A VBS or SAP GUI scripting session runs on a workstation outside Claude's Bash tool, so no PreToolUse hook can see it and none was added. Approval is procedural: PM confirmation that no BAPI/OData/RFC alternative exists (agent rule 1), a human-run script in a non-production client, and the change recorded in the task log. If a Bash-driven runner (`cscript`, `*.vbs`) is ever introduced, add a `Bash` matcher hook that reuses the approval logic in `scripts/lib/sap-action-lib.ts`.
 
 ### 2.1 RunQuery rule
 Strip comments/whitespace; allow only if exactly one statement and it starts with `SELECT` (case-insensitive) and contains no `;`-separated second statement or `INSERT|UPDATE|DELETE|MODIFY|COMMIT|CALL` keywords. Otherwise deny.

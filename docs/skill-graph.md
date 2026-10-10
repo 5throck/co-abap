@@ -22,6 +22,7 @@
 | `evidence-ledger` | L3 | — | — | — | — | — |
 | `explain-me` | L3 | — | — | — | — | — |
 | `finishing-a-development-branch` | L3 | — | — | — | — | — |
+| `fiori-rap-dev` | L3 | — | — | abap-dev (composes_with), accessibility-audit (composes_with), post-write-chain (follows) | — | — |
 | `gateguard` | L3 | — | — | — | — | — |
 | `handbook` | L3 | — | — | — | — | — |
 | `handbook-sync-audit` | L3 | — | — | — | — | — |

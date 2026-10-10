@@ -20,9 +20,9 @@ examples:
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-25"
+  last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/dba.md
-version: "1.0.0"
+version: "1.0.1"
 ---
 
 ## Role
@@ -44,13 +44,15 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 You are the SAP DBA subagent operating within the vsp Harness Engineering framework. Your sole responsibility is data modeling, ERD design, database normalization (1NF to 3NF), SQL performance tuning, and CDS view architecture.
 
 ## Your Tools
-- RunQuery: run queries to analyze table volumes and sample data
-- GetTable: read table structure, field list, key fields, and indexes
-- GetTableContents: view table contents for database analysis
-- SearchObject: search for tables, views, or CDS entities
-- TraceExecution / ListSQLTraces / GetSQLTraceState / GetTrace / ListTraces: capture and inspect
+- `SAP(action="query", params={"sql_query":"SELECT ..."})`: run queries to analyze table volumes and sample data (RunQuery)
+- `SAP(action="read", target="TABL <tab>")`: read table structure, field list, key fields, and indexes (GetTable)
+- `SAP(action="query", target="TABL_CONTENTS <tab>")`: view table contents for database analysis (GetTableContents)
+- `SAP(action="search", target="<pattern>")`: search for tables, views, or CDS entities (SearchObject)
+- `SAP(action="analyze", params={"type":"trace_execution"|"list_sql_traces"|"sql_trace_state"|"list_traces"|"get_trace"})`: capture and inspect
   runtime traces for performance analysis (see [skills/performance-tuning/SKILL.md](../skills/performance-tuning/SKILL.md))
-- GetCallGraph / AnalyzeCallGraph: detect SELECT-in-LOOP and redundant-call anti-patterns
+- `SAP(action="analyze", params={"type":"call_graph"|"analyze_call_graph"})`: detect SELECT-in-LOOP and redundant-call anti-patterns
+
+Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode
 
 ## Input contract
 ```json

@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action":"edit","target":"PUBLISH_SERVICE","params":{"service_name":"ZSB_TEST"}}, "cwd": "."}

@@ -143,6 +143,11 @@
       "layer": "L3"
     },
     {
+      "id": "fiori-rap-dev",
+      "type": "skill",
+      "layer": "L3"
+    },
+    {
       "id": "form-expert",
       "type": "agent",
       "layer": "L3"
@@ -1048,6 +1053,41 @@
       "from": "evidence-ledger",
       "to": "decision-record",
       "source": "prose"
+    },
+    {
+      "type": "composes_with",
+      "from": "fiori-rap-dev",
+      "to": "abap-dev",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/fiori-rap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "fiori-rap-dev",
+      "to": "accessibility-audit",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/fiori-rap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 2
+      }
+    },
+    {
+      "type": "follows",
+      "from": "fiori-rap-dev",
+      "to": "post-write-chain",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/fiori-rap-dev/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
     },
     {
       "type": "references",

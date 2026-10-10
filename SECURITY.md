@@ -78,6 +78,30 @@ The default when `HARNESS_PROFILE` is absent is `hooked` on the Claude Code CLI.
 - Location: `memory/audit/sap-actions-YYYY-MM.jsonl` (one JSON object per line, append-only) and the evidence store `memory/audit/sap-evidence.json`. Both stay local (`memory/audit/` is git-ignored) unless the user opts in.
 - Content: hashes only. Each record holds a timestamp, session, actor, tool, risk class, decision, object, package, transport, a SHA-256 hash of the tool input, and before and after source hashes. Source text, SQL result rows, passwords, tokens, and connection strings are never logged.
 
+#### Outside the MCP gate
+
+The `sap-action-gate` hook covers `mcp__abap__*` calls only. The paths below run outside it and
+need their own rules. Where a Bash-level gate is installed (`scripts/hooks/gui-script-gate.ts`, wired in
+`.claude/settings.json`), it enforces the GUI rule in item 1. Where it is not installed, that rule is
+procedural: the agent must follow it, and nothing in the harness blocks a violation. As of this
+revision, `scripts/hooks/gui-script-gate.ts` does not exist, so item 1 is procedural.
+
+1. **SAP GUI scripting and BDC** (the `gui-scripter` agent, and any BDC or recorded-session script):
+   - These run outside the `mcp__abap__*` hooks.
+   - Any script that writes data or changes a transaction requires a recorded human approval before it
+     runs. Use the same single-use approval mechanism as R3 (see [Approval mechanism](#tier-3--harness-hooks-in-detail)).
+     Agents must not create approval files under `memory/audit/approvals/`.
+   - Read-only scripts (navigation, display, and export without saving) are allowed without approval.
+   - Every run, read-only or not, is logged to `memory/audit/` with the script name, target system, and
+     decision. Script text and result data are not logged, per the audit log content rule.
+2. **Form layouts** (SAPscript, Smart Forms, Adobe Forms): humans change these in SAP GUI. The harness
+   does not change form layouts, and no agent may script a layout change.
+3. **Enabling UI5, RAP, TRANSPORT, or ABAPGIT features** (`SAP_FEATURE_UI5`, `SAP_FEATURE_RAP`,
+   `SAP_FEATURE_TRANSPORT`, `SAP_FEATURE_ABAPGIT`): turning one on is a deliberate configuration change
+   that requires PM approval. The deploy and publish tools these features unlock are R3 (denied by
+   default, human approval per run). Tool mapping: see the
+   [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+
 #### Guidance that is not enforced
 
 The approval rules in the sections below (for example, "wait for explicit user confirmation") are

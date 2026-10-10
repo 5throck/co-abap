@@ -1,8 +1,8 @@
 ---
 name: desktop-app-fallback
 description: Manual Post-Write QA chain for Claude Code Desktop App (hooks don't fire)
-version: 1.0.0
-last_reviewed: 2026-08-15
+version: 1.0.1
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: test-runner
@@ -23,7 +23,7 @@ Use this skill when working in the **Claude Code Desktop App**, where `PostToolU
 
 ## Trigger
 
-After any `WriteSource` or `EditSource` operation in the Desktop App.
+After any `WriteSource` or `EditSource` operation (`SAP(action="edit", ...)`, R2) in the Desktop App. Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
 
 ## Manual QA Chain
 

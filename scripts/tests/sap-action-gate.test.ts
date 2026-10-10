@@ -1,11 +1,11 @@
-// @version 1.1.0
+// @version 1.2.0
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { evaluate } from "../hooks/sap-action-gate.ts";
 import { record } from "../hooks/sap-action-audit.ts";
-import { inspectQuery, readEvidence } from "../lib/sap-action-lib.ts";
+import { inspectQuery, normalizeObjectKey, readEvidence } from "../lib/sap-action-lib.ts";
 
 const REPO = join(import.meta.dir, "..", "..");
 const FIX = join(REPO, "scripts", "hooks", "__fixtures__");
@@ -327,6 +327,94 @@ describe("hyperfocused SAP tool", () => {
       expect(JSON.stringify(rec)).not.toContain("zcl_secret_body");
       expect(rec.tool).toBe("edit"); expect(rec.class).toBe("R2"); expect(rec.object).toBe("CLAS ZCL_A");
     });
+  });
+});
+
+describe("RAP / UI5 targets", () => {
+  const sap = (ti: object) => call("SAP", ti);
+  const ev = (ti: object) => evaluate(sap(ti), root);
+  test("fixtures", () => {
+    expect(evaluate(fx("hf-srvb-publish"), root).decision).toBe("deny");
+    expect(evaluate(fx("hf-srvd-create-tmp"), root).decision).toBe("ask");
+    expect(evaluate(fx("hf-ui5-deploy-zip"), root).decision).toBe("deny");
+    expect(evaluate(fx("hf-read-bdef"), root).decision).toBe("allow");
+  });
+  test("SRVB publish/unpublish sub-types are R3", () => {
+    for (const t of ["PUBLISH_SERVICE", "UNPUBLISH_SERVICE"]) {
+      const r = ev({ action: "edit", target: t, params: { service_name: "ZSB_T" } });
+      expect(r.decision).toBe("deny"); expect(r.cls).toBe("R3"); expect(r.reason).toContain("without approval");
+    }
+  });
+  test("publish approval is single-target and allows", () => {
+    approve("edit.publish_service", "ZSB_T");
+    expect(ev({ action: "edit", target: "PUBLISH_SERVICE", params: { service_name: "ZSB_T" } }).decision).toBe("allow");
+    expect(ev({ action: "edit", target: "PUBLISH_SERVICE", params: { service_name: "ZSB_OTHER" } }).decision).toBe("deny");
+  });
+  test("SRVB edit with publish params is R3, plain SRVB create is R2", () => {
+    expect(ev({ action: "edit", target: "SRVB ZSB_T", params: { publish: true, package: "$TMP" } }).cls).toBe("R3");
+    expect(ev({ action: "edit", target: "SRVB ZSB_T", params: { op: "publish", package: "$TMP" } }).decision).toBe("deny");
+    expect(ev({ action: "create", target: "SRVB ZSB_T", params: { publish: "false", package: "$TMP" } }).cls).toBe("R2");
+    const plain = ev({ action: "create", target: "SRVB ZSB_T", params: { package: "$TMP" } });
+    expect(plain.cls).toBe("R2"); expect(plain.decision).toBe("ask");
+    expect(ev({ action: "create", target: "SRVB ZSB_T", params: { package: "SAPBC" } }).decision).toBe("deny");
+  });
+  test("RAP types: SRVD/BDEF/DDLX/DCLS create is R2 with package check; reads allow", () => {
+    for (const t of ["SRVD", "BDEF", "DDLX", "DCLS"]) {
+      expect(ev({ action: "create", target: `${t} ZX`, params: { package: "$TMP" } }).decision).toBe("ask");
+      expect(ev({ action: "create", target: `${t} ZX`, params: { package: "SAPBC" } }).decision).toBe("deny");
+      expect(ev({ action: "read", target: `${t} ZX` }).decision).toBe("allow");
+    }
+  });
+  test("ADT URLs for RAP/UI5 types resolve to evidence keys and packages", () => {
+    const urls: Record<string, string> = {
+      "/sap/bc/adt/bo/behaviordefinitions/zi_x": "BDEF ZI_X",
+      "/sap/bc/adt/ddic/srvd/sources/zsd_x": "SRVD ZSD_X",
+      "/sap/bc/adt/businessservices/bindings/zsb_x": "SRVB ZSB_X",
+      "/sap/bc/adt/ddic/ddlx/sources/zx": "DDLX ZX",
+      "/sap/bc/adt/acm/dcl/sources/zx": "DCLS ZX",
+    };
+    const hf = JSON.parse(readFileSync(join(root, "config", "sap-action-policy.json"), "utf-8")).hyperfocused;
+    expect(normalizeObjectKey("/sap/bc/adt/filestore/ui5-bsp/objects/zapp/content", hf)).toBe("WAPA ZAPP");
+    for (const [u, k] of Object.entries(urls)) {
+      record(sap({ action: "edit", params: { object_url: u, package: "$TMP", source: "x" } }), root);
+      expect(readEvidence(root)[k]?.package).toBe("$TMP");
+    }
+    // package resolved from evidence for an edit without package
+    expect(ev({ action: "edit", params: { object_url: "/sap/bc/adt/bo/behaviordefinitions/zi_x", source: "y" } }).reason).toContain("$TMP");
+  });
+  test("UI5 / WAPA deploys are R3", () => {
+    expect(ev({ action: "create", target: "WAPA ZAPP", params: { package: "$TMP" } }).cls).toBe("R3");
+    expect(ev({ action: "edit", target: "OBJECT", params: { object_type: "WAPA/WB", name: "ZAPP", package: "$TMP" } }).cls).toBe("R3");
+    for (const fp of ["/w/app.zip", "/w/webapp/manifest.json", "C:\\w\\webapp\\Component.js", "/w/zapp.wapa.xml"]) {
+      const r = ev({ action: "system", params: { type: "deploy_from_file", file_path: fp, package_name: "$TMP" } });
+      expect(r.decision).toBe("deny"); expect(r.cls).toBe("R3"); expect(r.tool).toBe("system.deploy_from_file.ui5");
+    }
+    expect(ev({ action: "system", params: { type: "deploy_from_file", object_type: "WAPA", file_path: "/w/x", package_name: "$TMP" } }).cls).toBe("R3");
+  });
+  test("ordinary deploy_from_file stays R2; git_import_zip stays R2", () => {
+    expect(ev({ action: "system", params: { type: "deploy_from_file", file_path: "/w/zcl_a.clas.abap", package_name: "$TMP" } }).decision).toBe("ask");
+    expect(ev({ action: "system", params: { type: "git_import_zip", package_name: "$TMP", file_path: "/w/a.zip" } }).cls).toBe("R2");
+  });
+  test("UI5 deploy approved once with file path target", () => {
+    const ti = { action: "system", params: { type: "deploy_from_file", file_path: "/w/app.zip", package_name: "$TMP" } };
+    approve("system.deploy_from_file.ui5", "/w/app.zip");
+    expect(ev(ti).decision).toBe("allow");
+    record({ ...sap(ti), tool_response: "ok" }, root);
+    expect(ev(ti).decision).toBe("deny");
+  });
+  test("legacy named UI5/RAP tools are R3", () => {
+    for (const n of ["UI5Deploy", "UI5UploadApp", "UI5ListApps", "PublishServiceBinding", "UnpublishServiceBinding", "UploadBSP"]) {
+      const r = evaluate(call(n, {}), root);
+      expect(r.decision).toBe("deny"); expect(r.cls).toBe("R3");
+    }
+  });
+  test("escalation config is validated", () => {
+    const f = join(root, "config", "sap-action-policy.json");
+    const p = JSON.parse(readFileSync(f, "utf-8"));
+    p.hyperfocused.escalations = [{ label: "x", actions: ["edit"], valuePatterns: ["("] }];
+    writeFileSync(f, JSON.stringify(p));
+    const r = ev({ action: "read", target: "X" });
+    expect(r.decision).toBe("ask"); expect(r.reason).toContain("policy unavailable");
   });
 });
 

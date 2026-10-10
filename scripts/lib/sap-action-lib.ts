@@ -4,7 +4,7 @@
  * Used by hooks/sap-action-gate.ts (PreToolUse) and hooks/sap-action-audit.ts (PostToolUse).
  * Audit records store hashes only: never source text, SQL rows, tokens or credentials.
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 import { createHash } from 'node:crypto';
@@ -36,7 +36,14 @@ export interface HfAction {
   class: Cls; sql?: boolean; subFrom?: string[]; subDefault?: string; defaultNeedsTarget?: boolean;
   unknown?: 'default' | 'ask' | 'r3pattern'; sub?: Record<string, Cls | HfSub>;
 }
+/** Escalates an R2 hyperfocused call to R3 (UI5/BSP deploys, SRVB publish). Data in the policy file. */
+export interface HfEscalation {
+  label: string; actions: string[]; subs?: string[]; keyTypes?: string[];
+  paramsTruthy?: string[]; paramsWordKeys?: string[]; paramsWords?: string;
+  valueKeys?: string[]; valuePatterns?: string[];
+}
 export interface HfPolicy {
+  escalations?: HfEscalation[];
   actions: Record<string, Cls | HfAction>;
   packageKeys: string[]; urlTypes: Record<string, string>; limuTypes: Record<string, string>;
 }
@@ -86,6 +93,17 @@ export function validatePolicy(raw: unknown): Policy {
     const isCls = (c: unknown) => c === 'R0' || c === 'R1' || c === 'R2' || c === 'R3';
     if (!h || typeof h.actions !== 'object' || !isStrArr(h.packageKeys)) fail('hyperfocused');
     if (typeof h.urlTypes !== 'object' || typeof h.limuTypes !== 'object') fail('hyperfocused maps');
+    if (h.escalations !== undefined) {
+      if (!Array.isArray(h.escalations)) fail('hyperfocused.escalations');
+      for (const e of h.escalations) {
+        if (typeof e?.label !== 'string' || !isStrArr(e.actions)) fail('hyperfocused.escalations entry');
+        for (const k of ['subs', 'keyTypes', 'paramsTruthy', 'paramsWordKeys', 'valueKeys', 'valuePatterns']) {
+          if (e[k] !== undefined && !isStrArr(e[k])) fail(`hyperfocused.escalations.${k}`);
+        }
+        for (const rx of e.valuePatterns ?? []) new RegExp(rx, 'i');
+        if (e.paramsWords !== undefined) new RegExp(e.paramsWords, 'i');
+      }
+    }
     for (const [a, v] of Object.entries<any>(h.actions)) {
       if (!(isCls(v) || isCls(v?.class))) fail(`hyperfocused.actions.${a}`);
       for (const [n, sv] of Object.entries<any>(v?.sub ?? {})) {
@@ -252,6 +270,35 @@ function hfKeys(target: string | undefined, p: Record<string, unknown>, hf?: HfP
   return out;
 }
 
+const isOff = (v: unknown): boolean => v === undefined || v === null || v === false || v === 0 || v === '' || (typeof v === 'string' && /^(false|0|no)$/i.test(v.trim()));
+
+/** First escalation rule that matches an R2 hyperfocused call, or undefined. Fail-safe: only ever raises the class. */
+function matchEscalation(
+  hf: HfPolicy, action: string, sub: string | undefined, target: string | undefined,
+  keys: string[], p: Record<string, unknown>,
+): HfEscalation | undefined {
+  const types = new Set<string>(keys.map((k) => k.split(' ')[0].toUpperCase()));
+  const t0 = target?.trim().split(/\s+/)[0]?.split('/')[0]?.toUpperCase();
+  if (t0) types.add(t0);
+  for (const k of ['object_type', 'objtype', 'objType']) {
+    const v = str(p[k]); if (v) types.add(v.split('/')[0].toUpperCase());
+  }
+  for (const e of hf.escalations ?? []) {
+    if (!e.actions.includes(action)) continue;
+    if (e.subs && !(sub && e.subs.includes(sub))) continue;
+    if (e.keyTypes?.some((t) => types.has(t.toUpperCase()))) {
+      if (!e.paramsTruthy && !e.paramsWords) return e;
+      if (e.paramsTruthy?.some((k) => !isOff(p[k]))) return e;
+      if (e.paramsWords && e.paramsWordKeys?.some((k) => typeof p[k] === 'string' && new RegExp(e.paramsWords!, 'i').test((p[k] as string).trim()))) return e;
+    }
+    if (e.valuePatterns?.length) {
+      const vals = [target, ...(e.valueKeys ?? []).map((k) => p[k])].flatMap((v) => listOf(v));
+      if (vals.some((v) => e.valuePatterns!.some((rx) => new RegExp(rx, 'i').test(v)))) return e;
+    }
+  }
+  return undefined;
+}
+
 function listOf(v: unknown): string[] {
   if (Array.isArray(v)) return v.filter((x): x is string => typeof x === 'string' && !!x.trim()).map((x) => x.trim());
   const s = str(v);
@@ -323,6 +370,10 @@ export function resolveHyperfocused(raw: unknown, policy: Policy): HfResolved {
       cls = 'R3'; out.sub = name; out.tool = `${action}.${name}`;
     }
   }
+  if (cls === 'R2') {
+    const esc = matchEscalation(hf, action, out.sub, target, out.keys, p);
+    if (esc) { cls = 'R3'; out.tool = `${out.tool}.${esc.label}`; }
+  }
   out.cls = cls;
   out.write = sub?.write ?? true;
   if (sub) {
@@ -331,7 +382,7 @@ export function resolveHyperfocused(raw: unknown, policy: Policy): HfResolved {
       if (p[param] === true || p[param] === 'true') for (const st of steps) if (!out.evidence.includes(st)) out.evidence.push(st);
     }
   }
-  out.approvalTarget = out.transport ?? out.keys[0] ?? str(p.function) ?? str(p.report) ?? target ?? str(p.job);
+  out.approvalTarget = out.transport ?? out.keys[0] ?? str(p.service_name) ?? str(p.file_path) ?? str(p.function) ?? str(p.report) ?? target ?? str(p.job);
   return out;
 }
 

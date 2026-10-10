@@ -1,7 +1,7 @@
 ---
 name: abap-dev
 description: Use when working on SAP ABAP development tasks — provides specialized workflows for BAPI exploration, transport management, unit testing, performance analysis, impact architecture analysis, and documentation audits. Trigger on any SAP/ABAP coding, debugging, or system analysis task.
-version: 1.2.1
+version: 1.2.2
 last_reviewed: 2026-10-10
 status: active
 scope: co-abap
@@ -41,14 +41,16 @@ This skill defines the ABAP development capabilities and optimized workflow patt
 
 ## Core Capabilities
 
-- **Surgical Edits**: Use `EditSource` for changes under 50 lines to ensure syntax safety and atomicity.
-- **Context Awareness**: Use `GetContext` when analyzing large classes to save tokens and focus on structural understanding.
-- **Graph Analysis**: Perform impact analysis via `AnalyzeCallGraph` before refactoring.
+> The vsp server runs in hyperfocused mode: one `SAP(action, target, params)` tool. Legacy names below (EditSource, GetContext, SyntaxCheck, ...) are conceptual labels; callable forms are in brackets. Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode. GetAPIReleaseState has no equivalent (check C1 manually in ADT per DA-3); UI5* tools need `SAP_FEATURE_UI5` (off).
+
+- **Surgical Edits**: Use `EditSource` [`edit` `target=EDITSOURCE`] for changes under 50 lines to ensure syntax safety and atomicity.
+- **Context Awareness**: Use `GetContext` [`analyze` `type=context`] when analyzing large classes to save tokens and focus on structural understanding.
+- **Graph Analysis**: Perform impact analysis via `AnalyzeCallGraph` [`analyze` `type=analyze_call_graph`] before refactoring.
 - **SQL Accuracy**: See ABAP SQL rules in `sap:performance-analyzer` below.
 
 ## Best Practices
 
-- Always execute `SyntaxCheck` after any modification to verify quality.
+- Always execute `SyntaxCheck` [`analyze` `type=syntax_check`] after any modification to verify quality.
 - Focus operations primarily within `Z*` and `$TMP` packages.
 - **Data access**: follow the CDS-first scope and SQL quality baseline in `docs/co-abap.context.md` (Data Access Rules, DA-1..DA-8). Existing Z/Y programs keep their existing data-access pattern.
 
@@ -84,10 +86,10 @@ Names unverified for your release; check existence and C1 state on the target sy
 **Trigger**: When searching for integration APIs, standard function modules, or BAPI alternatives to custom development.
 
 **Workflow**:
-1. Use `SearchObject` with `type=FUNC` and a keyword pattern (e.g. `BAPI_SALESORDER_*`) to locate candidate function modules.
-2. For each candidate, call `GetSource` to read the function module signature (importing/exporting/tables parameters).
-3. Use `GetFunctionGroup` to understand the group the BAPI belongs to and related functions.
-4. Call `GetTable` on the relevant parameter structures (e.g. `BAPIORDERS`, `BAPISDORDER`) to understand field definitions and types.
+1. Use `SearchObject` [`SAP(action="search", ...)`] with `type=FUNC` and a keyword pattern (e.g. `BAPI_SALESORDER_*`) to locate candidate function modules.
+2. For each candidate, call `GetSource` [`read`] to read the function module signature (importing/exporting/tables parameters).
+3. Use `GetFunctionGroup` [`read` `target="FUGR ..."`] to understand the group the BAPI belongs to and related functions.
+4. Call `GetTable` [`read` `target="TABL ..."`] on the relevant parameter structures (e.g. `BAPIORDERS`, `BAPISDORDER`) to understand field definitions and types.
 5. Document findings: BAPI name, parameters, return code structure (BAPIRET2), known limitations.
 
 **Output format**:
@@ -112,14 +114,14 @@ Limitations: <known issues or missing fields>
 **Trigger**: When working on dev/production systems, deploying objects, or managing change management.
 
 **Workflow**:
-1. **Check existing transports**: Call `ListTransports` to see open requests. Reuse an existing request if the task is part of an ongoing change.
-2. **Create a new request** (if needed): Call `CreateTransport` with a clear description (`feat: <summary>`).
-3. **Add objects**: After each `WriteSource`/`EditSource`/`Activate`, call `AddToTransport` with the object URL and transport number.
+1. **Check existing transports**: Call `ListTransports` [`system` `type=list_transports`] to see open requests. Reuse an existing request if the task is part of an ongoing change.
+2. **Create a new request** (if needed): Call `CreateTransport` [`system` `type=create_transport`, R2] with a clear description (`feat: <summary>`).
+3. **Add objects**: After each `WriteSource`/`EditSource`/`Activate`, call `AddToTransport` [`system` `type=add_transport_object`] with the object URL and transport number.
 4. **Pre-release gate**: Before `ReleaseTransport`, verify:
    - `SyntaxCheck` → 0 errors on all objects
    - `RunUnitTests` → 0 failures
    - `RunATCCheck` → 0 Priority-1 findings
-5. **Release**: Call `ReleaseTransport`. Log the transport number in `memory/YYYY-MM-DD.md`.
+5. **Release**: Call `ReleaseTransport` [`system` `type=release_transport`, R3, approval required]. Log the transport number in `memory/YYYY-MM-DD.md`.
 
 **Slash command**: Use `/transport` for all steps above.
 

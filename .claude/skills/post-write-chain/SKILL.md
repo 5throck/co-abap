@@ -1,7 +1,7 @@
 ---
 name: post-write-chain
 description: 'Use after ANY WriteSource, EditSource, or Activate operation on SAP ABAP objects. Enforces the mandatory quality gate: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck. Trigger automatically after every ABAP write operation.'
-version: 1.2.0
+version: 1.3.0
 last_reviewed: 2026-10-10
 status: active
 scope: co-abap
@@ -108,8 +108,24 @@ This skill enforces a mandatory four-step quality gate that runs after every ABA
 4. **RunATCCheck** — Execute ABAP Test Cockpit checks. Priority-1 findings block deployment.
 5. If any step fails, fix the issue and re-run from the failed step. Do not skip forward.
 
+## UI5 / Fiori Branch
+
+For objects under a Fiori / UI5 app, run these in addition to (not instead of) the backend chain:
+
+1. **ui5-linter** - zero errors (deprecated API, global usage).
+2. **QUnit / OPA5** - unit and integration tests pass.
+3. **manifest validation** - `manifest.json` checks (ids, data sources to `_O4`/`_O2`, `minUI5Version`, routing, i18n).
+4. **accessibility-audit** - WCAG 2.1 AA via [accessibility-audit](../accessibility-audit/SKILL.md); Critical/Serious violations block handoff.
+
+See [fiori-rap-dev](../fiori-rap-dev/SKILL.md) for details.
+
+## RAP Artifacts
+
+BDEF, SRVD, and DDLX: run `syntax_check` and activation (R2). SRVB publish is R3 and needs approval; it is not part of the automated chain. Behavior pool classes (`ZBP_R_`) follow the full four-step chain.
+
 ## Related Skills
 
 - [abap-dev](../abap-dev/SKILL.md) — Core ABAP development workflows including unit testing and performance analysis
 - [desktop-app-fallback](../desktop-app-fallback/SKILL.md) — Manual QA chain for Desktop App sessions where hooks do not fire
 - [performance-tuning](../performance-tuning/SKILL.md) — Deep performance analysis for slow programs and expensive SQL
+- [fiori-rap-dev](../fiori-rap-dev/SKILL.md) — Fiori / RAP workflow that uses the UI5 branch above

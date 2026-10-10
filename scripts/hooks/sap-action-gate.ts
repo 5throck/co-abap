@@ -7,7 +7,7 @@
  * Denied calls are logged here because PostToolUse does not fire for them.
  * Design: docs/designs/2026-10-10-sap-write-safety-gate-design.md
  *
- * @version 1.1.0
+ * @version 1.2.0
  */
 
 import {

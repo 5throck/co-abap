@@ -58,7 +58,12 @@
     "^Drop",
     "^Insert",
     "^Modify",
-    "^Import"
+    "^Import",
+    "^UI5",
+    "Publish",
+    "Unpublish",
+    "^Upload",
+    "ServiceBinding"
   ],
   "defaultUnknown": "ask",
   "allowedPackages": [
@@ -225,6 +230,14 @@
           "unlock": {
             "class": "R2",
             "write": false
+          },
+          "publish_service": {
+            "class": "R3",
+            "write": false
+          },
+          "unpublish_service": {
+            "class": "R3",
+            "write": false
           }
         }
       },
@@ -339,11 +352,93 @@
       "ddic/tables": "TABL",
       "ddic/domains": "DOMA",
       "ddic/dataelements": "DTEL",
-      "packages": "DEVC"
+      "packages": "DEVC",
+      "bo/behaviordefinitions": "BDEF",
+      "ddic/srvd/sources": "SRVD",
+      "businessservices/bindings": "SRVB",
+      "businessservices/odatav2": "SRVB",
+      "businessservices/odatav4": "SRVB",
+      "ddic/ddlx/sources": "DDLX",
+      "acm/dcl/sources": "DCLS",
+      "filestore/ui5-bsp/objects": "WAPA"
     },
     "limuTypes": {
       "REPT": "PROG",
       "REPS": "PROG"
-    }
-  }
+    },
+    "escalations": [
+      {
+        "_doc": "Escalate an R2 call to R3. UI5/BSP repository (WAPA) content in any write/system call.",
+        "label": "ui5",
+        "actions": [
+          "edit",
+          "create",
+          "system"
+        ],
+        "keyTypes": [
+          "WAPA"
+        ]
+      },
+      {
+        "_doc": "deploy_from_file whose file/target is UI5/BSP content or a zip archive.",
+        "label": "ui5",
+        "actions": [
+          "system"
+        ],
+        "subs": [
+          "deploy_from_file"
+        ],
+        "valueKeys": [
+          "file_path",
+          "path",
+          "zip_path",
+          "archive",
+          "app_path",
+          "webapp_path",
+          "folder",
+          "directory",
+          "source_dir",
+          "bsp_name",
+          "app_name",
+          "application",
+          "object_type",
+          "type"
+        ],
+        "valuePatterns": [
+          "\\.zip$",
+          "(^|[\\\\/])manifest\\.json$",
+          "(^|[\\\\/])webapp([\\\\/]|$)",
+          "(^|[\\\\/])(ui5|bsp)([\\\\/.]|$)",
+          "\\.(wapa|ui5|bsp)\\.",
+          "^(WAPA|UI5|BSP)(/.*)?$"
+        ]
+      },
+      {
+        "_doc": "RAP service binding publish/unpublish expressed as params on an SRVB object (documented form is edit PUBLISH_SERVICE/UNPUBLISH_SERVICE, handled as sub-types). Plain SRVB create/edit stays R2.",
+        "label": "srvb_publish",
+        "actions": [
+          "edit",
+          "create"
+        ],
+        "keyTypes": [
+          "SRVB"
+        ],
+        "paramsTruthy": [
+          "publish",
+          "unpublish",
+          "publish_service",
+          "unpublish_service"
+        ],
+        "paramsWordKeys": [
+          "op",
+          "operation",
+          "mode",
+          "type",
+          "action"
+        ],
+        "paramsWords": "^(un)?publish"
+      }
+    ]
+  },
+  "_legacyNote": "Top-level classes/r3Patterns cover LEGACY (non-hyperfocused) vsp tool names only. Production runs SAP_MODE=hyperfocused (single SAP tool; see 'hyperfocused'). GetAPIReleaseState does not exist in vsp v2.60.0 and is kept as R0 only for legacy-mode safety; see docs/co-abap.context.md 'vsp Tool Reference (Hyperfocused Mode)'."
 }

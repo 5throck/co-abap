@@ -1,8 +1,8 @@
 ---
 name: dump-monitor
 description: Use when checking SAP system health, investigating reported errors, or performing a periodic operational health check. Provides a standardized workflow using ListDumps/GetDump to detect ABAP short dumps and route new findings into /triage for investigation.
-version: 1.0.0
-last_reviewed: 2026-08-15
+version: 1.0.1
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: devops-admin
@@ -47,13 +47,16 @@ may run it as part of a health check.
 
 ## Workflow
 
+> `ListDumps` / `GetDump` are conceptual labels; in hyperfocused mode they are `SAP(action="analyze", ...)` calls (R0). Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
+
 ```
 1. List recent dumps
    ListDumps(since=<last-check-timestamp or 24h ago>)
+   → SAP(action="analyze", params={"type":"list_dumps", ...})
 
 2. For each new dump not already triaged (cross-reference against
    scratch/qa-reports/ or memory/ logs from prior checks):
-   GetDump(dump_id) → capture: program, exception, call stack, timestamp, user/client
+   GetDump(dump_id) → SAP(action="analyze", params={"type":"get_dump", ...}) → capture: program, exception, call stack, timestamp, user/client
 
 3. Classify
    - Runtime error in a Z*/custom object → candidate for /triage with classification "Debug"

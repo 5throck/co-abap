@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action":"system","params":{"type":"deploy_from_file","file_path":"/work/app.zip","package_name":"$TMP"}}, "cwd": "."}
