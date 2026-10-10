@@ -1,45 +1,60 @@
 /**
- * @version 1.2.0
+ * @version 1.3.0
  */
 import { describe, expect, test } from 'bun:test';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { isDetachedL3Project, l3BaselineChecks } from '../review-baseline.ts';
 
-function makeDetachedL3Fixture(marker = 'template-version.txt'): string {
+function makeFixture(files: string[] = ['template-version.txt']): string {
   const root = join(tmpdir(), `l3-baseline-${Date.now()}-${Math.random().toString(16).slice(2)}`);
-  mkdirSync(join(root, '.claude'), { recursive: true });
   mkdirSync(join(root, 'docs'), { recursive: true });
-  writeFileSync(join(root, '.claude', marker), marker.endsWith('.json') ? '{}\n' : 'variant=co-abap\n');
   writeFileSync(join(root, 'docs', 'context.md'), '# context\n');
+  for (const f of files) {
+    mkdirSync(join(root, f, '..'), { recursive: true });
+    writeFileSync(join(root, f), 'x\n');
+  }
   return root;
 }
 
+function withFixture(files: string[], fn: (root: string) => void): void {
+  const root = makeFixture(files);
+  try { fn(root); } finally { rmSync(root, { recursive: true, force: true }); }
+}
+
 describe('review-baseline L3 detection', () => {
-  test('accepts either provenance marker and rejects when templates/ exists', () => {
-    for (const marker of ['template-version.txt', 'last-upgrade-delivery.json']) {
-      const root = makeDetachedL3Fixture(marker);
-      try {
-        expect(isDetachedL3Project(root)).toBe(true);
-        mkdirSync(join(root, 'templates'));
-        expect(isDetachedL3Project(root)).toBe(false);
-      } finally {
-        rmSync(root, { recursive: true, force: true });
-      }
-    }
+  test('detects the root template-version.txt marker (no .claude/ directory)', () => {
+    withFixture(['template-version.txt'], root => {
+      expect(existsSync(join(root, '.claude'))).toBe(false);
+      expect(isDetachedL3Project(root)).toBe(true);
+    });
   });
 
-  test('rejects a project with no provenance marker', () => {
-    const root = makeDetachedL3Fixture();
-    rmSync(join(root, '.claude', 'template-version.txt'));
-    try {
+  test('does not detect with only .claude/template-version.txt', () => {
+    withFixture(['.claude/template-version.txt'], root => expect(isDetachedL3Project(root)).toBe(false));
+  });
+
+  test('does not detect with only .claude/last-upgrade-delivery.json', () => {
+    withFixture(['.claude/last-upgrade-delivery.json'], root => expect(isDetachedL3Project(root)).toBe(false));
+  });
+
+  test('does not detect when templates/ exists', () => {
+    withFixture(['template-version.txt'], root => {
+      mkdirSync(join(root, 'templates'));
       expect(isDetachedL3Project(root)).toBe(false);
-    } finally {
-      rmSync(root, { recursive: true, force: true });
-    }
+    });
   });
 
+  test('does not detect without docs/context.md', () => {
+    withFixture(['template-version.txt'], root => {
+      rmSync(join(root, 'docs', 'context.md'));
+      expect(isDetachedL3Project(root)).toBe(false);
+    });
+  });
+});
+
+describe('review-baseline checks', () => {
   test('L0-only checks are reported N/A', () => {
     expect(l3BaselineChecks().filter(c => c.naReason).map(c => c.name))
       .toEqual(['validate-templates', 'propagate-to-templates']);

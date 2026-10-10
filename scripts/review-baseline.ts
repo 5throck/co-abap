@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * L3 Project Review Baseline
- * @version 1.1.0
+ * @version 1.2.0
  *
  * Runs only the deterministic checks delivered to a detached L3 project.
  * L0 source-tree checks (templates and propagation) are reported N/A rather
@@ -16,12 +16,13 @@ const ROOT = join(import.meta.dir, '..');
 const quiet = process.argv.includes('--quiet');
 
 // LOCAL-PATCH(upstream-request: pending): this file was dropped by template upgrade v0.7.0
-// (700bbd4) and should be delivered by the template. Marker list also accepts
-// .claude/last-upgrade-delivery.json (template-version.txt removed in v0.8.3).
+// (700bbd4). The template should deliver review-baseline.ts using the platform-independent
+// root marker <root>/template-version.txt (no .claude/ compatibility). Note:
+// skills/project-review/SKILL.md:56 still names .claude/template-version.txt; that file is
+// template-owned and must be fixed upstream.
 export function isDetachedL3Project(root: string): boolean {
   return !existsSync(join(root, 'templates'))
-    && (existsSync(join(root, '.claude', 'template-version.txt'))
-      || existsSync(join(root, '.claude', 'last-upgrade-delivery.json')))
+    && existsSync(join(root, 'template-version.txt'))
     && existsSync(join(root, 'docs', 'context.md'));
 }
 

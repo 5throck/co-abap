@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T06:59:20.419Z
+**Generated**: 2026-10-10T07:07:31.946Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -38,7 +38,7 @@
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
 | schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
 | sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-07 |
+| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-10 |
 | test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
 
 ---
@@ -170,8 +170,8 @@
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
-| review-baseline.test.ts | 1.2.0 | scripts/tests/review-baseline.test.ts | bun:test |
-| review-baseline.ts | 1.1.0 | scripts/review-baseline.ts | N/A |
+| review-baseline.test.ts | 1.3.0 | scripts/tests/review-baseline.test.ts | bun:test |
+| review-baseline.ts | 1.2.0 | scripts/review-baseline.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
