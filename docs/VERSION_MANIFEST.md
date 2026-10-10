@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T06:20:26.158Z
+**Generated**: 2026-10-10T07:07:31.946Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 48
-- **Scripts**: 107 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 109 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -19,9 +19,9 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | inherit | 2026-09-25 |
+| architect | agents/architect.md | high | inherit | 2026-10-10 |
 | co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-25 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-09-25 |
+| code-writer | agents/code-writer.md | low | inherit | 2026-10-10 |
 | dba | agents/dba.md | medium | inherit | 2026-09-25 |
 | devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-25 |
 | fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-25 |
@@ -38,7 +38,7 @@
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
 | schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
 | sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-07 |
+| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-10 |
 | test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
 
 ---
@@ -49,7 +49,7 @@
 | Name | Version | Status | Location | Platform | Triggers | Owner |
 |------|---------|--------|----------|----------|----------|-------|
 | abap-code-review | 1.0.0 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
-| abap-dev | 1.1.0 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
+| abap-dev | 1.2.0 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
 | accessibility-audit | 1.1.0 | active | skills/accessibility-audit/SKILL.md | workspace | accessibility-audit, /accessibility-audit, axe-core audit, wcag accessibility check, wcag 2.1 aa | pm |
 | agent-lifecycle-manager | 1.3.0 | active | skills/agent-lifecycle-manager/SKILL.md | workspace | create agent, new agent, validate agents, agent lifecycle, manage agents, hire agent, fire agent, deprecate agent | pm |
 | api-documentation | 1.0.2 | active | skills/api-documentation/SKILL.md | workspace | api documentation, document api, api reference, developer documentation, rest api docs, graphql docs, sdk documentation | pm |
@@ -170,6 +170,8 @@
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
+| review-baseline.test.ts | 1.3.0 | scripts/tests/review-baseline.test.ts | bun:test |
+| review-baseline.ts | 1.2.0 | scripts/review-baseline.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |

@@ -58,14 +58,23 @@ erDiagram
 | | | | |
 
 ### 3.3. Data Access Strategy (CDS-First)
-<!-- Evaluate in order; stop at the first level that fits. Rationale required for levels 3-4. -->
+<!-- Rules: docs/co-abap.context.md § Data Access Rules (DA-1..DA-8). Evaluate in order (DA-3); stop at the first level that fits. Rationale required below level 2. -->
 
-| Level | Option | Candidate Object(s) | Used? | Rationale |
-|-------|--------|---------------------|-------|-----------|
-| 1 | Released standard CDS (`I_*`) | | | |
-| 2 | Custom CDS (`Z*`) | | | |
-| 3 | Open SQL with DB pushdown | | | |
-| 4 | AMDP | | | |
+> See [Data Access Rules DA-1..DA-8](../../docs/co-abap.context.md#data-access-rules-cds-first--sql-quality).
+
+- **System release (DA-1)**: [S/4HANA release ___ | ECC | unknown]
+- **Applicability (DA-2)**: [ ] New read on S/4HANA [ ] Maintenance (existing pattern: ___) [ ] ECC/non-VDM (Open SQL)
+
+| Level | Option | Candidate Object(s) | C1 verified (how / result) | Used? | Rationale |
+|-------|--------|---------------------|----------------------------|-------|-----------|
+| 1 | Released standard CDS (`I_*`) | | | | |
+| 2 | Custom CDS (`ZI_` / `ZR_` / `ZC_`, DA-8) | | N/A | | |
+| 3 | Open SQL with DB pushdown | | N/A | | |
+| 4 | AMDP | | N/A | | |
+
+- [ ] DA-4 SQL quality baseline reviewed for written/modified statements
+- [ ] DA-5 DCL (`#CHECK`) defined for every new CDS view
+- [ ] DA-6 conversion evidence (row count, totals, trace) attached — or N/A
 
 ### 3.4. Index Recommendations
 

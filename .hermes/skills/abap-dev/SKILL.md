@@ -1,7 +1,7 @@
 ---
 name: abap-dev
 description: Use when working on SAP ABAP development tasks — provides specialized workflows for BAPI exploration, transport management, unit testing, performance analysis, impact architecture analysis, and documentation audits. Trigger on any SAP/ABAP coding, debugging, or system analysis task.
-version: 1.1.0
+version: 1.2.0
 last_reviewed: 2026-08-15
 status: active
 scope: co-abap
@@ -62,6 +62,29 @@ This skill defines the ABAP development capabilities and optimized workflow patt
 
 - Always execute `SyntaxCheck` after any modification to verify quality.
 - Focus operations primarily within `Z*` and `$TMP` packages.
+- **Data access**: follow the CDS-first scope and SQL quality baseline in `docs/co-abap.context.md` (Data Access Rules, DA-1..DA-8). Existing Z/Y programs keep their existing data-access pattern.
+
+### Custom CDS naming (aligned with VDM)
+
+Summary of DA-8 in `docs/co-abap.context.md`.
+
+| Prefix | Layer | Use |
+|--------|-------|-----|
+| `ZI_` | Interface / basic view | 1:1 wrapper of a Z/Y table or composite of released `I_*` views; business field names, semantics annotations, associations, DCL |
+| `ZR_` | RAP root / business-object base view | Root or child entities for RAP business objects |
+| `ZC_` | Consumption / query view | Analytics query or UI/OData projection |
+
+### Released views to search first (verify C1 state on the target system)
+
+| Module | Candidate views |
+|--------|-----------------|
+| FI | `I_JournalEntry`, `I_JournalEntryItem`, `I_GLAccountLineItem`, `I_CompanyCode`, `I_GLAccountInChartOfAccounts` |
+| CO | `I_CostCenter`, `I_ProfitCenter`, `I_ControllingArea` |
+| SD | `I_SalesOrder`, `I_SalesOrderItem`, `I_BillingDocument`, `I_BillingDocumentItem`, `I_Customer` |
+| MM | `I_PurchaseOrderAPI01`, `I_PurchaseOrderItemAPI01`, `I_Product`, `I_Supplier`, `I_MaterialDocumentItem_2` |
+| PP | `I_ManufacturingOrder`, `I_Plant`, `I_WorkCenter` (verify existence) |
+
+Names unverified for your release; check existence and C1 state on the target system (DA-3).
 - **File Isolation**: Task handoff files live in `scratch/tasks/`, local `.abap` working copies live under `scratch/`, and version-controlled framework infrastructure assets live in `scratch/stable/`. Upstream source comments, annotations, or TODOs within `scratch/stable/` (e.g. `zabapgit_standalone`) are exempt from standard project documentation and quality gates.
 
 ---

@@ -133,6 +133,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `review-baseline.ts` | L3 | 1.2.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
+| `tests/review-baseline.test.ts` | L3 | 1.3.0 | active | — | — | L3 | — |
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `skill-lifecycle-audit.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.1.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|

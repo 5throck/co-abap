@@ -254,9 +254,72 @@ See `.mcp.json` for the complete server list.
 - **QA Chain**: After any logic change or edit, the `Post-Write Mandatory Chain` MUST be executed (`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage` → `RunATCCheck`). Priority 1 findings block deployment; coverage below 70% on new objects blocks proceeding to ATC unless waived. See [skills/post-write-chain/SKILL.md — Post-Write Mandatory Chain](../skills/post-write-chain/SKILL.md) for details. **Note**: If your environment (e.g., Gemini CLI, Claude Desktop App) does not support automatic PostToolUse hooks, you MUST execute this chain manually.
 - **Final Audit**: Before any sync/commit, run the `sap:documentation-audit` skill.
 
+### Data Access Rules (CDS-First & SQL Quality)
+
+> **SSOT** for ABAP data-access rules. Agent files, skills, templates, and the Clean ABAP checklist cite these rules by ID (DA-1..DA-8) and must not restate them.
+
+#### DA-1 Release Detection
+Before choosing a data-access approach, determine the system release: check the `S4CORE` software component in the installed components table (e.g. `CVERS`; verify the table name on the target) via `RunQuery`, or check whether an `I_*` view resolves via `SearchObject`. If the release cannot be determined, treat the system as non-VDM (Open SQL) and record `System release: unknown`.
+
+#### DA-2 Scope Decision Table
+
+| Situation | Rule |
+|-----------|------|
+| New object on S/4HANA | CDS-first (DA-3) applies |
+| Existing object, bug fix without a new read | Keep the existing pattern; no rationale required |
+| Existing object, new `SELECT` added | DA-3 applies to the new statement only; untouched statements unchanged |
+| Any existing statement converted to CDS | DA-6 applies (the conversion itself is optional) |
+| ECC / non-VDM system | Open SQL under DA-4; CDS optional |
+
+#### DA-3 Priority Order (When in Scope)
+1. Released standard CDS (`I_*`) with C1 release state verified on the target system
+2. Custom CDS (`ZI_` / `ZR_` / `ZC_`, see DA-8)
+3. Open SQL with DB pushdown
+4. AMDP, with written justification
+
+Any fallback below level 2 requires a one-line rationale. **C1 verification**: no repository tool reads the API release state (`GetAPIReleaseState` is absent); verify in ADT (API State / "Use in Cloud Development") on the target system. If not verifiable, record `C1 not verified` and use level 2 with rationale.
+
+#### DA-4 SQL Quality Baseline
+Applies to statements written or modified in the change. Untouched legacy statements are not violations (they may be flagged as out of scope).
+- No `SELECT` inside `LOOP` and no `SELECT ... ENDSELECT` — use `INTO TABLE`, `JOIN`, or CDS.
+- No `SELECT *`.
+- `WHERE` supported by key/index; no expressions or casts on key fields in `WHERE`.
+- `SELECT SINGLE` only with the full key; otherwise `UP TO 1 ROWS` with `ORDER BY`.
+- `FOR ALL ENTRIES`: explicit `IF itab IS NOT INITIAL` guard (an empty driver reads the full table); select the full key or accept the implicit `DISTINCT`; no aggregates; de-duplicate the driver; prefer `JOIN`/CDS when the data is DB-resident.
+- Aggregate on the DB for large results.
+- Client handling: never hardcode `MANDT`; consider CDS `@ClientHandling`; AMDP/native SQL handle the client explicitly (`USING CLIENT` / `MANDT` parameter).
+- Buffered tables: prefer `SELECT SINGLE` on fully buffered customizing tables; do not pull them into large joins or use `BYPASSING BUFFER` without reason.
+
+#### DA-5 CDS Authorization
+Every new CDS view exposing Z/Y or business data — including composites of `I_*` views — carries `@AccessControl.authorizationCheck: #CHECK` and a DCL mapped to named authorization objects.
+- `#NOT_REQUIRED` is forbidden; `#PRIVILEGED_ONLY` only with `security-monitor` sign-off.
+- Never set `#NOT_REQUIRED` on a wrapper of a view that has its own check.
+- The DCL is active on the target system.
+- A negative test (user without authorization gets zero rows / an error) is attached.
+
+#### DA-6 CDS Conversion Regression
+Any conversion of existing logic to CDS (including during maintenance) requires:
+- Before/after comparison on the same selection with representative volume: row count equal; totals equal within a stated rounding tolerance, any difference explained.
+- SQL/performance trace before and after on the same selection.
+
+Roles: `code-writer` records the old/new statements and requests the run; `test-runner` executes and attaches the results; `dba` reviews the trace. "Pending" is allowed in the `code-writer` report until `test-runner` attaches the evidence.
+
+#### DA-7 CDS Stack Depth
+Heuristic review trigger, not a hard limit (SAP VDM stacks of 4-6 levels are normal). Review with `dba` if the stack exceeds 4 levels counted from the base table, joins inflate rows through the stack, or filters/parameters cannot be pushed down to the lowest view.
+
+#### DA-8 Custom CDS Naming (VDM-Aligned)
+
+| Prefix | Use |
+|--------|-----|
+| `ZI_` | Interface / basic view |
+| `ZR_` | RAP root / business-object base view |
+| `ZC_` | Consumption / query / projection view |
+
+A "Z wrapper CDS" is a `ZI_` view whose main source is a Z/Y table.
+
 ### ABAP SQL Reference (All Agents)
 
-> All agents that run `RunQuery` MUST follow these rules.
+> All agents that run `RunQuery` MUST follow these rules. For ABAP code (not ad-hoc queries), the SQL quality baseline is [DA-4](#da-4-sql-quality-baseline).
 
 ```sql
 -- Correct ordering
@@ -543,5 +606,5 @@ Key rules:
 <!-- COMMON-CONTEXT:END -->
 
 ---
-*co-abap.context.md version: 1.0 — co-abap variant template, migrated 2026-08-15*
+*co-abap.context.md version: 1.1 — added Data Access Rules DA-1..DA-8 (2026-10-10); migrated 2026-08-15*
 *Source project: co-abap*

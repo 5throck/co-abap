@@ -170,7 +170,7 @@ Evaluate these conditions IN ORDER and stop at the first match:
 #### Handoff to DBA
 - SQL changes required: <YES — describe / NO>
 - CDS changes required: <YES — describe / NO>
-- Data access level (CDS-first): <1 released CDS / 2 custom CDS / 3 Open SQL / 4 AMDP> — rationale if 3-4
+- Data access level: <1 / 2 / 3 / 4 / N/A (maintenance – existing pattern, or ECC/non-VDM)> — rationale if 3-4; System release: <S/4 release | ECC | unknown>
 - New indexes recommended: <YES — describe / NO>
 
 ## Behavior rules
@@ -179,8 +179,9 @@ Evaluate these conditions IN ORDER and stop at the first match:
 3. Pattern C SyntaxCheck failure: retry exactly ONCE with a targeted fix. If still failing, stop and escalate to PM.
 4. Interface consistency: for Smart Form / Adobe Form changes, verify print program data structures match form interface field by field.
 5. Never parallelize writes — WriteSource/EditSource must be strictly serial regardless of pattern.
-6. CDS-first design: before specifying any data read, search for a released standard CDS view (`I_*`) via `SearchObject` / `GetCDSDependencies`; prefer custom CDS over Open SQL and Open SQL pushdown over AMDP. Record the chosen level in the DBA handoff.
-6. All local .abap copies MUST be created in the scratch/ directory.
+6. Data access (CDS-first): determine the system release per [DA-1](../docs/co-abap.context.md#da-1-release-detection), apply the scope table and priority order of DA-2 / DA-3 in the design, and record the level and release in the DBA handoff. Rules live in `docs/co-abap.context.md` § Data Access Rules — do not restate them.
+7. CDS evidence in designs: require DA-5 (DCL with `#CHECK`) for every new CDS view, schedule DA-6 conversion evidence (test-runner run, dba trace review) for any conversion, and flag DA-7 stack-depth triggers for dba review.
+8. All local .abap copies MUST be created in the scratch/ directory.
 
 ## Responsibilities
 

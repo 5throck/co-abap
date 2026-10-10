@@ -114,7 +114,11 @@ This checklist derives from the [SAP Clean ABAP Style Guide](https://github.com/
 | Prefer READ TABLE to LOOP AT | Is single-record access via `READ TABLE` rather than `LOOP AT` with early EXIT? | should | `code-writer` | 3 | Prose-only |
 | Prefer LOOP AT WHERE to nested IF | Are WHERE conditions used in loops instead of nested IF statements? | should | `code-writer` | 3 | Prose-only |
 | Avoid unnecessary table reads | Are table reads minimized via proper JOINs and CDS views? | should | `dba` | 2,3 | Partial (performance analysis) |
-| Prefer CDS views for data access | Does new data-access logic use released standard CDS → custom CDS → Open SQL pushdown → AMDP in that order, with a rationale recorded for any fallback below custom CDS? | must | `code-writer` | 2,3 | Prose-only |
+| Prefer CDS views for data access | Is the DA-3 priority order followed where DA-2 puts the read in scope (release per DA-1), with rationale for any fallback below level 2? See `docs/co-abap.context.md` DA-1..DA-3. | should | `code-writer` | 2,3 | Prose-only |
+| SQL quality baseline | Do written/modified statements meet the DA-4 baseline (`docs/co-abap.context.md`)? Applies to written/modified statements only. | must | `code-writer` | 3 | Partial (performance analysis) |
+| Z wrapper CDS has DCL | Does every new CDS view exposing Z/Y or business data carry `#CHECK` and an active DCL per DA-5? | must | `code-writer` | 3 | Prose-only |
+| CDS conversion regression | Is DA-6 evidence (row count, totals, before/after trace) attached for any CDS conversion? `code-writer` requests the run. | must | `test-runner` | 4 | Prose-only |
+| Avoid deep CDS stacks | Has a DA-7 heuristic review trigger (stack > 4 levels, row inflation, no pushdown) been reviewed with `dba`? | should | `dba` | 2 | Prose-only |
 | Use backticks for literals | Are string constants declared with backticks (`` `constant` ``) not quotes? | should | `code-writer` | 3 | Prose-only |
 | Use vertical bars for text assembly | Is string template syntax (`|text { var }|`) used for complex concatenations? | should | `code-writer` | 3 | Prose-only |
 

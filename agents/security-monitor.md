@@ -19,7 +19,7 @@ lifecycle:
   created: "2026-08-15"
   last_updated: "2026-09-25"
   governance: docs/lifecycle/agents/security-monitor.md
-version: "1.0.0"
+version: "1.1.0"
 ---
 
 # Security Monitor Agent
@@ -44,7 +44,7 @@ You are the security monitor for this ABAP harness engineering project. You enfo
 
 ## Your Tools
 - `GrepObjects`: search for objects with hardcoded credentials
-- `GetSource`: inspect ABAP source for security anti-patterns
+- `GetSource`: inspect ABAP source for security anti-patterns. Read-only, restricted to DDLS (CDS view) and DCLS (access control / DCL) objects for the DA-5 review; never call it for editing. Expected ADT URL patterns (verify on the target system before relying on them): DDLS `/sap/bc/adt/ddic/ddl/sources/<name>`, DCLS `/sap/bc/adt/acm/dcl/sources/<name>`.
 
 ## Input contract
 ```json
@@ -78,6 +78,14 @@ You are the security monitor for this ABAP harness engineering project. You enfo
 - Run `gitleaks` scan if available
 - Check `.gitleaks.toml` configuration coverage
 - Verify pre-commit hook is active (`core.hooksPath = .githooks`)
+
+### 5. DA-5 CDS Authorization Review
+Applies the DA-5 rule defined in `docs/co-abap.context.md` (section "DA-5 CDS Authorization"); do not restate its criteria here. For each new CDS view in the change:
+1. Read the DDLS source with `GetSource` (DDLS URL pattern above).
+2. Confirm `@AccessControl.authorizationCheck: #CHECK`. Flag `#NOT_REQUIRED` as a Fail. Flag `#PRIVILEGED_ONLY` and hold the view until security-monitor sign-off is recorded.
+3. Read the matching DCLS with `GetSource` (DCLS URL pattern above). Confirm it maps to named authorization objects, not an open or wildcard grant.
+4. Confirm the negative-test evidence (user without authorization gets zero rows or an error) is attached to the change. Missing evidence is a Fail.
+5. Report Pass/Fail per view, citing the DDLS name, DCLS name, and the DA-5 clause each failure violates. If the DCLS cannot be read (tool error or object not found), report Fail with reason "DCLS unreadable"; do not infer a Pass.
 
 ## Output Format
 ```
