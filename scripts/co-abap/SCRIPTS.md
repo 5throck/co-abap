@@ -8,7 +8,7 @@
 | `dispatch-parallel.ts` | 1.1.0 | Parallel agent dispatcher (refactored to import common, VSP defaults) | L2 |
 | `dispatch-serial.ts` | 1.1.0 | Serial pipeline executor (refactored to import common, VSP defaults) | L2 |
 | `retry-handler.ts` | 1.1.0 | 3-retry with exponential backoff + AbortSignal (variant-specific per ADR-0050) | L2 |
-| `vsp-audit.ts` | 1.1.0 | ATC rule-pack audit: validates atc-rulepack.json, prints deterministic check selection per change type | L2 |
+| `vsp-audit.ts` | 1.2.0 | ATC rule-pack audit: validates atc-rulepack.json, prints deterministic check selection per change type with the matching SAP(action=...) call | L2 |
 | `atc-rulepack.json` | 1.0.0 | ATC check-selection rule pack per change type (abapOpenChecks parity) | L2 |
 | `vsp-task.ts` | 1.0.1 | Create task files from template | L2 |
 | `vsp-publish.ts` | 1.1.0 | Package and publish core framework assets to the plugin repository (project-root source base; verified asset list; missing required asset aborts) | L2 |

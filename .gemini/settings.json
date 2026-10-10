@@ -9,10 +9,10 @@
       "env": {
         "SAP_MODE": "hyperfocused",
         "SAP_ALLOWED_PACKAGES": "Z*,$TMP,$ZADT_VSP,$VSP_ADT",
-        "SAP_FEATURE_ABAPGIT": "on",
-        "SAP_FEATURE_TRANSPORT": "on",
-        "SAP_FEATURE_UI5": "on",
-        "SAP_FEATURE_RAP": "on"
+        "SAP_FEATURE_ABAPGIT": "off",
+        "SAP_FEATURE_TRANSPORT": "off",
+        "SAP_FEATURE_UI5": "off",
+        "SAP_FEATURE_RAP": "off"
       }
     },
     "abap-docs": {

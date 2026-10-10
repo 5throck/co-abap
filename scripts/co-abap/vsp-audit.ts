@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // vsp-audit.ts - ATC rule-pack audit: validates atc-rulepack.json and prints the deterministic check selection per change type
 // Usage: bun scripts/co-abap/vsp-audit.ts [--change-type <feature|refactor|hotfix|transport-release>] [--list]
-// @version 1.1.0
+// @version 1.2.0
 
 import path from "node:path";
 import * as fs from "node:fs";
@@ -15,6 +15,14 @@ const RED = "\x1b[31m";
 const RESET = "\x1b[0m";
 
 const VALID_SEVERITY_GATES = new Set(["blocker", "should"]);
+// Hyperfocused-mode SAP(...) call per legacy tool name (SSOT: docs/co-abap.context.md "vsp Tool Reference")
+const SAP_CALLS: Record<string, string> = {
+  SyntaxCheck: 'SAP(action="analyze", params={"type":"syntax_check"})',
+  RunATCCheck: 'SAP(action="test", params={"type":"atc"})',
+  RunUnitTests: 'SAP(action="test")',
+  GetCodeCoverage: 'SAP(action="test", params={"with_coverage":true})',
+};
+
 const VALID_TOOLS = new Set(["SyntaxCheck", "RunATCCheck", "RunUnitTests", "GetCodeCoverage"]);
 
 interface RulepackCheck {
@@ -145,7 +153,7 @@ function printChangeTypeTable(rulepack: Rulepack, changeType: string): void {
   for (const check of checks) {
     console.log(
       `| ${check.id}`.padEnd(30) +
-      `| ${check.tool}`.padEnd(20) +
+      `| ${check.tool} -> ${SAP_CALLS[check.tool] ?? "?"}`.padEnd(20) +
       `| ${check.atc_variant}`.padEnd(20) +
       `| ${check.severity_gate}`.padEnd(18) +
       `| ${check.owner}`

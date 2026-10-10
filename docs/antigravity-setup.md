@@ -87,9 +87,9 @@ Antigravity does not fire `PostToolUse` hooks. After any ABAP code change, **alw
 
 | Step | Tool | Pass Condition |
 |------|------|---------------|
-| 1 | `SyntaxCheck` | 0 errors |
-| 2 | `RunUnitTests` | 0 failures |
-| 3 | `RunATCCheck` | 0 Priority-1 findings |
+| 1 | syntax check (`SAP(action=analyze, type=syntax_check)`) | 0 errors |
+| 2 | unit tests (`SAP(action=test)`) | 0 failures |
+| 3 | ATC (`SAP(action=test, type=atc)`) | 0 Priority-1 findings |
 
 You can trigger these by asking Antigravity directly, or by switching to Claude Code CLI and running `/post-write <ObjectName>`.
 

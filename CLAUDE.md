@@ -28,7 +28,7 @@ The workspace `.claude/settings.json` currently has **three active hook types**:
 - **SessionStart** — runs `git config core.hooksPath .githooks` (async) to ensure git hooks are configured at the start of each session.
 - **PostToolUse** — fires `bun scripts/sync-md.ts` (async) after every Write/Edit on the CLI (see [Hooks](#hooks) below for the ABAP-specific behavior).
 
-> **Desktop App Hook Status**: `PostToolUse` hooks do **not** fire in the Desktop App. After any `WriteSource`/`EditSource`, run the [Desktop App Manual Post-Write Chain](#desktop-app-manual-post-write-chain).
+> **Desktop App Hook Status**: `PostToolUse` hooks do **not** fire in the Desktop App. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run the [Desktop App Manual Post-Write Chain](#desktop-app-manual-post-write-chain).
 
 | Hook | Environment | Active? | Notes |
 |------|-------------|:-------:|-------|
@@ -56,7 +56,7 @@ Custom slash commands in `.claude/commands/` are natively recognized by Claude C
 | `/new-task "name"` | Create task block in today's memory log |
 | `/triage` | ABAP object triage workflow |
 | `/transport` | SAP transport request workflow |
-| `/post-write` | Manual Post-Write Mandatory Chain (SyntaxCheck/RunUnitTests/RunATCCheck) |
+| `/post-write` | Manual Post-Write Mandatory Chain (syntax check, unit tests, ATC; see [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)) |
 | `/celebrate` | Session-completion celebration |
 | `/commit-push-pr "..."` | Redirects direct commit/push/PR requests to the `/sync` pipeline |
 | `/gateguard <file>` | Pre-edit fact-forcing quality gate — investigate a file before editing it |
@@ -263,7 +263,7 @@ At the start of every Claude Code session, run this checklist:
 
 Both the CLI and the Desktop App share the same configuration files and MCP server setup. Key differences, especially regarding hook behavior and UI features, are detailed in [docs/tooling-matrix.md](docs/tooling-matrix.md).
 
-> **Hook limitation**: `PostToolUse` hooks configured in `.claude/settings.json` do **not** fire in the Desktop App. After any `WriteSource` / `EditSource`, run the Post-Write Mandatory Chain manually (see [skills/post-write-chain/SKILL.md](skills/post-write-chain/SKILL.md)) and sync via `bun scripts/dev-sync.ts`.
+> **Hook limitation**: `PostToolUse` hooks configured in `.claude/settings.json` do **not** fire in the Desktop App. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run the Post-Write Mandatory Chain manually (see [skills/post-write-chain/SKILL.md](skills/post-write-chain/SKILL.md)) and sync via `bun scripts/dev-sync.ts`.
 
 > **Linux developers**: Use CLI only — the Desktop App is not available on Linux.
 
@@ -285,13 +285,13 @@ A `PostToolUse` hook fires after every `Write` or `Edit` tool call and runs `bun
 
 ### Desktop App Manual Post-Write Chain
 
-When using Claude Code Desktop App, PostToolUse hooks do not fire. After any `WriteSource` or `EditSource`, run this chain manually:
+When using Claude Code Desktop App, PostToolUse hooks do not fire. After any source write (`SAP(action=edit)`/`SAP(action=create)`), run this chain manually (names per the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
 
 ```
 1. bun scripts/sync-md.ts          # update memory index
-2. SyntaxCheck(<object_url>)        # verify ABAP syntax
-3. RunUnitTests(<object_url>)       # run unit tests
-4. RunATCCheck(<object_url>)        # ATC quality check
+2. SAP(action=analyze, type=syntax_check)   # verify ABAP syntax
+3. SAP(action=test)                        # run unit tests
+4. SAP(action=test, type=atc)               # ATC quality check
 5. bun scripts/dev-sync.ts "fix: description"  # sync & commit
 ```
 

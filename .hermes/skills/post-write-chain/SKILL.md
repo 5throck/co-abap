@@ -1,7 +1,7 @@
 ---
 name: post-write-chain
 description: 'Use after ANY WriteSource, EditSource, or Activate operation on SAP ABAP objects. Enforces the mandatory quality gate: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck. Trigger automatically after every ABAP write operation.'
-version: 1.3.0
+version: 1.3.1
 last_reviewed: 2026-10-10
 status: active
 scope: co-abap
@@ -77,7 +77,7 @@ Action required: Add ABAP Unit test cases covering the uncovered branches,
 3. If RunUnitTests fails, do not run GetCodeCoverage or RunATCCheck until the test logic is fixed.
 4. If GetCodeCoverage falls below threshold (or regresses on an existing object) without a recorded waiver, do not proceed to RunATCCheck.
 5. Priority-1 ATC findings block all further steps including transport release.
-6. In Gemini / Antigravity sessions: route all four steps through `sap_execute` with `"action": "SyntaxCheck"`, `"action": "RunUnitTests"`, `"action": "GetCodeCoverage"`, `"action": "RunATCCheck"`.
+6. In Gemini / Antigravity sessions: route all four steps through the `SAP` tool per the [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT): `SAP(action="analyze", params={"type":"syntax_check", ...})`, `SAP(action="test", ...)` for unit tests (with `with_coverage=true` for coverage), and `SAP(action="test", params={"type":"atc", ...})`.
 
 ## Enforcement
 

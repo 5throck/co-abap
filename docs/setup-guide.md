@@ -545,10 +545,22 @@ If you get an error, check:
 > **`abap-docs`**: ABAP keyword and API reference (marianzeis.de).
 > **`sap-docs`**: SAP Help Portal documentation search.
 > **Focused mode** (named tools, standard development):
-> Change `"SAP_MODE": "focused"` — exposes ~100 individually named MCP tools instead of routing through `sap_execute`.
+> Change `"SAP_MODE": "focused"` — exposes 98 individually named MCP tools instead of the single `SAP` tool.
 > **Expert mode** (all tools, debugging / advanced operations):
-> Change `"SAP_MODE": "expert"` — exposes 147 individually named MCP tools.
-> **Note**: hyperfocused mode still provides access to all 101 MCP operations — they are routed via `sap_execute` rather than registered as individual tool names. See `docs/context.md § Deployed vsp Binary`.
+> Change `"SAP_MODE": "expert"` — exposes 148 individually named MCP tools.
+> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+
+**Safety options (optional, set in `.env`; verify with `./vsp --help`).** See `.env.sample` for the template.
+
+| Variable | Effect |
+|----------|--------|
+| `SAP_READ_ONLY` | Block all write operations (create, update, delete, activate) |
+| `SAP_BLOCK_FREE_SQL` | Block arbitrary SQL via the query action |
+| `SAP_EXPECT` | Pin the connection as `SID[.CLIENT][/USER]`; vsp refuses to work when the system differs |
+| `SAP_ENABLE_TRANSPORTS` | Opt in to transport management operations (off by default) |
+| `SAP_ALLOW_TRANSPORTABLE_EDITS` | Opt in to editing objects in transportable packages (needs a transport) |
+
+Gate classes and policy: see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 ---
 
@@ -745,7 +757,7 @@ In the Claude session, run:
 Expected output:
 ```
 Connected MCP servers:
-  abap      — vsp (hyperfocused mode) · 1 entry point (sap_execute, routes to 101 operations)
+  abap      — vsp (hyperfocused mode) · 1 entry point (`SAP` tool, action-routed)
   abap-docs — ABAP keyword & API reference · N tools
   sap-docs  — SAP Help Portal search · N tools
 ```
@@ -969,7 +981,7 @@ Type `/tools` or ask:
 What MCP tools are available?
 ```
 
-Expected: `sap_execute` and abap-docs / sap-docs tools listed.
+Expected: `SAP` and abap-docs / sap-docs tools listed.
 
 ### 8-C. Recommended use cases for Gemini CLI
 
@@ -1150,7 +1162,7 @@ Inside Claude session:
 ```
 Show me the system info from SAP
 ```
-✅ Returns SAP system details via `sap_execute`
+✅ Returns SAP system details via the `SAP` tool
 
 ### Checkpoint 4 — Read ABAP Source
 
@@ -1347,9 +1359,9 @@ Use this list when onboarding a new team member.
 
 | Mode | Tools | Best for |
 |------|-------|---------|
-| `hyperfocused` | 101 ops via `sap_execute` | AI agents — all tools accessible, hallucination-resistant single entry point |
-| `focused` | ~100 named tools | Standard development sessions |
-| `expert` | 147 named tools | Debugging, advanced operations |
+| `hyperfocused` | single `SAP` tool, action-routed | AI agents — all tools accessible, hallucination-resistant single entry point |
+| `focused` | 98 named tools | Standard development sessions |
+| `expert` | 148 named tools | Debugging, advanced operations |
 
 Change mode in `.mcp.json` `env.SAP_MODE` and `.env` `SAP_MODE`.
 
@@ -1398,7 +1410,7 @@ bun scripts/dev-sync.ts "feat: summary of change"
 
 # Show vsp help
 ./vsp --help
-./vsp mcp --help
+./vsp --help
 ```
 
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Project metadata checks (CHANGELOG structure, lifecycle metadata bumps)
- * @version 1.0.0
+ * @version 1.1.0
  *
  * a. CHANGELOG.md has exactly one `## [Unreleased]`, and it is the first `## ` heading.
  * b. Entries under [Unreleased] follow docs/context.md "CHANGELOG Entry Format".
@@ -9,6 +9,7 @@
  *    subheading and carry a `(#PR)` reference (older flat history is grandfathered).
  * c. (date-only `last_updated`/`last_reviewed` diffs need no version bump) agents/*.md and skills/<name>/SKILL.md changed vs the merge-base with origin/main
  *    must bump frontmatter `version` and keep `last_updated` >= latest commit date.
+ * d. vsp-version-pin: PINNED_VERSION in scripts/co-abap/install-vsp.ts equals every vsp version claim in the pinned docs.
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -89,6 +90,41 @@ export function checkFileMeta(file: string, current: string, base: string | null
   return issues;
 }
 
+export const VSP_PIN_DOCS = ['docs/co-abap.context.md', 'docs/setup-guide.md', 'docs/designs/2026-10-10-sap-write-safety-gate-design.md'];
+
+export function extractPinnedVersion(installSrc: string): string | null {
+  return installSrc.match(/PINNED_VERSION\s*=\s*["'](v\d+\.\d+\.\d+)["']/)?.[1] ?? null;
+}
+
+/** Version claims: "vsp vX.Y.Z", "vsp Go binary vX.Y.Z" and bare "v2.NN.N" tokens. Returns [line, version][]. */
+export function findVspVersionClaims(text: string): Array<[number, string]> {
+  const out: Array<[number, string]> = [];
+  text.split(/\r?\n/).forEach((l, i) => {
+    for (const m of l.matchAll(/(?<![\w.\/-])v(2\.\d+\.\d+)\b/g)) out.push([i + 1, 'v' + m[1]]);
+  });
+  return out;
+}
+
+export function checkVspVersionPin(pinned: string | null, docs: Record<string, string>): Result {
+  const label = 'vsp-version-pin';
+  if (!pinned) return { status: 'FAIL', label, details: ['PINNED_VERSION not found in scripts/co-abap/install-vsp.ts'] };
+  const details: string[] = [];
+  for (const [file, text] of Object.entries(docs)) {
+    for (const [line, v] of findVspVersionClaims(text)) {
+      if (v !== pinned) details.push(`${file}:${line}: claims ${v}, PINNED_VERSION is ${pinned}`);
+    }
+  }
+  return { status: details.length ? 'FAIL' : 'PASS', label, details };
+}
+
+function runVspVersionPin(): Result {
+  const inst = join(ROOT, 'scripts/co-abap/install-vsp.ts');
+  if (!existsSync(inst)) return { status: 'SKIP', label: 'vsp-version-pin', details: ['install-vsp.ts absent (not a co-abap project)'] };
+  const docs: Record<string, string> = {};
+  for (const f of VSP_PIN_DOCS) if (existsSync(join(ROOT, f))) docs[f] = readFileSync(join(ROOT, f), 'utf-8');
+  return checkVspVersionPin(extractPinnedVersion(readFileSync(inst, 'utf-8')), docs);
+}
+
 function git(args: string[]): { ok: boolean; out: string } {
   const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf-8' });
   return { ok: r.status === 0, out: (r.stdout ?? '').trim() };
@@ -118,7 +154,7 @@ function run(): number {
     const text = readFileSync(cl, 'utf-8');
     results.push(checkChangelogStructure(text), checkChangelogEntries(text));
   }
-  results.push(checkLifecycleMeta());
+  results.push(checkLifecycleMeta(), runVspVersionPin());
   let fails = 0;
   for (const r of results) {
     console.log(`[${r.status}] ${r.label}`);

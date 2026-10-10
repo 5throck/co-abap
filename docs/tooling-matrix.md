@@ -15,10 +15,10 @@ Agents must choose the appropriate tool for each task type. All tools share the 
 | Task type | Claude Code CLI | Claude Code App | Antigravity | Gemini CLI |
 |-----------|:--------------:|:--------------:|:-----------:|:----------:|
 | PM multi-agent dispatch | —Plan mode + subagents | —Plan mode + subagents | —| —Native sub-task delegation |
-| Serial write chain (SyntaxCheck —RunUnitTests —RunATCCheck) | —Hook fires automatically | 🚨 Hook does NOT fire —run manually | 🚨 Hook unverified | —Supported |
-| ATC code quality check (RunATCCheck) | —| —| —| —Identical result |
+| Serial write chain (syntax check —unit tests —ATC; `SAP(action=analyze, type=syntax_check)`, `SAP(action=test)`) | —Hook fires automatically | 🚨 Hook does NOT fire —run manually | 🚨 Hook unverified | —Supported |
+| ATC code quality check (`SAP(action=test, type=atc)`) | —| —| —| —Identical result |
 | ABAP object browse / edit | 🚨 Terminal only | —Visual diff + inline review | —File explorer + diff view | 🚨 Terminal only |
-| MCP read/query (GetSource, RunQuery, GrepObjects) | —| —Identical result | —Identical result | —Identical result |
+| MCP read/query (`SAP(action=read)`, `SAP(action=query)`, `SAP(action=grep)`) | —| —Identical result | —Identical result | —Identical result |
 | Git commit / PR | —`commit-commands` skills | —PR monitoring + CI status | 🚨 Extension terminal only | —Bash tools |
 | Custom commands | —19 slash commands | —19 slash commands | ⚠️ Emulated via `.gemini/commands/` | ⚠️ Emulated via `.gemini/commands/` |
 | Skill discovery | `.claude/skills/` + `skills/` | `.claude/skills/` + `skills/` | `.gemini/skills/` + `.agents/skills/` + `skills/` | `.gemini/skills/` + `skills/` |
@@ -44,6 +44,6 @@ Agents must choose the appropriate tool for each task type. All tools share the 
 
 ---
 
-*Last Updated: 2026-07-09*
+*Last Updated: 2026-10-10*
 
 

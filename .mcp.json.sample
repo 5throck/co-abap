@@ -1,5 +1,6 @@
 {
   "//": "Safe MCP configuration for vsp. Privileged SAP features default to off. To opt in locally, copy this file to ignored .mcp.local.json, change only approved SAP_FEATURE_* values to on, and configure your MCP client to use that local file.",
+  "//safety": "Optional vsp env hardening, add inside an abap server env only when needed: SAP_EXPECT=<SID>.<client> (pin the target system, recommended); SAP_READ_ONLY=true (read-only analyst sessions); SAP_BLOCK_FREE_SQL=true (also blocks the single-SELECT RunQuery agents use, so off by default); SAP_ENABLE_TRANSPORTS=true and SAP_ALLOW_TRANSPORTABLE_EDITS=true (opt-in for /transport only, default off).",
   "mcpServers": {
     "abap-windows": {
       "command": "./vsp",

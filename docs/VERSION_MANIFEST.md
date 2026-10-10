@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T08:13:04.400Z
+**Generated**: 2026-10-10T08:22:12.841Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -20,26 +20,26 @@
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | inherit | 2026-10-10 |
-| co-analyst | agents/co-analyst.md | medium | inherit | 2026-09-25 |
+| co-analyst | agents/co-analyst.md | medium | inherit | 2026-10-10 |
 | code-writer | agents/code-writer.md | low | inherit | 2026-10-10 |
-| dba | agents/dba.md | medium | inherit | 2026-09-25 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-09-25 |
-| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-09-25 |
-| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-09-25 |
-| form-expert | agents/form-expert.md | medium | inherit | 2026-09-25 |
-| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-09-25 |
+| dba | agents/dba.md | medium | inherit | 2026-10-10 |
+| devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-10 |
+| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-10-10 |
+| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-10-10 |
+| form-expert | agents/form-expert.md | medium | inherit | 2026-10-10 |
+| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-10-10 |
 | i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-09-29 |
-| interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
-| le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
-| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
+| interface-expert | agents/interface-expert.md | medium | inherit | 2026-10-10 |
+| le-analyst | agents/le-analyst.md | medium | inherit | 2026-10-10 |
+| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-10-10 |
 | pm | agents/pm.md | high | inherit | 2026-10-10 |
-| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
-| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-09-25 |
-| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-09-25 |
+| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-10-10 |
+| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-10-10 |
+| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-10 |
+| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-10-10 |
+| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-10-10 |
 | security-monitor | agents/security-monitor.md | low | inherit | 2026-10-10 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-09-25 |
+| test-runner | agents/test-runner.md | low | inherit | 2026-10-10 |
 
 ---
 
@@ -74,7 +74,7 @@
 | performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | 1.3.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
+| post-write-chain | 1.3.1 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
 | project-review | 1.3.2 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -125,8 +125,8 @@
 | check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | N/A |
 | check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | N/A |
 | check-lint.ts | 1.0.0 | scripts/handbook/check-lint.ts | N/A |
-| check-project-meta.test.ts | 1.0.0 | scripts/tests/check-project-meta.test.ts | bun:test |
-| check-project-meta.ts | 1.0.0 | scripts/check-project-meta.ts | N/A |
+| check-project-meta.test.ts | 1.1.0 | scripts/tests/check-project-meta.test.ts | bun:test |
+| check-project-meta.ts | 1.1.0 | scripts/check-project-meta.ts | N/A |
 | check-search.ts | 2.0.0 | scripts/handbook/check-search.ts | N/A |
 | check-spell.ts | 1.0.0 | scripts/handbook/check-spell.ts | N/A |
 | check-structure.test.ts | 1.0.0 | scripts/tests/check-structure.test.ts | bun:test |
@@ -217,7 +217,7 @@
 | verify-scripts.ts | 1.12.0 | scripts/verify-scripts.ts | fs, path |
 | verify-skill-graph.ts | 1.7.0 | scripts/verify-skill-graph.ts | N/A |
 | verify-skills.ts | 1.5.1 | scripts/verify-skills.ts | N/A |
-| vsp-audit.ts | 1.1.0 | scripts/co-abap/vsp-audit.ts | N/A |
+| vsp-audit.ts | 1.2.0 | scripts/co-abap/vsp-audit.ts | N/A |
 | vsp-publish.ts | 1.1.0 | scripts/co-abap/vsp-publish.ts | bun |
 | vsp-task.ts | 1.0.1 | scripts/co-abap/vsp-task.ts | N/A |
 

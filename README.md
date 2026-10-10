@@ -1,5 +1,5 @@
 ---
-content_hash: 2c327947eb48ab5bbac68347ed6568c64588571f46e6265441b3cf9d22587d71
+content_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa814b1d
 ---
 # Harness Engineering for SAP ABAP
 
@@ -98,7 +98,7 @@ For the detailed execution sequence, see [AGENTS.md § Collaborative Workflow](A
 # Agents collaborate in phases:
 # Phase 1: sap-investigator + read-only-analyst + schema-inspector (parallel)
 # Phase 2: architect designs → code-writer implements
-# Phase 3: test-runner verifies (SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck)
+# Phase 3: test-runner verifies (syntax check → unit tests → coverage → ATC; tool names per [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode))
 # Phase 4: transport release + git sync
 ```
 
@@ -177,9 +177,9 @@ ubuntu/windows/macos matrix, and the secret-scan job uses a digest-pinned gitlea
 The table describes configured gates and does not assert that a GitHub Actions run has
 been observed.
 
-SAP-side, the same discipline applies after every `WriteSource`/`EditSource` via the
-[Post-Write Mandatory Chain](skills/post-write-chain/SKILL.md): `SyntaxCheck` → `RunUnitTests` →
-`GetCodeCoverage` (≥70% on new objects) → `RunATCCheck` (zero Priority-1 findings).
+SAP-side, the same discipline applies after every source write (`SAP(action=edit)`/`SAP(action=create)`) via the
+[Post-Write Mandatory Chain](skills/post-write-chain/SKILL.md): syntax check (`SAP(action=analyze, type=syntax_check)`) → unit tests (`SAP(action=test)`) →
+coverage (`with_coverage=true`, ≥70% on new objects) → ATC (`SAP(action=test, type=atc)`, zero Priority-1 findings).
 
 ---
 
@@ -206,4 +206,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-09-27*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-10-10*

@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 2c327947eb48ab5bbac68347ed6568c64588571f46e6265441b3cf9d22587d71
+translated_from_hash: f4bc7eb998e2b9b67ae9694c87ace3022fbdfccf8bb61deca1fd25e1fa814b1d
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -98,7 +98,7 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 # 에이전트 단계별 협업:
 # Phase 1: sap-investigator + read-only-analyst + schema-inspector (병렬)
 # Phase 2: architect 설계 → code-writer 구현
-# Phase 3: test-runner 검증 (SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck)
+# Phase 3: test-runner 검증 (구문 검사 → 단위 테스트 → 커버리지 → ATC; 도구 이름은 [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) 참조)
 # Phase 4: 트랜스포트 릴리즈 + git 동기화
 ```
 
@@ -177,10 +177,10 @@ ubuntu/windows/macos 매트릭스로 실행되고, 시크릿 스캔 작업은 �
 gitleaks 이미지를 사용합니다. 이 표는 구성된 게이트를 설명하며 GitHub Actions 실행이
 이미 관찰되었음을 주장하지 않습니다.
 
-SAP 측에서는 모든 `WriteSource`/`EditSource` 이후 [Post-Write Mandatory
+SAP 측에서는 모든 소스 쓰기(`SAP(action=edit)`/`SAP(action=create)`) 이후 [Post-Write Mandatory
 Chain](skills/post-write-chain/SKILL.md)을 통해 동일한 규율이 적용됩니다:
-`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage`(신규 객체 70% 이상) →
-`RunATCCheck`(Priority-1 발견 0건).
+구문 검사(`SAP(action=analyze, type=syntax_check)`) → 단위 테스트(`SAP(action=test)`) → 커버리지(`with_coverage=true`, 신규 객체 70% 이상) →
+ATC(`SAP(action=test, type=atc)`, Priority-1 발견 0건).
 
 ---
 

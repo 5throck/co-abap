@@ -242,10 +242,10 @@ Load project files at session start using the `@` syntax:
 
 ### Recommended Mode
 
-Use `--mode hyperfocused` for all Gemini sessions. In hyperfocused mode all 101 MCP operations are accessible via `sap_execute`; the single entry point reduces tool-selection hallucinations without restricting capability.
+Use `--mode hyperfocused` for all Gemini sessions. Hyperfocused mode exposes a single MCP tool, `SAP`, called as `SAP(action, target "TYPE NAME", params)`; the single entry point reduces tool-selection hallucinations. Actions: read, edit, create, delete, search, query, grep, test, analyze, debug, system, rfc, i18n, revisions, lint, info, help.
 
 ```bash
-vsp mcp --mode hyperfocused
+vsp --mode hyperfocused
 ```
 
 ### Settings File
@@ -255,15 +255,15 @@ contains `["--mode", "hyperfocused"]` before starting a session.
 
 ### Tool Usage in Hyperfocused Mode
 
-All operations are routed through `sap_execute` with an `action` parameter:
+All operations go through the `SAP` tool. Legacy tool names map to `SAP(...)` calls per the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT). Examples:
 
-```json
-{ "action": "GetSource", "object_type": "PROG", "name": "ZPROG_SBOOK_QUERY" }
-{ "action": "EditSource", "object_url": "/sap/bc/adt/...", "old_string": "...", "new_string": "..." }
-{ "action": "GrepPackages", "packages": ["$TMP"], "pattern": "ZPROG_" }
+```
+SAP(action="read", target="CLAS ZCL_X")
+SAP(action="grep", params={"package_name":"ZPKG","pattern":"SELECT"})
+SAP(action="help", target="edit")
 ```
 
-See [docs/mcp_usage.md](docs/mcp_usage.md) for the full tool catalog and parameter reference.
+See [docs/mcp_usage.md](docs/mcp_usage.md) for the full catalog.
 
 ---
 
@@ -274,14 +274,14 @@ The following capabilities extend those in [skills/abap-dev/SKILL.md](skills/aba
 - **Role-Based Execution**: Switch between Business and Technical roles defined in `AGENTS.md`
   by explicitly stating the active role at the start of a task.
 - **Multi-Agent Coordination**: Delegate long-running research to background sessions;
-  keep write operations (EditSource, WriteSource) in the primary session.
+  keep write operations (edit/create via `SAP`) in the primary session.
 - **Advanced Diagnostics**: Use `vsp health` to validate architecture and
   `vsp slim` for context optimization before large read sessions.
-- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via `sap_execute` as defined in `docs/context.md`.
-  ```json
-  { "action": "SyntaxCheck",   "object_url": "/sap/bc/adt/..." }
-  { "action": "RunUnitTests",  "object_url": "/sap/bc/adt/..." }
-  { "action": "RunATCCheck",   "object_url": "/sap/bc/adt/..." }
+- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via the `SAP` tool (see the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
+  ```
+  SAP(action="analyze", params={"type":"syntax_check", ...})
+  SAP(action="test", params={"object_url":"/sap/bc/adt/..."})
+  SAP(action="test", params={"type":"atc", ...})
   ```
 
 > **Common engineering rules** (memory logging, language, file isolation, post-write chain, git): [docs/context.md § Project-Wide Rules](docs/context.md#project-wide-rules-all-tools).

@@ -20,7 +20,7 @@
 
 | Layer | Technology |
 |-------|-----------|
-| MCP Server | `vsp` Go binary v2.38.1 — connects to SAP via ADT (ABAP Development Tools REST API) |
+| MCP Server | `vsp` Go binary v2.60.0 — connects to SAP via ADT (ABAP Development Tools REST API) |
 | AI Orchestration | Claude Code CLI / Desktop App, Gemini CLI, Antigravity (VS Code extension) |
 | SAP Connection | HTTP/HTTPS to SAP NetWeaver AS ABAP; configured via `.env` (`SAP_*` prefix) |
 | Scripting | TypeScript (`.ts`) via Bun for all automation |
@@ -197,8 +197,7 @@ Manual equivalent: `bun scripts/dev-sync.ts "feat: description"`.
 | Item | Value |
 |------|-------|
 | Binary | `vsp.exe` (project root) |
-| Version | `2.38.1` (commit: a75fbfd9, built: 2026-04-07) |
-| Last Modified | 2026-05-01 |
+| Version | `2.60.0` (pinned by `scripts/co-abap/install-vsp.ts`) |
 | Mode | `hyperfocused` (see `.mcp.json`) |
 
 > To upgrade: replace `vsp.exe` with the new binary and update this table.

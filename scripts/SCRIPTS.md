@@ -138,8 +138,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `check-project-meta.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
-| `tests/check-project-meta.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
+| `check-project-meta.ts` | L3 | 1.1.0 | active | — | — | L3 | — |
+| `tests/check-project-meta.test.ts` | L3 | 1.1.0 | active | — | — | L3 | — |
 | `harness-metrics.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `tests/harness-metrics.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `review-baseline.ts` | L3 | 1.3.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
@@ -375,7 +375,7 @@ they depend on the absent L0 template source tree.
 **v1.3.0**: adds `validate-docs-links --all`, `check-project-meta`, and `test:unit`; each check runs with a 300 s timeout (TIMEOUT reported as FAIL).
 
 #### `check-project-meta.ts`
-**Purpose**: Deterministic project metadata checks: CHANGELOG `[Unreleased]` heading uniqueness/position, entry format (subheading + `(#PR)` for entries dated on/after 2026-10-11), and version/`last_updated` bumps for agents/skills changed since the merge-base with `origin/main` (`[SKIP]` without origin/main).
+**Purpose**: Deterministic project metadata checks: CHANGELOG `[Unreleased]` heading uniqueness/position, entry format (subheading + `(#PR)` for entries dated on/after 2026-10-11), and version/`last_updated` bumps for agents/skills changed since the merge-base with `origin/main` (`[SKIP]` without origin/main), plus `vsp-version-pin` (PINNED_VERSION in `scripts/co-abap/install-vsp.ts` must equal every vsp version claim in co-abap.context.md, setup-guide.md and the write-safety-gate design).
 **Usage**: `bun scripts/check-project-meta.ts`
 **Provenance**: L3 | L3, active.
 
