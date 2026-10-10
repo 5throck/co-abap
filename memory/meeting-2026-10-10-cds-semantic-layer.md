@@ -5,7 +5,7 @@
 - **Format**: inline, 2 rounds, role-played by PM (no sub-agent dispatch)
 - **Participants**: architect, dba, code-writer, co-analyst / fi-analyst, security-monitor, test-runner, **red-team (dissent seat)**
 - **Scope**: `agents/code-writer.md` rule 8, `agents/architect.md` rule 6, `docs/clean-abap-checklist.md` CDS item, `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md` (PR #190), pending proposal to relax CDS-first for existing Z/Y programs
-- **Outcome status**: PROPOSAL for user approval (the meeting does not decide)
+- **Outcome status**: PROPOSAL — approved by the user on 2026-10-10 and applied in PR #190; rules now live in `docs/co-abap.context.md` DA-1..DA-8
 
 ## Agenda
 
@@ -32,7 +32,7 @@
 - **security-monitor → red-team**: Agrees the NL design should not change ABAP rules now, except one item that matters regardless: any new Z wrapper CDS must ship with DCL.
 - **red-team (final dissent, verbatim)**: "I accept the narrowed trigger. I still object to treating the NL-analytics design as a basis for any harness change before a target system and owner exist. Keep it as a reference document only."
 
-## Proposals (for user approval)
+## Proposals (approved and applied)
 
 | # | Proposal | Owner | Priority |
 |---|----------|-------|----------|
@@ -49,7 +49,7 @@
 
 - **red-team**: "I still object to treating the NL-analytics design as a basis for any harness change before a target system and owner exist. Keep it as a reference document only." — Reflected in P7 (status stays `proposed`, explicitly decoupled), but the objection stands for any future change motivated by the design.
 
-## Action items (pending approval)
+## Action items (completed in PR #190)
 
 - PR A (ABAP rules): P1, P2, P3, P4, P5, P8 → `agents/code-writer.md`, `agents/architect.md`, `docs/clean-abap-checklist.md`
 - PR A or follow-up: P6 → `skills/abap-dev/SKILL.md`

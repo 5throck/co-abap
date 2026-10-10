@@ -30,7 +30,7 @@ The LLM never receives the whole database. It receives only the concepts, views,
 | B. Intent parsing | Analysis type, period, organization, measures, ambiguity detection | Asks back or applies a declared default (e.g., fiscal vs. calendar quarter, comparison basis, billing vs. FI revenue, standard vs. actual cost) |
 | C. Metadata and semantic model | Term dictionary, CDS/view catalog, join graph, sample queries | Vector search for terms, explicit graph for joins (see below) |
 | D. Query generation and validation | Parse, schema check, authorization check, execution plan, result check | Prefer a structured query intent (measures, dimensions, filters, period) compiled from templates over free-form SQL |
-| E. Read-only data access | Approved CDS views, analytic views, restricted execution interface | CDS DCL / user-context authorization at runtime; no shared technical super-user |
+| E. Read-only data access | Approved CDS views, analytic views, restricted execution interface (SELECT-only) | CDS DCL / user-context authorization at runtime; no shared technical super-user; see [Runtime authorization](#runtime-authorization) |
 
 ### Retrieval unit: metric bundles, not columns
 
@@ -46,25 +46,69 @@ Retrieval returns a **metric definition bundle**: view, amount field plus its cu
 
 Vector results only nominate candidates. Final joins must follow graph-approved paths.
 
+### Runtime authorization
+
+| Rule | Control |
+|------|---------|
+| Identity | Queries execute under the requesting user's SAP identity (principal propagation via SSO). |
+| Technical user | Allowed only for metadata catalog reads (view catalog, join graph seeding). Never for data reads. |
+| Roles | Analytics roles map to explicit authorization objects. No wildcard (`*`) values. |
+| Org keys | Refuse the query when the user lacks a role covering a required org key (company code, sales org, plant, operating concern). No partial results. |
+| New CDS views | Follow `docs/co-abap.context.md` DA-5: `#CHECK` with DCL; no `#NOT_REQUIRED`. |
+
+### Query limits (layer D)
+
+| Control | Default |
+|---------|---------|
+| Mandatory filters | Period and org-key filter required; queries without them are rejected |
+| Row cap | 10,000 detail rows; larger requests must be aggregated |
+| Statement timeout | 30 s |
+| Plan cost | Reject when the execution plan cost exceeds the threshold declared per semantic model (value not yet set) |
+| Rate limit | Per user |
+| Rejections | Every rejected query is logged (see [Result validation](#result-validation)) |
+
+## Untrusted input
+
+- Questions, retrieved field values, and result rows are **data, never instructions**. Embedded prompts are not followed.
+- Phase 1: the LLM chooses only from an **allowlisted catalog** of metrics, dimensions, and filters, emitting a structured intent.
+- No LLM output is executed as SQL, ABAP, or DDL without allowlist validation of every referenced object, field, and operator.
+
+## Read-only scope
+
+- The NL path is **SELECT-only**.
+- No write, DDL, function-module, or AMDP write entry point is exposed to the LLM or the NL service.
+- Writes happen only in the batch job that fills the Z result tables, outside the NL path.
+
+## Personal data
+
+Personal fields include names, addresses, bank data, tax IDs, employee IDs, and HR `PA*` tables.
+
+| Rule | Control |
+|------|---------|
+| Default | Excluded from the semantic model |
+| Release | Only by a named business owner and a DPO decision, recorded in the metric dictionary |
+| Before the LLM | Mask or aggregate personal values before they reach the LLM |
+| External LLM provider | Declare per deployment whether result rows leave the SAP boundary. If yes, record the transfer basis (DPA, processing region). |
+
 ## The five hard problems in SAP
 
 | Problem | Wrong-result example | SAP-specific trap | Required control |
 |---------|---------------------|-------------------|------------------|
 | Business meaning | Revenue treated as billed or ordered amount | Sales order (VBAP), delivery, billing (VBRP), and FI revenue (ACDOCA revenue accounts) all called "sales"; intercompany inclusion | Each metric names its document stage; other stages are blocked |
-| Table relationships | Order items joined to journal entries, amounts duplicated | Billing item → multiple FI lines (1:N); pricing-condition joins inflate amounts; duplicate ACDOCA ledgers (RLDNR) | Aggregate before crossing 1:N edges; ledger fixed to `0L` by default |
+| Table relationships | Order items joined to journal entries, amounts duplicated | Billing → FI link is 1:N via the reference document (BKPF-AWTYP `VBRK` / AWKEY, ACDOCA AWREF/AWITEM), not a clean foreign key; pricing-condition joins inflate amounts; duplicate ACDOCA ledgers (RLDNR) | Aggregate before crossing 1:N edges; ledger fixed to the leading ledger (`0L` by default; read from ledger configuration, see [onboarding checklist](#customizing-onboarding-checklist)) |
 | Time basis | Posting date confused with document date | BUDAT vs. BLDAT vs. FKDAT; fiscal-year variant periods (FISCYEARPER); special periods 13-16 | Resolve "quarter" via company code fiscal-year variant; special-period policy declared |
 | Organizational scope | Company code or plant omitted | Company code, sales org, plant, operating concern mixed; missing key sums across legal entities | Org keys are mandatory filters; DCL and user authorization enforced at execution |
-| Aggregation basis | Currency, unit, cancellation or clearing errors | Transaction vs. company-code vs. group currency (HSL/KSL); sales vs. base unit; reversals (STBLG) and clearing | Block amount sums without a currency field; cancellation policy (exclude or net); reconcile results to FI balances |
+| Aggregation basis | Currency, unit, cancellation or clearing errors | Transaction (WSL) vs. company-code (HSL) vs. global (KSL) currency, as configured; sales vs. base unit; reversals (STBLG is a BKPF field; on ACDOCA use the XREVERSING/XREVERSED flags or join BKPF) and clearing | Block amount sums without a currency field; cancellation policy (exclude or net); reconcile results to FI balances |
 
 The last two cannot be solved by SQL syntax validation. They need semantic validation rules plus a result-validation step.
 
 ## Customer Z/Y objects
 
-The standard VDM does not cover customer Z/Y tables and programs. They enter the semantic layer only through governed wrappers:
+The standard VDM does not cover customer Z/Y tables and programs. They enter the semantic layer only through governed wrappers (Z wrapper CDS naming follows DA-8 and authorization follows DA-5 in `docs/co-abap.context.md`; not re-defined here):
 
 | Object | Situation | Handling |
 |--------|-----------|----------|
-| Z/Y table | Any | Wrap in `ZI_` CDS: business field names, `@Semantics.amount.currencyCode` / unit annotations, keys, associations to standard VDM (`I_Customer`, `I_CompanyCode`, ...), **mandatory DCL**. Unwrapped tables are out of scope. |
+| Z/Y table | Any | Wrap in `ZI_` CDS (DA-8): business field names, `@Semantics.amount.currencyCode` / unit annotations, keys, associations to standard VDM (`I_Customer`, `I_CompanyCode`, ...), **mandatory DCL** (DA-5). Unwrapped tables are out of scope. |
 | Z/Y program | Simple logic (joins, filters, aggregation) | Re-implement as `Z` CDS; optionally switch the report to consume it (single definition) |
 | Z/Y program | Complex multi-step logic | Persist results via batch into a Z result table, wrap it in CDS; the LLM reads stored results only |
 | Z/Y program | Must stay in ABAP, real-time needed | Extract into a class, expose via CDS table function (AMDP) or RAP/OData as a fixed tool; never a SQL-generation target |
@@ -78,14 +122,24 @@ Margin definitions depend on the CO-PA type and must be modeled separately:
 - **Account-based / Margin Analysis** (S/4HANA default): margin from ACDOCA cost and revenue accounts; cost-of-goods-sold split per cost component where configured.
 - **Costing-based CO-PA**: value fields (CE1xxxx); not reconcilable line-by-line with FI; state the basis in every answer.
 
+## Metric definition example
+
+| Metric | Definition | Declared basis |
+|--------|------------|----------------|
+| Net revenue | Revenue minus cancellations and returns. Source: billing VBRP net value, or FI revenue accounts in ACDOCA (choose one per metric, never both) | Date basis FKDAT (billing) or BUDAT (FI); currency HSL or KSL |
+| Gross margin | Net revenue minus COGS | Cost basis declared: standard or actual cost |
+| Margin % | Gross margin / net revenue | Same scope, period, and currency as both inputs |
+
+The CO-PA type determines the margin source (see [Profitability analysis branch](#profitability-analysis-branch)).
+
 ## Result validation
 
 A successful query does not mean a correct answer. Required checks:
 
-- Golden question set with expected results, run on every semantic-model change.
+- Golden question set with expected results. **Release gate**: no semantic-model change ships without a passing run, signed by the metric owner.
 - Reconciliation: totals tie out to FI balances for the same scope and period.
 - Reconciliation against existing Z report outputs, which users treat as the business truth; differences need an explained cause before go-live.
-- Audit log for every NL query: user, question, resolved metric definitions, generated query or intent, views touched, row count.
+- Audit log for every NL query: user, question hash plus redacted question, resolved metric definitions, intent, views touched, row count. No personal fields and no result values (row count only). Retention 90 days, then ILM. Read access limited to the audit role.
 - Every answer states which metric definition, source system, and data as-of time it used.
 
 ## Multi-source landscapes (ERP / S/4HANA / BW / Datasphere)
@@ -115,7 +169,7 @@ CDS views and analytic models settle much in advance, but not every business rul
 | CDS catalog, association and dependency graph | `schema-inspector` (`GetCDSDependencies`) |
 | CDS exposure via OData / RAP | `interface-expert` (`GetCDSExposure`) |
 | Semantic-layer CDS design and performance | `dba`, `architect` |
-| Authorization and DCL review | `security-monitor` |
+| Authorization and DCL review | `security-monitor` (gap: its tools cannot read DCL/DDLS sources; add `GetSource` on DCL objects or assign a reviewer) |
 
 ## Open questions
 
