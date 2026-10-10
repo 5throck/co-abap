@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "classes": {
+    "R0": [
+      "GetSource", "GetRevisionSource", "SearchObject", "GetTable", "GetTableContents",
+      "GetCDSDependencies", "GetCDSImpactAnalysis", "GetCDSExposure", "GetODataMetadata",
+      "GetFunctionGroup", "GetContext", "GetArguments", "GetAPIReleaseState",
+      "GetConnectionInfo", "GetSystemInfo", "ListDumps", "GetDump", "ListTransports",
+      "GetTransport", "ListTraces", "GetTrace", "ListSQLTraces", "GetSQLTraceState",
+      "GetCallGraph", "RunQuery"
+    ],
+    "R1": ["SyntaxCheck", "RunUnitTests", "GetCodeCoverage", "RunATCCheck", "TraceExecution"],
+    "R2": ["WriteSource", "EditSource", "Activate", "CreateTransport", "AddToTransport"],
+    "R3": ["ReleaseTransport", "RunReport", "RunOptions", "InstallZADTVSP", "InstallAbapGit"]
+  },
+  "r3Patterns": ["^Delete", "Delete$", "^Install", "Deploy", "^Drop", "^Insert", "^Modify", "^Import"],
+  "defaultUnknown": "ask",
+  "allowedPackages": ["Z*", "$TMP", "$ZADT_VSP", "$VSP_ADT"],
+  "runQuery": { "selectOnly": true },
+  "approval": { "envVar": "SAP_APPROVAL_TOKEN", "dir": "memory/audit/approvals" },
+  "release": { "requireEvidence": true, "blockInManualProfile": true }
+}

@@ -60,9 +60,27 @@
 ### 1-C. Required Permissions on Target SAP System
 
 The SAP user configured in `.env` needs:
-- Role `SAP_ALL` or equivalent (for trial systems)
-- For production: roles `S_ADT_WB_ACCESS` + `S_DEVELOP` + `S_CTS_ADMI`
+- Local trial/evaluation systems only (A4H, NPL): `SAP_ALL` is acceptable for convenience. **Never use `SAP_ALL` or `SAP_NEW` in shared, QA, or production systems.**
+- Shared, QA, and production systems: a dedicated AI dev user with the least-privilege role below, not a personal or shared user
 - WebSocket debug (ZADT_VSP): additional `S_BTCH_ADM` recommended
+
+#### Least-privilege role for the AI dev user
+
+Use a dedicated dialog user per environment. Restrict it to the allowlisted packages (`SAP_ALLOWED_PACKAGES`).
+The table is the target; adjust the values to your system and get Basis sign-off.
+
+| Authorization object | Fields and values | Why |
+|----------------------|-------------------|-----|
+| `S_DEVELOP` | `DEVCLASS` = `Z*`, `$TMP` (only the packages in the allowlist); `OBJTYPE` as needed; `ACTVT` = `01`, `02`, `03`, `07`, `16` (add `06` only if deletion is required) | Create, change, display, and activate objects in approved packages only |
+| `S_DEVELOP` (debug) | no `ACTVT 02` on `OBJTYPE` `DEBUG` | No debugger changes |
+| `S_TRANSPRT` | `ACTVT` = `01`, `02`, `03` (create, change, display); **no `43`** | The AI can create and fill transports but cannot release them |
+| `S_TABU_DIS` / `S_TABU_NAM` | `ACTVT` = `03` (display) only | Read-only table access for diagnostics |
+| `S_PROGRAM` | only what the chosen report/transaction needs; no `SAP_ALL`-style broad access | Limits report execution |
+
+Not included, on purpose: `SAP_ALL`, `SAP_NEW`, `S_TRANSPRT` `ACTVT 43` (release), `S_TABU_DIS` change or
+maintenance (`ACTVT 02`/`01`), and any role that allows data changes in production.
+
+Transport release is done by a human outside the AI session. The harness gate also blocks it (see [SECURITY.md](../SECURITY.md#control-tiers)).
 
 ---
 

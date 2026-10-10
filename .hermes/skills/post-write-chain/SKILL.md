@@ -1,8 +1,8 @@
 ---
 name: post-write-chain
 description: 'Use after ANY WriteSource, EditSource, or Activate operation on SAP ABAP objects. Enforces the mandatory quality gate: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck. Trigger automatically after every ABAP write operation.'
-version: 1.1.0
-last_reviewed: 2026-08-15
+version: 1.2.0
+last_reviewed: 2026-10-10
 status: active
 scope: co-abap
 owner: test-runner
@@ -78,6 +78,12 @@ Action required: Add ABAP Unit test cases covering the uncovered branches,
 4. If GetCodeCoverage falls below threshold (or regresses on an existing object) without a recorded waiver, do not proceed to RunATCCheck.
 5. Priority-1 ATC findings block all further steps including transport release.
 6. In Gemini / Antigravity sessions: route all four steps through `sap_execute` with `"action": "SyntaxCheck"`, `"action": "RunUnitTests"`, `"action": "GetCodeCoverage"`, `"action": "RunATCCheck"`.
+
+## Enforcement
+
+- **Hook-capable environments (Claude Code CLI)**: the `sap-action-audit` hook records each chain step's result as evidence in `memory/audit/sap-evidence.json` (object status `pending` after a write, `passed` once all four steps pass after that write, `failed` otherwise). `ReleaseTransport` is denied unless every object in the transport has `passed` evidence. Do not edit the evidence file by hand.
+- **Manual profile (`HARNESS_PROFILE=manual`)**: no hook records evidence. Run the chain by hand with `/post-write`, and report the results in the task or QA report. **Transport release is blocked** in this profile; release only from the hooked CLI profile.
+- Following this skill is a process rule for the agent. Only the hook-recorded evidence and the transport release gate are enforced controls (see [SECURITY.md](../../SECURITY.md#control-tiers)).
 
 ## Claude Code Desktop App Note
 

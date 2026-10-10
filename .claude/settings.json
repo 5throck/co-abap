@@ -27,6 +27,16 @@
   "hooks": {
     "PostToolUse": [
       {
+        "matcher": "mcp__abap__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/sap-action-audit.ts",
+            "timeout": 15
+          }
+        ]
+      },
+      {
         "matcher": "Write|Edit",
         "hooks": [
           {
@@ -104,6 +114,17 @@
       }
     ],
     "PreToolUse": [
+      {
+        "matcher": "mcp__abap__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/sap-action-gate.ts",
+            "timeout": 15,
+            "statusMessage": "SAP action gate..."
+          }
+        ]
+      },
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
@@ -201,7 +222,11 @@
       "Bash(git push --force*)",
       "Bash(git push --force-with-lease*)",
       "Bash(*--no-verify*)",
-      "Bash(rm -rf *)"
+      "Bash(rm -rf *)",
+      "Write(memory/audit/approvals/**)",
+      "Edit(memory/audit/approvals/**)",
+      "MultiEdit(memory/audit/approvals/**)",
+      "Bash(*memory/audit/approvals*)"
     ]
   },
   "env": {

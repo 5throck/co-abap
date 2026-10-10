@@ -1,0 +1,1 @@
+{"session_id":"s1","tool_name":"mcp__abap__ReleaseTransport","tool_input":{"transport":"A4HK900001","objects":["/sap/bc/adt/oo/classes/zcl_foo"]},"cwd":"."}

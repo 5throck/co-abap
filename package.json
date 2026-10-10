@@ -13,6 +13,7 @@
     "scratch-cleanup": "bun scripts/co-abap/scratch-cleanup.ts --status",
     "test": "bun test scripts",
     "test:unit": "bun test scripts",
+    "metrics": "bun scripts/harness-metrics.ts",
     "typecheck": "tsc --noEmit -p scripts/tsconfig.json"
   },
   "devDependencies": {

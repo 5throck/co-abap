@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T07:31:09.059Z
+**Generated**: 2026-10-10T07:52:39.211Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 48
-- **Scripts**: 111 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 114 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -32,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
-| pm | agents/pm.md | high | inherit | 2026-10-04 |
+| pm | agents/pm.md | high | inherit | 2026-10-10 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
@@ -73,7 +73,7 @@
 | performance-tuning | 1.0.0 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
-| post-write-chain | 1.1.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
+| post-write-chain | 1.2.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
 | project-review | 1.3.2 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
@@ -156,6 +156,8 @@
 | graph-delta-log.ts | 1.0.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
+| harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
+| harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
 | install-vsp.ts | 1.1.0 | scripts/co-abap/install-vsp.ts | bun |
 | lifecycle-sync-audit.ts | 1.17.1 | scripts/lifecycle-sync-audit.ts | js-yaml |
@@ -174,6 +176,7 @@
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
 | review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
 | review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
+| sap-action-gate.test.ts | 1.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
