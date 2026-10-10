@@ -140,6 +140,9 @@ NUL
 # Archive directory ignored to save space (local preservation only)
 memory/archive/
 
+# SAP action audit trail + evidence + approvals (local only; hashes, opt-in to commit)
+memory/audit/
+
 # Ignore test temp directories
 tests/.temp/
 

@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action": "query", "params": {"sql": "DELETE FROM t000"}}, "cwd": "."}
