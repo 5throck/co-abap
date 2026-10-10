@@ -1,4 +1,4 @@
-// @version 1.0.0
+// @version 1.1.0
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -61,7 +61,9 @@ describe("gate classification", () => {
   });
   test("R3 pattern tool denied", () => expect(evaluate(call("DeleteObject", { name: "zfoo" }), root).decision).toBe("deny"));
   test("hyperfocused SAP action resolves", () =>
-    expect(evaluate(call("SAP", { action: "RunReport", params: { name: "ZR" } }), root).decision).toBe("deny"));
+    expect(evaluate(call("SAP", { action: "delete", target: "PROG ZR" }), root).decision).toBe("deny"));
+  test("legacy tool name as SAP action is unclassified and asks", () =>
+    expect(evaluate(call("SAP", { action: "RunReport", params: { name: "ZR" } }), root).decision).toBe("ask"));
   test("non-abap tool asks", () => expect(evaluate({ tool_name: "Bash", tool_input: {} }, root).decision).toBe("ask"));
 });
 
@@ -176,6 +178,155 @@ describe("audit log", () => {
     process.env.HARNESS_TASK_ID = "T-1"; process.env.HARNESS_SPEC_ID = "SPEC-9";
     record(call("GetSource", { name: "zfoo" }), root);
     expect(logLines()[1].taskId).toBe("T-1"); expect(logLines()[1].specId).toBe("SPEC-9");
+  });
+});
+
+describe("hyperfocused SAP tool", () => {
+  const sap = (ti: object, extra: object = {}) => call("SAP", ti, extra);
+  const d = (ti: object) => evaluate(sap(ti), root).decision;
+  test("fixtures", () => {
+    expect(evaluate(fx("hf-read"), root).decision).toBe("allow");
+    expect(evaluate(fx("hf-edit-tmp"), root).decision).toBe("ask");
+    expect(evaluate(fx("hf-query-delete"), root).decision).toBe("deny");
+    expect(evaluate(fx("hf-rfc-call"), root).decision).toBe("deny");
+    expect(evaluate(fx("hf-release"), root).decision).toBe("deny");
+  });
+  test("R0 actions allow", () => {
+    for (const a of ["read", "search", "grep", "revisions", "info", "help", "lint"]) expect(d({ action: a, target: "X" })).toBe("allow");
+    expect(d({})).toBe("allow");
+    expect(d({ action: "READ", target: "CLAS ZCL_A" })).toBe("allow");
+  });
+  test("query: SELECT allowed, DML/chained/empty denied, param wins", () => {
+    expect(d({ action: "query", params: { sql: "SELECT * FROM t000" } })).toBe("allow");
+    expect(d({ action: "query", target: "SELECT * FROM T000" })).toBe("allow");
+    expect(d({ action: "query", target: "TABL_CONTENTS ZT" })).toBe("allow");
+    expect(d({ action: "query", target: "SQL", params: { sql_query: "SELECT 1 FROM t000" } })).toBe("allow");
+    expect(d({ action: "query", target: "SQL", params: { sql_query: "UPDATE t000 SET x = 1" } })).toBe("deny");
+    expect(d({ action: "query", target: "SELECT 1 FROM t000", params: { sql: "DELETE FROM t000" } })).toBe("deny");
+    expect(d({ action: "query", target: "SQL" })).toBe("deny");
+    expect(d({ action: "query", params: { sql: "SELECT 1 FROM t; DELETE FROM t" } })).toBe("deny");
+    expect(d({ action: "query" })).toBe("ask");
+  });
+  test("edit/create are R2: package allowlist", () => {
+    expect(d({ action: "edit", target: "CLAS ZCL_A", params: { source: "x", package: "$TMP" } })).toBe("ask");
+    expect(d({ action: "edit", target: "CLAS ZCL_A", params: { source: "x", package_name: "SAPBC" } })).toBe("deny");
+    expect(d({ action: "create", target: "OBJECT", params: { object_type: "CLAS/OC", name: "ZCL_A", dev_class: "SAPBC" } })).toBe("deny");
+    expect(evaluate(sap({ action: "edit", target: "CLAS ZCL_A", params: { source: "x" } }), root).reason).toContain("not determinable");
+    expect(d({ action: "edit", target: "COMPARE_SOURCE", params: { type1: "CLAS" } })).toBe("allow");
+  });
+  test("edit package derived from evidence of the same TYPE NAME", () => {
+    record(sap({ action: "edit", target: "CLAS ZCL_A", params: { source: "x", package: "$TMP" } }), root);
+    expect(evaluate(sap({ action: "edit", target: "clas zcl_a", params: { source: "y" } }), root).reason).toContain("$TMP");
+  });
+  test("delete, debug denied; approval allows delete once", () => {
+    expect(d({ action: "delete", target: "CLAS ZCL_A" })).toBe("deny");
+    expect(d({ action: "debug", target: "RUN_REPORT", params: { report: "ZR" } })).toBe("deny");
+    approve("delete", "CLAS ZCL_A");
+    expect(d({ action: "delete", target: "CLAS ZCL_A" })).toBe("allow");
+  });
+  test("rfc ops", () => {
+    for (const op of ["info", "ping", "probe", "search"]) expect(d({ action: "rfc", params: { op } })).toBe("allow");
+    expect(d({ action: "rfc", target: "STFC_CONNECTION" })).toBe("allow");
+    expect(d({ action: "rfc", target: "STFC_CONNECTION", params: { op: "describe" } })).toBe("allow");
+    for (const op of ["call", "run", "read_table"]) expect(d({ action: "rfc", target: "Z_X", params: { op } })).toBe("deny");
+    expect(d({ action: "rfc", params: { op: "mystery" } })).toBe("ask");
+    expect(d({ action: "rfc" })).toBe("ask");
+  });
+  test("system sub-types", () => {
+    for (const type of ["list_transports", "get_transport", "get_user_transports", "get_transport_info", "transport_status", "transport_buffer", "import_status"])
+      expect(d({ action: "system", params: { type } })).toBe("allow");
+    expect(d({ action: "system", target: "INFO" })).toBe("allow");
+    for (const type of ["delete_transport", "merge_transports", "copy_to_toc", "upload_transport", "install_zadt_vsp", "deploy_zip", "git_delete_objects"])
+      expect(d({ action: "system", params: { type, target: "QAS" } })).toBe("deny");
+    expect(d({ action: "system", params: { type: "install_something_new" } })).toBe("deny");
+    expect(d({ action: "system", params: { type: "frobnicate" } })).toBe("ask");
+    expect(d({ action: "system" })).toBe("ask");
+    expect(d({ action: "system", params: { type: "create_transport", package: "$TMP", description: "x" } })).toBe("ask");
+    expect(d({ action: "system", params: { type: "create_transport", package: "SAPBC" } })).toBe("deny");
+    expect(d({ action: "system", params: { type: "git_import_zip", package: "ZDEMO" } })).toBe("ask");
+    expect(d({ action: "system", params: { type: "git_export", packages: "$TMP,SAPBC" } })).toBe("deny");
+    expect(d({ action: "system", params: { type: "deploy_from_file", file_path: "/x/zfoo.prog.abap", package_name: "$TMP" } })).toBe("ask");
+    expect(d({ action: "system", params: { type: "save_to_file", object_type: "CLAS" } })).toBe("ask");
+  });
+  test("unknown action or sub-type asks", () => {
+    expect(d({ action: "frobnicate" })).toBe("ask");
+    expect(d({ action: "analyze", params: { type: "frobnicate" } })).toBe("ask");
+    expect(d({ action: "analyze" })).toBe("ask");
+    expect(d({ action: "test", params: { type: "frobnicate" } })).toBe("ask");
+    expect(d({ action: "i18n", params: { op: "frobnicate" } })).toBe("ask");
+    expect(d({ action: 5 })).toBe("ask");
+  });
+  test("analyze/test/i18n classes", () => {
+    expect(d({ action: "analyze", params: { type: "call_graph" } })).toBe("allow");
+    expect(d({ action: "analyze", params: { type: "syntax_check", object_url: OBJ } })).toBe("allow");
+    expect(d({ action: "analyze", params: { type: "execute_abap", source: "x" } })).toBe("deny");
+    expect(d({ action: "analyze", params: { type: "cluster_read", table: "INDX" } })).toBe("deny");
+    expect(d({ action: "test", params: { object_url: OBJ } })).toBe("allow");
+    expect(d({ action: "test", target: "ATC", params: { object_uri: OBJ } })).toBe("allow");
+    expect(d({ action: "i18n", params: { op: "texts_get", program_name: "ZR" } })).toBe("allow");
+    expect(d({ action: "i18n", params: { op: "texts_set", program_name: "ZR" } })).toBe("ask");
+  });
+  test("params given as JSON string are parsed", () =>
+    expect(d({ action: "query", params: JSON.stringify({ sql: "DELETE FROM t" }) })).toBe("deny"));
+
+  describe("evidence and release", () => {
+    const T = "A4HK900001";
+    const chain = (obj = "CLAS ZCL_A", t0 = Date.now() - 60000) => {
+      record(sap({ action: "edit", target: obj, params: { source: "x", package: "$TMP", transport: T } }), root, new Date(t0));
+      record({ ...sap({ action: "analyze", params: { type: "syntax_check", object_url: "/sap/bc/adt/oo/classes/" + obj.split(" ")[1].toLowerCase() } }), tool_response: "ok" }, root, new Date(t0 + 1000));
+      record({ ...sap({ action: "test", target: obj, params: { coverage: true } }), tool_response: "ok" }, root, new Date(t0 + 2000));
+      record({ ...sap({ action: "test", target: "ATC", params: { object_url: "/sap/bc/adt/oo/classes/" + obj.split(" ")[1].toLowerCase() } }), tool_response: "ok" }, root, new Date(t0 + 3000));
+    };
+    const rel = { action: "system", params: { type: "release_transport", transport: T } };
+    test("TYPE NAME and URL identities share one evidence key; chain gives passed", () => {
+      chain();
+      expect(Object.keys(readEvidence(root))).toEqual(["CLAS ZCL_A"]);
+      expect(readEvidence(root)["CLAS ZCL_A"].status).toBe("passed");
+      expect(readEvidence(root)["CLAS ZCL_A"].transport).toBe(T);
+    });
+    test("test without coverage leaves chain pending", () => {
+      record(sap({ action: "edit", target: "CLAS ZCL_B", params: { source: "x", package: "$TMP", transport: T } }), root, new Date(1000));
+      record({ ...sap({ action: "test", target: "CLAS ZCL_B" }), tool_response: "ok" }, root, new Date(2000));
+      expect(readEvidence(root)["CLAS ZCL_B"].chain.RunUnitTests.result).toBe("pass");
+      expect(readEvidence(root)["CLAS ZCL_B"].status).toBe("pending");
+    });
+    test("release denied with no tracked objects", () => {
+      approve("ReleaseTransport", T);
+      expect(evaluate(sap(rel), root).reason).toContain("tracked transport objects");
+    });
+    test("release denied with pending evidence, allowed with passed evidence and approval, single use", () => {
+      approve("ReleaseTransport", T);
+      record(sap({ action: "edit", target: "CLAS ZCL_B", params: { source: "x", package: "$TMP", transport: T } }), root);
+      expect(evaluate(sap(rel), root).reason).toContain("lack passed QA evidence");
+      rmSync(join(root, "memory", "audit", "sap-evidence.json"));
+      chain();
+      expect(evaluate(sap(rel), root).decision).toBe("allow");
+      record({ ...sap(rel), tool_response: "ok" }, root);
+      expect(logLines().at(-1).decision).toBe("approved");
+      expect(evaluate(sap(rel), root).decision).toBe("deny");
+    });
+    test("release denied without approval / without transport / in manual profile", () => {
+      chain();
+      expect(evaluate(sap(rel), root).reason).toContain("without approval");
+      expect(evaluate(sap({ action: "system", params: { type: "release_transport" } }), root).decision).toBe("deny");
+      approve("ReleaseTransport", T);
+      process.env.HARNESS_PROFILE = "manual";
+      expect(evaluate(sap(rel), root).reason).toContain("manual profile");
+    });
+    test("add_transport_object registers pending object that blocks release", () => {
+      chain();
+      approve("ReleaseTransport", T);
+      record(sap({ action: "system", params: { type: "add_transport_object", transport: T, objects: ["R3TR PROG ZNEW", "LIMU REPT ZOLD"] } }), root);
+      expect(readEvidence(root)["PROG ZNEW"].transport).toBe(T);
+      expect(readEvidence(root)["PROG ZOLD"].status).toBe("pending");
+      expect(evaluate(sap(rel), root).reason).toContain("2 object(s) lack");
+    });
+    test("audit log stores hashes only and the hyperfocused tool name", () => {
+      record(sap({ action: "edit", target: "CLAS ZCL_A", params: { source: "CLASS zcl_secret_body.", package: "$TMP" } }), root);
+      const rec = logLines().at(-1);
+      expect(JSON.stringify(rec)).not.toContain("zcl_secret_body");
+      expect(rec.tool).toBe("edit"); expect(rec.class).toBe("R2"); expect(rec.object).toBe("CLAS ZCL_A");
+    });
   });
 });
 

@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action": "system", "params": {"type": "release_transport", "transport": "A4HK900001"}}, "cwd": "."}

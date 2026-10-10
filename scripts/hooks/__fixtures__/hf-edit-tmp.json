@@ -1,0 +1,1 @@
+{"session_id": "s1", "tool_name": "mcp__abap__SAP", "tool_input": {"action": "edit", "target": "CLAS ZCL_TEST", "params": {"source": "CLASS zcl_test.", "package": "$TMP"}}, "cwd": "."}

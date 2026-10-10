@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T07:52:39.211Z
+**Generated**: 2026-10-10T08:02:25.554Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -159,7 +159,7 @@
 | harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
 | harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
-| install-vsp.ts | 1.1.0 | scripts/co-abap/install-vsp.ts | bun |
+| install-vsp.ts | 1.1.1 | scripts/co-abap/install-vsp.ts | bun |
 | lifecycle-sync-audit.ts | 1.17.1 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
@@ -176,7 +176,7 @@
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
 | review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
 | review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
-| sap-action-gate.test.ts | 1.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
+| sap-action-gate.test.ts | 1.1.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |

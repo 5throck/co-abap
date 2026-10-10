@@ -4,7 +4,7 @@
  * Used by hooks/sap-action-gate.ts (PreToolUse) and hooks/sap-action-audit.ts (PostToolUse).
  * Audit records store hashes only: never source text, SQL rows, tokens or credentials.
  *
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 import { createHash } from 'node:crypto';
@@ -24,6 +24,21 @@ export interface Policy {
   runQuery: { selectOnly: boolean };
   approval: { envVar: string; dir: string };
   release: { requireEvidence: boolean; blockInManualProfile: boolean };
+  hyperfocused?: HfPolicy;
+}
+
+/** Hyperfocused-mode (single `SAP` tool) action map; data lives in config/sap-action-policy.json. */
+export interface HfSub {
+  class: Cls; canonical?: string; evidence?: string[];
+  evidenceIfParam?: Record<string, string[]>; write?: boolean;
+}
+export interface HfAction {
+  class: Cls; sql?: boolean; subFrom?: string[]; subDefault?: string; defaultNeedsTarget?: boolean;
+  unknown?: 'default' | 'ask' | 'r3pattern'; sub?: Record<string, Cls | HfSub>;
+}
+export interface HfPolicy {
+  actions: Record<string, Cls | HfAction>;
+  packageKeys: string[]; urlTypes: Record<string, string>; limuTypes: Record<string, string>;
 }
 
 export interface HookInput {
@@ -66,6 +81,18 @@ export function validatePolicy(raw: unknown): Policy {
   if (typeof p.approval?.envVar !== 'string' || typeof p.approval?.dir !== 'string') fail('approval');
   if (p.approval.dir.startsWith('/') || p.approval.dir.split(/[\\/]/).includes('..')) fail('approval.dir');
   if (typeof p.release?.requireEvidence !== 'boolean' || typeof p.release?.blockInManualProfile !== 'boolean') fail('release');
+  if (p.hyperfocused !== undefined) {
+    const h = p.hyperfocused;
+    const isCls = (c: unknown) => c === 'R0' || c === 'R1' || c === 'R2' || c === 'R3';
+    if (!h || typeof h.actions !== 'object' || !isStrArr(h.packageKeys)) fail('hyperfocused');
+    if (typeof h.urlTypes !== 'object' || typeof h.limuTypes !== 'object') fail('hyperfocused maps');
+    for (const [a, v] of Object.entries<any>(h.actions)) {
+      if (!(isCls(v) || isCls(v?.class))) fail(`hyperfocused.actions.${a}`);
+      for (const [n, sv] of Object.entries<any>(v?.sub ?? {})) {
+        if (!(isCls(sv) || isCls(sv?.class))) fail(`hyperfocused.actions.${a}.sub.${n}`);
+      }
+    }
+  }
   return { ...p, r3Patterns: p.r3Patterns ?? [] } as Policy;
 }
 
@@ -148,6 +175,164 @@ export function derivePackage(input: Record<string, unknown>, evidence: Record<s
     if (evidence[key]?.package) return evidence[key].package;
   }
   return undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Hyperfocused mode: SAP { action, target, params }
+// ---------------------------------------------------------------------------
+
+export const isHyperfocused = (toolName: string): boolean =>
+  toolName.startsWith(TOOL_PREFIX) && toolName.slice(TOOL_PREFIX.length).toLowerCase() === 'sap';
+
+export interface HfResolved {
+  cls: Cls | null;
+  /** Name used for approvals and the audit log, e.g. `edit`, `system.delete_transport`, `ReleaseTransport`. */
+  tool: string;
+  action: string;
+  sub?: string;
+  deny?: string;
+  ask?: string;
+  evidence: string[];
+  write: boolean;
+  /** Normalized object identities ("TYPE NAME"), used as evidence-store keys. */
+  keys: string[];
+  packages: string[];
+  transport?: string;
+  /** Target for single-use approvals. */
+  approvalTarget?: string;
+  /** Transport objects named in the call (add/remove/move). */
+  objects: string[];
+  rawSql?: string[];
+}
+
+const str = (v: unknown): string | undefined => (typeof v === 'string' && v.trim() ? v.trim() : undefined);
+
+function hfParams(raw: Record<string, unknown>): Record<string, unknown> {
+  let p = raw.params;
+  if (typeof p === 'string') { try { p = JSON.parse(p); } catch { p = undefined; } }
+  return p && typeof p === 'object' && !Array.isArray(p) ? (p as Record<string, unknown>) : {};
+}
+
+/** "CLAS ZCL_A", "CLAS/OC ZCL_A", an ADT URL or "R3TR PROG ZX" to a normalized "TYPE NAME" key. */
+export function normalizeObjectKey(v: string, hf?: HfPolicy): string | undefined {
+  const t = v.trim();
+  if (!t) return undefined;
+  if (t.startsWith('/')) {
+    let u = t.toLowerCase();
+    try { u = decodeURIComponent(u); } catch { /* keep raw */ }
+    const m = u.match(/^\/sap\/bc\/adt\/(.+?)(?:[?#].*)?$/);
+    if (m) {
+      for (const [prefix, type] of Object.entries(hf?.urlTypes ?? {})) {
+        const mm = m[1].match(new RegExp('^' + prefix.replace(/[.+?^${}()|[\]\\]/g, '\\$&') + '/([^/]+)'));
+        if (mm) return `${type} ${mm[1].toUpperCase()}`;
+      }
+    }
+    return u;
+  }
+  const parts = t.split(/\s+/);
+  if (parts.length === 3 && /^(R3TR|LIMU)$/i.test(parts[0])) {
+    const type = parts[1].toUpperCase();
+    return `${hf?.limuTypes?.[type] ?? type} ${parts[2].toUpperCase()}`;
+  }
+  const m = t.match(/^([A-Za-z]{3,4})(?:\/[A-Za-z]+)?\s+(\S+)$/);
+  return m ? `${m[1].toUpperCase()} ${m[2].toUpperCase()}` : undefined;
+}
+
+function hfKeys(target: string | undefined, p: Record<string, unknown>, hf?: HfPolicy): string[] {
+  const out: string[] = [];
+  const add = (v: unknown) => { const s = str(v); const k = s ? normalizeObjectKey(s, hf) : undefined; if (k && !out.includes(k)) out.push(k); };
+  if (target && /\s/.test(target)) add(target);
+  for (const k of ['object_url', 'object_uri', 'class_url', 'source_url', 'url', 'object']) add(p[k]);
+  const ot = str(p.object_type), on = str(p.name) ?? str(p.object_name);
+  if (ot && on) add(`${ot} ${on}`);
+  if (str(p.class_name)) add(`CLAS ${str(p.class_name)}`);
+  if (str(p.program_name)) add(`PROG ${str(p.program_name)}`);
+  const fp = str(p.file_path)?.match(/([^/\\]+)\.([a-z]{3,4})\.[^/\\]*$/i);
+  if (fp) add(`${fp[2]} ${fp[1]}`);
+  return out;
+}
+
+function listOf(v: unknown): string[] {
+  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === 'string' && !!x.trim()).map((x) => x.trim());
+  const s = str(v);
+  return s ? [s] : [];
+}
+
+/** Resolve a hyperfocused `SAP` call to a risk class using policy.hyperfocused. */
+export function resolveHyperfocused(raw: unknown, policy: Policy): HfResolved {
+  const input = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  const p = hfParams(input);
+  const target = str(input.target);
+  const base: HfResolved = { cls: null, tool: 'SAP', action: '', evidence: [], write: true, keys: [], packages: [], objects: [] };
+  const hf = policy.hyperfocused;
+  if (!hf) return { ...base, ask: 'policy has no hyperfocused map' };
+  // SAP() with no arguments is documented as "info".
+  const rawAction = input.action === undefined && !target && Object.keys(p).length === 0 ? 'info' : input.action;
+  if (typeof rawAction !== 'string' || !rawAction.trim()) return { ...base, ask: 'SAP action missing or not a string' };
+  const action = rawAction.trim().toLowerCase();
+  const out: HfResolved = { ...base, action, tool: action };
+  const entry = Object.prototype.hasOwnProperty.call(hf.actions, action) ? hf.actions[action] : undefined;
+  if (!entry) return { ...out, ask: `unclassified SAP action "${action}"` };
+  const cfg: HfAction = typeof entry === 'string' ? { class: entry } : entry;
+
+  out.keys = hfKeys(target, p, hf);
+  out.transport = firstString(p, ['transport', 'transport_number', 'transportNumber', 'request']);
+  for (const k of hf.packageKeys) {
+    for (const v of listOf(p[k])) for (const piece of v.split(',')) if (piece.trim()) out.packages.push(piece.trim());
+  }
+  const tparts = target?.split(/\s+/) ?? [];
+  if (!out.packages.length && tparts[0]?.toUpperCase() === 'DEVC' && tparts[1]) out.packages.push(tparts[1]);
+  if (!out.packages.length && target?.toUpperCase() === 'DEVC' && str(p.name)) out.packages.push(str(p.name)!);
+  for (const k of ['objects', 'object']) for (const o of listOf(p[k])) {
+    const nk = normalizeObjectKey(o, hf); if (nk) out.objects.push(nk);
+  }
+
+  let cls: Cls = cfg.class;
+  let sub: HfSub | undefined;
+  if (cfg.sql) {
+    // query: a single SELECT is R0, anything else is denied. A statement in params wins over target.
+    const stmts = ['sql_query', 'sql', 'query', 'statement'].map((k) => str(p[k])).filter((x): x is string => !!x);
+    const tw = target?.toUpperCase();
+    if (stmts.length === 0 && target && tw !== 'SQL' && !/^TABL_CONTENTS\b/.test(tw!)) stmts.push(target);
+    if (stmts.length === 0 && tw === 'SQL') return { ...out, cls: 'R0', deny: 'query rejected: SQL target without a SQL string' };
+    for (const sql of stmts) {
+      const bad = inspectQuery(sql);
+      if (bad) return { ...out, cls: 'R0', deny: `query rejected: ${bad}` };
+    }
+    if (stmts.length === 0 && !/^TABL_CONTENTS\b/.test(tw ?? '')) return { ...out, ask: 'query without a table or SQL statement' };
+    out.cls = 'R0';
+    return out;
+  }
+  if (cfg.subFrom) {
+    let name: string | undefined;
+    for (const k of cfg.subFrom) {
+      const v = k === 'target' ? (target && !/\s/.test(target) ? target : undefined) : str(p[k]);
+      if (v) { name = v.toLowerCase(); break; }
+    }
+    if (!name && cfg.subDefault && (!cfg.defaultNeedsTarget || target)) name = cfg.subDefault;
+    const known = name && cfg.sub && Object.prototype.hasOwnProperty.call(cfg.sub, name) ? cfg.sub[name] : undefined;
+    if (known) {
+      sub = typeof known === 'string' ? { class: known } : known;
+      cls = sub.class;
+      out.sub = name;
+      out.tool = `${action}.${name}`;
+      if (sub.canonical) out.tool = sub.canonical;
+    } else if (cfg.unknown === 'ask' || (cfg.unknown === 'r3pattern' && !(name && policy.r3Patterns.some((r) => new RegExp(r, 'i').test(name!))))) {
+      return { ...out, ask: `unclassified SAP ${action} sub-type${name ? ` "${name}"` : ''}` };
+    } else if (cfg.unknown === 'r3pattern') {
+      cls = 'R3'; out.sub = name; out.tool = `${action}.${name}`;
+    }
+  }
+  out.cls = cls;
+  out.write = sub?.write ?? true;
+  if (sub) {
+    out.evidence = [...(sub.evidence ?? [])];
+    for (const [param, steps] of Object.entries(sub.evidenceIfParam ?? {})) {
+      if (p[param] === true || p[param] === 'true') for (const st of steps) if (!out.evidence.includes(st)) out.evidence.push(st);
+    }
+  }
+  out.approvalTarget = out.transport ?? out.keys[0] ?? str(p.function) ?? str(p.report) ?? target ?? str(p.job);
+  return out;
 }
 
 // ---------------------------------------------------------------------------

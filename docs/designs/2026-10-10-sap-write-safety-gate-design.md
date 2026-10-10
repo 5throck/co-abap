@@ -28,6 +28,41 @@ Tool names derived from `agents/*.md`, `skills/*/SKILL.md`, `docs/co-abap.contex
 | R3 | Data change / release / privileged | deny by default; allow only with approval (2.2); ReleaseTransport additionally requires `passed` evidence for every object in the transport | ReleaseTransport, RunReport, RunOptions, InstallZADTVSP, InstallAbapGit, any abapGit/UI5/RAP deploy tool, any delete/data-modifying tool |
 | — | Unknown `mcp__abap__*` | ask (fail safe), reason "unclassified tool" | — |
 
+### 2.0 Hyperfocused mode (vsp v2.60.0)
+
+`.mcp.json` runs vsp with `SAP_MODE=hyperfocused`: one tool `SAP` (hook name `mcp__abap__SAP`) with input `{action, target, params}`. The gate classifies the `action`, then sub-classifies by `params.type`, `params.op` or a single-word `target` (for example `INFO`, `ATC`, `ACTIVATE`). The map is data in `config/sap-action-policy.json` under `hyperfocused`; the legacy table above still applies to non-hyperfocused tool names. `SAP()` with no arguments is `info`. An unknown action or an unknown sub-type is `ask` (fail safe). Parameters may be a JSON string.
+
+| Action (sub-type) | Class | Decision and notes |
+|-------------------|-------|--------------------|
+| read, search, grep, revisions, info, help, lint | R0 | allow (lint is offline static analysis) |
+| query (single SELECT in `params.sql_query`/`sql`/`query`/`statement` or in `target`; `TABL_CONTENTS <t>`) | R0 | allow. Any statement that is not exactly one SELECT, or `target=SQL` without a statement, is deny. A statement in params and one in target are both inspected. No table and no statement is ask |
+| analyze: call_graph, callers, callees, dumps, traces, application_log, check_boundaries, usage_examples and the other read types listed in the policy | R0 | allow |
+| analyze: syntax_check | R1 | allow; evidence step `SyntaxCheck` |
+| analyze: trace_execution | R1 | allow; no evidence step |
+| analyze: execute_abap, cluster_read | R3 | deny unless approved (arbitrary ABAP execution; cluster_read takes a free `where` and bypasses the SQL guard) |
+| analyze: set_pretty_printer_settings | R2 | ask (no package, so "not determinable") |
+| test (default or `type=unit`) | R1 | allow; evidence `RunUnitTests`, plus `GetCodeCoverage` only when `params.coverage` or `with_coverage` is true |
+| test (`type=atc` or `target=ATC`) | R1 | allow; evidence `RunATCCheck` |
+| test: atc_customizing | R0 | allow |
+| edit, create | R2 | ask when the package is allowlisted, deny when outside; package from `package`, `package_name`, `dev_class`, else the evidence store for the same "TYPE NAME", else ask. `edit` COMPARE_SOURCE is R0; ACTIVATE, ACTIVATE_MULTI, ACTIVATE_PACKAGE, LOCK, UNLOCK are R2 but do not reset the QA chain |
+| i18n: compare_languages, data_element_labels, message_class_texts, texts, texts_get | R0 | allow |
+| i18n: texts_set, write_message_texts | R2 | ask (no package, so "not determinable") |
+| system: INFO, COMPONENTS, CONNECTION, FEATURES, system_info, list_transports, get_transport, get_user_transports, get_transport_info, transport_status, transport_buffer, import_status, git_types, git_import_status, git_object_versions, list_dependencies | R0 | allow |
+| system: create_transport, add_transport_object, remove_transport_object, move_transport_object, deploy_from_file, git_import_zip, rename | R2 | ask with the package check |
+| system: save_to_file, git_export | R2 (no QA reset) | ask: writes a local file / exports SAP content; `git_export` checks every package of `packages` |
+| system: release_transport | R3 | deny unless evidence + approval (see below); approval tool name is `ReleaseTransport`, target is `params.transport` |
+| system: delete_transport, merge_transports, copy_to_toc, upload_transport, install_zadt_vsp, deploy_zip, git_delete_objects | R3 | deny unless approved |
+| system: any other type matching `r3Patterns` (delete, install, deploy, drop, insert, modify, import prefixes) | R3 | deny unless approved; other unknown types are ask |
+| delete | R3 | deny unless approved (target "TYPE NAME") |
+| debug (all targets) | R3 | deny unless approved: can execute reports, call RFCs, move objects, set text elements |
+| rfc: info, ping, probe, describe (default with a target), search, job | R0 | allow |
+| rfc: call, run | R3 | deny unless approved (target is the function or report name) |
+| rfc: read_table | R3 | deny unless approved: a read, but it bypasses the SELECT-only SQL guard |
+
+Object identity for the evidence store is the normalized "TYPE NAME" (uppercase, subtype such as `/OC` dropped). ADT URLs (`/sap/bc/adt/oo/classes/zcl_a`) and `R3TR`/`LIMU` transport entries map to the same key, so `edit` by target, `analyze`/`test` by `object_url` and `add_transport_object` meet in one record. Mapping to the post-write chain: `syntax_check` is `SyntaxCheck`, `test` is `RunUnitTests`, `test` with `coverage:true` is `GetCodeCoverage`, `test type=atc` is `RunATCCheck`. The help texts do not say that `test` returns coverage, so until a live system confirms a coverage parameter, `GetCodeCoverage` stays missing and release stays denied (fail safe).
+
+`release_transport` has no `objects` parameter in vsp, so the gate collects the objects from the call (if given) and from every evidence record whose `transport` equals `params.transport` (set by `edit`/`create` with `params.transport` and by `add_transport_object`). It denies when none are tracked or any lacks passed evidence. The manual-profile block and the single-use approval apply unchanged.
+
 ### 2.1 RunQuery rule
 Strip comments/whitespace; allow only if exactly one statement and it starts with `SELECT` (case-insensitive) and contains no `;`-separated second statement or `INSERT|UPDATE|DELETE|MODIFY|COMMIT|CALL` keywords. Otherwise deny.
 
