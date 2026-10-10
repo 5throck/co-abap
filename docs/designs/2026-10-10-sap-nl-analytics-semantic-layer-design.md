@@ -61,11 +61,14 @@ Vector results only nominate candidates. Final joins must follow graph-approved 
 | Control | Default |
 |---------|---------|
 | Mandatory filters | Period and org-key filter required; queries without them are rejected |
-| Row cap | 10,000 detail rows; larger requests must be aggregated |
-| Statement timeout | 30 s |
-| Plan cost | Reject when the execution plan cost exceeds the threshold declared per semantic model (value not yet set) |
+| Row cap | 10,000 detail rows (initial default, calibrated at onboarding); larger requests must be aggregated |
+| Statement timeout | 30 s (initial default, calibrated at onboarding) |
+| Cost gate | Pre-execution estimate, not a fixed cost constant (HANA has no single portable cost number). Run `EXPLAIN PLAN` (or the analytics layer's equivalent) before execution and reject when the estimated rows scanned on the largest table exceed the per-system threshold, or when the query lacks a filter on the partition/period key of ACDOCA-class tables. Threshold is calibrated at onboarding (e.g. p95 of estimated rows across golden-question runs x safety factor) and recorded per system in the semantic model |
+| Memory limit | HANA statement memory limit and/or workload class assigned to the analytics user, configured by Basis, so a runaway statement is cancelled by the database rather than the application |
 | Rate limit | Per user |
 | Rejections | Every rejected query is logged (see [Result validation](#result-validation)) |
+
+The 10,000-row cap and 30 s timeout are unvalidated starting values. Calibrate the row cap, timeout, and cost threshold from golden-question runs and system sizing during onboarding.
 
 ## Untrusted input
 
@@ -160,6 +163,8 @@ CDS views and analytic models settle much in advance, but not every business rul
 - [ ] Z fields and Z tables used in revenue or cost logic
 - [ ] Profitability analysis type (costing-based or account-based / margin analysis)
 - [ ] Authorization objects and DCL roles mapped to analytics users
+- [ ] Calibrate query limits (row cap, timeout, cost threshold) from golden-question runs
+- [ ] HANA statement memory limit / workload class set for the analytics user (Basis)
 
 ## Mapping to this project's agents
 
@@ -169,7 +174,7 @@ CDS views and analytic models settle much in advance, but not every business rul
 | CDS catalog, association and dependency graph | `schema-inspector` (`GetCDSDependencies`) |
 | CDS exposure via OData / RAP | `interface-expert` (`GetCDSExposure`) |
 | Semantic-layer CDS design and performance | `dba`, `architect` |
-| Authorization and DCL review | `security-monitor` (gap: its tools cannot read DCL/DDLS sources; add `GetSource` on DCL objects or assign a reviewer) |
+| Authorization and DCL review | `security-monitor` (DA-5 review via GetSource on DDLS/DCLS) |
 
 ## Open questions
 
@@ -177,6 +182,7 @@ CDS views and analytic models settle much in advance, but not every business rul
 2. Free-form SQL with validation, or structured query intent only (recommended for phase 1)?
 3. Who owns and approves metric definitions in the term dictionary?
 4. Golden question set: initial size and owners per module.
+5. Query-limit calibration: which golden-question percentile and safety factor set the cost threshold, and does the target analytics layer expose an `EXPLAIN PLAN` equivalent?
 
 ## Constraints
 
