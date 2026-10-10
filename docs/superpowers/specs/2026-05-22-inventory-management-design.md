@@ -198,16 +198,16 @@ Common:
 
 | Internal Code | Label | Description |
 |---------------|-------|-------------|
-| G | Goods Receipt | 입고 (PO 기반) |
-| I | Goods Issue | 출고 (생산오더 기반) |
+| G | Goods Receipt | Inbound (PO-based) |
+| I | Goods Issue | Outbound (production-order-based) |
 
 ### 5.4 Status Codes
 
 | Code | Label | Description |
 |------|-------|-------------|
-| P | Pending | 처리 중 |
-| S | Success | 성공 |
-| E | Error | 오류 |
+| P | Pending | In progress |
+| S | Success | Success |
+| E | Error | Error |
 
 ---
 

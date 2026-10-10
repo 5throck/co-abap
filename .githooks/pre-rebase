@@ -8,13 +8,14 @@ set -euo pipefail
 # (old behavior: exit 0) was inconsistent with scripts/hooks/pre-push.ts, which
 # falls back to a blocking regex scan when gitleaks is not installed. Same
 # working-tree `git grep` pass and the same pattern list; the pattern SSOT lives
-# in scripts/hooks/pre-push.ts (regex fallback branch) — keep the list in sync
+# in scripts/lib/secret-patterns.ts — keep the list in sync
 # when editing either file. Limitation (same as pre-push's fallback): the
 # working tree is scanned, not the commits being rebased.
 if ! command -v gitleaks &> /dev/null; then
     echo "⚠️  gitleaks not found - running regex secret scan fallback (install gitleaks for full coverage)"
     echo "   Install gitleaks for protection: https://github.com/gitleaks/gitleaks"
-    SECRET_PATTERN='sk-ant-api03-[A-Za-z0-9_-]{93}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-proj-[A-Za-z0-9_-]+'
+    # Keep in sync with SECRET_ERE in scripts/lib/secret-patterns.ts (shared SSOT).
+    SECRET_PATTERN='AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|gho_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{20,}|sk-ant-[A-Za-z0-9_-]{20,}|sk-proj-[A-Za-z0-9_-]{20,}|sk-[0-9A-Za-z]{48}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN ([A-Z]+ )?PRIVATE KEY-----'
     if MATCHES=$(git grep -n -E "$SECRET_PATTERN" -- "*.ts" "*.js" "*.mjs" "*.py" "*.sh" "*.json" "*.md" "*.env" "*.env.*" "*.yml" "*.yaml" "*.toml" "*.cfg" "*.ini" "*.html" 2>/dev/null); then
         echo "❌ Potential secrets found - rebase blocked. Install gitleaks for full coverage."
         echo "$MATCHES" | head -n 5

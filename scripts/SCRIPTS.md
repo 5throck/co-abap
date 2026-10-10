@@ -121,6 +121,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
+| `lib/secret-patterns.ts` | L3 | 1.0.0 | active | Shared secret pattern list (TOKEN_PATTERNS, ASSIGNMENT_PATTERN, SECRET_ERE) used by hooks/pre-commit.ts and hooks/pre-push.ts. LOCAL-PATCH: hooks are template-managed, so re-apply on upgrade | —| L3 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -133,8 +134,10 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `readme-lifecycle-audit.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `review-baseline.ts` | L3 | 1.2.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
-| `tests/review-baseline.test.ts` | L3 | 1.3.0 | active | — | — | L3 | — |
+| `check-project-meta.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
+| `tests/check-project-meta.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
+| `review-baseline.ts` | L3 | 1.3.0 | active | LOCAL-PATCH(upstream-request: pending): dropped by template upgrade v0.7.0; detects root template-version.txt marker | — | L3 | — |
+| `tests/review-baseline.test.ts` | L3 | 1.4.0 | active | — | — | L3 | — |
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `skill-lifecycle-audit.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.1.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
@@ -353,7 +356,7 @@ skills still being modified, dependency graph, circular dependencies, `scope` fi
 **Runs automatically**: pre-commit hook when `skills/**` files are staged.
 **v1.2.0**: `scope` validation now accepts `workspace | common | variant | <current project's own directory name>` (was previously only the literal string `variant`, which incorrectly flagged legitimate variant-name scope values like `scope: co-consult`); `docs/_examples/skills/**` excluded from scanning (illustrative documentation, not real skills). Run once per location (workspace root + each `templates/co-*/` variant + `templates/common/`) since agent/scope resolution is relative to `cwd`.
 **L3 lifecycle policy**: a detached L3 project is identified by
-`.claude/template-version.txt` plus `docs/context.md` and no `templates/`. Its skill
+root `template-version.txt` plus `docs/context.md` and no `templates/`. Its skill
 copies inherit L0 SSOT review evidence and lifecycle records; the audit emits `[SKIP]`
 for those L0-owned checks rather than treating local upgrade commits as unreviewed skill
 changes. L0 authoring contexts continue to require lifecycle records.
@@ -363,6 +366,12 @@ changes. L0 authoring contexts continue to require lifecycle records.
 delivered checks and reports `validate-templates` and propagation drift as N/A because
 they depend on the absent L0 template source tree.
 **Usage**: `bun scripts/review-baseline.ts [--quiet]`
+**v1.3.0**: adds `validate-docs-links --all`, `check-project-meta`, and `test:unit`; each check runs with a 300 s timeout (TIMEOUT reported as FAIL).
+
+#### `check-project-meta.ts`
+**Purpose**: Deterministic project metadata checks: CHANGELOG `[Unreleased]` heading uniqueness/position, entry format (subheading + `(#PR)` for entries dated on/after 2026-10-11), and version/`last_updated` bumps for agents/skills changed since the merge-base with `origin/main` (`[SKIP]` without origin/main).
+**Usage**: `bun scripts/check-project-meta.ts`
+**Provenance**: L3 | L3, active.
 
 #### `readme-lifecycle-audit.ts`
 **Purpose**: Validates README.md / README_ko.md pairing in `templates/` directories.

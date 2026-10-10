@@ -5,6 +5,7 @@
  */
 
 import { $ } from "bun";
+import { SECRET_ERE } from "../lib/secret-patterns.ts";
 
 // All-zero OID: git's "null" object id, sent as the local OID of a ref
 // deletion on both SHA-1 (40 zeros) and SHA-256 (64 zeros) repositories.
@@ -178,7 +179,7 @@ async function main() {
   } catch {
     // gitleaks not installed — run minimal regex fallback
     console.warn("  ⚠️  gitleaks not installed — running regex secret scan fallback");
-    const { stdout } = await $`git grep -rn -E "sk-ant-api03-[A-Za-z0-9_-]{93}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|sk-proj-[A-Za-z0-9_-]+" -- "*.ts" "*.js" "*.mjs" "*.py" "*.sh" "*.json" "*.md" "*.env" "*.env.*" "*.yml" "*.yaml" "*.toml" "*.cfg" "*.ini" "*.html"`.nothrow();
+    const { stdout } = await $`git grep -rn -E ${SECRET_ERE} -- "*.ts" "*.js" "*.mjs" "*.py" "*.sh" "*.json" "*.md" "*.env" "*.env.*" "*.yml" "*.yaml" "*.toml" "*.cfg" "*.ini" "*.html"`.nothrow();
     const matches = stdout.toString().trim();
     if (matches) {
       console.error("\n\x1b[31m❌ Potential secrets found — push blocked. Install gitleaks for full coverage.\x1b[0m");

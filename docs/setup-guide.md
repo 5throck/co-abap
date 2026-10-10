@@ -534,6 +534,35 @@ If you get an error, check:
 
 ---
 
+### 5-E. Cloud Sessions (Claude Code on the web)
+
+Cloud sessions run in a managed container, not on your workstation. Plan around these limits:
+
+| Capability | Cloud container | Why |
+|------------|:---------------:|-----|
+| `abap` MCP (vsp) | ❌ | Needs the local `vsp` binary (`./vsp`, gitignored, not in the repo) and direct network access to your SAP system |
+| `abap-docs` / `sap-docs` MCP endpoints | ⚠️ may be blocked | The environment network policy can refuse third-party documentation hosts (proxy `403`) |
+| ABAP write and QA chains (`WriteSource`, `SyntaxCheck`, `RunUnitTests`, `RunATCCheck`) | ❌ | Require the `abap` MCP; run them from the local CLI (see [Post-Write chain](../skills/post-write-chain/SKILL.md)) |
+| Repo reads, docs, governance scripts, `bun` tests | ✅ | Local to the checkout |
+
+Rules for cloud sessions:
+
+- Do not paste SAP credentials into a cloud session. Credentials stay in the local `.env` or OS keychain.
+- Treat an `abap` connection failure (`ENOENT ... ./vsp`) as expected in the cloud, not as a broken project config.
+- Make and sync ABAP changes from the local CLI. Cloud sessions may draft docs and non-ABAP code.
+
+**Aligning the `./vsp` path.** The tracked `.mcp.json` runs `"command": "./vsp"`, a path relative to the project root. The install steps in 5-A place the binary differently by platform, so pick one fix locally:
+
+| Platform | Install step | Fix |
+|----------|--------------|-----|
+| macOS / Linux | `~/abap/vsp` (repo root) | Works as-is when the repo root is the working directory. |
+| Windows | `~/abap/vsp.exe` | `./vsp` does not match. Either create a local link (`mklink vsp.exe vsp`) or override the command in `.mcp.local.json` (copy of `.mcp.json.sample`, gitignored) to `./vsp.exe`. |
+| Any, binary elsewhere | e.g. `/usr/local/bin/vsp` | Symlink it into the repo root: `ln -s /usr/local/bin/vsp ./vsp`, or set the absolute path in `.mcp.local.json`. |
+
+Do not commit a platform-specific `command` change to `.mcp.json`. Keep it in `.mcp.local.json` or a local symlink.
+
+---
+
 ## 6. Configure Claude Code
 
 ### 6-A. Verify .claude/settings.json (already in repo)

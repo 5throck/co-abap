@@ -1,7 +1,7 @@
 # W4 Thin-Dispatcher Conversion — co-abap
 
 - **Date**: 2026-09-26
-- **Status**: Approved (one-design-doc convention, ADR-0074; ADR-0090 fleet rollout)
+- **Status**: implemented (one-design-doc convention, ADR-0074; ADR-0090 fleet rollout — AGENTS.md §3–§5 pointer summaries and docs/governance/agents/ shipped)
 
 ## Background & Change
 

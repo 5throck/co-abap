@@ -46,6 +46,7 @@ paths = [
   '''(^|/)venv/''',
   '''(^|/)node_modules/''',
   '''(^|/)__pycache__/''',
-  # Preserved from this project's prior .gitleaks.toml (not in the current common template):
-  '''(^|/)scratch/''',
+  # Vendored abapGit ABAP sources: `key = c_id-i18n_langs` generic-api-key false positives (narrow, not all of scratch/)
+  '''^scratch/stable/zadt_vsp_git\.prog\.abap$''',
+  '''^scratch/stable/zabapgit_standalone\.prog\.abap$''',
 ]

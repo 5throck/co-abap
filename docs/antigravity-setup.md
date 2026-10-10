@@ -56,27 +56,16 @@ MCP servers for Antigravity are registered in VS Code's **user** `settings.json`
 
 ---
 
-## 3. Environment Variables
+## 3. Credentials and Environment Variables
 
-`vsp` reads SAP connection details from environment variables. If Antigravity does not automatically load the `.env` file, set these as system-level variables or add them directly inside the `env` block above.
+**Credential storage standard** (applies to every setup guide and config in this repo):
 
-**Windows (PowerShell — user scope):**
-```powershell
-[System.Environment]::SetEnvironmentVariable("SAP_URL",      "http://vhcalnplci:50000", "User")
-[System.Environment]::SetEnvironmentVariable("SAP_USER",     "your-sap-user",           "User")
-[System.Environment]::SetEnvironmentVariable("SAP_PASSWORD", "your-sap-password",       "User")
-[System.Environment]::SetEnvironmentVariable("SAP_CLIENT",   "001",                     "User")
-```
+1. **Preferred: `.env` in the project root.** Create it with mode `600` (`chmod 600 .env`). It is gitignored; `.env.sample` lists the keys with placeholder values only.
+2. **Alternative: OS keychain** (macOS Keychain, Windows Credential Manager, or `secret-tool` on Linux), read into the session at launch.
 
-**macOS / Linux (`~/.bashrc` or `~/.zshrc`):**
-```bash
-export SAP_URL="http://vhcalnplci:50000"
-export SAP_USER="your-sap-user"
-export SAP_PASSWORD="your-sap-password"
-export SAP_CLIENT="001"
-```
+Do **not** store `SAP_PASSWORD` in shell profiles (`~/.bashrc`, `~/.zshrc`), in Windows user environment variables, in `.gemini/settings.json`, or in any tracked config file. Those locations are readable by other processes and are easy to commit by accident.
 
-Restart VS Code after setting environment variables.
+`vsp` reads SAP connection details from environment variables. If Antigravity does not load the `.env` file automatically, keep the password out of the MCP config and inject it at launch from `.env` or the keychain. Put any local-only overrides in the gitignored `.mcp.local.json`, never in the tracked `.gemini/settings.json`. Restart VS Code after changing credentials.
 
 ---
 
@@ -175,4 +164,4 @@ After editing any skill in `skills/`, run `bun scripts/sync-skills.ts` to propag
 
 ---
 
-*Last Updated: 2026-07-09*
+*Last Updated: 2026-10-10*

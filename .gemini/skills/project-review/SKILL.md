@@ -14,7 +14,7 @@ description: >
   phase schema changes, workspace-schema.json modified, new variant added);
   QA escalation from auditor (audit.ts ERROR >= 3 or security Critical finding).
 owner: pm
-version: 1.3.1
+version: 1.3.2
 last_reviewed: 2026-09-14
 prerequisites: []
 metadata:
@@ -53,7 +53,8 @@ catches that class mechanically, not by agent effort.
 Run the validator battery and record results — this is (a) the report's Baseline
 section and (b) the reference for classifying findings as `script-gap` later.
 
-**Detached L3 project** (no `templates/`, with `.claude/template-version.txt` and
+<!-- LOCAL-PATCH(upstream-request: UR-2): detection marker is root template-version.txt, not legacy .claude/template-version.txt -->
+**Detached L3 project** (no `templates/`, with root `template-version.txt` and
 `docs/context.md`): run the local consolidated baseline:
 
 ```bash

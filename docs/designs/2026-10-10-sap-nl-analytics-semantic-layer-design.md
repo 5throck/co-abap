@@ -55,6 +55,8 @@ Vector results only nominate candidates. Final joins must follow graph-approved 
 | Roles | Analytics roles map to explicit authorization objects. No wildcard (`*`) values. |
 | Org keys | Refuse the query when the user lacks a role covering a required org key (company code, sales org, plant, operating concern). No partial results. |
 | New CDS views | Follow `docs/co-abap.context.md` DA-5: `#CHECK` with DCL; no `#NOT_REQUIRED`. |
+| Closing-period break-glass | Exceeding the org-key or row threshold during period close is allowed only through a named break-glass role (no wildcard values), with an approval time-boxed to the close window. Every use is written to an audit log (user, reason, approver, query ID, timestamp). Use is rate-limited per user and per period. Expired approvals are refused without fallback. |
+| Privileged CDS objects | Views annotated `#PRIVILEGED_ONLY` are excluded from analytics entirely (no template, free-form SQL, or break-glass path can reach them). This is stricter than DA-5, which only requires `#CHECK` with DCL. |
 
 ### Query paths (layer D)
 

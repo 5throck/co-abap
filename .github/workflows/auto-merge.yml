@@ -18,7 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       (github.event_name == 'pull_request_review' && github.event.review.state == 'approved') ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     steps:
       - name: Merge only after every required check succeeds
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
@@ -50,6 +52,12 @@ jobs:
                 console.log('No open PR is associated with the completed CI head SHA.');
                 return;
               }
+            }
+
+            // Never merge PRs whose head lives in a different repository (forks).
+            if (pr.head.repo && pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+              console.log(`PR #${pr.number} head repo ${pr.head.repo.full_name} differs from base; skipping.`);
+              return;
             }
 
             if (pr.state !== 'open') {

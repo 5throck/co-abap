@@ -2,7 +2,7 @@
 
 **Spec ID**: 2026-09-26-project-review-remediation-design
 **Date**: 2026-09-26
-**Status**: implemented
+- **Status**: implemented
 **Source**: `docs/reports/2026-09-26-project-review-full.md`
 **Decision**: `docs/decisions/DEC-20260926-01.md`
 

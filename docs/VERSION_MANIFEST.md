@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T07:18:27.445Z
+**Generated**: 2026-10-10T07:31:09.059Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 48
-- **Scripts**: 109 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 111 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -32,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-09-25 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-09-25 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-09-25 |
-| pm | agents/pm.md | high | N/A | 2026-10-04 |
+| pm | agents/pm.md | high | inherit | 2026-10-04 |
 | pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-09-25 |
 | read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-09-27 |
 | sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-07 |
@@ -49,7 +49,7 @@
 | Name | Version | Status | Location | Platform | Triggers | Owner |
 |------|---------|--------|----------|----------|----------|-------|
 | abap-code-review | 1.0.0 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
-| abap-dev | 1.2.0 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
+| abap-dev | 1.2.1 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
 | accessibility-audit | 1.1.0 | active | skills/accessibility-audit/SKILL.md | workspace | accessibility-audit, /accessibility-audit, axe-core audit, wcag accessibility check, wcag 2.1 aa | pm |
 | agent-lifecycle-manager | 1.3.0 | active | skills/agent-lifecycle-manager/SKILL.md | workspace | create agent, new agent, validate agents, agent lifecycle, manage agents, hire agent, fire agent, deprecate agent | pm |
 | api-documentation | 1.0.2 | active | skills/api-documentation/SKILL.md | workspace | api documentation, document api, api reference, developer documentation, rest api docs, graphql docs, sdk documentation | pm |
@@ -74,7 +74,7 @@
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
 | post-write-chain | 1.1.0 | active | skills/post-write-chain/SKILL.md | workspace | post-write-chain, WriteSource, EditSource, Activate | test-runner |
-| project-review | 1.3.1 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
+| project-review | 1.3.2 | active | skills/project-review/SKILL.md | workspace | project review, review project, audit project, quality review | pm |
 | research-analysis | 1.0.2 | active | skills/research-analysis/SKILL.md | workspace | research, analyze, investigate, synthesize, evidence gathering, data analysis, literature review | pm |
 | sap-co | 1.0.0 | active | skills/sap-co/SKILL.md | workspace | sap-co, cost center, internal order, CO-PA, cost allocation | co-analyst |
 | sap-fi | 1.0.0 | active | skills/sap-fi/SKILL.md | workspace | sap-fi, journal entry, GL, accounts payable, accounts receivable, financial reporting | fi-analyst |
@@ -124,6 +124,8 @@
 | check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | N/A |
 | check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | N/A |
 | check-lint.ts | 1.0.0 | scripts/handbook/check-lint.ts | N/A |
+| check-project-meta.test.ts | 1.0.0 | scripts/tests/check-project-meta.test.ts | bun:test |
+| check-project-meta.ts | 1.0.0 | scripts/check-project-meta.ts | N/A |
 | check-search.ts | 2.0.0 | scripts/handbook/check-search.ts | N/A |
 | check-spell.ts | 1.0.0 | scripts/handbook/check-spell.ts | N/A |
 | check-structure.test.ts | 1.0.0 | scripts/tests/check-structure.test.ts | bun:test |
@@ -170,8 +172,8 @@
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
-| review-baseline.test.ts | 1.3.0 | scripts/tests/review-baseline.test.ts | bun:test |
-| review-baseline.ts | 1.2.0 | scripts/review-baseline.ts | N/A |
+| review-baseline.test.ts | 1.4.0 | scripts/tests/review-baseline.test.ts | bun:test |
+| review-baseline.ts | 1.3.0 | scripts/review-baseline.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
@@ -259,7 +261,6 @@
 
 ⚠️ **Drift detected**:
 
-- [WARNING] Agent pm missing tier or model metadata
 - [WARNING] Command post-write has no matching skill of the same name
 - [WARNING] Command security-check has no matching skill of the same name
 - [WARNING] Command transport has no matching skill of the same name

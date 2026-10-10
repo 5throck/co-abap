@@ -17,7 +17,7 @@ examples:
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-09-25"
+  last_updated: "2026-10-10"
   governance: docs/lifecycle/agents/security-monitor.md
 version: "1.1.0"
 ---

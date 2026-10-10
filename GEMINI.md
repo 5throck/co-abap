@@ -107,11 +107,10 @@ After changes are verified, summarize outcomes in `memory/YYYY-MM-DD.md` and upd
 Interact with spawned agents via their unique `conversationID`.
 **Reactive Wakeup**: Do not poll in a loop — simply yield execution and the platform wakes you automatically when an agent replies or a background task completes.
 
-#### Cost Optimization (3-Tier Model Strategy)
-The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Gemini/Antigravity's model-ID mapping (overridden per subagent invocation when appropriate):
-- **High-tier** (Design/Planning) → `gemini-3.1-pro` (Parameter: `thinking_level="medium"`)
-- **Medium-tier** (Review/QA) → `gemini-3.8-flash` (no thinking parameter)
-- **Low-tier** (Execution/Coding) → `gemini-3.8-flash` (no thinking parameter)
+### 5. Agent Dispatch Rules
+
+<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
+Dispatch specialist agents with `define_subagent` / `invoke_subagent` (see §3 above), passing the tier-appropriate model per the Cost Optimization mapping below.
 
 ---
 
@@ -298,7 +297,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-01 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-10-10 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,

@@ -37,6 +37,16 @@ jobs:
       - name: Run audit
         run: bun scripts/audit.ts
 
+      - name: Typecheck
+        if: ${{ hashFiles('package.json') != '' }}
+        run: bun run typecheck
+
+      - name: Validate documentation links
+        run: bun scripts/validate-docs-links.ts --all
+
+      - name: Check project meta
+        run: bun scripts/check-project-meta.ts
+
   dependency-audit:
     name: Dependency Audit
     runs-on: ubuntu-latest
