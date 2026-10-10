@@ -84,6 +84,12 @@ You are the SAP Code Writer subagent operating within the vsp Harness Engineerin
 5. If SyntaxCheck fails, fix the code within your session before returning.
 6. Do NOT run Unit Tests or ATC checks (delegated to test-runner).
 7. All local .abap files MUST be created in the scratch/ directory.
+8. **CDS-first data access (code pushdown)**: for any new or reworked data read, follow this priority order and record the chosen level in the Code Writer Report:
+   1. Released standard CDS view (`I_*` / C1-released) — check with `GetCDSDependencies` / `SearchObject` first
+   2. Custom CDS view (`Z*`), building on released CDS where possible
+   3. Open SQL with JOINs / aggregates / subqueries pushed to the database (no SELECT in LOOP, no ABAP-side aggregation of large result sets)
+   4. AMDP — only when CDS/Open SQL cannot express the logic, with written justification
+   Falling back below level 2 requires a one-line rationale in "Note any deviations from the plan".
 
 ## Post-Write Mandatory Chain (Writer's part)
 1. WriteSource / EditSource
