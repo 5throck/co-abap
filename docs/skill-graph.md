@@ -37,7 +37,7 @@
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/platform-skill-lifecycle-manager` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/post-write-chain` | L3 | 1.3.2 | — | — | — | — | — |
-| `root/project-review` | L3 | 1.3.2 | — | — | — | — | — |
+| `root/project-review` | L3 | 1.3.3 | — | — | — | — | — |
 | `root/research-analysis` | L3 | 1.0.2 | — | — | root/documentation-writing (enables) | — | — |
 | `root/sap-co` | L3 | 1.0.0 | — | — | root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (follows) | — | — |
 | `root/sap-fi` | L3 | 1.0.0 | — | — | root/sap-co (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |

@@ -14,7 +14,7 @@ description: >
   phase schema changes, workspace-schema.json modified, new variant added);
   QA escalation from auditor (audit.ts ERROR >= 3 or security Critical finding).
 owner: pm
-version: 1.3.2
+version: 1.3.3
 last_reviewed: 2026-10-08
 prerequisites: []
 metadata:
