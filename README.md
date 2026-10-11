@@ -1,5 +1,5 @@
 ---
-content_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
+content_hash: 219ff6a15eec8b35b37520717f3268d39ac8be7f46e34b7218d271321dac52d7
 ---
 # Harness Engineering for SAP ABAP
 
@@ -26,7 +26,7 @@ Key principles of Harness Engineering include:
 
 1. **[Install prerequisites](docs/setup-guide.md)** - MCP server, SAP ADT access, abapGit
 2. **Install vsp and configure `.env`** - `bun scripts/co-abap/install-vsp.ts`, then copy `.env.sample` to `.env` and `chmod 600 .env`
-3. **Seal the SAP safety policy (human, once)** - `bun scripts/sap-integrity.ts init`, then `bun scripts/sap-integrity.ts sign`. Until signed, SAP access is read-only (R0). Re-sign after you review changes to the policy, the enforcement scripts, `package.json` or `bunfig.toml`.
+3. **Seal the SAP safety policy (human, once)** - run `bun scripts/sap-integrity.ts init` in your own terminal. At the prompt, type the literal word `sign` (not your user name) and press Enter. `init` creates the approval key and signs the manifest in one step; check with `bun scripts/sap-integrity.ts verify`. Until signed, SAP access is read-only (R0). Later, after you review changes to the policy, the enforcement scripts, `package.json` or `bunfig.toml` (for example after pulling such a PR), run `bun scripts/sap-integrity.ts sign` and confirm the same way.
 4. **Explore [AGENTS.md](AGENTS.md)** - Understand agent roles and workflows
 5. **Run `/triage`** - Start your first task with automatic agent dispatch
 
@@ -243,4 +243,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-10-10*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-10-11*

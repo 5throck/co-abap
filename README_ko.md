@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
+translated_from_hash: 219ff6a15eec8b35b37520717f3268d39ac8be7f46e34b7218d271321dac52d7
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -26,7 +26,7 @@ translated_from_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe
 
 1. **[선행 조건 설치](docs/setup-guide.md)** - MCP 서버, SAP ADT 접근, abapGit
 2. **vsp 설치와 `.env` 설정** - `bun scripts/co-abap/install-vsp.ts` 실행 후 `.env.sample`을 `.env`로 복사하고 `chmod 600 .env`
-3. **SAP 안전 정책 봉인(사람이, 한 번만)** - `bun scripts/sap-integrity.ts init` 다음 `bun scripts/sap-integrity.ts sign`. 서명 전에는 SAP 접근이 읽기 전용(R0)입니다. 정책, 집행 스크립트, `package.json`, `bunfig.toml`을 검토해 바꾼 뒤에는 다시 서명하세요.
+3. **SAP 안전 정책 봉인(사람이, 한 번만)** - 본인 터미널에서 `bun scripts/sap-integrity.ts init`을 실행합니다. 확인 문구가 나오면 사용자 이름이 아니라 낱말 `sign`을 그대로 입력하고 Enter를 누릅니다. `init` 한 번으로 승인 키 만들기와 첫 서명이 함께 끝나며, `bun scripts/sap-integrity.ts verify`로 확인할 수 있습니다. 서명 전에는 SAP 접근이 읽기 전용(R0)입니다. 그 뒤 정책, 집행 스크립트, `package.json`, `bunfig.toml`이 바뀐 것을 검토했다면(예: 그런 PR을 받은 뒤) `bun scripts/sap-integrity.ts sign`을 실행하고 같은 방법으로 확인합니다.
 4. **[AGENTS.md](AGENTS.md) 탐색** - 에이전트 역할 및 워크플로우 이해
 5. **`/triage` 실행** - 자동 에이전트 디스패치로 첫 번째 태스크 시작
 
