@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-07",
+  "created": "2026-10-10",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -32,7 +32,7 @@
       "status": "active"
     },
     "audit.ts": {
-      "version": "2.51.0",
+      "version": "2.52.0",
       "status": "active"
     },
     "bootstrap-stages.ts": {
@@ -76,7 +76,7 @@
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.23.0",
+      "version": "1.25.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -104,7 +104,7 @@
       "status": "active"
     },
     "generate-skill-graph.ts": {
-      "version": "1.15.0",
+      "version": "2.0.0",
       "status": "active"
     },
     "generate-version-manifest.ts": {
@@ -112,7 +112,7 @@
       "status": "active"
     },
     "graph-delta-log.ts": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "active"
     },
     "helpers/golden-reference-loader.ts": {
@@ -288,7 +288,23 @@
       "status": "active"
     },
     "lib/platforms.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
+    "lib/skill-graph-compat.ts": {
       "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/package-merge.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/skills-used.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/version-bump.ts": {
+      "version": "1.0.0",
       "status": "active"
     },
     "lifecycle-sync-audit.ts": {
@@ -316,7 +332,7 @@
       "status": "active"
     },
     "readme-lifecycle-audit.ts": {
-      "version": "1.0.4",
+      "version": "1.1.0",
       "status": "active"
     },
     "render-pdf-deck.ts": {
@@ -336,11 +352,11 @@
       "status": "active"
     },
     "skill-lifecycle-audit.ts": {
-      "version": "1.6.0",
+      "version": "1.7.1",
       "status": "active"
     },
     "skill-session-review.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "sync-md.ts": {
@@ -488,7 +504,7 @@
       "status": "active"
     },
     "validate-md-language.ts": {
-      "version": "1.12.0",
+      "version": "1.15.0",
       "status": "active"
     },
     "validate-model-registry.ts": {
@@ -520,7 +536,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.51.0",
+      "version": "1.54.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
@@ -532,7 +548,7 @@
       "status": "active"
     },
     "verify-skill-graph.ts": {
-      "version": "1.6.0",
+      "version": "2.0.0",
       "status": "active"
     },
     "verify-memory.ts": {
@@ -556,7 +572,7 @@
       "status": "active"
     },
     "verify-skills.ts": {
-      "version": "1.5.1",
+      "version": "1.5.2",
       "status": "active"
     },
     "validate-pm-extends.ts": {

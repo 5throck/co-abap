@@ -9,6 +9,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **[2026-10-11]**: chore: upgrade template to 0.16.0 on top of current main (replaces closed #197, which was cut from a stale clone); local SAP safety, parity and LOCAL-PATCH changes preserved; skill graph and version manifest regenerated (#199).
+
 ### Fixed
 - **[2026-10-11]**: docs: integrity setup instructions say `init` alone creates the key and signs, and that the confirmation is the literal word `sign` (users typed their user name and aborted); README/README_ko, setup guide and SECURITY.md aligned (#198).
 

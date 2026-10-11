@@ -15,7 +15,7 @@ description: >
   QA escalation from auditor (audit.ts ERROR >= 3 or security Critical finding).
 owner: pm
 version: 1.3.2
-last_reviewed: 2026-09-14
+last_reviewed: 2026-10-08
 prerequisites: []
 metadata:
   type: process
@@ -26,6 +26,7 @@ metadata:
     - quality review
   related_skills:
     - project-resync
+    - upgrade-project
     - meeting-facilitation
 ---
 
@@ -82,7 +83,7 @@ bun scripts/propagate-to-templates.ts --check-drift  # L1↔L2 drift (tolerate g
 Record per script: PASS/FAIL/WARN counts. In variant projects, run the project's own
 `bun scripts/audit.ts` instead of the root battery.
 
-If the applicable baseline already shows ≥3 ERRORs, triage those FIRST (T-03) — agents may still be
+If the baseline already shows ≥3 ERRORs, triage those FIRST (T-03) — agents may still be
 dispatched for non-machine-detectable classes, but don't let agents re-discover what the
 scripts just printed.
 
@@ -112,7 +113,7 @@ base-map is an enhancer, never a dependency.
 
 | Mode | Agents | When |
 |------|--------|------|
-| `full` | 7 domains, parallel (paired per Step 3) | Default for T-01 user request, T-02 structural change, T-03 QA escalation |
+| `full` | 4 paired domain slots (Step 3) | Default for T-01 user request, T-02 structural change, T-03 QA escalation |
 | `scoped <domains>` | Only the named domains | Post-incident review where the blast radius is known (2026-09-07 lesson: a localized registry-tag mismatch did not need 7 agents) |
 | `baseline-only` | Zero — machine battery + PM lightweight check (§7 universal behaviors spot-check) | Weekly health pulse; quick pre-release sanity; when agent budget is constrained |
 
@@ -162,7 +163,7 @@ files and cross-validate; mcp__base-map__review_code on critical scripts.]
 **Fallbacks**:
 - Background dispatch blocked by concurrency limits → run slots sequentially
   (foreground), or merge two slots into one prompt.
-- On Antigravity/Gemini CLI: `/meeting "project review" --agents [list] --rounds 2 --dialogue`.
+- On Antigravity/Gemini CLI: the meeting-facilitation skill with topic "project review" and options `--agents [list] --rounds 2 --dialogue` (the legacy `/meeting` slash command is retired).
 - No Agent tool at all: PM role-plays each slot sequentially using the same prompts.
 
 ## Step 4 — Collect, Classify, Persist
@@ -260,4 +261,6 @@ ticket was not landed.
 ## Related Skills
 
 - **project-resync**: fleet-level close-out after fixes land (commit/PR pipeline)
+- **upgrade-project**: delivers template updates to the project
+- Loop: project-review (diagnose) → project-resync (fleet sync/backport) → upgrade-project (deliver) → project-review baseline-only (verify).
 - **meeting-facilitation**: Antigravity/Gemini dispatch path for Step 3
