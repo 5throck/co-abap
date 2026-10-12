@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-12T22:07:09.042Z
+**Generated**: 2026-10-12T22:21:31.502Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -115,7 +115,7 @@
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.51.0 | scripts/audit.ts | bun |
+| audit.ts | 2.52.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
@@ -140,8 +140,8 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.23.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.test.ts | 1.5.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
+| dev-sync.ts | 1.25.0 | scripts/dev-sync.ts | bun |
+| dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
@@ -153,9 +153,9 @@
 | gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
 | generate-raci.ts | 1.2.0 | scripts/generate-raci.ts | js-yaml |
-| generate-skill-graph.ts | 1.15.0 | scripts/generate-skill-graph.ts | js-yaml |
+| generate-skill-graph.ts | 2.0.0 | scripts/generate-skill-graph.ts | js-yaml |
 | generate-version-manifest.ts | 1.10.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
-| graph-delta-log.ts | 1.0.0 | scripts/graph-delta-log.ts | N/A |
+| graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
@@ -173,7 +173,7 @@
 | readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
 | regenerate-agents-md.ts | 1.3.0 | scripts/regenerate-agents-md.ts | fs, path |
 | render-commands.test.ts | 1.0.0 | scripts/tests/render-commands.test.ts | bun:test |
-| render-commands.ts | 1.0.0 | scripts/render-commands.ts | N/A |
+| render-commands.ts | 1.0.1 | scripts/render-commands.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
@@ -184,15 +184,15 @@
 | sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
 | sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
 | sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | N/A |
-| sap-mcp-proxy.test.ts | 2.1.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
+| sap-mcp-proxy.test.ts | 2.1.1 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
 | sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | N/A |
 | sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
-| skill-lifecycle-audit.ts | 1.6.0 | scripts/skill-lifecycle-audit.ts | N/A |
-| skill-session-review.ts | 1.1.0 | scripts/skill-session-review.ts | bun |
+| skill-lifecycle-audit.ts | 1.7.1 | scripts/skill-lifecycle-audit.ts | N/A |
+| skill-session-review.ts | 1.2.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
@@ -209,7 +209,7 @@
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test |
 | validate-docs-links.ts | 1.5.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
-| validate-md-language.ts | 1.14.0 | scripts/validate-md-language.ts | fs |
+| validate-md-language.ts | 1.15.0 | scripts/validate-md-language.ts | fs |
 | validate-model-registry.ts | 1.4.1 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
@@ -220,15 +220,15 @@
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.1 | scripts/validate-skills.ts | N/A |
 | validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.51.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.54.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
 | verify-platform-lifecycle.ts | 1.6.0 | scripts/verify-platform-lifecycle.ts | N/A |
 | verify-readme-sync.ts | 1.4.1 | scripts/verify-readme-sync.ts | bun, fs, path |
 | verify-scripts.ts | 1.12.0 | scripts/verify-scripts.ts | fs, path |
-| verify-skill-graph.ts | 1.7.0 | scripts/verify-skill-graph.ts | N/A |
-| verify-skills.ts | 1.5.1 | scripts/verify-skills.ts | N/A |
+| verify-skill-graph.ts | 2.0.0 | scripts/verify-skill-graph.ts | N/A |
+| verify-skills.ts | 1.5.2 | scripts/verify-skills.ts | N/A |
 | vsp-audit.ts | 1.2.0 | scripts/co-abap/vsp-audit.ts | N/A |
 | vsp-publish.ts | 1.1.0 | scripts/co-abap/vsp-publish.ts | bun |
 | vsp-task.ts | 1.0.1 | scripts/co-abap/vsp-task.ts | N/A |
@@ -241,14 +241,14 @@
 |------|------|----------|-------------------|
 | abap-dev | .claude/commands/abap-dev.md | claude | N/A |
 | celebrate | .claude/commands/celebrate.md | claude | N/A |
-| changelog | .claude/commands/changelog.md | all | N/A |
-| commit-push-pr | .claude/commands/commit-push-pr.md | all | N/A |
-| gateguard | .claude/commands/gateguard.md | all | N/A |
+| changelog | .claude/commands/changelog.md | claude | N/A |
+| commit-push-pr | .claude/commands/commit-push-pr.md | claude | N/A |
+| gateguard | .claude/commands/gateguard.md | claude | N/A |
 | meeting | .claude/commands/meeting.md | claude | N/A |
-| memlog | .claude/commands/memlog.md | all | N/A |
-| new-task | .claude/commands/new-task.md | all | N/A |
+| memlog | .claude/commands/memlog.md | claude | N/A |
+| new-task | .claude/commands/new-task.md | claude | N/A |
 | post-write | .claude/commands/post-write.md | claude | N/A |
-| project-review | .claude/commands/project-review.md | all | N/A |
+| project-review | .claude/commands/project-review.md | claude | N/A |
 | sap-co | .claude/commands/sap-co.md | claude | N/A |
 | sap-fi | .claude/commands/sap-fi.md | claude | N/A |
 | sap-le | .claude/commands/sap-le.md | claude | N/A |
@@ -256,7 +256,7 @@
 | sap-pp | .claude/commands/sap-pp.md | claude | N/A |
 | sap-sd | .claude/commands/sap-sd.md | claude | N/A |
 | security-check | .claude/commands/security-check.md | claude | N/A |
-| sync | .claude/commands/sync.md | all | N/A |
+| sync | .claude/commands/sync.md | claude | N/A |
 | transport | .claude/commands/transport.md | claude | N/A |
 | triage | .claude/commands/triage.md | claude | N/A |
 
@@ -266,8 +266,8 @@
 
 **Checked**: Claude (.claude/), Gemini (.gemini/), Antigravity (.agents/), Codex (.codex/ prompts mapping)
 
-- **Commands with parity (gemini mirror)**: 7 / 20
-- **Commands with codex prompts mapping**: 7 / 20
+- **Commands with parity (gemini mirror)**: 0 / 20
+- **Commands with codex prompts mapping**: 0 / 20
 - **Skills in all four mirrors**: 0 / 49
 - **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
 
