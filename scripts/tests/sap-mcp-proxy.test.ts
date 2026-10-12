@@ -1,6 +1,6 @@
 // @version 2.1.1
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { evaluate } from "../hooks/sap-action-gate.ts";
@@ -134,7 +134,10 @@ describe("environment and location independence", () => {
     try {
       const { msgs } = await runProxy(["--root", root], [rpc(1, "initialize", { clientInfo: { name: "t" } })], { PATH: "/usr/bin:/bin", HOME: home.home }, other);
       const se = msgs[0].result.stubEnv;
-      expect(se.cwd).toBe(root.replace(/^\/private/, ""));
+      // process.cwd() reports the resolved physical path — on macOS tmpdir() hands out
+      // /var/folders/... while the real path is /private/var/folders/..., so compare
+      // against the resolved root instead of string-stripping a leading /private.
+      expect(se.cwd).toBe(realpathSync(root));
       expect(se.SAP_URL).toBe("https://dummy.example");
       expect(se.SAP_USER).toBe("u");
       expect(se.SAP_MODE).toBe("hyperfocused");

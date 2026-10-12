@@ -27,12 +27,14 @@ Versions follow [Semantic Versioning](https://semver.org/).
 - **[2026-10-11]**: docs: integrity setup instructions say `init` alone creates the key and signs, and that the confirmation is the literal word `sign` (users typed their user name and aborted); README/README_ko, setup guide and SECURITY.md aligned (#198).
 
 ### Changed
+- **[2026-10-13]**: chore(memory): record the 2026-10-11 template-upgrade session log (`memory/2026-10-11.md` with its `MEMORY.md` index row). The other leftover upgrade-delivery files (delivered scripts, SCRIPTS.md registry rows, Gemini `.md` command copies) were dropped from this sync — already present on main in their current form (#203); `scripts/hooks/pre-push.ts` realigned with main's local-patch state.
 - **[2026-10-10]**: docs: ADR-0003..0007 (CDS-first data access, semantic-layer reference-only, cross-platform parity, SAP approval security model, parallel dispatch grants) with an ADR index; parity and semantic-layer designs status-updated; README/README_ko, setup guide, dispatch and security docs cover the 8 platforms, first-time integrity setup, approval flow and pre-dispatch grants; skill graph regenerated.
 
 ### Security
 - **[2026-10-10]**: security(sap): approvals and dispatch grants HMAC-signed with a key in the user config dir and stored outside the repo; signed integrity manifest (`scripts/sap-integrity.ts`; proxy drops to R0 on mismatch; covers bunfig/package.json and bun preloads); HMAC evidence and hash-chained audit; strict JSON-RPC allowlist; `.env` can only narrow safe defaults; `sap-approve` requires /dev/tty plus id-prefix confirmation; parallel dispatch gets read/write rows, one human pre-dispatch grant (scope-bound, out-of-scope denied), child env allowlist, staged SIGTERM/grace/SIGKILL shutdown and per-row worktrees; deny rules for all 8 platforms rendered from `config/platforms/protected-paths.json` and checked by `validate-platform-parity.ts`. Residual same-UID risk documented in SECURITY.md (#194).
 
 ### Fixed
+- **[2026-10-13]**: fix(tests): `scripts/tests/sap-mcp-proxy.test.ts` compares the proxy child's cwd against `realpathSync(root)` instead of string-stripping a leading `/private` — on macOS `tmpdir()` hands out `/var/folders/...` while `process.cwd()` reports the resolved `/private/var/folders/...`, so the location-independence test failed on clean main on macOS (CI's linux runners unaffected). (#208)
 - **[2026-10-10]**: fix(hooks): `scripts/hooks/pre-commit.ts` re-renders and stages platform command copies after stamping `config/commands/*.md` Last Updated dates; re-rendered stale `.gemini/commands/triage.toml` (#194 CI).
 
 ### Added

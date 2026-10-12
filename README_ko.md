@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 31c6da7c7360e4a93ebc72ae3caa994d6c754a1a0fccc216143d0c8464801e42
+translated_from_hash: 74e8d306e81c9149b917343049f9ad34545878a03bbb624e804b21696c1ce3c6
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -244,4 +244,4 @@ ATC(`SAP(action=test, type=atc)`, Priority-1 발견 0건).
 
 ---
 
-*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-09-26*
+*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-10-13*

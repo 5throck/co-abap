@@ -146,4 +146,4 @@ The full 8-platform matrix is in [tooling-matrix.md](tooling-matrix.md). Antigra
 
 ---
 
-*Last Updated: 2026-10-12*
+*Last Updated: 2026-10-13*
