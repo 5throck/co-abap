@@ -96,7 +96,7 @@
       "name": "devops-admin",
       "scope": "root",
       "capability": "devops-admin",
-      "content_hash": "73ae1e8ddc3b24b2",
+      "content_hash": "5d3d08b726acca09",
       "version": "1.0.1",
       "mirrors": [
         "agents/devops-admin.md"
@@ -304,7 +304,7 @@
       "name": "test-runner",
       "scope": "root",
       "capability": "test-runner",
-      "content_hash": "801f30d5b655235e",
+      "content_hash": "5cd6dfc9169e4600",
       "version": "1.0.1",
       "mirrors": [
         "agents/test-runner.md"
@@ -457,7 +457,7 @@
       "name": "abap-code-review",
       "scope": "root",
       "capability": "abap-code-review",
-      "content_hash": "8b656f27c4548ba5",
+      "content_hash": "c7b2b5ccb5239df0",
       "version": "1.0.1",
       "mirrors": [
         "skills/abap-code-review/SKILL.md",
@@ -1232,8 +1232,8 @@
         ".hermes/skills/sync/SKILL.md"
       ],
       "usage": {
-        "sessions": 1,
-        "last_used": "2026-10-10"
+        "sessions": 2,
+        "last_used": "2026-10-12"
       }
     },
     {

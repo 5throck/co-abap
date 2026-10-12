@@ -1,6 +1,6 @@
 ---
 name: abap-code-review
-description: Use when reviewing ABAP source for Clean ABAP conformance before object activation, transport release, or after importing foreign code. Covers the three ABAP-specific dimensions that general-purpose review skills do not - naming conventions, pretty-printer formatting, and anti-pattern compliance - against docs/clean-abap-checklist.md. Trigger on "review the ABAP code", "Clean ABAP check", "naming convention review", "pretty printer check", "anti-pattern scan".
+description: Use when reviewing ABAP source for Clean ABAP conformance before object activation, transport release, or after importing foreign code. Covers the three ABAP-specific dimensions that general-purpose review skills do not - naming conventions, pretty-printer formatting, and anti-pattern compliance - against docs/standards/clean-abap-checklist.md. Trigger on "review the ABAP code", "Clean ABAP check", "naming convention review", "pretty printer check", "anti-pattern scan".
 version: 1.0.1
 last_reviewed: 2026-10-10
 status: active
@@ -27,12 +27,12 @@ metadata:
 
 ## Context
 
-co-develop's general-purpose `code-review` skill covers language-agnostic review practice - it does not cover ABAP-specific compliance. This skill operationalizes the [Clean ABAP Conformance Checklist](../../docs/clean-abap-checklist.md) (`docs/clean-abap-checklist.md`) as a structured review pass over ABAP source. The checklist is the review standard: this skill walks its rule families and cites section numbers - it does not restate or duplicate the rules themselves.
+co-develop's general-purpose `code-review` skill covers language-agnostic review practice - it does not cover ABAP-specific compliance. This skill operationalizes the [Clean ABAP Conformance Checklist](../../docs/standards/clean-abap-checklist.md) (`docs/standards/clean-abap-checklist.md`) as a structured review pass over ABAP source. The checklist is the review standard: this skill walks its rule families and cites section numbers - it does not restate or duplicate the rules themselves.
 
 ## When to Use
 
 - **Before object activation** - author self-review by `code-writer` immediately after `WriteSource`/`EditSource` (`SAP(action="edit", ...)`), ahead of the post-write chain (SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck)
-- **Before the transport release gate** - verification by `test-runner` during the Phase 4 QA pass, and pre-release confirmation by `devops-admin` alongside `docs/transport-release-checklist.md`
+- **Before the transport release gate** - verification by `test-runner` during the Phase 4 QA pass, and pre-release confirmation by `devops-admin` alongside `docs/standards/transport-release-checklist.md`
 - **After receiving foreign code** - legacy imports, repair imports, or code copied from other systems that never passed this variant's gates
 - Not for non-ABAP artifacts - general-purpose code review stays with the co-develop `code-review` skill
 
@@ -48,7 +48,7 @@ Walk exactly three dimensions. Each cites the checklist sections that define it.
 
 ## Execution Steps
 
-1. **Load the review standard** - read `docs/clean-abap-checklist.md` before reviewing. Review against the checklist as written, never from memory.
+1. **Load the review standard** - read `docs/standards/clean-abap-checklist.md` before reviewing. Review against the checklist as written, never from memory.
 2. **Walk dimension (a) Naming** - evaluate the object against every rule in checklist §1, recording findings with the section number.
 3. **Walk dimension (b) Pretty-printer & formatting** - evaluate against checklist §10, including whether the ABAP Formatter conventions were applied before activation.
 4. **Walk dimension (c) Anti-patterns** - sweep checklist §2 (obsolete language elements), §4 (tables & strings), §6 (control flow), §7 (classes & methods), and §8 (error handling) for anti-pattern matches.
@@ -71,7 +71,7 @@ Severity values: `blocker` / `should` / `note`. End with a verdict line: `Review
 
 ## Relationship to ATC
 
-This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (`SAP(action="test", params={"type":"atc"})`; Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/clean-abap-checklist.md`, so:
+This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (`SAP(action="test", params={"type":"atc"})`; Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/standards/clean-abap-checklist.md`, so:
 
 - **Agreement expected** - a blocker this skill finds that maps to a rule-pack check should also surface as a Priority-1 ATC finding
 - **Disagreement means investigate** - ATC passing while this skill fails usually indicates a prose-only rule (naming clarity, comment quality, abstraction level) that ATC cannot check; this skill failing while ATC passes on a mapped check suggests the wrong change-type selection or a suppressed finding
@@ -80,7 +80,7 @@ This skill is the agent-side review pass over source before activation or releas
 
 - **Performance tuning** - use the `performance-tuning` and `dump-monitor` skills
 - **Functional or requirements review** - acceptance-criteria verification belongs to `test-runner` QA reports and the module analysts
-- **Transport logistics** - request creation, object assignment, and release mechanics belong to `devops-admin` with `docs/transport-release-checklist.md`
+- **Transport logistics** - request creation, object assignment, and release mechanics belong to `devops-admin` with `docs/standards/transport-release-checklist.md`
 
 ## Related Skills
 

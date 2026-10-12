@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-12](2026-10-12.md) | --help |
 | [2026-10-11](2026-10-11.md) | update |
 | [2026-10-10](2026-10-10.md) | feat: enforce CDS-first data access in ABAP coding rules |
 | [2026-10-11](2026-10-11.md) | chore: upgrade template to 0.16.0 |

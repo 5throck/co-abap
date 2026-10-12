@@ -10,7 +10,7 @@
 //     agents/, skills/, docs/ paths resolve correctly now
 //   - ASSETS rebuilt against the actual template layout: dropped entries that do not
 //     exist (.claude/commands, docs/prd-template.md, docs/task-template.md,
-//     docs/plugin-setup.md, scripts/sync-md.ts, .mcp.json.sample) and moved the vsp
+//     docs/platform-setup/plugin-setup.md, scripts/sync-md.ts, .mcp.json.sample) and moved the vsp
 //     scripts to their real scripts/co-abap/ paths; added atc-rulepack.json
 //     (vsp-audit.ts's data dependency)
 //   - a missing required source asset is an ERROR that aborts the run, not a warn-skip

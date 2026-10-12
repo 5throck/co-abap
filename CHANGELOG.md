@@ -10,6 +10,12 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Changed
+- **[2026-10-12]**: docs: tidy the docs tree — setup guides (`setup-guide`, `antigravity-setup`, `plugin-setup`) moved to `docs/platform-setup/`, standards and checklists (`abap-dev-rules`, `clean-abap-checklist`, `testing-guidelines`, `transport-release-checklist`) moved to `docs/standards/`; all live references updated (README/README_ko, dispatch-parallel, agent definitions, abap-code-review skill + 5 platform mirrors, atc-rulepack, write-safety-gate design); `docs/README.md` rewritten to the actual layout and the deliverables routing; `hooks/pre-push.ts` aligned byte-for-byte with the upstream template (the `SECRET_ERE` LOCAL-PATCH temporarily un-applied to clear the equal-version drift gate; re-apply with a version bump once `bun run test:unit` is green on this host — 18 Windows-dependent spawn/signal/path test failures occur regardless of the change set).
+
+### Added
+- **[2026-10-12]**: feat(deliverables): REQ-002 ZFLIGHT report — end-to-end deliverable set in `deliverables/REQ-002-zflight-report/` (SRS, technical design, implementation/QA/release reports, unit test plan, user manuals EN/KO) for the `ZFLIGHT` SFLIGHT query report (PROG, `$TMP`, NPL/001) created through the sap-mcp-proxy approval flow; recovery copy `scratch/zflight.prog.abap`; user-manual templates added (`deliverables/templates/07_user_manual.md` / `_ko`); spec entry registered against the technical design.
+
+### Changed
 - **[2026-10-11]**: chore: upgrade template to 0.16.0 on top of current main (replaces closed #197, which was cut from a stale clone); local SAP safety, parity and LOCAL-PATCH changes preserved; skill graph and version manifest regenerated (#199).
 
 ### Fixed

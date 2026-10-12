@@ -36,7 +36,7 @@
       ]
     },
     "transport-release": {
-      "description": "Release gate (devops-admin): the full composition before ReleaseTransport - see docs/transport-release-checklist.md",
+      "description": "Release gate (devops-admin): the full composition before ReleaseTransport - see docs/standards/transport-release-checklist.md",
       "checks": [
         { "id": "syntax-all-objects", "tool": "SyntaxCheck", "atc_variant": "syntax", "severity_gate": "blocker", "owner": "code-writer", "source": "clean-abap-checklist.md section 12: Syntax check passes" },
         { "id": "obsolete-language-elements", "tool": "RunATCCheck", "atc_variant": "obsolete-statements", "severity_gate": "blocker", "owner": "devops-admin", "source": "clean-abap-checklist.md section 12: Obsolete language elements avoided" },

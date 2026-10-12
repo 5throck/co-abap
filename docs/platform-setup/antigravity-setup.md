@@ -1,6 +1,6 @@
 # Antigravity MCP Setup Guide
 
-The Antigravity IDE reads the project-level `.agents/mcp.json`, which launches the `abap` server through `scripts/sap-mcp-proxy.ts` (to be confirmed on-device: item V9 in the [parity design](designs/2026-10-10-cross-platform-parity-design.md)). The Antigravity CLI (`agy`) config path and MCP format are not yet verified (item V8); until then, use the IDE or the fallback dispatcher `bun scripts/dispatch-parallel.ts --platform antigravity-cli --plan <file>`.
+The Antigravity IDE reads the project-level `.agents/mcp.json`, which launches the `abap` server through `scripts/sap-mcp-proxy.ts` (to be confirmed on-device: item V9 in the [parity design](../designs/2026-10-10-cross-platform-parity-design.md)). The Antigravity CLI (`agy`) config path and MCP format are not yet verified (item V8); until then, use the IDE or the fallback dispatcher `bun scripts/dispatch-parallel.ts --platform antigravity-cli --plan <file>`.
 
 > **Important**:
 > - SAP safety is enforced by the proxy, not by hooks. `ask` calls return `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` in their own terminal (typing the first 6 characters of the id on `/dev/tty`), then the agent repeats the identical call. Agents never run `sap-approve.ts`.
@@ -146,4 +146,4 @@ The full 8-platform matrix is in [tooling-matrix.md](tooling-matrix.md). Antigra
 
 ---
 
-*Last Updated: 2026-10-10*
+*Last Updated: 2026-10-12*
