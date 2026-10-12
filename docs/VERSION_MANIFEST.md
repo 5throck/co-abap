@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-12T12:37:55.762Z
+**Generated**: 2026-10-12T13:14:00.382Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -21,7 +21,7 @@
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | inherit | 2026-10-10 |
 | co-analyst | agents/co-analyst.md | medium | inherit | 2026-10-10 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-10-10 |
+| code-writer | agents/code-writer.md | low | inherit | 2026-10-12 |
 | dba | agents/dba.md | medium | inherit | 2026-10-10 |
 | devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-12 |
 | fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-10-10 |

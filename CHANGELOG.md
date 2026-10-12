@@ -10,6 +10,9 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **[2026-10-12]**: chore(variant): register the shipped country profiles in `variant.json` — `country_config.supported` = `["KR", "US", "JP"]` (default stays `null` per ADR-0091 R2; the active market is recorded in `docs/countries/ACTIVE.md`). Mirrors the template-side fix required by the Variant Readiness Gate (`country-config-supported`) once `docs/countries/` ships profiles; prevents the same VRG error at the next template reconciliation or promotion.
+
+### Changed
 - **[2026-10-12]**: feat: SAP globalization (I18N) runtime guidance — new standard `docs/standards/sap-globalization-checklist.md` (7 pass/fail rule families: time zones/DST, number/date/currency formatting, units of measure, calendars, texts, output/paper/forms, addresses); wired into the delivery pipeline (code-writer globalization rules + Globalization Check report line @1.1.2, abap-dev `sap:globalization` section + execution step @1.3.0 across 6 platform mirrors, QA report template gate row + release checklist item); country profiles instantiated per `docs/country-profiles.md` (`docs/countries/KR.md`, `US.md`, `JP.md`, `ACTIVE.md` — JP adds era dates, full-width characters, name order, April–March fiscal year); design doc `docs/designs/2026-10-12-sap-globalization-guidance-design.md` registered in the spec registry.
 
 ### Changed
