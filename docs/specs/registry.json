@@ -92,6 +92,15 @@
       "last_updated": "2026-10-07"
     },
     {
+      "id": "2026-10-12-sap-globalization-guidance-design",
+      "title": "sap globalization guidance design",
+      "file": "docs/designs/2026-10-12-sap-globalization-guidance-design.md",
+      "status": "implemented",
+      "source": "manual",
+      "created": "2026-10-12",
+      "last_updated": "2026-10-12"
+    },
+    {
       "id": "2026-10-12-zflight-report-design",
       "title": "ZFLIGHT report technical design (REQ-002)",
       "file": "deliverables/REQ-002-zflight-report/02_technical_design.md",

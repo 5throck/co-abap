@@ -70,8 +70,8 @@
       "name": "code-writer",
       "scope": "root",
       "capability": "code-writer",
-      "content_hash": "b406d11e25c964e5",
-      "version": "1.1.1",
+      "content_hash": "29cbb58c5d23f3c7",
+      "version": "1.1.2",
       "mirrors": [
         "agents/code-writer.md"
       ]
@@ -475,8 +475,8 @@
       "name": "abap-dev",
       "scope": "root",
       "capability": "abap-dev",
-      "content_hash": "7e00e9e630f76e70",
-      "version": "1.2.2",
+      "content_hash": "63d69a8fcd084ede",
+      "version": "1.3.0",
       "mirrors": [
         "skills/abap-dev/SKILL.md",
         ".claude/skills/abap-dev/SKILL.md",

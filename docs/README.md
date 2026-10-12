@@ -27,7 +27,8 @@ built from [`deliverables/templates/`](../deliverables/templates/).
 | `designs/` | Design-gate design documents (`YYYY-MM-DD-<slug>-design.md`); registered in `specs/` |
 | `specs/` | Spec registry — `registry.json` is a generated projection of `entries/*.json` (maintained by `scripts/spec-register.ts`, do not hand-splice) |
 | `governance/` | Governance workflow docs (`agents/pm-gateway-workflow.md`, `agents/workflows.md`, `agents/execution-plan-templates.md`) |
-| `standards/` | Development standards: `abap-dev-rules.md`, `clean-abap-checklist.md`, `testing-guidelines.md`, `transport-release-checklist.md`, `llm-interaction-standard.md` |
+| `standards/` | Development standards: `abap-dev-rules.md`, `clean-abap-checklist.md`, `sap-globalization-checklist.md`, `testing-guidelines.md`, `transport-release-checklist.md`, `llm-interaction-standard.md` |
+| `countries/` | Country profiles per `country-profiles.md` (`<ISO-CODE>.md` + `ACTIVE.md` pointer) |
 | `platform-setup/` | Setup guides: `setup-guide.md`, `antigravity-setup.md`, `plugin-setup.md`, `antigravity.md`, `hermes.md` |
 | `lifecycle/` | Lifecycle documents |
 | `decisions/` | Decision records (`DEC-YYYYMMDD-NN.md`) |
