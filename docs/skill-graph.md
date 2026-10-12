@@ -10,7 +10,7 @@
 
 | Skill (scope/name) | Layer | Version | Required-by Agents | Phases | Relates-to | Inputs | Outputs |
 |--------------------|-------|---------|-------------------|--------|------------|--------|---------|
-| `root/abap-code-review` | L3 | 1.0.1 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
+| `root/abap-code-review` | L3 | 1.0.2 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
 | `root/abap-dev` | L3 | 1.2.2 | — | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/accessibility-audit` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/agent-lifecycle-manager` | L3 | 1.3.0 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
