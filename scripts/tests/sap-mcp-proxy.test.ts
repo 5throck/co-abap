@@ -1,4 +1,4 @@
-// @version 2.1.0
+// @version 2.1.1
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -12,6 +12,7 @@ import { verifyIntegrity } from "../lib/sap-action-lib.ts";
 import { osUser, run as approveRun } from "../sap-approve.ts";
 import { secureHome } from "./fixtures/sap-secure-home.ts";
 
+const posixOnly = test.skipIf(process.platform === "win32");
 const REPO = join(import.meta.dir, "..", "..");
 const FIX = join(REPO, "scripts", "hooks", "__fixtures__");
 const PROXY = join(REPO, "scripts", "sap-mcp-proxy.ts");
@@ -125,7 +126,7 @@ describe("environment and location independence", () => {
     expect(out).not.toContain("hunter22"); expect(out).not.toContain("abc123"); expect(out).not.toContain("Ym9iOmh1");
     expect(out).toContain("bob");
   });
-  test("started from another cwd with an empty env: finds <root>/vsp, loads .env, applies safe defaults, vsp cwd = root", async () => {
+  posixOnly("started from another cwd with an empty env: finds <root>/vsp, loads .env, applies safe defaults, vsp cwd = root", async () => {
     writeFileSync(join(root, ".env"), "SAP_URL=https://dummy.example\nSAP_USER=u\n");
     writeFileSync(join(root, "vsp"), `#!/bin/sh\nexec "${process.execPath}" "${STUB}"\n`);
     chmodSync(join(root, "vsp"), 0o755);
@@ -444,7 +445,7 @@ describe("dispatch grants", () => {
 });
 
 describe("graceful shutdown", () => {
-  test("SIGTERM: in-flight call finishes and is audited, new calls rejected, vsp stdin closed", async () => {
+  posixOnly("SIGTERM: in-flight call finishes and is audited, new calls rejected, vsp stdin closed", async () => {
     const proc = Bun.spawn([process.execPath, PROXY, "--root", root, "--", process.execPath, STUB], {
       stdin: "pipe", stdout: "pipe", stderr: "pipe", env: { ...process.env, STUB_LOG: stubLog } as any,
     });

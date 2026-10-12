@@ -1,8 +1,8 @@
 ---
 name: abap-code-review
 description: Use when reviewing ABAP source for Clean ABAP conformance before object activation, transport release, or after importing foreign code. Covers the three ABAP-specific dimensions that general-purpose review skills do not - naming conventions, pretty-printer formatting, and anti-pattern compliance - against docs/standards/clean-abap-checklist.md. Trigger on "review the ABAP code", "Clean ABAP check", "naming convention review", "pretty printer check", "anti-pattern scan".
-version: 1.0.1
-last_reviewed: 2026-10-10
+version: 1.0.2
+last_reviewed: 2026-10-12
 status: active
 scope: co-abap
 owner: code-writer

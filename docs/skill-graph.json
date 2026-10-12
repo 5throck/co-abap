@@ -458,7 +458,7 @@
       "scope": "root",
       "capability": "abap-code-review",
       "content_hash": "c7b2b5ccb5239df0",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "mirrors": [
         "skills/abap-code-review/SKILL.md",
         ".claude/skills/abap-code-review/SKILL.md",

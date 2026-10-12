@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-12T10:44:44.869Z
+**Generated**: 2026-10-12T11:12:57.115Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -48,7 +48,7 @@
 
 | Name | Version | Status | Location | Platform | Triggers | Owner |
 |------|---------|--------|----------|----------|----------|-------|
-| abap-code-review | 1.0.1 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
+| abap-code-review | 1.0.2 | active | skills/abap-code-review/SKILL.md | workspace | abap-code-review, code review, Clean ABAP, naming convention, pretty printer, anti-pattern | code-writer |
 | abap-dev | 1.2.2 | active | skills/abap-dev/SKILL.md | workspace | abap-dev, BAPI, transport, ABAP Unit, performance analysis, impact analysis | code-writer |
 | accessibility-audit | 1.1.0 | active | skills/accessibility-audit/SKILL.md | workspace | accessibility-audit, /accessibility-audit, axe-core audit, wcag accessibility check, wcag 2.1 aa | pm |
 | agent-lifecycle-manager | 1.3.0 | active | skills/agent-lifecycle-manager/SKILL.md | workspace | create agent, new agent, validate agents, agent lifecycle, manage agents, hire agent, fire agent, deprecate agent | pm |
@@ -141,7 +141,7 @@
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
 | dev-sync.ts | 1.25.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.test.ts | 1.5.0 | scripts/tests/dispatch-parallel.test.ts | bun:test |
+| dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
@@ -173,7 +173,7 @@
 | readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
 | regenerate-agents-md.ts | 1.3.0 | scripts/regenerate-agents-md.ts | fs, path |
 | render-commands.test.ts | 1.0.0 | scripts/tests/render-commands.test.ts | bun:test |
-| render-commands.ts | 1.0.0 | scripts/render-commands.ts | N/A |
+| render-commands.ts | 1.0.1 | scripts/render-commands.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
@@ -184,7 +184,7 @@
 | sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
 | sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
 | sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | N/A |
-| sap-mcp-proxy.test.ts | 2.1.0 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
+| sap-mcp-proxy.test.ts | 2.1.1 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
 | sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | N/A |
 | sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | N/A |
 | scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
