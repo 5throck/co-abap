@@ -20,9 +20,9 @@ examples:
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-10-10"
+  last_updated: "2026-10-12"
   governance: docs/lifecycle/agents/devops-admin.md
-version: "1.0.1"
+version: "1.0.2"
 ---
 
 ## Role
