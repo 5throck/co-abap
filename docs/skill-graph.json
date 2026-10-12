@@ -96,8 +96,8 @@
       "name": "devops-admin",
       "scope": "root",
       "capability": "devops-admin",
-      "content_hash": "5d3d08b726acca09",
-      "version": "1.0.1",
+      "content_hash": "6202fb2d5b7ef102",
+      "version": "1.0.2",
       "mirrors": [
         "agents/devops-admin.md"
       ]
@@ -304,8 +304,8 @@
       "name": "test-runner",
       "scope": "root",
       "capability": "test-runner",
-      "content_hash": "5cd6dfc9169e4600",
-      "version": "1.0.1",
+      "content_hash": "fb7d679f2cd94cc6",
+      "version": "1.0.2",
       "mirrors": [
         "agents/test-runner.md"
       ]
