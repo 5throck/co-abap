@@ -1,4 +1,4 @@
-/** @version 1.5.0 */
+/** @version 1.5.1 */
 import { describe, expect, test, beforeAll, afterAll } from 'bun:test';
 import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -7,6 +7,7 @@ import { secureHome } from './fixtures/sap-secure-home.ts';
 import { join } from 'node:path';
 import { proxyArgv, GrantRequiredError, validateWriteRows, PLAN_BEGIN, killCommand, buildAdapter, buildChildEnv, resolveOutDir, buildPrompt, fanOut, parsePlan, resolveModel, runPlatformMode } from '../dispatch-parallel.ts';
 
+const posixOnly = test.skipIf(process.platform === 'win32');
 const REPO = join(import.meta.dir, '..', '..');
 let tmp: string, root: string, bin: string, oldPath: string | undefined;
 
@@ -83,7 +84,7 @@ describe('prompt + models', () => {
 });
 
 describe('fan-out with stub CLIs', () => {
-  test('codex rows start in parallel and results are collected', async () => {
+  posixOnly('codex rows start in parallel and results are collected', async () => {
     const log = join(tmp, 'codex.log'); writeFileSync(log, ''); setLog(log);
     const { results, runDir } = await fanOut(tasks, 'codex', { root, outDir: join(root, 'memory', 'dispatch'), runId: 'r1', maxParallel: 3 });
     expect(results.map(r => r.status)).toEqual(['completed', 'completed', 'completed']);
@@ -97,12 +98,12 @@ describe('fan-out with stub CLIs', () => {
     expect(summary.platform).toBe('codex');
     expect(summary.results).toHaveLength(3);
   });
-  test('max-parallel 1 serializes', async () => {
+  posixOnly('max-parallel 1 serializes', async () => {
     const log = join(tmp, 'ser.log'); writeFileSync(log, ''); setLog(log);
     await fanOut(tasks.slice(0, 2), 'gemini', { root, outDir: join(root, 'memory', 'dispatch'), runId: 'r2', maxParallel: 1 });
     expect(readFileSync(log, 'utf-8').trim().split('\n').map(l => l.split(' ')[0])).toEqual(['start', 'end', 'start', 'end']);
   });
-  test('gemini, claude, hermes get identical prompt text', async () => {
+  posixOnly('gemini, claude, hermes get identical prompt text', async () => {
     setLog(join(tmp, 'x.log'));
     const expected = buildPrompt(tasks[0], root);
     for (const plat of ['gemini', 'claude', 'hermes'] as const) {
@@ -111,7 +112,7 @@ describe('fan-out with stub CLIs', () => {
       expect(readFileSync(results[0].file, 'utf-8')).toContain(expected.trimEnd());
     }
   });
-  test('timeout and failure isolation', async () => {
+  posixOnly('timeout and failure isolation', async () => {
     const slowBin = join(tmp, 'bin2'); mkdirSync(slowBin);
     writeFileSync(join(slowBin, 'codex'), '#!/bin/sh\nexec sleep 5\n'); chmodSync(join(slowBin, 'codex'), 0o755);
     writeFileSync(join(slowBin, 'gemini'), '#!/bin/sh\necho boom >&2; exit 3\n'); chmodSync(join(slowBin, 'gemini'), 0o755);
@@ -135,7 +136,7 @@ describe('hardening', () => {
     expect(env).toEqual({ PATH: '/b', HOME: '/h', OPENAI_API_KEY: 'k', SAP_PROXY_MAX_CLASS: 'R0', SAP_DISPATCH_CHILD: '1', SAP_DISPATCH_MODE: 'read' });
     expect(buildChildEnv('gemini', { GOOGLE_CLOUD_PROJECT: 'p', GEMINI_API_KEY: 'g' })).toMatchObject({ GOOGLE_CLOUD_PROJECT: 'p', GEMINI_API_KEY: 'g' });
   });
-  test('spawned stub does not see SAP_PASSWORD but sees R0', async () => {
+  posixOnly('spawned stub does not see SAP_PASSWORD but sees R0', async () => {
     stub('codex', 'cat >/dev/null; OUT=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && OUT="$2"; shift; done; echo "pw=[$SAP_PASSWORD] max=[$SAP_PROXY_MAX_CLASS]" > "$OUT"');
     process.env.SAP_PASSWORD = 'secret';
     try {
@@ -157,7 +158,7 @@ describe('hardening', () => {
     const plan = join(tmp, 'hplan.json'); writeFileSync(plan, JSON.stringify([{ role: 'architect', task: 'x' }]));
     expect(await runPlatformMode(['--platform', 'hermes', '--plan', plan], root)).toBe(1);
   });
-  test('timeout kills the whole process group', async () => {
+  posixOnly('timeout kills the whole process group', async () => {
     const pidFile = join(tmp, 'grandchild.pid');
     stub('codex', `sleep 30 & echo $! > "${pidFile}"; wait`);
     const r = await fanOut([tasks[0]], 'codex', { root, runId: 'pg1', timeoutMs: 700 });
@@ -171,7 +172,7 @@ describe('hardening', () => {
 });
 
 describe('staged shutdown', () => {
-  test('graceful exit within grace when child traps SIGTERM', async () => {
+  posixOnly('graceful exit within grace when child traps SIGTERM', async () => {
     stub('codex', `trap 'exit 0' TERM; sleep 30 & wait`);
     const r = await fanOut([tasks[0]], 'codex', { root, runId: 'sg1', timeoutMs: 400, killGraceMs: 3000 });
     expect(r.results[0].status).toBe('timeout');
@@ -186,7 +187,7 @@ describe('staged shutdown', () => {
     expect(r.results[0].cleanup).toBe('forced');
     expect(Date.now() - t0).toBeLessThan(5000);
   });
-  test('parent SIGTERM cleans up child groups', async () => {
+  posixOnly('parent SIGTERM cleans up child groups', async () => {
     const pidFile = join(tmp, 'parent.pid');
     stub('codex', `echo $$ > "${pidFile}"; trap '' TERM; while :; do sleep 0.1; done`);
     const script = join(tmp, 'drv.ts');
@@ -232,7 +233,7 @@ describe('write rows and grants', () => {
     expect(a.reqs[0].runId).toBe('gr1');
     expect(a.reqs[0].rows[0].maxClass).toBe('R2');
   });
-  test('grant present: children get grant env and row max class; grant revoked after', async () => {
+  posixOnly('grant present: children get grant env and row max class; grant revoked after', async () => {
     stub('codex', 'cat >/dev/null; OUT=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && OUT="$2"; [ "$1" = "-s" ] && S="$2"; shift; done; echo "g=[$SAP_DISPATCH_GRANT] r=[$SAP_DISPATCH_ROW] m=[$SAP_PROXY_MAX_CLASS] s=[$S]" > "$OUT"');
     const a = api(true);
     const r = await fanOut([w(['CLAS ZCL_A'], { sapScope: scope(['CLAS ZCL_A'], 'R3') }), tasks[1]], 'codex', { root, runId: 'gr2', grantApi: a });
@@ -240,7 +241,7 @@ describe('write rows and grants', () => {
     expect(readFileSync(r.results[1].file, 'utf-8')).toContain('g=[] r=[] m=[R0] s=[read-only]');
     expect(a.calls.at(-1)).toBe('revoke:G1');
   });
-  test('worktree row runs in its own worktree that is removed afterwards', async () => {
+  posixOnly('worktree row runs in its own worktree that is removed afterwards', async () => {
     const g = (...x: string[]) => Bun.spawnSync(['git', '-C', root, ...x], { stdout: 'pipe', stderr: 'pipe' });
     g('init', '-q'); g('-c', 'user.email=a@b', '-c', 'user.name=t', 'commit', '-q', '--allow-empty', '-m', 'i');
     stub('codex', 'cat >/dev/null; OUT=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && OUT="$2"; shift; done; pwd > "$OUT"');
@@ -249,7 +250,7 @@ describe('write rows and grants', () => {
     expect(body).toContain(join('gr3', 'wt', '01-architect'));
     expect(existsSync(join(root, 'memory', 'dispatch', 'gr3', 'wt', '01-architect'))).toBe(false);
   });
-  test('hermes: write and read rows both refused without --allow-hermes-write', async () => {
+  posixOnly('hermes: write and read rows both refused without --allow-hermes-write', async () => {
     stub('hermes', 'echo ok');
     const rw = await fanOut([w(['CLAS ZCL_A'])], 'hermes', { root, runId: 'gh1', grantApi: api(true) });
     expect(rw.results[0].status).toBe('error');
@@ -261,10 +262,10 @@ describe('write rows and grants', () => {
   test('proxy argv carries dispatch flags and canonical root', () => {
     const a = proxyArgv('/repo', 'R2', 'G1', '01-x', 'write');
     expect(a.slice(1)).toEqual(['--root', '/repo', '--dispatch-child', '--dispatch-mode', 'write', '--max-class', 'R2', '--dispatch-grant', 'G1', '--dispatch-row', '01-x', '--', '--mode', 'hyperfocused']);
-    expect(a[0]).toBe('/repo/scripts/sap-mcp-proxy.ts');
+    expect(a[0].split('\\').join('/')).toBe('/repo/scripts/sap-mcp-proxy.ts');
     expect(proxyArgv('/repo', 'R0')).not.toContain('--dispatch-grant');
   });
-  test('per-platform MCP override reaches the child command line / env', async () => {
+  posixOnly('per-platform MCP override reaches the child command line / env', async () => {
     stub('codex', 'cat >/dev/null; echo "$@" > "$(dirname "$0")/codex.argv"; OUT=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && OUT="$2"; shift; done; echo done > "$OUT"');
     stub('claude', 'cat >/dev/null; echo "$@"');
     stub('gemini', 'cat >/dev/null; echo "S=$GEMINI_CLI_SYSTEM_SETTINGS_PATH"');
@@ -282,7 +283,7 @@ describe('write rows and grants', () => {
     const g = await fanOut([tasks[0]], 'gemini', { root, runId: 'pc3' });
     expect(readFileSync(g.results[0].file, 'utf-8')).toContain('01-architect.mcp.json');
   });
-  test('worktree row passes the main repo root, not the worktree', async () => {
+  posixOnly('worktree row passes the main repo root, not the worktree', async () => {
     stub('codex', 'cat >/dev/null; OUT=""; while [ $# -gt 0 ]; do [ "$1" = "-o" ] && OUT="$2"; ARGS="$ARGS $1"; shift; done; echo "$ARGS" > "$OUT"');
     const r = await fanOut([w(['CLAS ZCL_A'], { worktree: true })], 'codex', { root, runId: 'pc4', grantApi: api(true) });
     const body = readFileSync(r.results[0].file, 'utf-8');
@@ -302,7 +303,7 @@ describe('write rows and grants', () => {
 });
 
 describe('real proxy integration (stub vsp, no SAP)', () => {
-  test('tools/list works and a write call from a read row is denied', async () => {
+  posixOnly('tools/list works and a write call from a read row is denied', async () => {
     const proot = realpathSync(mkdtempSync(join(tmpdir(), 'dp-root-')));
     const sh = secureHome(proot, { sign: true });
     const argv = proxyArgv(proot, 'R0', undefined, '01-x', 'read');

@@ -1,13 +1,8 @@
 #!/usr/bin/env bun
 /**
  * pre-push.ts — TS-based pre-push hook.
- * @version 1.4.2
+ * @version 1.4.2 — LOCAL-PATCH: secret scan uses shared SECRET_ERE from lib/secret-patterns.ts (re-applied 2026-10-12, issue #203 / ticket T-20261012-012)
  */
-// v1.4.2 (2026-10-13): version-metadata bump only — the v1.4.1 M-6 change
-//           (SECRET_ERE externalized to scripts/lib/secret-patterns.ts, commit
-//           c4ee037) shipped without a version bump, so the L0/L1 drift gate sees
-//           equal-version content divergence against templates/common's inline-regex
-//           v1.4.1. Upstream backport to L0/L1 tracked in the workspace root.
 
 import { $ } from "bun";
 import { SECRET_ERE } from "../lib/secret-patterns.ts";

@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Command Renderer (single source -> per-platform command files)
- * @version 1.0.0
+ * @version 1.0.1
  *
  * Source: config/commands/<name>.md (frontmatter: name, description, argument-hint,
  * allowed-tools, optional gemini-parity: skip).
@@ -95,7 +95,7 @@ export function sync(root = ROOT, write = false): string[] {
     const abs = join(root, r.path);
     const cur = existsSync(abs) ? readFileSync(abs, 'utf-8').replace(/\r\n/g, '\n') : null;
     if (cur !== r.content) {
-      drift.push(`${cur === null ? 'missing' : 'stale'}: ${r.path}`);
+      drift.push(`${cur === null ? 'missing' : 'stale'}: ${r.path.replace(/\\/g, '/')}`);
       if (write) { mkdirSync(join(abs, '..'), { recursive: true }); writeFileSync(abs, r.content); }
     }
   }
