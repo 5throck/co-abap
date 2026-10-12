@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-12T22:24:31.295Z
+**Generated**: 2026-10-12T22:33:38.495Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -21,9 +21,9 @@
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | inherit | 2026-10-10 |
 | co-analyst | agents/co-analyst.md | medium | inherit | 2026-10-10 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-10-10 |
+| code-writer | agents/code-writer.md | low | inherit | 2026-10-12 |
 | dba | agents/dba.md | medium | inherit | 2026-10-10 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-10 |
+| devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-12 |
 | fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-10-10 |
 | fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-10-10 |
 | form-expert | agents/form-expert.md | medium | inherit | 2026-10-10 |
@@ -39,7 +39,7 @@
 | schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-10-10 |
 | sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-10-10 |
 | security-monitor | agents/security-monitor.md | low | inherit | 2026-10-10 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-10-10 |
+| test-runner | agents/test-runner.md | low | inherit | 2026-10-12 |
 
 ---
 
