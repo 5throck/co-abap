@@ -10,6 +10,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Changed
+- **[2026-10-13]**: chore(template): sync the leftover 2026-10-11 upgrade-delivery files (template 0.14.0 → 0.16.0) — 8 Gemini `.md` platform command copies, delivered scripts `scripts/helpers/version-bump.ts` and `scripts/lib/{package-merge,skill-graph-compat,skills-used}.ts`, and the `memory/2026-10-11.md` session log with its `MEMORY.md` index row.
 - **[2026-10-10]**: docs: ADR-0003..0007 (CDS-first data access, semantic-layer reference-only, cross-platform parity, SAP approval security model, parallel dispatch grants) with an ADR index; parity and semantic-layer designs status-updated; README/README_ko, setup guide, dispatch and security docs cover the 8 platforms, first-time integrity setup, approval flow and pre-dispatch grants; skill graph regenerated.
 
 ### Security

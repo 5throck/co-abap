@@ -118,6 +118,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/context-sections.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
 | `helpers/pm-md-parser.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/template-utils.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
+| `helpers/version-bump.ts` | L0 | 1.0.0 | active | Version-bump detection for the staged change set (dev-sync step 4.85) | —| L0+L1 | —|
 | `tests/apply-handbook-theme.test.ts` | L0 | 1.0.1 | active | — | — | common | — |
 | `tests/check-structure.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `tests/deploy-readme-patch.test.ts` | L0 | 1.0.0 | active | — | — | common | — |
@@ -126,7 +127,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.10.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
-| `hooks/pre-push.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
+| `hooks/pre-push.ts` | L0 | 1.4.2 | active | —| —| L0+L1 | —|
 | `hooks/sap-action-gate.ts` | L3 | 3.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); R3 always needs a proxy approval (legacy session approval files removed); advisory-only when run as a hook — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
 | `hooks/sap-action-audit.ts` | L3 | 2.0.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts; HMAC-signed evidence entries, clientId/grant fields (hashes only) | —| L3 | —|
 | `lib/sap-action-lib.ts` | L3 | 2.1.0 | active | Shared policy/evidence/audit logic; secure store outside the workspace (~/.config/co-abap: HMAC key, signed approvals/pending, integrity manifest, dispatch grants), HMAC'd evidence and audit hash chain | —| L3 | —|
@@ -146,6 +147,9 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/pipeline-state.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
+| `lib/package-merge.ts` | L0 | 1.0.0 | active | Scaffold-time package.json merge (variant merges over generated, scalar variant-wins) | —| L0+L1 | —|
+| `lib/skill-graph-compat.ts` | L0 | 1.1.0 | active | Skill-graph v2 identity primitives shared by generator/verifier/fleet report | —| L0+L1 | —|
+| `lib/skills-used.ts` | L0 | 1.0.0 | active | Parser for the `## Skills Used` evidence section of memory/YYYY-MM-DD.md | —| L0+L1 | —|
 | `lifecycle-sync-audit.ts` | L0 | 1.17.1 | active | —| —| L0+L1 | —|
 | `md-to-ooxml.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `qa-gate.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
