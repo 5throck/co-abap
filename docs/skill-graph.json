@@ -70,8 +70,8 @@
       "name": "code-writer",
       "scope": "root",
       "capability": "code-writer",
-      "content_hash": "b406d11e25c964e5",
-      "version": "1.1.1",
+      "content_hash": "29cbb58c5d23f3c7",
+      "version": "1.1.2",
       "mirrors": [
         "agents/code-writer.md"
       ]
@@ -96,8 +96,8 @@
       "name": "devops-admin",
       "scope": "root",
       "capability": "devops-admin",
-      "content_hash": "73ae1e8ddc3b24b2",
-      "version": "1.0.1",
+      "content_hash": "6202fb2d5b7ef102",
+      "version": "1.0.2",
       "mirrors": [
         "agents/devops-admin.md"
       ]
@@ -304,8 +304,8 @@
       "name": "test-runner",
       "scope": "root",
       "capability": "test-runner",
-      "content_hash": "801f30d5b655235e",
-      "version": "1.0.1",
+      "content_hash": "fb7d679f2cd94cc6",
+      "version": "1.0.2",
       "mirrors": [
         "agents/test-runner.md"
       ]
@@ -457,8 +457,8 @@
       "name": "abap-code-review",
       "scope": "root",
       "capability": "abap-code-review",
-      "content_hash": "8b656f27c4548ba5",
-      "version": "1.0.1",
+      "content_hash": "c7b2b5ccb5239df0",
+      "version": "1.0.2",
       "mirrors": [
         "skills/abap-code-review/SKILL.md",
         ".claude/skills/abap-code-review/SKILL.md",
@@ -475,8 +475,8 @@
       "name": "abap-dev",
       "scope": "root",
       "capability": "abap-dev",
-      "content_hash": "7e00e9e630f76e70",
-      "version": "1.2.2",
+      "content_hash": "63d69a8fcd084ede",
+      "version": "1.3.0",
       "mirrors": [
         "skills/abap-dev/SKILL.md",
         ".claude/skills/abap-dev/SKILL.md",
@@ -947,8 +947,8 @@
       "name": "project-review",
       "scope": "root",
       "capability": "project-review",
-      "content_hash": "c1e80ff22ed7e169",
-      "version": "1.3.2",
+      "content_hash": "fe88edc03acb3612",
+      "version": "1.3.3",
       "mirrors": [
         "skills/project-review/SKILL.md",
         ".claude/skills/project-review/SKILL.md",
@@ -1221,8 +1221,8 @@
       "name": "sync",
       "scope": "root",
       "capability": "sync",
-      "content_hash": "51aa9456e41d98a4",
-      "version": "1.7.0",
+      "content_hash": "661843888f616b5a",
+      "version": "1.8.0",
       "mirrors": [
         "skills/sync/SKILL.md",
         ".claude/skills/sync/SKILL.md",
@@ -1232,7 +1232,7 @@
         ".hermes/skills/sync/SKILL.md"
       ],
       "usage": {
-        "sessions": 2,
+        "sessions": 3,
         "last_used": "2026-10-13"
       }
     },

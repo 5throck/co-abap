@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
+translated_from_hash: 74e8d306e81c9149b917343049f9ad34545878a03bbb624e804b21696c1ce3c6
 ---
 # SAP ABAP를 위한 Harness Engineering
 
@@ -24,9 +24,9 @@ translated_from_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe
 
 ## 🚀 빠른 시작
 
-1. **[선행 조건 설치](docs/setup-guide.md)** - MCP 서버, SAP ADT 접근, abapGit
+1. **[선행 조건 설치](docs/platform-setup/setup-guide.md)** - MCP 서버, SAP ADT 접근, abapGit
 2. **vsp 설치와 `.env` 설정** - `bun scripts/co-abap/install-vsp.ts` 실행 후 `.env.sample`을 `.env`로 복사하고 `chmod 600 .env`
-3. **SAP 안전 정책 봉인(사람이, 한 번만)** - `bun scripts/sap-integrity.ts init` 다음 `bun scripts/sap-integrity.ts sign`. 서명 전에는 SAP 접근이 읽기 전용(R0)입니다. 정책, 집행 스크립트, `package.json`, `bunfig.toml`을 검토해 바꾼 뒤에는 다시 서명하세요.
+3. **SAP 안전 정책 봉인(사람이, 한 번만)** - 본인 터미널에서 `bun scripts/sap-integrity.ts init`을 실행합니다. 확인 문구가 나오면 사용자 이름이 아니라 낱말 `sign`을 그대로 입력하고 Enter를 누릅니다. `init` 한 번으로 승인 키 만들기와 첫 서명이 함께 끝나며, `bun scripts/sap-integrity.ts verify`로 확인할 수 있습니다. 서명 전에는 SAP 접근이 읽기 전용(R0)입니다. 그 뒤 정책, 집행 스크립트, `package.json`, `bunfig.toml`이 바뀐 것을 검토했다면(예: 그런 PR을 받은 뒤) `bun scripts/sap-integrity.ts sign`을 실행하고 같은 방법으로 확인합니다.
 4. **[AGENTS.md](AGENTS.md) 탐색** - 에이전트 역할 및 워크플로우 이해
 5. **`/triage` 실행** - 자동 에이전트 디스패치로 첫 번째 태스크 시작
 
@@ -111,7 +111,7 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 | **[AGENTS.md](AGENTS.md)** | 역할, 협업 워크플로우, 서브에이전트 디스패치 프로토콜 |
 | **[docs/context.md](docs/context.md)** | **공유** 프로젝트 컨텍스트: 빌드 명령어, 코드베이스 맵, 개발 규칙 |
 | **[skills/abap-dev/SKILL.md](skills/abap-dev/SKILL.md)** | 전문 AI 스킬(BAPI 탐색기, 메모리 인텔리전스) 및 QA 체인 |
-| **[docs/setup-guide.md](docs/setup-guide.md)** | 단계별 환경 설정(MCP, SAP, abapGit) |
+| **[docs/platform-setup/setup-guide.md](docs/platform-setup/setup-guide.md)** | 단계별 환경 설정(MCP, SAP, abapGit) |
 | **[docs/user-guide.md](docs/user-guide.md)** | 태스크 단위 가이드 — SAP 업무를 에이전트 팀에 맡기는 방법(한국어: [user-guide_ko.md](docs/user-guide_ko.md)) |
 | **[deliverables/index.md](deliverables/index.md)** | 요구사항 추적 매트릭스(RTM) — 모든 요구사항의 Stage 1–5 추적 |
 | **[SECURITY.md](SECURITY.md)** | 취약점 신고 절차 및 MCP 기반 SAP 접근 위협 모델 |
@@ -150,7 +150,7 @@ bun scripts/new-requirement.ts "새 가격 규칙" --module SD --owner "SD Analy
 ---
 
 > [!TIP]
-> **이 프로젝트가 처음이신가요?** [docs/setup-guide.md](docs/setup-guide.md)에서 시작하세요 — MCP 연결, abapGit, AI 에이전트 설정을 포함한 단계별 환경 구성 가이드입니다.
+> **이 프로젝트가 처음이신가요?** [docs/platform-setup/setup-guide.md](docs/platform-setup/setup-guide.md)에서 시작하세요 — MCP 연결, abapGit, AI 에이전트 설정을 포함한 단계별 환경 구성 가이드입니다.
 
 ---
 
@@ -232,7 +232,7 @@ ATC(`SAP(action=test, type=atc)`, Priority-1 발견 0건).
 
 - [플러그인 배포판](https://github.com/5throck/co-abap_plugin) - 즉시 사용 가능한 Claude Code 플러그인
 - [에이전트 역할](AGENTS.md) - 전체 에이전트 카탈로그 및 워크플로우
-- [설치 가이드](docs/setup-guide.md) - 환경 설정
+- [설치 가이드](docs/platform-setup/setup-guide.md) - 환경 설정
 - [변경 로그](CHANGELOG.md) - 버전 기록
 
 ---
@@ -244,4 +244,4 @@ ATC(`SAP(action=test, type=atc)`, Priority-1 발견 0건).
 
 ---
 
-*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-09-26*
+*Harness Engineering 팀이 유지 관리 | 최종 업데이트: 2026-10-13*

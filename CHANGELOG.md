@@ -9,6 +9,23 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- **[2026-10-12]**: feat: SAP globalization (I18N) runtime guidance — new standard `docs/standards/sap-globalization-checklist.md` (7 pass/fail rule families: time zones/DST, number/date/currency formatting, units of measure, calendars, texts, output/paper/forms, addresses); wired into the delivery pipeline (code-writer globalization rules + Globalization Check report line @1.1.2, abap-dev `sap:globalization` section + execution step @1.3.0 across 6 platform mirrors, QA report template gate row + release checklist item); country profiles instantiated per `docs/country-profiles.md` (`docs/countries/KR.md`, `US.md`, `JP.md`, `ACTIVE.md` — JP adds era dates, full-width characters, name order, April–March fiscal year); design doc `docs/designs/2026-10-12-sap-globalization-guidance-design.md` registered in the spec registry (#205).
+- **[2026-10-12]**: chore(variant): register the shipped country profiles in `variant.json` — `country_config.supported` = `["KR", "US", "JP"]` (default stays `null` per ADR-0091 R2; the active market is recorded in `docs/countries/ACTIVE.md`). Mirrors the template-side fix required by the Variant Readiness Gate (`country-config-supported`) once `docs/countries/` ships profiles; prevents the same VRG error at the next template reconciliation or promotion (#206).
+
+### Changed
+- **[2026-10-12]**: fix(tests): platform-neutralize the unit suite — the 18 tests that failed only on Windows are fixed or scoped (POSIX-only signal/process-group cases `skipIf(win32)` in dispatch-parallel/sap-mcp-proxy suites, path-separator assertions normalized, render-commands drift messages normalized to forward slashes @1.0.1); re-apply the pre-push `SECRET_ERE` local patch at @1.4.2; bump abap-code-review skill to 1.0.2. Issue #203 / ticket T-20261012-012 (#204).
+- **[2026-10-12]**: docs: tidy the docs tree — setup guides (`setup-guide`, `antigravity-setup`, `plugin-setup`) moved to `docs/platform-setup/`, standards and checklists (`abap-dev-rules`, `clean-abap-checklist`, `testing-guidelines`, `transport-release-checklist`) moved to `docs/standards/`; all live references updated (README/README_ko, dispatch-parallel, agent definitions, abap-code-review skill + 5 platform mirrors, atc-rulepack, write-safety-gate design); `docs/README.md` rewritten to the actual layout and the deliverables routing; `hooks/pre-push.ts` aligned byte-for-byte with the upstream template (the `SECRET_ERE` LOCAL-PATCH temporarily un-applied to clear the equal-version drift gate; re-apply with a version bump once `bun run test:unit` is green on this host — 18 Windows-dependent spawn/signal/path test failures occur regardless of the change set) (#200).
+
+### Added
+- **[2026-10-12]**: feat(deliverables): REQ-002 ZFLIGHT report — end-to-end deliverable set in `deliverables/REQ-002-zflight-report/` (SRS, technical design, implementation/QA/release reports, unit test plan, user manuals EN/KO) for the `ZFLIGHT` SFLIGHT query report (PROG, `$TMP`, NPL/001) created through the sap-mcp-proxy approval flow; recovery copy `scratch/zflight.prog.abap`; user-manual templates added (`deliverables/templates/07_user_manual.md` / `_ko`); spec entry registered against the technical design (#200).
+
+### Changed
+- **[2026-10-11]**: chore: upgrade template to 0.16.0 on top of current main (replaces closed #197, which was cut from a stale clone); local SAP safety, parity and LOCAL-PATCH changes preserved; skill graph and version manifest regenerated (#199).
+
+### Fixed
+- **[2026-10-11]**: docs: integrity setup instructions say `init` alone creates the key and signs, and that the confirmation is the literal word `sign` (users typed their user name and aborted); README/README_ko, setup guide and SECURITY.md aligned (#198).
+
 ### Changed
 - **[2026-10-13]**: chore(memory): record the 2026-10-11 template-upgrade session log (`memory/2026-10-11.md` with its `MEMORY.md` index row). The other leftover upgrade-delivery files (delivered scripts, SCRIPTS.md registry rows, Gemini `.md` command copies) were dropped from this sync — already present on main in their current form (#203); `scripts/hooks/pre-push.ts` realigned with main's local-patch state.
 - **[2026-10-10]**: docs: ADR-0003..0007 (CDS-first data access, semantic-layer reference-only, cross-platform parity, SAP approval security model, parallel dispatch grants) with an ADR index; parity and semantic-layer designs status-updated; README/README_ko, setup guide, dispatch and security docs cover the 8 platforms, first-time integrity setup, approval flow and pre-dispatch grants; skill graph regenerated.

@@ -23,9 +23,9 @@ required_skills: [abap-code-review]
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-10-10"
+  last_updated: "2026-10-12"
   governance: docs/lifecycle/agents/test-runner.md
-version: "1.0.1"
+version: "1.0.2"
 ---
 
 ## Role
@@ -85,7 +85,7 @@ Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hype
 ## Quality Gate Standards
 - **Unit Tests**: 100% Pass mandatory.
 - **ATC P1**: Zero tolerance (blocks activation/transport).
-- **ATC P2**: PM disposition required — Fix / Suppress-with-justification / Defer. See `docs/testing-guidelines.md § ATC Priority-2 Escalation Workflow`.
+- **ATC P2**: PM disposition required — Fix / Suppress-with-justification / Defer. See `docs/standards/testing-guidelines.md § ATC Priority-2 Escalation Workflow`.
 
 ## Behavior rules
 1. Follow the Post-Write Mandatory Chain: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck.

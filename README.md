@@ -1,5 +1,5 @@
 ---
-content_hash: 1d346a7321c2ba053aff09515fd50179b7b6cc110b91d382047763fbfe00f412
+content_hash: 74e8d306e81c9149b917343049f9ad34545878a03bbb624e804b21696c1ce3c6
 ---
 # Harness Engineering for SAP ABAP
 
@@ -24,9 +24,9 @@ Key principles of Harness Engineering include:
 
 ## 🚀 Quick Start
 
-1. **[Install prerequisites](docs/setup-guide.md)** - MCP server, SAP ADT access, abapGit
+1. **[Install prerequisites](docs/platform-setup/setup-guide.md)** - MCP server, SAP ADT access, abapGit
 2. **Install vsp and configure `.env`** - `bun scripts/co-abap/install-vsp.ts`, then copy `.env.sample` to `.env` and `chmod 600 .env`
-3. **Seal the SAP safety policy (human, once)** - `bun scripts/sap-integrity.ts init`, then `bun scripts/sap-integrity.ts sign`. Until signed, SAP access is read-only (R0). Re-sign after you review changes to the policy, the enforcement scripts, `package.json` or `bunfig.toml`.
+3. **Seal the SAP safety policy (human, once)** - run `bun scripts/sap-integrity.ts init` in your own terminal. At the prompt, type the literal word `sign` (not your user name) and press Enter. `init` creates the approval key and signs the manifest in one step; check with `bun scripts/sap-integrity.ts verify`. Until signed, SAP access is read-only (R0). Later, after you review changes to the policy, the enforcement scripts, `package.json` or `bunfig.toml` (for example after pulling such a PR), run `bun scripts/sap-integrity.ts sign` and confirm the same way.
 4. **Explore [AGENTS.md](AGENTS.md)** - Understand agent roles and workflows
 5. **Run `/triage`** - Start your first task with automatic agent dispatch
 
@@ -111,7 +111,7 @@ For detailed roles, trigger keywords, and handoff protocols, see [AGENTS.md](AGE
 | **[AGENTS.md](AGENTS.md)** | Roles, collaborative workflow, and subagent dispatch protocols. |
 | **[docs/context.md](docs/context.md)** | **Shared** project context: build commands, codebase map, and development rules. |
 | **[skills/abap-dev/SKILL.md](skills/abap-dev/SKILL.md)** | Specialized AI skills (BAPI explorer, memory intelligence) and QA chains. |
-| **[docs/setup-guide.md](docs/setup-guide.md)** | Step-by-step environment setup (MCP, SAP, abapGit). |
+| **[docs/platform-setup/setup-guide.md](docs/platform-setup/setup-guide.md)** | Step-by-step environment setup (MCP, SAP, abapGit). |
 | **[docs/user-guide.md](docs/user-guide.md)** | Task-level guide — how to hand SAP work to the agent team (한국어: [user-guide_ko.md](docs/user-guide_ko.md)). |
 | **[deliverables/index.md](deliverables/index.md)** | Requirements Traceability Matrix (RTM) — Stage 1–5 tracking for every requirement. |
 | **[SECURITY.md](SECURITY.md)** | Vulnerability reporting and the MCP-driven SAP access threat model. |
@@ -150,7 +150,7 @@ bun scripts/new-requirement.ts "New Pricing Rule" --module SD --owner "SD Analys
 ---
 
 > [!TIP]
-> **New to this project?** Start with [docs/setup-guide.md](docs/setup-guide.md) - step-by-step environment setup (includes MCP connectivity, abapGit, and AI agent configuration).
+> **New to this project?** Start with [docs/platform-setup/setup-guide.md](docs/platform-setup/setup-guide.md) - step-by-step environment setup (includes MCP connectivity, abapGit, and AI agent configuration).
 
 ---
 
@@ -231,7 +231,7 @@ coverage (`with_coverage=true`, ≥70% on new objects) → ATC (`SAP(action=test
 
 - [Plugin Distribution](https://github.com/5throck/co-abap_plugin) - Ready-to-use Claude Code plugin
 - [Agent Roles](AGENTS.md) - Complete agent catalog and workflows
-- [Setup Guide](docs/setup-guide.md) - Environment configuration
+- [Setup Guide](docs/platform-setup/setup-guide.md) - Environment configuration
 - [Changelog](CHANGELOG.md) - Version history
 
 ---
@@ -243,4 +243,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-10-10*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-10-13*

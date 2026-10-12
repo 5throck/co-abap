@@ -23,9 +23,9 @@ required_skills: [abap-code-review]
 lifecycle:
   phase: production
   created: "2026-08-15"
-  last_updated: "2026-10-10"
+  last_updated: "2026-10-12"
   governance: docs/lifecycle/agents/code-writer.md
-version: "1.1.1"
+version: "1.1.2"
 ---
 
 ## Role
@@ -80,6 +80,7 @@ The Code Writer Report is the output contract for implementation tasks; the gene
 **Data Access Level**: <1 released I_* | 2 ZI_/ZR_/ZC_ | 3 Open SQL | 4 AMDP | n/a>
 **C1 Check**: <object, how verified, result | not verified → level 2 + rationale>
 **CDS Conversion Evidence (DA-6)**: <test-runner result ref | pending | n/a>
+**Globalization Check**: <sap-globalization-checklist reviewed, exceptions noted | n/a (no user-facing output)>
 
 #### Implementation Details
 - [x] List major logical components added
@@ -98,6 +99,8 @@ The Code Writer Report is the output contract for implementation tasks; the gene
 9. **SQL quality**: DA-4 applies to every statement you write or modify.
 10. **New CDS views**: DA-5 (`#CHECK` + DCL) and DA-8 naming (`ZI_`/`ZR_`/`ZC_`).
 11. **Conversions**: DA-6 — record old/new statements and request the before/after run from test-runner; you do not run tests (rule 6).
+12. **Globalization**: follow `docs/standards/sap-globalization-checklist.md` — UTC timestamps with user-time-zone display, `CURRENCY` on monetary output, no dates/numbers assembled as text, standard unit conversion, factory-calendar working-day logic. Non-interactive output fixes country and language explicitly (`SET COUNTRY` / `SET LANGUAGE`).
+13. **Texts**: user-visible literals in text symbols and message classes; maintain selection texts before transport — a deferral (demo scope) must be recorded as a known limitation in the implementation report.
 
 ## Post-Write Mandatory Chain (Writer's part)
 1. WriteSource / EditSource

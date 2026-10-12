@@ -81,7 +81,7 @@ The table is the target; adjust the values to your system and get Basis sign-off
 Not included, on purpose: `SAP_ALL`, `SAP_NEW`, `S_TRANSPRT` `ACTVT 43` (release), `S_TABU_DIS` change or
 maintenance (`ACTVT 02`/`01`), and any role that allows data changes in production.
 
-Transport release is done by a human outside the AI session. The harness gate also blocks it (see [SECURITY.md](../SECURITY.md#control-tiers)).
+Transport release is done by a human outside the AI session. The harness gate also blocks it (see [SECURITY.md](../../SECURITY.md#control-tiers)).
 
 ---
 
@@ -301,7 +301,7 @@ git config core.hooksPath .githooks
 │   ├── mcp_usage.md
 │   ├── security.md
 │   ├── skill.md
-│   └── setup-guide.md
+│   └── platform-setup/
 └── vsp.exe                    ← Download separately (gitignored)
 ```
 
@@ -340,7 +340,7 @@ git config core.hooksPath .githooks
 │   ├── mcp_usage.md
 │   ├── security.md
 │   ├── skill.md
-│   └── setup-guide.md
+│   └── platform-setup/
 └── vsp                        ← Download separately (gitignored)
 ```
 
@@ -551,7 +551,7 @@ If you get an error, check:
 > Change `"SAP_MODE": "focused"` — exposes 98 individually named MCP tools instead of the single `SAP` tool.
 > **Expert mode** (all tools, debugging / advanced operations):
 > Change `"SAP_MODE": "expert"` — exposes 148 individually named MCP tools.
-> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 **Safety options (optional, set in `.env`; verify with `./vsp --help`).** See `.env.sample` for the template.
 
@@ -563,7 +563,7 @@ If you get an error, check:
 | `SAP_ENABLE_TRANSPORTS` | Opt in to transport management operations (off by default) |
 | `SAP_ALLOW_TRANSPORTABLE_EDITS` | Opt in to editing objects in transportable packages (needs a transport) |
 
-Gate classes and policy: see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+Gate classes and policy: see the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 ---
 
@@ -575,7 +575,7 @@ Cloud sessions run in a managed container, not on your workstation. Plan around 
 |------------|:---------------:|-----|
 | `abap` MCP (vsp) | ❌ | Needs the local `vsp` binary (`./vsp`, gitignored, not in the repo) and direct network access to your SAP system |
 | `abap-docs` / `sap-docs` MCP endpoints | ⚠️ may be blocked | The environment network policy can refuse third-party documentation hosts (proxy `403`) |
-| ABAP write and QA chains (`WriteSource`, `SyntaxCheck`, `RunUnitTests`, `RunATCCheck`) | ❌ | Require the `abap` MCP; run them from the local CLI (see [Post-Write chain](../skills/post-write-chain/SKILL.md)) |
+| ABAP write and QA chains (`WriteSource`, `SyntaxCheck`, `RunUnitTests`, `RunATCCheck`) | ❌ | Require the `abap` MCP; run them from the local CLI (see [Post-Write chain](../../skills/post-write-chain/SKILL.md)) |
 | Repo reads, docs, governance scripts, `bun` tests | ✅ | Local to the checkout |
 
 Rules for cloud sessions:
@@ -610,7 +610,7 @@ Every platform (Claude Code, Codex, Gemini CLI, Antigravity, Hermes) starts the 
    ```
 
    You confirm by typing the first 6 characters of the id on `/dev/tty`; the approver is your OS user. Then let the agent repeat the identical call. Approvals are single use, bound to the exact input, and expire after 15 minutes. They are stored outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). Agents must never run `sap-approve.ts`.
-4. One-time integrity setup (human): `bun scripts/sap-integrity.ts init`. After a reviewed change to the policy or enforcement scripts, run `bun scripts/sap-integrity.ts sign`; until you do, the proxy is R0 (read-only). `bun scripts/sap-integrity.ts verify` and `verify-audit` are read-only checks.
+4. One-time integrity setup (human): `bun scripts/sap-integrity.ts init`. At the confirmation prompt, type the literal word `sign` (not your user name) and press Enter; anything else aborts and nothing is created. `init` creates `~/.config/co-abap/approval.key` and signs the manifest, so no separate `sign` is needed the first time. After a reviewed change to the policy or enforcement scripts, run `bun scripts/sap-integrity.ts sign` and confirm the same way; until you do, the proxy is R0 (read-only). A `missing` line for `bunfig.toml` is expected when the repo has none: its absence is signed too. `bun scripts/sap-integrity.ts verify` and `verify-audit` are read-only checks.
 5. Parallel write dispatch: write rows in a dispatch plan declare `sapScope {packages, objects, actions, maxClass}`. The dispatcher writes a grant request and stops; run `bun scripts/sap-approve.ts --grant <runId>`, then re-run the dispatcher with `--run-id <runId>` (or use `--wait-grant`). The grant is revoked when the run ends.
 
 ---
@@ -839,7 +839,7 @@ Antigravity is a VS Code-based editor that can connect to the same abap MCP serv
 
 For complete, step-by-step instructions, including absolute path configurations for Windows, macOS, and Linux, and recommended role usage splits, see the dedicated setup guide:
 
-👉 **[docs/antigravity-setup.md](antigravity-setup.md)**
+👉 **[antigravity-setup.md](antigravity-setup.md)**
 
 ### Brief Summary of Differences
 

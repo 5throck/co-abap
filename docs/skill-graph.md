@@ -10,8 +10,8 @@
 
 | Skill (scope/name) | Layer | Version | Required-by Agents | Phases | Relates-to | Inputs | Outputs |
 |--------------------|-------|---------|-------------------|--------|------------|--------|---------|
-| `root/abap-code-review` | L3 | 1.0.1 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
-| `root/abap-dev` | L3 | 1.2.2 | — | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
+| `root/abap-code-review` | L3 | 1.0.2 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
+| `root/abap-dev` | L3 | 1.3.0 | — | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/accessibility-audit` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/agent-lifecycle-manager` | L3 | 1.3.0 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
 | `root/api-documentation` | L3 | 1.0.2 | — | — | — | — | — |
@@ -37,7 +37,7 @@
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/platform-skill-lifecycle-manager` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/post-write-chain` | L3 | 1.3.2 | — | — | — | — | — |
-| `root/project-review` | L3 | 1.3.2 | — | — | — | — | — |
+| `root/project-review` | L3 | 1.3.3 | — | — | — | — | — |
 | `root/research-analysis` | L3 | 1.0.2 | — | — | root/documentation-writing (enables) | — | — |
 | `root/sap-co` | L3 | 1.0.0 | — | — | root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (follows) | — | — |
 | `root/sap-fi` | L3 | 1.0.0 | — | — | root/sap-co (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
@@ -52,7 +52,7 @@
 | `root/source-command-celebrate` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/source-command-commit-push-pr` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/standup-synthesizer` | L3 | 1.0.0 | — | — | — | — | — |
-| `root/sync` | L3 | 1.7.0 | — | — | — | — | — |
+| `root/sync` | L3 | 1.8.0 | — | — | — | — | — |
 | `root/team-builder` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/token-usage-lint` | L3 | 1.1.0 | — | — | root/ui-ux-design-intelligence (follows) | — | — |
 | `root/translate` | L3 | 1.0.3 | — | — | root/documentation-writing (composes_with) | — | — |

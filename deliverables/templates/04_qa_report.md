@@ -20,6 +20,7 @@
 | **Syntax Check** | Success | PASSED | Check completed with zero warnings. |
 | **Unit Tests** | 100% Pass | PASSED | All unit test cases executed successfully. |
 | **ATC Scan** | Zero P1 Findings | PASSED | No Priority-1 findings; P2/P3 resolved or noted. |
+| **Globalization / Text Check** | Checklist reviewed | PASSED | `docs/standards/sap-globalization-checklist.md` — time zones, currency/date formatting, units, calendars; user-visible texts in text symbols/message classes. Blocker-severity failures block the gate. |
 
 ---
 
@@ -64,4 +65,5 @@ Findings:
 - [ ] Code coverage criteria are met.
 - [ ] Raw ATC scan output confirms zero Priority-1 findings.
 - [ ] Relational integrity of table updates checked and verified.
+- [ ] Globalization checklist (`docs/standards/sap-globalization-checklist.md`) reviewed — text symbols/message classes maintained (or deferral recorded as a known limitation), country/language-explicit output in batch and interfaces.
 - **QA Verification Signature**: ___________________ (Date: YYYY-MM-DD)
