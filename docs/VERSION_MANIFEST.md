@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-10T09:34:28.865Z
+**Generated**: 2026-10-12T22:07:09.042Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -241,14 +241,14 @@
 |------|------|----------|-------------------|
 | abap-dev | .claude/commands/abap-dev.md | claude | N/A |
 | celebrate | .claude/commands/celebrate.md | claude | N/A |
-| changelog | .claude/commands/changelog.md | claude | N/A |
-| commit-push-pr | .claude/commands/commit-push-pr.md | claude | N/A |
-| gateguard | .claude/commands/gateguard.md | claude | N/A |
+| changelog | .claude/commands/changelog.md | all | N/A |
+| commit-push-pr | .claude/commands/commit-push-pr.md | all | N/A |
+| gateguard | .claude/commands/gateguard.md | all | N/A |
 | meeting | .claude/commands/meeting.md | claude | N/A |
-| memlog | .claude/commands/memlog.md | claude | N/A |
-| new-task | .claude/commands/new-task.md | claude | N/A |
+| memlog | .claude/commands/memlog.md | all | N/A |
+| new-task | .claude/commands/new-task.md | all | N/A |
 | post-write | .claude/commands/post-write.md | claude | N/A |
-| project-review | .claude/commands/project-review.md | claude | N/A |
+| project-review | .claude/commands/project-review.md | all | N/A |
 | sap-co | .claude/commands/sap-co.md | claude | N/A |
 | sap-fi | .claude/commands/sap-fi.md | claude | N/A |
 | sap-le | .claude/commands/sap-le.md | claude | N/A |
@@ -256,7 +256,7 @@
 | sap-pp | .claude/commands/sap-pp.md | claude | N/A |
 | sap-sd | .claude/commands/sap-sd.md | claude | N/A |
 | security-check | .claude/commands/security-check.md | claude | N/A |
-| sync | .claude/commands/sync.md | claude | N/A |
+| sync | .claude/commands/sync.md | all | N/A |
 | transport | .claude/commands/transport.md | claude | N/A |
 | triage | .claude/commands/triage.md | claude | N/A |
 
@@ -266,8 +266,8 @@
 
 **Checked**: Claude (.claude/), Gemini (.gemini/), Antigravity (.agents/), Codex (.codex/ prompts mapping)
 
-- **Commands with parity (gemini mirror)**: 0 / 20
-- **Commands with codex prompts mapping**: 0 / 20
+- **Commands with parity (gemini mirror)**: 7 / 20
+- **Commands with codex prompts mapping**: 7 / 20
 - **Skills in all four mirrors**: 0 / 49
 - **Skills in claude+gemini only (both)**: 0 / 49 (common-template skills are parity-exempt)
 
