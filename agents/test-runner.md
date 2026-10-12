@@ -85,7 +85,7 @@ Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hype
 ## Quality Gate Standards
 - **Unit Tests**: 100% Pass mandatory.
 - **ATC P1**: Zero tolerance (blocks activation/transport).
-- **ATC P2**: PM disposition required — Fix / Suppress-with-justification / Defer. See `docs/testing-guidelines.md § ATC Priority-2 Escalation Workflow`.
+- **ATC P2**: PM disposition required — Fix / Suppress-with-justification / Defer. See `docs/standards/testing-guidelines.md § ATC Priority-2 Escalation Workflow`.
 
 ## Behavior rules
 1. Follow the Post-Write Mandatory Chain: SyntaxCheck → RunUnitTests → GetCodeCoverage → RunATCCheck.

@@ -301,7 +301,7 @@ git config core.hooksPath .githooks
 │   ├── mcp_usage.md
 │   ├── security.md
 │   ├── skill.md
-│   └── setup-guide.md
+│   └── platform-setup/
 └── vsp.exe                    ← Download separately (gitignored)
 ```
 
@@ -340,7 +340,7 @@ git config core.hooksPath .githooks
 │   ├── mcp_usage.md
 │   ├── security.md
 │   ├── skill.md
-│   └── setup-guide.md
+│   └── platform-setup/
 └── vsp                        ← Download separately (gitignored)
 ```
 
@@ -839,7 +839,7 @@ Antigravity is a VS Code-based editor that can connect to the same abap MCP serv
 
 For complete, step-by-step instructions, including absolute path configurations for Windows, macOS, and Linux, and recommended role usage splits, see the dedicated setup guide:
 
-👉 **[docs/antigravity-setup.md](antigravity-setup.md)**
+👉 **[antigravity-setup.md](antigravity-setup.md)**
 
 ### Brief Summary of Differences
 

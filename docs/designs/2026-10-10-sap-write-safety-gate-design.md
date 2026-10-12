@@ -3,7 +3,7 @@
 - **Spec ID**: 2026-10-10-sap-write-safety-gate
 - **Date**: 2026-10-10
 - **Status**: approved (user approval 2026-10-10)
-- **Scope**: `.claude/settings.json` hooks, `scripts/hooks/sap-action-gate.ts`, `scripts/hooks/sap-action-audit.ts`, `config/sap-action-policy.json`, `memory/audit/`, `scripts/harness-metrics.ts`, `SECURITY.md`, `docs/setup-guide.md`, `skills/post-write-chain/SKILL.md`
+- **Scope**: `.claude/settings.json` hooks, `scripts/hooks/sap-action-gate.ts`, `scripts/hooks/sap-action-audit.ts`, `config/sap-action-policy.json`, `memory/audit/`, `scripts/harness-metrics.ts`, `SECURITY.md`, `docs/platform-setup/setup-guide.md`, `skills/post-write-chain/SKILL.md`
 
 > **Status note (2026-10-10, later)**: The approval mechanism in section 4 and the manual profile were replaced. Superseded details below are kept as history. Current behavior: approvals and pending requests live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600). The approver is the OS user, confirmed by typing the first 6 characters of the id on `/dev/tty`. `memory/audit/approvals`, `SAP_APPROVAL_TOKEN`, `SAP_APPROVE_ALLOW_NON_TTY`, `--approver` and `HARNESS_PROFILE=manual` no longer exist. A human runs `bun scripts/sap-integrity.ts init` once and `sign` after reviewed changes to the policy and enforcement scripts (until then the proxy is R0). Parallel write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`. See SECURITY.md.
 
@@ -15,7 +15,7 @@
 | Only vsp-level controls | `.mcp.json`: `SAP_ALLOWED_PACKAGES=Z*,$TMP,$ZADT_VSP,$VSP_ADT`, `SAP_FEATURE_*` flags |
 | Post-write chain not enforced | `skills/post-write-chain/SKILL.md` is guidance only |
 | No audit trail | no log of SAP actions, approvals, or QA results |
-| Over-privileged guidance | `docs/setup-guide.md:63` mentions `SAP_ALL` (trial systems) |
+| Over-privileged guidance | `docs/platform-setup/setup-guide.md:63` mentions `SAP_ALL` (trial systems) |
 | No KPIs measured | no metrics script or data source |
 
 ## 2. Tool risk classification
@@ -135,7 +135,7 @@ Never log source text, SQL result rows, passwords, tokens, or connection strings
 | S_TABU_DIS / S_TABU_NAM | ACTVT 03 (display) only |
 | S_PROGRAM / S_DEVELOP debug | no debug-change (ACTVT 02 on DEBUG) |
 | Forbidden | SAP_ALL, SAP_NEW outside local trial (A4H/NPL) |
-| setup-guide | `SAP_ALL` text at `docs/setup-guide.md:63` relabelled "local trial only; production-like systems use the role above" |
+| setup-guide | `SAP_ALL` text at `docs/platform-setup/setup-guide.md:63` relabelled "local trial only; production-like systems use the role above" |
 
 ## 7. Control tiers (for SECURITY.md)
 
@@ -179,5 +179,5 @@ Code volume and agent call counts are reported as reference-only, not KPIs.
 | `memory/audit/` + `.gitignore` | new dir / ignore rule | devops-admin |
 | `scripts/harness-metrics.ts` | new | devops-admin #2 |
 | `SECURITY.md` | control tiers section | security-monitor |
-| `docs/setup-guide.md` | SAP_ALL trial-only; least-privilege role | security-monitor |
+| `docs/platform-setup/setup-guide.md` | SAP_ALL trial-only; least-privilege role | security-monitor |
 | `skills/post-write-chain/SKILL.md` | note: enforced via evidence store; manual profile | security-monitor |

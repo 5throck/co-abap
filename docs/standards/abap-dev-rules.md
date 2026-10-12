@@ -74,4 +74,4 @@ See [testing-guidelines.md](testing-guidelines.md) for ATC priority thresholds a
 - Memory logs: `memory/YYYY-MM-DD.md`
 
 ---
-*Last Updated: 2026-05-25*
+*Last Updated: 2026-10-12*
