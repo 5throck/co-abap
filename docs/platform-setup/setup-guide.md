@@ -81,7 +81,7 @@ The table is the target; adjust the values to your system and get Basis sign-off
 Not included, on purpose: `SAP_ALL`, `SAP_NEW`, `S_TRANSPRT` `ACTVT 43` (release), `S_TABU_DIS` change or
 maintenance (`ACTVT 02`/`01`), and any role that allows data changes in production.
 
-Transport release is done by a human outside the AI session. The harness gate also blocks it (see [SECURITY.md](../SECURITY.md#control-tiers)).
+Transport release is done by a human outside the AI session. The harness gate also blocks it (see [SECURITY.md](../../SECURITY.md#control-tiers)).
 
 ---
 
@@ -551,7 +551,7 @@ If you get an error, check:
 > Change `"SAP_MODE": "focused"` — exposes 98 individually named MCP tools instead of the single `SAP` tool.
 > **Expert mode** (all tools, debugging / advanced operations):
 > Change `"SAP_MODE": "expert"` — exposes 148 individually named MCP tools.
-> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 **Safety options (optional, set in `.env`; verify with `./vsp --help`).** See `.env.sample` for the template.
 
@@ -563,7 +563,7 @@ If you get an error, check:
 | `SAP_ENABLE_TRANSPORTS` | Opt in to transport management operations (off by default) |
 | `SAP_ALLOW_TRANSPORTABLE_EDITS` | Opt in to editing objects in transportable packages (needs a transport) |
 
-Gate classes and policy: see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+Gate classes and policy: see the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
 
 ---
 
@@ -575,7 +575,7 @@ Cloud sessions run in a managed container, not on your workstation. Plan around 
 |------------|:---------------:|-----|
 | `abap` MCP (vsp) | ❌ | Needs the local `vsp` binary (`./vsp`, gitignored, not in the repo) and direct network access to your SAP system |
 | `abap-docs` / `sap-docs` MCP endpoints | ⚠️ may be blocked | The environment network policy can refuse third-party documentation hosts (proxy `403`) |
-| ABAP write and QA chains (`WriteSource`, `SyntaxCheck`, `RunUnitTests`, `RunATCCheck`) | ❌ | Require the `abap` MCP; run them from the local CLI (see [Post-Write chain](../skills/post-write-chain/SKILL.md)) |
+| ABAP write and QA chains (`WriteSource`, `SyntaxCheck`, `RunUnitTests`, `RunATCCheck`) | ❌ | Require the `abap` MCP; run them from the local CLI (see [Post-Write chain](../../skills/post-write-chain/SKILL.md)) |
 | Repo reads, docs, governance scripts, `bun` tests | ✅ | Local to the checkout |
 
 Rules for cloud sessions:

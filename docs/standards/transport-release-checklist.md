@@ -1,7 +1,7 @@
 # Transport Release Quality Gate
 
 > **Owner**: `devops-admin` (release decision)  
-> **Upstream workflow**: [skills/abap-dev/SKILL.md](../skills/abap-dev/SKILL.md) `sap:transport-manager`  
+> **Upstream workflow**: [skills/abap-dev/SKILL.md](../../skills/abap-dev/SKILL.md) `sap:transport-manager`  
 > **Decision record**: closes the co-abap gap "No transport-release quality gate doc (release-strategy rules, import ordering)" from the variant benchmark backlog (`docs/variant-benchmark-backlog.md` §11, co-abap row), closed 2026-08-25.
 
 ---
@@ -10,8 +10,8 @@
 
 The rules governing transport release were previously split across two contracts:
 
-- [agents/devops-admin.md](../agents/devops-admin.md) - the QA-chain constraint, the never-release-with-failures behavior rule, and the "Quality Gate & Release Log" output section.
-- [skills/abap-dev/SKILL.md](../skills/abap-dev/SKILL.md) `sap:transport-manager` - the create/add/release workflow and its step 4 pre-release gate.
+- [agents/devops-admin.md](../../agents/devops-admin.md) - the QA-chain constraint, the never-release-with-failures behavior rule, and the "Quality Gate & Release Log" output section.
+- [skills/abap-dev/SKILL.md](../../skills/abap-dev/SKILL.md) `sap:transport-manager` - the create/add/release workflow and its step 4 pre-release gate.
 
 This checklist consolidates both into a single runbook the `devops-admin` agent walks before every `ReleaseTransport` call. It does not change either contract - it restates their rules in execution order and adds the import-ordering rules that were previously undocumented.
 
@@ -66,7 +66,7 @@ The runbook `devops-admin` walks for each release:
 
 | Consumer | Role |
 |----------|------|
-| [agents/devops-admin.md](../agents/devops-admin.md) | Owner of the release decision; its Behavior rule 6 requires running this checklist before every `ReleaseTransport` |
-| [skills/abap-dev/SKILL.md](../skills/abap-dev/SKILL.md) `sap:transport-manager` | Upstream workflow whose step 4 pre-release gate this doc expands |
+| [agents/devops-admin.md](../../agents/devops-admin.md) | Owner of the release decision; its Behavior rule 6 requires running this checklist before every `ReleaseTransport` |
+| [skills/abap-dev/SKILL.md](../../skills/abap-dev/SKILL.md) `sap:transport-manager` | Upstream workflow whose step 4 pre-release gate this doc expands |
 
 This checklist does not modify either contract - it consolidates them.
