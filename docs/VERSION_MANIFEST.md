@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-13T06:01:52.349Z
+**Generated**: 2026-10-13T11:19:54.979Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -140,7 +140,7 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.1.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.27.0 | scripts/dev-sync.ts | bun |
+| dev-sync.ts | 1.28.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
@@ -201,7 +201,7 @@
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
-| upgrade-project.ts | 1.70.2 | scripts/upgrade-project.ts | N/A |
+| upgrade-project.ts | 1.70.3 | scripts/upgrade-project.ts | N/A |
 | validate-agents.ts | 1.3.2 | scripts/validate-agents.ts | N/A |
 | validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
 | validate-doc-folder.ts | 1.2.1 | scripts/validate-doc-folder.ts | fs, path |
