@@ -101,27 +101,27 @@ Required env keys (see `.env.sample`):
 ## Skills
 
 <!-- DYNAMIC_SKILLS_START -->
-<!-- Auto-discovered from skills/ (SSOT) — mirrored to .agents/.claude/.gemini/.codex/.hermes skills via sync-skills.ts -->
+<!-- Auto-discovered from .agents/skills/ — synced to .claude/skills/ and .gemini/skills/ via sync-skills.ts -->
 <!-- Status: active | deprecated | experimental -->
 
 | Skill | Directory | Purpose | Status |
 |-------|-----------|---------|--------|
-| ABAP Development | `skills/abap-dev/` | Core SAP ABAP development workflow | active |
-| ABAP Code Review | `skills/abap-code-review/` | Clean ABAP review pass over naming, formatting, and anti-patterns with ATC cross-reference | active |
-| Desktop App Fallback | `skills/desktop-app-fallback/` | Manual post-write QA for Claude Code Desktop App | active |
-| Dump Monitoring | `skills/dump-monitor/` | Standardized ListDumps/GetDump health check routed to /triage | active |
-| Performance Tuning | `skills/performance-tuning/` | Standardized trace/SQL/call-graph analysis for slow programs and large-table access | active |
-| Post-Write Chain | `skills/post-write-chain/` | Mandatory QA chain after WriteSource/EditSource | active |
-| SAP CO — Controlling | `skills/sap-co/` | CO module: cost centers, internal orders, CO-PA | active |
-| SAP FI — Financial Accounting | `skills/sap-fi/` | FI module: journal entries, GL, AR/AP, fixed assets | active |
-| SAP LE — Logistics Execution | `skills/sap-le/` | LE module: shipping, transport, warehouse management | active |
-| SAP MM — Materials Management | `skills/sap-mm/` | MM module: purchasing, goods receipt, material master | active |
-| SAP PP — Production Planning | `skills/sap-pp/` | PP module: BOM, routing, production orders, MRP | active |
-| SAP SD — Sales & Distribution | `skills/sap-sd/` | SD module: sales orders, deliveries, billing, pricing | active |
-| Source Command: Celebrate | `skills/source-command-celebrate/` | Celebrate task completion for team morale | active |
+| ABAP Development | `.agents/skills/abap-dev/` | Core SAP ABAP development workflow | active |
+| ABAP Code Review | `.agents/skills/abap-code-review/` | Clean ABAP review pass over naming, formatting, and anti-patterns with ATC cross-reference | active |
+| Desktop App Fallback | `.agents/skills/desktop-app-fallback/` | Manual post-write QA for Claude Code Desktop App | active |
+| Dump Monitoring | `.agents/skills/dump-monitor/` | Standardized ListDumps/GetDump health check routed to /triage | active |
+| Performance Tuning | `.agents/skills/performance-tuning/` | Standardized trace/SQL/call-graph analysis for slow programs and large-table access | active |
+| Post-Write Chain | `.agents/skills/post-write-chain/` | Mandatory QA chain after WriteSource/EditSource | active |
+| SAP CO — Controlling | `.agents/skills/sap-co/` | CO module: cost centers, internal orders, CO-PA | active |
+| SAP FI — Financial Accounting | `.agents/skills/sap-fi/` | FI module: journal entries, GL, AR/AP, fixed assets | active |
+| SAP LE — Logistics Execution | `.agents/skills/sap-le/` | LE module: shipping, transport, warehouse management | active |
+| SAP MM — Materials Management | `.agents/skills/sap-mm/` | MM module: purchasing, goods receipt, material master | active |
+| SAP PP — Production Planning | `.agents/skills/sap-pp/` | PP module: BOM, routing, production orders, MRP | active |
+| SAP SD — Sales & Distribution | `.agents/skills/sap-sd/` | SD module: sales orders, deliveries, billing, pricing | active |
+| Source Command: Celebrate | `.agents/skills/source-command-celebrate/` | Celebrate task completion for team morale | active |
 <!-- DYNAMIC_SKILLS_END -->
 
-> **SSOT**: Skills live in `skills/<name>/` and are mirrored (generated, do not edit) to `.agents/skills/`, `.claude/skills/`, `.gemini/skills/`, `.codex/skills/`, and `.hermes/skills/` via `bun scripts/sync-skills.ts`.
+> **SSOT**: Skills live in `.agents/skills/` and are synced to `.claude/skills/` and `.gemini/skills/` via `bun scripts/sync-skills.ts`.
 > Workspace-root skills (e.g., `meeting`, `meeting-facilitation`, `project-review`, `sync`) are inherited from L0 at scaffold time and are not variant-managed.
 
 ---
@@ -153,6 +153,10 @@ Required env keys (see `.env.sample`):
 | `scratch-cleanup.ts` | Scratch workspace hygiene (temp purge, task archival, status) — *variant: scripts/co-abap/* | active |
 | `install-vsp.ts` | VSP (VS Code extension) installation — *variant: scripts/co-abap/* | active |
 | `install-bun.ts` | Bun runtime installation — *variant: scripts/co-abap/* | active |
+| `sap-mcp-proxy.ts` | Platform-neutral stdio MCP proxy in front of vsp — the single SAP enforcement point (allow/ask/deny, HMAC approvals, integrity seal, dispatch grants) — *variant overlay: scripts/* | active |
+| `sap-approve.ts` | Human-only approval CLI (single-use, input-hash-bound, /dev/tty-confirmed; also grants `--grant <runId>`) — *variant overlay: scripts/* | active |
+| `sap-integrity.ts` | Policy + enforcement-code integrity seal (init/sign/verify/verify-audit); mismatch drops the proxy to read-only — *variant overlay: scripts/* | active |
+| `validate-abap-platform-parity.ts` | Cross-platform parity: MCP proxy routing, deny-rules SSOT rendering, instruction sections, skill mirrors, schema models — *variant overlay: scripts/* | active |
 
 ---
 
@@ -197,7 +201,8 @@ Manual equivalent: `bun scripts/dev-sync.ts "feat: description"`.
 | Item | Value |
 |------|-------|
 | Binary | `vsp.exe` (project root) |
-| Version | `2.60.0` (pinned by `scripts/co-abap/install-vsp.ts`) |
+| Version | `2.38.1` (commit: a75fbfd9, built: 2026-04-07) |
+| Last Modified | 2026-05-01 |
 | Mode | `hyperfocused` (see `.mcp.json`) |
 
 > To upgrade: replace `vsp.exe` with the new binary and update this table.
@@ -242,143 +247,20 @@ See `.mcp.json` for the complete server list.
 | `scratch/tasks/` | Active task handoff files (created by `/new-task`) | Yes |
 | `scratch/stable/` | Exported ABAP sources kept for reference (read-only snapshots) | Yes |
 | `scratch/temp/` | Throwaway work files — not committed | No |
-| `skills/` | Skill SSOT — synced to `.claude/skills/` and `.gemini/skills/` via `sync-skills.ts` | Yes |
+| `.agents/skills/` | Skill SSOT — synced to `.claude/skills/` and `.gemini/skills/` via `sync-skills.ts` | Yes |
 | `.agents/` (other) | Claude Code plugin runtime cache (auto-generated by Desktop App) | No |
 | `.claude/worktrees/` | Parallel session worktrees (auto-managed by Desktop App) | No |
-
-### vsp Tool Reference (Hyperfocused Mode)
-
-> **SSOT** for legacy vsp tool names. `.mcp.json` runs vsp v2.60.0 with `SAP_MODE=hyperfocused`, which exposes **one** MCP tool, `SAP` (Claude name `mcp__abap__SAP`), called as `SAP(action, target "TYPE NAME", params)`. Agent files, skills, and templates still use the legacy names below; they must **cite this table** (`docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode`) and must not restate it. Gate classes (R0-R3) follow [the SAP write-safety gate design §2.0](designs/2026-10-10-sap-write-safety-gate-design.md) and the `hyperfocused` section of `config/sap-action-policy.json` (the policy file wins on conflict). Discover details with `SAP(action="help", target="<action>")`.
->
-> **Safety**: on every platform the `abap` server is launched through `scripts/sap-mcp-proxy.ts`, which applies these gate classes before vsp sees the call. `ask` and unapproved R3 calls return `APPROVAL_REQUIRED id=<id>`; a human runs `bun scripts/sap-approve.ts <id>` (typing the first 6 characters of the id on `/dev/tty`) and the agent repeats the identical call once. Agents never run `sap-approve.ts`. See [SECURITY.md](../SECURITY.md#control-tiers).
-
-| Legacy name | Hyperfocused equivalent | Gate | Notes |
-|-------------|------------------------|:----:|-------|
-| GetSource | `SAP(action="read", target="CLAS ZCL_X")` (any `TYPE NAME`) | R0 | |
-| GetTable | `SAP(action="read", target="TABL ZTAB")` | R0 | |
-| GetFunctionGroup | `SAP(action="read", target="FUGR ZFG")` | R0 | |
-| GetRevisionSource | `SAP(action="revisions", target="CLAS ZCL_X", ...)` | R0 | history, one version, compare |
-| GetContext | `SAP(action="analyze", params={"type":"context", ...})` | R0 | |
-| SearchObject | `SAP(action="search", target="ZCL_*")` | R0 | |
-| GrepObjects / GrepPackages | `SAP(action="grep", params={"package_name":"ZPKG","pattern":"SELECT"})` | R0 | |
-| GetTableContents | `SAP(action="query", target="TABL_CONTENTS ZTAB", params={"max_rows":50})` | R0 | |
-| RunQuery | `SAP(action="query", params={"sql_query":"SELECT ..."})` | R0 | exactly one SELECT, else deny (gate §2.1); DA-4 still applies |
-| GetCDSDependencies | `SAP(action="analyze", params={"type":"analyze_deps", ...})` | R0 | |
-| GetCDSImpactAnalysis | `SAP(action="analyze", params={"type":"cds_impact", ...})` | R0 | also `impact`, `references` |
-| GetCDSExposure | `SAP(action="read", target="SRVB ZUI_X_O4")` + `analyze` `references` | R0 | no dedicated sub-type; derive from SRVD/SRVB read |
-| GetODataMetadata | `SAP(action="read", target="SRVB <name>")` | R0 | `$metadata` of a published service only via browser/Gateway client |
-| SyntaxCheck | `SAP(action="analyze", params={"type":"syntax_check", ...})` | R1 | evidence `SyntaxCheck` |
-| RunUnitTests | `SAP(action="test", params={"object_url":"/sap/bc/adt/oo/classes/zcl_x"})` | R1 | evidence `RunUnitTests` |
-| GetCodeCoverage | `test` with `params.with_coverage=true` (or `coverage`) | R1 | evidence `GetCodeCoverage` only when the flag is set |
-| RunATCCheck | `SAP(action="test", params={"type":"atc", ...})` | R1 | evidence `RunATCCheck` |
-| TraceExecution | `SAP(action="analyze", params={"type":"trace_execution", ...})` | R1 | no evidence step |
-| ListTraces / GetTrace | `analyze` `type=list_traces` / `get_trace` | R0 | |
-| ListSQLTraces / GetSQLTraceState | `analyze` `type=list_sql_traces` / `sql_trace_state` | R0 | |
-| GetCallGraph / AnalyzeCallGraph | `analyze` `type=call_graph` (`callers`, `callees`) / `analyze_call_graph` | R0 | |
-| ListDumps / GetDump | `analyze` `type=list_dumps` / `get_dump` (`explain_dump`) | R0 | |
-| WriteSource / EditSource | `SAP(action="edit", target="CLAS ZCL_X", params={"source":...})`; surgical: `target="EDITSOURCE"` with `old_string`/`new_string` | R2 | package must be allowlisted; resets QA chain; new objects use `create` (R2) |
-| Activate | `edit` `target=ACTIVATE` (`ACTIVATE_MULTI`, `ACTIVATE_PACKAGE`) | R2 | does not reset the QA chain |
-| ListTransports / GetTransport | `SAP(action="system", params={"type":"list_transports"})` / `get_transport` | R0 | |
-| CreateTransport / AddToTransport | `system` `type=create_transport` / `add_transport_object` | R2 | |
-| ReleaseTransport | `system` `type=release_transport` | R3 | approval + `passed` evidence for every object |
-| GetConnectionInfo / GetSystemInfo | `SAP(action="system", target="CONNECTION")` / `target="INFO"` (also `COMPONENTS`, `FEATURES`) | R0 | `info` action also R0 |
-| GetArguments (FM signature) | `SAP(action="rfc", target="FM_NAME")` (`op=describe`, default) | R0 | `op=call`/`run`/`read_table` are R3 |
-| RunReport / RunOptions | `debug` `RUN_REPORT` / `rfc` `op=run` | R3 | deny unless approved |
-| any delete | `SAP(action="delete", ...)` | R3 | |
-| debugging | `SAP(action="debug", ...)` | R3 | whole action is R3 |
-| **GetAPIReleaseState** | **none in v2.60.0** | - | C1 check stays manual in ADT per DA-3 (record `C1 not verified` if unavailable) |
-| **UI5ListApps / UI5GetApp / UI5GetFileContent** | **none in hyperfocused mode** | - | need `SAP_FEATURE_UI5=on` (off). Fallback: read the BSP repo via `search`/`read` where possible, otherwise read the app from its Git repo/Business Application Studio export |
-
-**Feature flags.** `SAP_FEATURE_UI5`, `SAP_FEATURE_RAP`, `SAP_FEATURE_TRANSPORT`, and `SAP_FEATURE_ABAPGIT` are **off**. Transport operations above go through `system` and are still classified by the gate. Turning a flag on is a deliberate `.mcp.json` change reviewed by the PM; deploy-type tools it unlocks (UI5/RAP/abapGit deploy) are R3 and need explicit approval per gate §2.2.
-
-**Scope limits.** SAPscript (SE71), Smart Forms (SMARTFORMS), and Adobe Forms (SFP) **layouts are not editable via ADT/vsp**; their print programs, driver classes, and interface-feeding code are. Layout work is a human GUI step recorded in the forms design. SAP GUI scripting is **outside the MCP gate** and must not be used to bypass it.
 
 ### ABAP Development Rules
 - **Naming**: `ZCL_` (class), `ZIF_` (interface), `ZPROG_` (program).
 - **Isolation**: All local `.abap` files must be created ONLY in the `scratch/` directory.
 - **Write Operations**: Use `EditSource` for small changes. Always run `SyntaxCheck` before `WriteSource`.
-- **QA Chain**: After any logic change or edit, the `Post-Write Mandatory Chain` MUST be executed (`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage` → `RunATCCheck`). Priority 1 findings block deployment; coverage below 70% on new objects blocks proceeding to ATC unless waived. See [skills/post-write-chain/SKILL.md — Post-Write Mandatory Chain](../skills/post-write-chain/SKILL.md) for details. **Note**: The proxy records chain evidence on every platform; where nothing triggers the chain automatically, run it with `/post-write <object>`.
+- **QA Chain**: After any logic change or edit, the `Post-Write Mandatory Chain` MUST be executed (`SyntaxCheck` → `RunUnitTests` → `GetCodeCoverage` → `RunATCCheck`). Priority 1 findings block deployment; coverage below 70% on new objects blocks proceeding to ATC unless waived. See [skills/post-write-chain/SKILL.md — Post-Write Mandatory Chain](../skills/post-write-chain/SKILL.md) for details. **Note**: If your environment (e.g., Gemini CLI, Claude Desktop App) does not support automatic PostToolUse hooks, you MUST execute this chain manually.
 - **Final Audit**: Before any sync/commit, run the `sap:documentation-audit` skill.
-
-### Data Access Rules (CDS-First & SQL Quality)
-
-> **SSOT** for ABAP data-access rules. Agent files, skills, templates, and the Clean ABAP checklist cite these rules by ID (DA-1..DA-8) and must not restate them.
-
-#### DA-1 Release Detection
-Before choosing a data-access approach, determine the system release: check the `S4CORE` software component in the installed components table (e.g. `CVERS`; verify the table name on the target) via `RunQuery`, or check whether an `I_*` view resolves via `SearchObject`. If the release cannot be determined, treat the system as non-VDM (Open SQL) and record `System release: unknown`.
-
-#### DA-2 Scope Decision Table
-
-| Situation | Rule |
-|-----------|------|
-| New object on S/4HANA | CDS-first (DA-3) applies |
-| Existing object, bug fix without a new read | Keep the existing pattern; no rationale required |
-| Existing object, new `SELECT` added | DA-3 applies to the new statement only; untouched statements unchanged |
-| Any existing statement converted to CDS | DA-6 applies (the conversion itself is optional) |
-| ECC / non-VDM system | Open SQL under DA-4; CDS optional |
-
-#### DA-3 Priority Order (When in Scope)
-1. Released standard CDS (`I_*`) with C1 release state verified on the target system
-2. Custom CDS (`ZI_` / `ZR_` / `ZC_`, see DA-8)
-3. Open SQL with DB pushdown
-4. AMDP, with written justification
-
-Any fallback below level 2 requires a one-line rationale. **C1 verification**: no repository tool reads the API release state (`GetAPIReleaseState` is absent); verify in ADT (API State / "Use in Cloud Development") on the target system. If not verifiable, record `C1 not verified` and use level 2 with rationale.
-
-#### DA-4 SQL Quality Baseline
-Applies to statements written or modified in the change. Untouched legacy statements are not violations (they may be flagged as out of scope).
-- No `SELECT` inside `LOOP` and no `SELECT ... ENDSELECT` — use `INTO TABLE`, `JOIN`, or CDS.
-- No `SELECT *`.
-- `WHERE` supported by key/index; no expressions or casts on key fields in `WHERE`.
-- `SELECT SINGLE` only with the full key; otherwise `UP TO 1 ROWS` with `ORDER BY`.
-- `FOR ALL ENTRIES`: explicit `IF itab IS NOT INITIAL` guard (an empty driver reads the full table); select the full key or accept the implicit `DISTINCT`; no aggregates; de-duplicate the driver; prefer `JOIN`/CDS when the data is DB-resident.
-- Aggregate on the DB for large results.
-- Client handling: never hardcode `MANDT`; consider CDS `@ClientHandling`; AMDP/native SQL handle the client explicitly (`USING CLIENT` / `MANDT` parameter).
-- Buffered tables: prefer `SELECT SINGLE` on fully buffered customizing tables; do not pull them into large joins or use `BYPASSING BUFFER` without reason.
-
-#### DA-5 CDS Authorization
-Every new CDS view exposing Z/Y or business data — including composites of `I_*` views — carries `@AccessControl.authorizationCheck: #CHECK` and a DCL mapped to named authorization objects.
-- `#NOT_REQUIRED` is forbidden; `#PRIVILEGED_ONLY` only with `security-monitor` sign-off.
-- Never set `#NOT_REQUIRED` on a wrapper of a view that has its own check.
-- The DCL is active on the target system.
-- A negative test (user without authorization gets zero rows / an error) is attached.
-- The NL-analytics layer is stricter than DA-5 and excludes `#PRIVILEGED_ONLY` views entirely, with no template, free-form SQL, or break-glass path able to reach them (see `docs/designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md`, runtime authorization).
-
-#### DA-6 CDS Conversion Regression
-Any conversion of existing logic to CDS (including during maintenance) requires:
-- Before/after comparison on the same selection with representative volume: row count equal; totals equal within a stated rounding tolerance, any difference explained.
-- SQL/performance trace before and after on the same selection.
-
-Roles: `code-writer` records the old/new statements and requests the run; `test-runner` executes and attaches the results; `dba` reviews the trace. "Pending" is allowed in the `code-writer` report until `test-runner` attaches the evidence.
-
-#### DA-7 CDS Stack Depth
-Heuristic review trigger, not a hard limit (SAP VDM stacks of 4-6 levels are normal). Review with `dba` if the stack exceeds 4 levels counted from the base table, joins inflate rows through the stack, or filters/parameters cannot be pushed down to the lowest view.
-
-#### DA-8 Custom CDS Naming (VDM-Aligned)
-
-| Prefix | Use |
-|--------|-----|
-| `ZI_` | Interface / basic view |
-| `ZR_` | RAP root / business-object base view |
-| `ZC_` | Consumption / query / projection view |
-
-A "Z wrapper CDS" is a `ZI_` view whose main source is a Z/Y table.
-
-**RAP layer (VDM/RAP-aligned convention):**
-
-| Artifact | Name | Rule |
-|----------|------|------|
-| Root view entity (R layer) | `ZR_<Entity>` | `define root view entity`, over `ZI_`/table |
-| Projection view (C layer) | `ZC_<Entity>` | `as projection on ZR_<Entity>`; one per consumption scenario |
-| Metadata extension (DDLX) | same name as the annotated view, e.g. `ZC_<Entity>` | `@Metadata.layer: #CUSTOMER`; UI annotations live here, not in the view |
-| Behavior definition (BDEF) | same name as its view: `ZR_<Entity>` (base), `ZC_<Entity>` (projection) | behavior pool class `ZBP_R_<Entity>` |
-| Access control (DCLS) | same name as the protected view | DA-5 |
-| Service definition (SRVD) | `ZUI_<Entity>` (UI) / `ZAPI_<Entity>` (Web API) | exposes `ZC_` entities only |
-| Service binding (SRVB) | `ZUI_<Entity>_O4` / `ZUI_<Entity>_O2` / `ZAPI_<Entity>_O4` | suffix = protocol (`_O2` OData V2, `_O4` OData V4) |
 
 ### ABAP SQL Reference (All Agents)
 
-> All agents that run `RunQuery` MUST follow these rules. For ABAP code (not ad-hoc queries), the SQL quality baseline is [DA-4](#da-4-sql-quality-baseline).
+> All agents that run `RunQuery` MUST follow these rules.
 
 ```sql
 -- Correct ordering

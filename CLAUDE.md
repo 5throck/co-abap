@@ -121,22 +121,6 @@ When writing Korean documentation or Korean translation output, prefer native Ko
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
-<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
-### SAP safety (proxy) & approvals
-
-Same rules on every platform; only the config file differs. Platform: **Claude Code (CLI & Desktop App)**.
-
-- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.mcp.json`. The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Claude SAP `PreToolUse`/`PostToolUse` hooks are no longer registered; any remaining SAP hook output is advisory UX only.
-- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty`; then repeat the identical call once (single use, input-bound, short TTL). Pending requests and approvals live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600); the approver is the OS user.
-- **Integrity**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy or enforcement scripts; until then the proxy is R0 (read-only). `verify` and `verify-audit` are read-only checks.
-- **Agents must never run `sap-approve.ts` or `sap-integrity.ts init|sign`**, write approval or pending files, read `~/.config/co-abap/`, or launch `vsp` outside the proxy. The former manual profile is retired.
-
-### Parallel dispatch
-
-- **Native mechanism**: the native `Agent` tool (multiple `Agent()` calls in one message run in parallel).
-- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform claude --plan <plan-file>` runs one CLI process per plan row. Each row has `mode: read|write`; read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. Timeouts: SIGTERM, 10s grace (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls. SAP calls from children always pass through the proxy.
-- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
-
 ## Execution Plan Boilerplate
 
 The execution plan table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in **[Execution Plan Templates §5.1 Standard Execution Plan Template](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template)** and **[§5.1.1 Design Gate Exemptions](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions)** — do not restate them here.
@@ -148,9 +132,6 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
-<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
-### 5. Agent Dispatch Rules
-
 Use the native `Agent` tool to spawn sub-agents for parallel or isolated tasks. Sub-agents load their role-based configurations from `agents/<name>.md`.
 
 > **Agent Architecture**: See [docs/context.md](docs/context.md) for governance rules.
@@ -163,13 +144,13 @@ Agent(
   description   = "Implement automation script",
   prompt        = "You are an automation engineer. [paste agents/automation-engineer.md content here]\n\nTask: Implement the script per the approved plan.",
   subagent_type = "claude",  // platform agent type; embed the agents/<name>.md role definition in the prompt
-  model         = "haiku"    // automation-engineer is Low-tier (registry: claude-haiku-4-5) — see registry→model mapping below
+  model         = "haiku"    // automation-engineer is Low-tier (registry: claude-haiku-5-5) — see registry→model mapping below
 )
 ```
 
 > The example dispatches `automation-engineer`, a **workspace-root (L0) agent** — in a scaffolded project, substitute your project's equivalent implementer agent's role definition in the prompt.
 
-> **Registry name → `model` parameter mapping**: `docs/workspace-schema.json` and the tables above name models by full registry ID (e.g. `claude-opus-5-5`) for cross-platform documentation. The native `Agent` tool's `model` parameter only accepts the short aliases `sonnet | opus | haiku | fable`. <!-- Note: `fable` is a forward-looking alias not yet registered in workspace-schema.json --> When dispatching, translate the agent's tier to its registry model, then to the matching alias: High → `claude-opus-5-5` → `model = "opus"`; Medium → `claude-sonnet-5-5` → `model = "sonnet"`; Low → `claude-haiku-4-5` → `model = "haiku"`. Omitting `model` lets the subagent fall back to its frontmatter (`model: inherit`), which inherits the parent session's model instead of the tier-appropriate one — always set `model` explicitly to actually get the cost-tier benefit.
+> **Registry name → `model` parameter mapping**: `docs/workspace-schema.json` and the tables above name models by full registry ID (e.g. `claude-opus-5-5`) for cross-platform documentation. The native `Agent` tool's `model` parameter only accepts the short aliases `sonnet | opus | haiku | fable`. <!-- Note: `fable` is a forward-looking alias not yet registered in workspace-schema.json --> When dispatching, translate the agent's tier to its registry model, then to the matching alias: High → `claude-opus-5-5` → `model = "opus"`; Medium → `claude-sonnet-5-5` → `model = "sonnet"`; Low → `claude-haiku-5-5` → `model = "haiku"`. Omitting `model` lets the subagent fall back to its frontmatter (`model: inherit`), which inherits the parent session's model instead of the tier-appropriate one — always set `model` explicitly to actually get the cost-tier benefit.
 >
 > **Automated enforcement (Claude Code CLI only)**: `scripts/hooks/agent-model-gate.ts` runs as a `PreToolUse` hook (matcher: `Agent`) and asks for confirmation whenever an `Agent()` call dispatches one of the 8 workspace-root agents (`pm`, `architect`, `auditor`, `lifecycle-manager`, `automation-engineer`, `docs-writer`, `scaffolding-expert`, `security-expert`) without a valid `model` alias — this is the check that catches the High/Low-tier (`opus`/`haiku`) silent-fallback bug described above before it happens. L0-only; not propagated to `templates/common/` since variant projects have their own agent rosters without a workspace-wide tier registry.
 
@@ -182,14 +163,11 @@ Each implementation task follows the **Phase 4 execution loop** (see [AGENTS.md 
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->
-<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
-### 6. Native Sub-agents (Agent Tool)
-
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Claude Code's model-ID mapping (overridden per agent invocation when appropriate):
 - **High-tier** → `claude-opus-5-5`
 - **Medium-tier** → `claude-sonnet-5-5`
-- **Low-tier** → `claude-haiku-4-5`
+- **Low-tier** → `claude-haiku-5-5`
 <!-- COMMON-CLAUDE:END -->
 
 <!-- COMMON-CLAUDE:START -->

@@ -1,4 +1,23 @@
-// @version 1.25.0
+// @version 1.27.0
+// v1.27.0 (2026-10-12, T-20261012-011): (1) a branch whose PR is CLOSED
+//          unmerged refuses the sync before staging/commit — committing a new
+//          sync onto a dead branch under-represents the review surface
+//          (PR #1509's 45-file branch re-landed via the 1-file PR #1510).
+//          (2) the PR title re-derives from the full main...HEAD diff when
+//          the caller message is weak, so the title represents the whole
+//          surface; commit-message 1.1.0 keeps the file count in every
+//          fallback subject.
+// v1.26.0 (2026-10-11, U-20261008-001, spec
+//          docs/designs/2026-10-11-backlog-batch-2-design.md): step 1 descriptive
+//          commit messages — weak caller messages (no message, bare "chore: update",
+//          bare "chore: upgrade template to X") are replaced at composition time by a
+//          conventional-commit summary derived from the task-staged change set
+//          (primary path-group picks type(scope); docs/designs changes cite the spec
+//          id while the 72-char budget allows; no classifiable paths fall back to
+//          "chore: workspace sync (<n> files)"). Descriptive caller messages are kept
+//          verbatim. The derived message feeds the language gate, PR slug, commit,
+//          and PR title — one message everywhere. Composition lives in
+//          scripts/helpers/commit-message.ts (pure, unit-tested).
 // v1.25.0 (2026-10-08, T-20261008-005): step 3.9 heal-by-early-publish — the lifecycle
 //          members of `audit.ts --spec-check --lifecycle-only` fail on publish-pending
 //          L0→L1 drift, so a change set that adds or bumps an L1-delivered script or
@@ -170,13 +189,13 @@ import { $ } from 'bun';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as crypto from 'node:crypto';
-import * as os from 'node:os';
 import { withRetry, DEFAULT_CONFIG } from './retry-handler.ts';
 import { hasNonEnglish } from './lib/language-guard.ts';
 import { parseCachedNameStatus, parseStatusPorcelain } from './lib/git-status.ts';
 import { sharedPipelineFilesChanged, parseUnresolvedConflicts } from './helpers/merge-state.ts';
 import { isDeliveredDiff } from './lib/upgrade-policy.ts';
 import { detectVersionBumps, hasTestUnitScript } from './helpers/version-bump.ts';
+import { composeCommitMessage, deriveCommitMessage, isWeakCommitMessage } from './helpers/commit-message.ts';
 
 const GREEN = '\x1b[32m';
 const RED = '\x1b[31m';
@@ -246,11 +265,30 @@ for (let i = 0; i < rawArgs.length; i++) {
     msgArgs.push(arg);
   }
 }
-const msg = (msgArgs.join(' ') || "chore: update")
+let msg = (msgArgs.join(' ') || "chore: update")
   // Collapse newlines/control chars — safe for git -m and gh --title arguments
   .replace(/[\r\n\t]+/g, ' ')
   .replace(/\s+/g, ' ')
   .trim() || "chore: update";
+
+// Step 1 (U-20261008-001): weak messages — the no-arg fallback "chore: update" and
+// the bare "chore: upgrade template to X" shape — are replaced by a descriptive
+// conventional-commit summary derived from the task-staged change set. Snapshot the
+// staged set here (nothing stages between this point and the step 6.5 snapshot, so
+// this IS the task-staged set). Composition is pure (helpers/commit-message.ts) and
+// its output is English by construction, so the language gate below still applies
+// unchanged to caller-supplied text.
+if (import.meta.main) {
+  try {
+    const earlyStagedRes = await $`git diff --cached --name-only -z`.quiet().nothrow();
+    if (earlyStagedRes.exitCode === 0) {
+      const stagedPaths = earlyStagedRes.stdout.toString().split('\0').filter(Boolean);
+      msg = composeCommitMessage(msg, stagedPaths);
+    }
+  } catch (e) {
+    console.error(`[dev-sync] commit-message derivation skipped: ${e}`);
+  }
+}
 
 // Language gate — commit messages / PR titles must be English (context.md §3).
 // Runs before any git mutation so a non-English message never reaches a commit or PR
@@ -1159,6 +1197,18 @@ if (currentBranch === "main" || currentBranch === "master") {
         }
     }
 } else {
+    // T-20261012-011: a branch whose PR was CLOSED unmerged is dead —
+    // committing a new sync onto it under-represents the review surface
+    // (PR #1509 closed with 45 files; the content re-landed via a 1-file PR
+    // #1510). Refuse before staging/commit.
+    const closedPrRes = await $`gh pr view ${branch} --json state --jq .state`.quiet().nothrow();
+    if (closedPrRes.exitCode === 0 && closedPrRes.stdout.toString().trim() === 'CLOSED') {
+        console.error(`${RED}❌ Branch '${branch}' has a CLOSED (unmerged) PR — refusing to commit a new sync onto a dead branch.${RESET}`);
+        console.error(`${YELLOW}   Re-branch from main (git checkout main && git checkout -b pr/<new-slug>) and re-run /sync.${RESET}`);
+        if (import.meta.main) {
+          process.exit(1);
+        }
+    }
     console.log(`${CYAN}ℹ️  Already on branch '${branch}' - committing here without creating a new branch.${RESET}`);
 }
 
@@ -1385,7 +1435,7 @@ try {
 
 const pushRetry = await withRetry(
     () => $`git push -u origin ${branch}`.nothrow(),
-    { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
+    { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
     'git push'
 );
 const pushProc = pushRetry.result as { exitCode: number; stderr: { toString(): string } } | undefined;
@@ -1476,27 +1526,8 @@ if (!remoteMainExists) {
 // on a reused branch name whose earlier PR was already MERGED/CLOSED, that lookup
 // still "succeeds" and this step would wrongly report "no new PR needed" while the
 // new commits sit with zero PR coverage. Must check state explicitly.
-// LOCAL-PATCH(upstream-request: pending) — REST fallback for GraphQL-blocked
-// environments (cloud sessions return 403 on `gh pr view/create`, which use GraphQL).
-const originUrlRes = await $`git remote get-url origin`.quiet().nothrow();
-const restSlugMatch = originUrlRes.stdout.toString().trim().match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/);
-const restSlug = restSlugMatch ? restSlugMatch[1] : '';
-const isGraphqlBlocked = (r: unknown): boolean => {
-    const x = r as { exitCode?: number; stderr?: { toString(): string } } | null;
-    return !!x && x.exitCode !== 0 && /403|GraphQL/i.test(x.stderr?.toString() ?? '');
-};
-const findOpenPrViaRest = async (): Promise<string> => {
-    if (!restSlug) return '';
-    const owner = restSlug.split('/')[0];
-    const res = await $`gh api ${`repos/${restSlug}/pulls?head=${owner}:${branch}&state=open`} --jq ${'.[0].html_url // ""'}`.quiet().nothrow();
-    return res.exitCode === 0 ? res.stdout.toString().trim() : '';
-};
 const existingPrRes = await $`gh pr view ${branch} --json url,state --jq "if .state == \"OPEN\" then .url else \"\" end"`.quiet().nothrow();
-let existingPrUrl = existingPrRes.exitCode === 0 ? existingPrRes.stdout.toString().trim() : '';
-if (!existingPrUrl && isGraphqlBlocked(existingPrRes)) {
-    console.log(`${YELLOW}⚠️  gh pr view blocked (403/GraphQL) — using REST fallback${RESET}`);
-    existingPrUrl = await findOpenPrViaRest();
-}
+const existingPrUrl = existingPrRes.exitCode === 0 ? existingPrRes.stdout.toString().trim() : '';
 
 if (existingPrUrl) {
     console.log(`${GREEN}✓ PR already exists for '${branch}' — commit pushed, no new PR needed:${RESET}`);
@@ -1549,63 +1580,56 @@ if (existingPrUrl) {
         }
     }
 
+    // T-20261012-011: the PR title represents the FULL branch-vs-main
+    // surface — when the branch carries prior commits, the staged set
+    // under-represents it (PR #1509's 45-file branch re-landed via a
+    // 1-file PR #1510). If the caller message is weak, re-derive it from
+    // the full main...HEAD diff before creating the PR.
+    let prTitle = msg;
+    try {
+        const fullDiffRes = await $`git diff --name-only origin/main...HEAD -z`.quiet().nothrow();
+        if (fullDiffRes.exitCode === 0 && isWeakCommitMessage(prTitle)) {
+            const diffPaths = fullDiffRes.stdout.toString().split('\0').filter(Boolean);
+            if (diffPaths.length > 0) {
+                prTitle = deriveCommitMessage(diffPaths);
+                if (prTitle !== msg) {
+                    console.log(`${CYAN}ℹ️  PR title derived from the full branch-vs-main diff: ${prTitle}${RESET}`);
+                }
+            }
+        }
+    } catch (err) {
+        console.log(`${YELLOW}⚠️  full-diff title derivation skipped (${String(err).split('\n')[0]})${RESET}`);
+    }
+
     let prCreateRetry: Awaited<ReturnType<typeof withRetry>>;
     if (bodySourceFile) {
         prCreateRetry = await withRetry(
-            () => $`gh pr create --title ${msg} --body-file ${bodySourceFile}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
+            () => $`gh pr create --title ${prTitle} --body-file ${bodySourceFile}`.nothrow(),
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
             'gh pr create'
         );
     } else if (prBody) {
         prCreateRetry = await withRetry(
             () => $`gh pr create --title ${msg} --body ${prBody}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
             'gh pr create'
         );
     } else if (fs.existsSync(path.join('.github', 'pull_request_template.md'))) {
         const prTpl = fs.readFileSync(path.join('.github', 'pull_request_template.md'), 'utf-8');
         prCreateRetry = await withRetry(
             () => $`gh pr create --title ${msg} --body ${prTpl}`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
             'gh pr create'
         );
     } else {
         prCreateRetry = await withRetry(
             () => $`gh pr create --fill`.nothrow(),
-            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => (typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0) || isGraphqlBlocked(r) },
+            { ...DEFAULT_CONFIG, maxRetries: 3, initialDelay: 1000, isSuccess: (r: unknown) => typeof r === "object" && r !== null && (r as { exitCode: number }).exitCode === 0 },
             'gh pr create'
         );
     }
 
-    // A GraphQL-blocked result stops retries (isSuccess above) but is not a real success.
-    const lastCreateResult = (prCreateRetry as { result?: unknown }).result;
-    const createBlocked = isGraphqlBlocked(lastCreateResult);
-    if (createBlocked) {
-        console.log(`${YELLOW}⚠️  gh pr create blocked (403/GraphQL) — falling back to REST: gh api repos/${restSlug}/pulls${RESET}`);
-        let restOk = false;
-        if (restSlug) {
-            const restBody = bodySourceFile ? fs.readFileSync(bodySourceFile, 'utf-8') : (prBody || msg);
-            const bodyTmp = path.join(os.tmpdir(), `dev-sync-pr-body-${process.pid}.md`);
-            fs.writeFileSync(bodyTmp, restBody);
-            const restRes = await $`gh api ${`repos/${restSlug}/pulls`} -X POST -f title=${msg} -f head=${branch} -f base=main -F body=@${bodyTmp} --jq .html_url`.quiet().nothrow();
-            try { fs.unlinkSync(bodyTmp); } catch { /* best effort */ }
-            if (restRes.exitCode === 0) {
-                console.log(`${GREEN}✓ PR created via REST:${RESET} ${restRes.stdout.toString().trim()}`);
-                restOk = true;
-            } else {
-                const already = await findOpenPrViaRest();
-                if (already) {
-                    console.log(`${GREEN}✓ PR already exists:${RESET} ${already}`);
-                    restOk = true;
-                }
-            }
-        }
-        if (!restOk) {
-            // Push already succeeded — do not fail the pipeline.
-            console.log(`${YELLOW}⚠️  REST PR creation also failed. Push succeeded; open the PR manually:${RESET}`);
-            console.log(`  https://github.com/${restSlug}/compare/${branch}?expand=1`);
-        }
-    } else if (!prCreateRetry.success) {
+    if (!prCreateRetry.success) {
         const errMsg = prCreateRetry.lastError?.message || 'unknown error';
         console.log(`${RED}❌ gh pr create failed: ${errMsg}${RESET}`);
         if (import.meta.main) {
