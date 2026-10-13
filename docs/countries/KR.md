@@ -18,7 +18,7 @@ Not mapped in this variant. Route jurisdictional questions (trade/customs, labor
 
 ## Operational Formats
 
-Each row names the SAP concept that carries the convention. Checklist rules: `docs/standards/sap-globalization-checklist.md`.
+Each row names the SAP concept that carries the convention. Checklist rules: `docs/sap-globalization-checklist.md`.
 
 | Dimension | KR convention | SAP development note |
 |---|---|---|

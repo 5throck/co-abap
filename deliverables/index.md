@@ -8,4 +8,3 @@ status `Draft`. The Stage, QA Gate, and Release columns advance through Stages 1
 
 | Req ID | Requirement Title | Module | Stage | Owner | Status | Deliverables | QA Gate | Release |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **REQ-002** | ZFLIGHT report | CROSS | Stage 1 | pm | Draft | [Link](./REQ-002-zflight-report/) |  |  |

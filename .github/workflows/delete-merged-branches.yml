@@ -1,3 +1,8 @@
+# Ported from Projects/co-abap (.github/workflows/delete-merged-branches.yml, PR #196
+# class) via T-20261011-005 — parameterized for any repo (no project-specific literals).
+# Rationale transfers: agent-session git proxies return 403 on branch deletion, so
+# merged head branches pile up; this runner prunes them automatically (event leg) and
+# on demand (manual sweep, dry_run default true).
 name: Delete Merged Branches
 
 on:

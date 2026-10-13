@@ -1,4 +1,11 @@
-// @version 2.52.0
+// @version 2.53.0
+// v2.53.0 (2026-10-11, U-20261009-001, spec
+//          docs/designs/2026-10-11-backlog-batch-2-design.md): the platform-lifecycle
+//          Fail hint names the third-party-skill escape hatches — tool-generated
+//          skills like graft are version-exempt via docs/self-managed-surfaces.json
+//          or the loader's built-in default (scripts/lib/self-managed-tools.ts
+//          v1.1.0), so a graft install can no longer block every /sync. Message-only
+//          change; the check wiring is unchanged.
 // v2.52.0 (2026-10-09, T-20261009-005/-002): tracked node_modules guard — any
 //          git-tracked node_modules path is a hard FAIL (the 7b154db3 symlink
 //          incident class; complements the slash-less .gitignore entry).
@@ -1003,7 +1010,7 @@ if (hasBun) {
     if (fs.existsSync(path.join('scripts', 'verify-platform-lifecycle.ts'))) {
         const out = await $`bun ${path.join('scripts', 'verify-platform-lifecycle.ts')}`.nothrow();
         if (out.exitCode !== 0)
-            Fail("Platform lifecycle verification failed (run 'bun scripts/verify-platform-lifecycle.ts' to see details)");
+            Fail("Platform lifecycle verification failed (run 'bun scripts/verify-platform-lifecycle.ts' to see details; third-party tool skills like graft are version-exempt via docs/self-managed-surfaces.json or the built-in default in scripts/lib/self-managed-tools.ts)");
     }
 
     // Script lifecycle verification: version headers
@@ -1145,11 +1152,9 @@ if (!LIFECYCLE_ONLY && fs.existsSync(claudeCommandsDir)) {
         const content = readUTF8File(filePath);
         if (/^gemini-parity:\s*skip/m.test(content)) continue;
 
-        // Gemini custom commands are TOML-only; scripts/render-commands.ts renders them.
-        // LOCAL-PATCH(upstream-request: pending): Gemini CLI loads TOML commands only
-        const geminiCmd = path.join('.gemini', 'commands', file.replace(/\.md$/, '.toml'));
+        const geminiCmd = path.join('.gemini', 'commands', file);
         if (!fs.existsSync(geminiCmd)) {
-            Warn(`Command parity gap: .claude/commands/${file} has no matching .gemini/commands/${file.replace(/\.md$/, '.toml')} (run bun scripts/render-commands.ts; add 'gemini-parity: skip' to frontmatter for intentional Claude-only commands)`);
+            Warn(`Command parity gap: .claude/commands/${file} has no matching .gemini/commands/${file} (add 'gemini-parity: skip' to frontmatter for intentional Claude-only commands)`);
             parityWarnings++;
         }
     }

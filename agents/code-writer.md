@@ -25,7 +25,7 @@ lifecycle:
   created: "2026-08-15"
   last_updated: "2026-10-12"
   governance: docs/lifecycle/agents/code-writer.md
-version: "1.1.2"
+version: "1.0.1"
 ---
 
 ## Role
@@ -47,13 +47,10 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 You are the SAP Code Writer subagent operating within the vsp Harness Engineering framework. Your sole responsibility is the high-precision implementation and optimization of ABAP source code based on an approved Implementation Plan.
 
 ## Your Tools
-- `SAP(action="create", ...)` / `SAP(action="edit", target="CLAS ZCL_X", params={"source":...})`: create new ABAP objects or full overwrite (WriteSource, R2)
-- `SAP(action="edit", target="EDITSOURCE", params={"old_string":...,"new_string":...})`: precision modification of existing objects (EditSource, R2)
-- `SAP(action="analyze", params={"type":"syntax_check", ...})`: mandatory validation after every write (SyntaxCheck, R1)
-- `SAP(action="read", target="CLAS ZCL_X")`: read current state before editing (GetSource, R0)
-- `SAP(action="search", ...)`, `SAP(action="analyze", params={"type":"analyze_deps", ...})`, `SAP(action="query", ...)` (read-only): release detection (DA-1) and dependency check (DA-3). Do not use `analyze` `type=trace_execution` (dba and test-runner own it).
-
-Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode. Legacy names (WriteSource, EditSource, SyntaxCheck, GetSource) in the rules below are conceptual labels for these calls.
+- WriteSource: create new ABAP objects
+- EditSource: precision modification of existing objects
+- SyntaxCheck: mandatory validation after every write
+- GetSource: read current state before editing
 
 ## Input contract
 ```json
@@ -70,16 +67,9 @@ Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hype
 
 ### Code Writer Report
 
-The Code Writer Report is the output contract for implementation tasks; the generic Output Format below applies only to non-implementation analysis.
-
 **Object**: <name> (<type>)
 **Action**: <Created | Modified>
 **Syntax Check**: <PASSED | FAILED (include errors)>
-**System Release**: <S/4HANA release | ECC | unknown>
-**Data Access Scope**: <new read on S/4 | maintenance (existing pattern) | ECC/non-VDM>
-**Data Access Level**: <1 released I_* | 2 ZI_/ZR_/ZC_ | 3 Open SQL | 4 AMDP | n/a>
-**C1 Check**: <object, how verified, result | not verified → level 2 + rationale>
-**CDS Conversion Evidence (DA-6)**: <test-runner result ref | pending | n/a>
 **Globalization Check**: <sap-globalization-checklist reviewed, exceptions noted | n/a (no user-facing output)>
 
 #### Implementation Details
@@ -95,12 +85,8 @@ The Code Writer Report is the output contract for implementation tasks; the gene
 5. If SyntaxCheck fails, fix the code within your session before returning.
 6. Do NOT run Unit Tests or ATC checks (delegated to test-runner).
 7. All local .abap files MUST be created in the scratch/ directory.
-8. **Data access**: follow `docs/co-abap.context.md` DA-1..DA-3 (determine release, apply scope table, priority order). Record the chosen level and C1 check in the Code Writer Report; falling back below level 2 needs a one-line rationale in "Note any deviations from the plan".
-9. **SQL quality**: DA-4 applies to every statement you write or modify.
-10. **New CDS views**: DA-5 (`#CHECK` + DCL) and DA-8 naming (`ZI_`/`ZR_`/`ZC_`).
-11. **Conversions**: DA-6 — record old/new statements and request the before/after run from test-runner; you do not run tests (rule 6).
-12. **Globalization**: follow `docs/standards/sap-globalization-checklist.md` — UTC timestamps with user-time-zone display, `CURRENCY` on monetary output, no dates/numbers assembled as text, standard unit conversion, factory-calendar working-day logic. Non-interactive output fixes country and language explicitly (`SET COUNTRY` / `SET LANGUAGE`).
-13. **Texts**: user-visible literals in text symbols and message classes; maintain selection texts before transport — a deferral (demo scope) must be recorded as a known limitation in the implementation report.
+8. **Globalization**: follow `docs/sap-globalization-checklist.md` — UTC timestamps with user-time-zone display, `CURRENCY` on monetary output, no dates/numbers assembled as text, standard unit conversion, factory-calendar working-day logic. Non-interactive output fixes country and language explicitly (`SET COUNTRY` / `SET LANGUAGE`).
+9. **Texts**: user-visible literals in text symbols and message classes; maintain selection texts before transport — a deferral (demo scope) must be recorded as a known limitation in the implementation report.
 
 ## Post-Write Mandatory Chain (Writer's part)
 1. WriteSource / EditSource

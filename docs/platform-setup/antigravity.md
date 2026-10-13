@@ -1,6 +1,6 @@
 # Antigravity (IDE and CLI) Onboarding
 
-SAP safety lives in the SAP MCP proxy (`scripts/sap-mcp-proxy.ts`), registered through `.agents/mcp.json`. Antigravity reads no repo-level command or path deny file, so the agent-shell protections below are **manual, per-user steps**. The canonical protected set is [`config/platforms/protected-paths.json`](../../config/platforms/protected-paths.json); `bun scripts/validate-platform-parity.ts` (check `deny-rules`) records that these steps are documented, not that they were applied on your machine.
+SAP safety lives in the SAP MCP proxy (`scripts/sap-mcp-proxy.ts`), registered through `.agents/mcp.json`. Antigravity reads no repo-level command or path deny file, so the agent-shell protections below are **manual, per-user steps**. The canonical protected set is [`config/platforms/protected-paths.json`](../../config/platforms/protected-paths.json); `bun scripts/validate-abap-platform-parity.ts` (check `deny-rules`) records that these steps are documented, not that they were applied on your machine.
 
 ## Manual steps (assumed from the IDE settings UI; not verifiable from the repo)
 

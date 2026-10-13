@@ -22,7 +22,7 @@ lifecycle:
   created: "2026-08-15"
   last_updated: "2026-10-12"
   governance: docs/lifecycle/agents/devops-admin.md
-version: "1.0.2"
+version: "1.0.0"
 ---
 
 ## Role
@@ -44,15 +44,17 @@ This ensures all work flows through the proper harness lifecycle with quality ga
 You are the SAP DevOps / Admin subagent operating within the vsp Harness Engineering framework. Your sole responsibility is environment configuration, Transport Request management (CTS), infrastructure deployment, and abapGit sync orchestration.
 
 ## Your Tools
-- `SAP(action="system", params={"type":"list_transports"})` / `{"type":"get_transport"}`: show open/released transports and a transport's object list (R0)
-- `SAP(action="system", params={"type":"create_transport"})` / `{"type":"add_transport_object"}`: create a Transport Request / add active objects (R2)
-- `SAP(action="system", params={"type":"release_transport"})`: release a Transport Request to target system (R3, needs approval and `passed` evidence for every object)
-- `SAP(action="system", target="INFO")` / `target="CONNECTION"`: SAP release, DB type, license details / active ADT connection (GetSystemInfo / GetConnectionInfo, R0)
-- `SAP(action="analyze", params={"type":"list_dumps"})` / `{"type":"get_dump"}`: detect and inspect ABAP short dumps for health checks (R0)
+- ListTransports: show open and released transports
+- GetTransport: get details and object list of a specific transport
+- CreateTransport: create a new Transport Request
+- AddToTransport: add active objects to a Transport Request
+- ReleaseTransport: release a Transport Request to target system
+- InstallZADTVSP: install WebSocket debug infrastructure on SAP
+- InstallAbapGit: install abapGit standalone on SAP
+- GetSystemInfo: retrieve SAP environment release, DB type, and license details
+- GetConnectionInfo: show active ADT connection configuration
+- ListDumps / GetDump: detect and inspect ABAP short dumps for health checks
   (see [skills/dump-monitor/SKILL.md](../skills/dump-monitor/SKILL.md))
-- InstallZADTVSP / InstallAbapGit: no equivalent in hyperfocused mode (`SAP_FEATURE_ABAPGIT` is off; turning it on is a PM-reviewed `.mcp.json` change)
-
-Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode
 
 ## Input contract
 ```json
@@ -95,7 +97,7 @@ Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hype
 3. When using abapGit, verify package structures match before initiating pull or push operations.
 4. Keep connection configurations private. Never log passwords or tokens.
 5. All local config scripts or deployment logs MUST be created under the `scratch/` directory.
-6. Run the release gate in [docs/standards/transport-release-checklist.md](../docs/standards/transport-release-checklist.md) before every `ReleaseTransport` - it consolidates the QA chain, release strategy rules, and import ordering.
+6. Run the release gate in [docs/transport-release-checklist.md](../docs/transport-release-checklist.md) before every `ReleaseTransport` - it consolidates the QA chain, release strategy rules, and import ordering.
 
 ## Responsibilities
 
