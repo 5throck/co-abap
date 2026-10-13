@@ -127,15 +127,13 @@ For the **4-level enforcement model**, **mandatory criteria**, **execution plan 
 
 **Execution Plan Boilerplate**: the table format, the Design Gate (Row 0) rule, exemption categories, and the `/sync`-as-final-step rule are the Single Source of Truth in [Execution Plan Templates §5.1](docs/governance/agents/execution-plan-templates.md#51-standard-execution-plan-template) and [§5.1.1](docs/governance/agents/execution-plan-templates.md#511-design-gate-exemptions).
 
-<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
-> **Note (Codex-specific)**: Use the literal model ID (e.g. `gpt-5.6-sol`) in the `Model` column, not a Claude-style short alias. Independent plan rows are dispatched in parallel (`multi_agent` or `scripts/dispatch-parallel.ts --platform codex`); dependent rows run sequentially.
+> **Note (Codex-specific)**: Use the literal model ID (e.g. `gpt-5.6-sol`) in the `Model` column, not a Claude-style short alias. With no native subagent tool, each plan row is executed sequentially in-session under the row's named specialist role.
 
 ### 6. Execution Mechanics (Plan Mode, Task Tracking, 3-Tier)
 
 - **Plan Mode** ≙ Codex plan/approval mode: when the user requests a new feature or significant refactor, the change touches >2 files, or the approach is unclear — draft the plan, present it, and wait for explicit approval before touching code.
 - **Task Tracking** ≙ Codex `update_plan`: one plan item per atomic step, set `in_progress` before starting, `completed` immediately on verification; never leave items in progress at session end.
-<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
-- **Specialist dispatch**: use `multi_agent` when usable, else `bun scripts/dispatch-parallel.ts --platform codex --plan <file>`; each child loads `agents/<name>.md` as its role. Dependent rows run sequentially.
+- **No native subagents**: specialist "dispatch" means loading `agents/<name>.md` as role context and executing that row's work in-session. Parallelism is not available; order plan rows sequentially.
 
 #### Cost Optimization (3-Tier Model Strategy)
 The High/Medium/Low tier concept and its usage rules are the Single Source of Truth in [AGENTS.md §3.6 3-Tier Strategy](AGENTS.md#36-3-tier-strategy). Codex's model-ID mapping:
@@ -167,28 +165,11 @@ If a custom prompt or background script returns a non-zero exit code:
 - All `scripts/` operational scripts are TypeScript (`.ts`) — run via `bun scripts/<name>.ts`. No `.sh/.ps1` counterparts (ADR-0036).
 - If a hook fails on Windows with "command not found", run it via Git Bash: `"C:\Program Files\Git\bin\bash.exe" .githooks/pre-commit`
 
-<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
-### SAP safety (proxy) & approvals
-
-Same rules on every platform; only the config file differs. Platform: **Codex (CLI & IDE)**.
-
-- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.codex/config.toml`. The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Codex hooks are optional UX; SAP enforcement does not depend on them.
-- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty`; then repeat the identical call once (single use, input-bound, short TTL). Pending requests and approvals live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600); the approver is the OS user.
-- **Integrity**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy or enforcement scripts; until then the proxy is R0 (read-only). `verify` and `verify-audit` are read-only checks.
-- **Agents must never run `sap-approve.ts` or `sap-integrity.ts init|sign`**, write approval or pending files, read `~/.config/co-abap/`, or launch `vsp` outside the proxy. The former manual profile is retired.
-
-### Parallel dispatch
-
-- **Native mechanism**: the `multi_agent` feature when it is usable in your Codex build (on-device item V2); otherwise use the dispatcher below.
-- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform codex --plan <plan-file>` runs one CLI process per plan row. Each row has `mode: read|write`; read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. Timeouts: SIGTERM, 10s grace (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls. SAP calls from children always pass through the proxy.
-- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
-
 ## Git & PR Additions (Codex)
 
 All shared Git/PR rules are in [docs/context.md](docs/context.md). Codex-specific additions:
 
-<!-- LOCAL-PATCH(upstream-request: pending): parity Phase 5 - native/fallback parallel dispatch and proxy enforcement replace sequential role-play and hook-status text -->
-- **Platform Hook Support**: SAP enforcement is in `scripts/sap-mcp-proxy.ts`, not hooks. Until `.codex/hooks.json` is verified on-device, run `bun scripts/hooks/post-write-lifecycle-check.ts` manually before committing and `bun scripts/audit.ts` after each task.
+- **Platform Hook Support**: Codex does not fire the workspace hook suite in Phase 1 — run `bun scripts/hooks/post-write-lifecycle-check.ts` manually before committing; `bun scripts/audit.ts` after each task. Phase 2 may wire CLI-only `.codex/hooks.json`.
 - **Commit Protection (SYNC_ACTIVE)**: Direct `git commit` or `git push` calls are **FORBIDDEN**. If you see `[FAIL] Direct git commits are restricted`, run `/sync "type: description"` instead. **`--no-verify` is forbidden.**
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 <!-- COMMON-CODEX:END -->

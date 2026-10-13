@@ -7,6 +7,15 @@
     "sap-docs": {
       "type": "http",
       "url": "https://mcp-sap-docs.marianzeis.de/mcp"
+    },
+    "abap": {
+      "command": "bun",
+      "args": [
+        "scripts/sap-mcp-proxy.ts",
+        "--",
+        "--mode",
+        "hyperfocused"
+      ]
     }
   },
   "hooks": {
@@ -41,6 +50,15 @@
             "type": "command",
             "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-hooks.cjs\" tool-savings",
             "timeout": 8000
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/sync-md.ts"
           }
         ]
       },
@@ -187,15 +205,11 @@
       "Bash(git push --force-with-lease*)",
       "Bash(*--no-verify*)",
       "Bash(rm -rf *)",
-      "Bash(bun scripts/sap-approve.ts*)",
       "Bash(./vsp*)",
       "Bash(*/vsp)",
       "Bash(*/vsp *)",
       "Bash(bun *sap-approve*)",
       "Bash(node *sap-approve*)",
-      "Bash(bun *sap-integrity*)",
-      "Bash(node *sap-integrity*)",
-      "Bash(*sap-mcp-proxy*)",
       "Bash(*grantApproval*)",
       "Bash(*consumeProxyApproval*)",
       "Bash(bun -e*)",
@@ -203,13 +217,6 @@
       "Bash(node -e*)",
       "Bash(node --eval*)",
       "Bash(script *)",
-      "Bash(python -c*)",
-      "Bash(python3 -c*)",
-      "Bash(perl -e*)",
-      "Bash(expect*)",
-      "Bash(unbuffer*)",
-      "Bash(socat*)",
-      "Bash(deno eval*)",
       "Bash(git stash*)",
       "Bash(git checkout -- *)",
       "Bash(git restore *)",
@@ -217,17 +224,26 @@
       "Bash(rm *vsp*)",
       "Bash(mv *vsp*)",
       "Bash(cp *vsp*)",
+      "Bash(bun *sap-integrity*)",
+      "Bash(node *sap-integrity*)",
+      "Bash(*sap-mcp-proxy*)",
+      "Bash(python -c*)",
+      "Bash(python3 -c*)",
+      "Bash(perl -e*)",
+      "Bash(expect*)",
+      "Bash(unbuffer*)",
+      "Bash(socat*)",
+      "Bash(deno eval*)",
       "Bash(*approval.key*)",
       "Bash(*.config/co-abap*)",
       "Bash(cat *.env*)",
       "Bash(less *.env*)",
       "Bash(head *.env*)",
       "Bash(tail *.env*)",
-      "Read(.env*)",
-      "Read(~/.config/co-abap/**)",
       "Edit(.env*)",
       "Write(.env*)",
       "MultiEdit(.env*)",
+      "Read(.env*)",
       "Edit(vsp)",
       "Write(vsp)",
       "MultiEdit(vsp)",
@@ -296,7 +312,9 @@
       "MultiEdit(memory/audit/**)",
       "Edit(~/.config/co-abap/**)",
       "Write(~/.config/co-abap/**)",
-      "MultiEdit(~/.config/co-abap/**)"
+      "MultiEdit(~/.config/co-abap/**)",
+      "Read(~/.config/co-abap/**)",
+      "Bash(bun scripts/sap-approve.ts*)"
     ]
   },
   "env": {

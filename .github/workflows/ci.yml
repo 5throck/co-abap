@@ -37,18 +37,20 @@ jobs:
       - name: Run audit
         run: bun scripts/audit.ts
 
+      # Variant overlay (T-20261011-008/T-20261011-013, spec
+      # docs/designs/2026-10-11-backlog-batch-2-design.md): the co-abap hardening
+      # wave's CI jobs. Typecheck runs only where a scripts/tsconfig.json exists
+      # (the template does not mandate one); platform parity enforces the
+      # deny-rules SSOT + proxy-seam routing shipped by this wave.
       - name: Typecheck
-        if: ${{ hashFiles('package.json') != '' }}
+        if: ${{ hashFiles('scripts/tsconfig.json') != '' }}
         run: bun run typecheck
 
       - name: Validate documentation links
         run: bun scripts/validate-docs-links.ts --all
 
-      - name: Check project meta
-        run: bun scripts/check-project-meta.ts
-
       - name: Validate platform parity
-        run: bun scripts/validate-platform-parity.ts
+        run: bun scripts/validate-abap-platform-parity.ts
 
   dependency-audit:
     name: Dependency Audit

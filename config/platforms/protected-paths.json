@@ -1,5 +1,5 @@
 {
-  "$comment": "Single source of truth for the agent-shell protected set on all 8 platforms. Checked by `bun scripts/validate-platform-parity.ts` (check id: deny-rules). Residual risk: a same-UID agent with an unrestricted shell can still read ~/.config/co-abap/approval.key; full closure needs a separate OS user (see SECURITY.md).",
+  "$comment": "Single source of truth for the agent-shell protected set on all 8 platforms. Checked by `bun scripts/validate-abap-platform-parity.ts` (check id: deny-rules). Residual risk: a same-UID agent with an unrestricted shell can still read ~/.config/co-abap/approval.key; full closure needs a separate OS user (see SECURITY.md).",
   "version": 1,
   "commands": [
     {

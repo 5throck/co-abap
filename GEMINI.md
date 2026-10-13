@@ -167,22 +167,6 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 <!-- COMMON-GEMINI:END -->
 
 <!-- COMMON-GEMINI:START -->
-<!-- LOCAL-PATCH(upstream-request: pending): cross-platform parity Phase 5 (docs/designs/2026-10-10-cross-platform-parity-design.md) -->
-### SAP safety (proxy) & approvals
-
-Same rules on every platform; only the config file differs. Platform: **Gemini CLI & Antigravity**.
-
-- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly. Config: `.gemini/settings.json` (Gemini CLI) and `.agents/mcp.json` (Antigravity IDE). The proxy classifies every SAP tool call (allow / ask / deny), writes the audit line and QA evidence, and gates transport release on passed QA evidence. Gemini BeforeTool/AfterTool hooks are optional UX; SAP enforcement does not depend on them.
-- **Approvals**: an `ask` (or unapproved R3) call returns `APPROVAL_REQUIRED id=<id>` and is not sent to SAP. Stop and show the id to the user. A **human** runs `bun scripts/sap-approve.ts <id>` in their own terminal and types the first 6 characters of the id on `/dev/tty`; then repeat the identical call once (single use, input-bound, short TTL). Pending requests and approvals live outside the repo in `~/.config/co-abap/{pending,approvals}/<repo-hash>/`, HMAC-signed with `~/.config/co-abap/approval.key` (0600); the approver is the OS user.
-- **Integrity**: a human runs `bun scripts/sap-integrity.ts init` once, and `bun scripts/sap-integrity.ts sign` after reviewed changes to the policy or enforcement scripts; until then the proxy is R0 (read-only). `verify` and `verify-audit` are read-only checks.
-- **Agents must never run `sap-approve.ts` or `sap-integrity.ts init|sign`**, write approval or pending files, read `~/.config/co-abap/`, or launch `vsp` outside the proxy. The former manual profile is retired.
-
-### Parallel dispatch
-
-- **Native mechanism**: Gemini CLI subagents in `.gemini/agents/*.md` invoked as `@name`; Antigravity IDE uses Agent Manager; Antigravity CLI is pending on-device item V8 (use the dispatcher).
-- **Fallback fan-out**: `bun scripts/dispatch-parallel.ts --platform gemini --plan <plan-file>` runs one CLI process per plan row. Each row has `mode: read|write`; read rows run at R0. Write rows declare `sapScope {packages, objects, actions, maxClass}`; the dispatcher writes a grant request and stops. A human runs `bun scripts/sap-approve.ts --grant <runId>`, then re-runs the dispatcher with `--run-id <runId>` (or `--wait-grant`). Children work under the grant, out-of-scope calls are denied, and the grant is revoked at run end. Timeouts: SIGTERM, 10s grace (`--kill-grace`), then SIGKILL; the proxy finishes in-flight calls. SAP calls from children always pass through the proxy.
-- Parallel rows must be independent; dependent rows run sequentially. The PM Gateway execution plan still comes first.
-
 ## Git & PR Additions (Gemini)
 
 All shared Git/PR rules are in [docs/context.md](docs/context.md). Gemini-specific additions:
@@ -208,8 +192,8 @@ Before editing any file for the **FIRST time in a session**, the agent MUST:
 |----------|:-----------:|---------|
 | Gemini CLI | ✅ Hook (automatic) | BeforeTool `deny` mode — blocked until agent investigates |
 | Antigravity | ✅ Prompt (manual) | Hooks do not fire — agent self-enforces |
-| Codex CLI | ✅ Prompt (manual) | Agent self-enforces (Codex hooks optional; SAP safety via proxy) |
-| Codex Desktop App | ✅ Prompt (manual) | Agent self-enforces (SAP safety via proxy) |
+| Codex CLI | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0077) |
+| Codex Desktop App | ✅ Prompt (manual) | Hooks not wired in Phase 1 — agent self-enforces (ADR-0077) |
 
 If the hook is not active (Antigravity), agents must still follow the 4-step process before making first edits.
 <!-- COMMON-GEMINI:END -->
@@ -313,7 +297,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-10 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-10-13 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,

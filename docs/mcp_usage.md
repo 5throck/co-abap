@@ -4,7 +4,7 @@
 
 **Purpose:** Machine-friendly reference for optimal tool usage patterns, workflows, and best practices.
 
-> **Tool names:** The named tools below (GetSource, EditSource, GrepObjects, ...) are the focused/expert-mode names. This project runs vsp in hyperfocused mode, where the single `SAP(action, target, params)` tool replaces them; map each legacy name via the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT).
+> **Tool names:** The named tools below (GetSource, EditSource, GrepObjects, ...) are the focused/expert-mode names. This project runs vsp in hyperfocused mode, where the single `SAP(action, target, params)` tool replaces them; map each legacy name via the [vsp Tool Reference](co-abap.context.md#upstream-vsp-reference-build--test) (SSOT).
 
 ---
 
@@ -129,7 +129,7 @@ flowchart TD
 |----------|------|--------|
 | Standard development | Focused | Simpler, fewer choices |
 | Existing workflow scripts | Expert | Backward compatibility |
-| AI Agent Optimization | Hyperfocused | **Recommended.** Best for Gemini/Claude. One `SAP` tool, routed by action (read, edit, create, delete, search, query, grep, test, analyze, debug, system, rfc, i18n, revisions, lint, info, help; see the [vsp Tool Reference](co-abap.context.md#vsp-tool-reference-hyperfocused-mode)); single entry point reduces tool-selection hallucinations. |
+| AI Agent Optimization | Hyperfocused | **Recommended.** Best for Gemini/Claude. One `SAP` tool, routed by action (read, edit, create, delete, search, query, grep, test, analyze, debug, system, rfc, i18n, revisions, lint, info, help; see the [vsp Tool Reference](co-abap.context.md#upstream-vsp-reference-build--test)); single entry point reduces tool-selection hallucinations. |
 | Debugging lock issues | Expert | Direct LockObject access |
 | Learning the API | Expert | See all atomic operations |
 
