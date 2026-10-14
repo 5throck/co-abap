@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-13",
+  "created": "2026-10-14",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -200,7 +200,7 @@
       "status": "active"
     },
     "helpers/registry-append.ts": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "active"
     },
     "render-commands.ts": {
@@ -532,7 +532,7 @@
       "status": "active"
     },
     "upgrade-project.ts": {
-      "version": "1.70.5",
+      "version": "1.70.6",
       "status": "active"
     },
     "validate-agents.ts": {
@@ -580,7 +580,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.56.0",
+      "version": "1.57.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
