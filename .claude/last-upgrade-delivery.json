@@ -1,22 +1,24 @@
 {
-  "timestamp": "2026-10-13T11:18:29.382Z",
+  "timestamp": "2026-10-13T23:42:49.896Z",
   "files": [
-    ".gitleaks.toml",
+    ".gemini/commands/changelog.toml",
+    ".gemini/commands/commit-push-pr.toml",
+    ".gemini/commands/gateguard.toml",
+    ".gemini/commands/memlog.toml",
+    ".gemini/commands/new-task.toml",
+    ".gemini/commands/project-review.toml",
+    ".gemini/commands/sync.toml",
     "CLAUDE.md",
     "docs/clean-abap-checklist.md",
-    "docs/workspace-schema.json",
     "scripts/SCRIPTS.md",
-    "scripts/dev-sync.ts",
-    "scripts/helpers/local-patch-scan.ts",
+    "scripts/audit.ts",
+    "scripts/evidence-backport-scan.ts",
+    "scripts/lifecycle-sync-audit.ts",
+    "scripts/render-commands.ts",
+    "scripts/test-runner.ts",
     "scripts/upgrade-project.ts",
+    "scripts/validate-templates.ts",
     "template-version.txt",
-    ".gemini/commands/changelog.md",
-    ".gemini/commands/commit-push-pr.md",
-    ".gemini/commands/gateguard.md",
-    ".gemini/commands/memlog.md",
-    ".gemini/commands/new-task.md",
-    ".gemini/commands/project-review.md",
-    ".gemini/commands/sync.md",
-    "scripts/helpers/gitleaks-merge.ts"
+    "scripts/helpers/registry-append.ts"
   ]
 }

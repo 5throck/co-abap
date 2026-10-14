@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-14](2026-10-14.md) | chore(scripts): workspace sync (23 files) |
 | [2026-10-13](2026-10-13.md) | chore: update |
 | [2026-10-11](2026-10-11.md) | chore: upgrade template to 0.16.0 |
 | [2026-10-12](2026-10-12.md) | --help |
