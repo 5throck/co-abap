@@ -1,28 +1,30 @@
 #!/usr/bin/env bun
 /**
- * Command Renderer (single source -> per-platform command files)
- * @version 1.0.1
+ * Gemini command renderer — SSOT to per-platform command files (L0).
+ * @version 1.1.0
  *
- * Source: config/commands/<name>.md (frontmatter: name, description, argument-hint,
- * allowed-tools, optional gemini-parity: skip).
- * Outputs:
- *   .claude/commands/<name>.md   (verbatim source)
- *   .codex/prompts/<name>.md     (verbatim source)
- *   .gemini/commands/<name>.toml (Gemini custom commands are TOML only; $ARGUMENTS -> {{args}})
- * Antigravity shares .gemini/commands (per repo docs, unverified).
+ * v1.1.0 (2026-10-13, T-20261013-009 phase 1): promoted from Projects/co-abap's
+ *          local script (v1.0.1) and generalized to the fleet SSOT — source is
+ *          `.claude/commands/<name>.md` (ADR-0077 D4), output is
+ *          `.gemini/commands/<name>.toml` (Gemini CLI loads TOML only). The
+ *          legacy `.gemini/commands/*.md` files stay in place (P-02 root↔common
+ *          mirrors, human-readable) and are NOT swept here; template/fleet
+ *          toml migration is the follow-up phase.
+ * v1.0.1 (Projects/co-abap): gemini-parity:skip, orphan sweep, --check.
  *
  * Usage: bun scripts/render-commands.ts [--check]
  */
 
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dir, '..');
-export const SOURCE_DIR = join('config', 'commands');
+export const SOURCE_DIR = join('.claude', 'commands');
+export const GEMINI_DIR = join('.gemini', 'commands');
 
 export interface Rendered { path: string; content: string }
 
-/** Minimal frontmatter reader: top-level `key: value`, `>`/`|` blocks. No YAML dependency (runs in L3). */
+/** Minimal frontmatter reader: top-level `key: value`, `>`/`|` blocks. No YAML dependency. */
 export function splitFrontmatter(text: string): { fm: Record<string, string>; body: string } {
   const t = text.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n');
   if (!t.startsWith('---\n')) return { fm: {}, body: t };
@@ -45,6 +47,12 @@ export function splitFrontmatter(text: string): { fm: Record<string, string>; bo
   return { fm, body: nl < 0 ? '' : t.slice(nl + 1) };
 }
 
+function splitFrontmatterRaw(src: string): string {
+  const m = src.match(/^---\n([\s\S]*?)\n---/);
+  return m ? m[1] : '';
+}
+
+/** Gemini custom commands are TOML only; Claude's $ARGUMENTS -> {{args}}. */
 export function renderGeminiToml(name: string, source: string): string {
   const { fm, body } = splitFrontmatter(source);
   if (/[!@]\{/.test(body)) throw new Error(`${name}: body contains Gemini !{ } or @{ } injection syntax`);
@@ -70,44 +78,26 @@ export function renderAll(root = ROOT): Rendered[] {
   const out: Rendered[] = [];
   for (const name of listSources(root)) {
     const src = readFileSync(join(root, SOURCE_DIR, `${name}.md`), 'utf-8').replace(/\r\n/g, '\n');
-    out.push({ path: join('.claude', 'commands', `${name}.md`), content: src });
-    out.push({ path: join('.codex', 'prompts', `${name}.md`), content: src });
-    if (!/^gemini-parity:\s*skip/m.test(splitFrontmatterRaw(src))) {
-      out.push({ path: join('.gemini', 'commands', `${name}.toml`), content: renderGeminiToml(name, src) });
-    }
+    if (/^gemini-parity:\s*skip/m.test(splitFrontmatterRaw(src))) continue;
+    out.push({ path: join(GEMINI_DIR, `${name}.toml`), content: renderGeminiToml(name, src) });
   }
   return out;
 }
 
-function splitFrontmatterRaw(src: string): string {
-  const m = src.match(/^---\n([\s\S]*?)\n---/);
-  return m ? m[1] : '';
-}
-
-const MANAGED: Array<[string, string]> = [['.claude/commands', '.md'], ['.codex/prompts', '.md'], ['.gemini/commands', '.toml']];
-
-/** Returns drift descriptions (empty = in sync). With write=true, fixes drift. */
+/** Returns drift descriptions (empty = in sync). With write=true, fixes drift.
+ * Legacy `.gemini/commands/*.md` files are reported as info, not drift — they
+ * remain P-02 root↔common mirrors until the fleet toml migration (phase 2). */
 export function sync(root = ROOT, write = false): string[] {
   const drift: string[] = [];
   const rendered = renderAll(root);
-  const want = new Set(rendered.map(r => r.path.replace(/\\/g, '/')));
   for (const r of rendered) {
     const abs = join(root, r.path);
     const cur = existsSync(abs) ? readFileSync(abs, 'utf-8').replace(/\r\n/g, '\n') : null;
     if (cur !== r.content) {
       drift.push(`${cur === null ? 'missing' : 'stale'}: ${r.path.replace(/\\/g, '/')}`);
-      if (write) { mkdirSync(join(abs, '..'), { recursive: true }); writeFileSync(abs, r.content); }
-    }
-  }
-  for (const [dir, ext] of MANAGED) {
-    const abs = join(root, dir);
-    if (!existsSync(abs)) continue;
-    for (const f of readdirSync(abs)) {
-      // Legacy Gemini .md commands are not loaded by Gemini CLI; treat them as stale too.
-      const managedExt = f.endsWith(ext) || (dir === '.gemini/commands' && f.endsWith('.md'));
-      if (managedExt && !want.has(`${dir}/${f}`)) {
-        drift.push(`orphan: ${dir}/${f}`);
-        if (write) rmSync(join(abs, f));
+      if (write) {
+        mkdirSync(join(root, r.path, '..'), { recursive: true });
+        writeFileSync(abs, r.content);
       }
     }
   }
@@ -120,7 +110,7 @@ if (import.meta.main) {
   const drift = sync(ROOT, !check);
   if (check) {
     if (drift.length) { for (const d of drift) console.error(`[FAIL] ${d}`); console.error(`Run: bun scripts/render-commands.ts`); process.exit(1); }
-    console.log(`[PASS] rendered commands in sync (${listSources().length} sources)`);
+    console.log(`[PASS] rendered gemini commands in sync (${listSources().length} sources)`);
   } else {
     console.log(drift.length ? `Rendered ${drift.length} change(s):\n${drift.join('\n')}` : 'Already in sync');
   }
