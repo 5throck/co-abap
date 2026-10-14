@@ -1,24 +1,12 @@
 {
-  "timestamp": "2026-10-13T23:42:49.896Z",
+  "timestamp": "2026-10-14T16:59:21.347Z",
   "files": [
-    ".gemini/commands/changelog.toml",
-    ".gemini/commands/commit-push-pr.toml",
-    ".gemini/commands/gateguard.toml",
-    ".gemini/commands/memlog.toml",
-    ".gemini/commands/new-task.toml",
-    ".gemini/commands/project-review.toml",
-    ".gemini/commands/sync.toml",
     "CLAUDE.md",
     "docs/clean-abap-checklist.md",
     "scripts/SCRIPTS.md",
-    "scripts/audit.ts",
-    "scripts/evidence-backport-scan.ts",
-    "scripts/lifecycle-sync-audit.ts",
-    "scripts/render-commands.ts",
-    "scripts/test-runner.ts",
+    "scripts/helpers/registry-append.ts",
     "scripts/upgrade-project.ts",
     "scripts/validate-templates.ts",
-    "template-version.txt",
-    "scripts/helpers/registry-append.ts"
+    "template-version.txt"
   ]
 }
