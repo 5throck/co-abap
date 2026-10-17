@@ -2023,6 +2023,56 @@ if (existsSync(variantScriptsSrc)) {
   };
   preserveVariantScripts(variantScriptsDst, '');
 
+  // T-20261012-001 completion (T-20261017-001 canary): variant OVERLAY top-level
+  // scripts (templates/<variant>/scripts/*.ts, e.g. co-abap's
+  // validate-abap-platform-parity.ts) had no upgrade delivery path — new-project
+  // §6.6 delivers them at scaffold time, upgrades never did, so the variant's CI
+  // job referencing the script failed with Module-not-found. Same NEW/UPDATE
+  // semantics as the nested walk, delivered to project scripts/ root.
+  const overlayScriptsTop = join(templatesDir, 'scripts');
+  if (existsSync(overlayScriptsTop)) {
+    for (const entry of readdirSync(overlayScriptsTop, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith('.ts')) continue;
+      const rel2 = `scripts/${entry.name}`;
+      const src = join(overlayScriptsTop, entry.name);
+      const projFile = join(projectDir, rel2);
+      const tplVer = extractScriptVersion(src);
+      if (!tplVer) continue;
+      const projVer = existsSync(projFile) ? extractScriptVersion(projFile) : '';
+      if (!existsSync(projFile)) {
+        console.log(`  NEW   ${rel2}  (none) → ${tplVer}`);
+        if (!dryRun) { mkdirSync(dirname(projFile), { recursive: true }); copyFileSync(src, projFile); }
+        console.log(`  ${dryTag}COPIED: ${rel2}`);
+        syncChanged++;
+      } else if (semverGt(tplVer, projVer)) {
+        if (isLocallyModified(projFile)) {
+          console.log(`  ⚠️  CONFLICT ${rel2}  ${projVer} → ${tplVer}  (local modifications exist — template will overwrite)`);
+        } else {
+          console.log(`  UPDATE ${rel2}  ${projVer} → ${tplVer}`);
+          if (!dryRun) copyFileSync(src, projFile);
+          console.log(`  ${dryTag}COPIED: ${rel2}`);
+        }
+        syncChanged++;
+      } else {
+        console.log(`  OK     ${rel2}`);
+      }
+      // Auto-register the delivered top-level script (same contract as the
+      // nested scan below): a delivered script without a row fails the
+      // project's first verify-scripts (T-20261012-001 lesson).
+      const regPath = join(projectDir, 'scripts', 'SCRIPTS.md');
+      if (!dryRun && existsSync(regPath)) {
+        const regText = readFileSync(regPath, 'utf-8');
+        if (!regText.split('\n').some((l) => l.includes(`\`${entry.name}\``))) {
+          const ver = tplVer;
+          appendRegistryRows(regPath, [
+            `| \`${entry.name}\` | L2-only | ${ver} | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|`,
+          ]);
+          console.log(`  📝 SCRIPTS.md: registered ${entry.name} (v${ver})`);
+        }
+      }
+    }
+  }
+
   // T-20261012-001: variant top-level/nested-delivered scripts need registry
   // rows in the project scripts/SCRIPTS.md — the L1 snapshot has no rows for
   // them (co-abap's sap-mcp-proxy.ts failed the project's first verify-scripts).

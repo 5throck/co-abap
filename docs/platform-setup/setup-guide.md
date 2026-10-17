@@ -551,7 +551,7 @@ If you get an error, check:
 > Change `"SAP_MODE": "focused"` — exposes 98 individually named MCP tools instead of the single `SAP` tool.
 > **Expert mode** (all tools, debugging / advanced operations):
 > Change `"SAP_MODE": "expert"` — exposes 148 individually named MCP tools.
-> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+> **Note**: hyperfocused mode exposes one MCP tool, `SAP(action, target, params)`, instead of individually named tools. Legacy tool names map per the [vsp Tool Reference](../co-abap.context.md#upstream-vsp-reference-build--test).
 
 **Safety options (optional, set in `.env`; verify with `./vsp --help`).** See `.env.sample` for the template.
 
@@ -563,7 +563,7 @@ If you get an error, check:
 | `SAP_ENABLE_TRANSPORTS` | Opt in to transport management operations (off by default) |
 | `SAP_ALLOW_TRANSPORTABLE_EDITS` | Opt in to editing objects in transportable packages (needs a transport) |
 
-Gate classes and policy: see the [vsp Tool Reference](../co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+Gate classes and policy: see the [vsp Tool Reference](../co-abap.context.md#upstream-vsp-reference-build--test).
 
 ---
 

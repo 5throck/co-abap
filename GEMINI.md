@@ -297,10 +297,16 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-13 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-10-17 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,
 vsp MCP Configuration, Gemini Skill Additions, `.claude/` coexistence) as the project-specific
 tail, matching the structure used across co-hr, co-safety, and other co-* projects. Companion
 fix to the CLAUDE.md correction (PR #102).*
+
+## SAP Safety (co-abap hardening)
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly — the proxy classifies every SAP tool call (allow / ask / deny) and writes the audit line.
+- **Approvals**: an `ask` call returns `APPROVAL_REQUIRED id=<id>`; stop and show it — a **human** runs `bun scripts/sap-approve.ts <id>` (agents must never run `sap-approve.ts`), then the identical call is repeated once.
+- **Parallel dispatch**: `bun scripts/co-abap/dispatch-parallel.ts --plan <file>` runs one CLI process per row; write rows need a human-granted approval (`sap-approve.ts --grant`), out-of-scope calls denied, grant revoked at run end.

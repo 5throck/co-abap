@@ -234,12 +234,13 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `co-abap/vsp-audit.ts` | L2 | 1.2.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/scratch-cleanup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/install-vsp.ts` | L2 | 1.1.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
+| `validate-abap-platform-parity.ts` | L3 | 1.1.0 | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001): agent-shell protected-set parity checks (deny-rules SSOT; CI-checked). | —| L3 | —|
 | `co-abap/setup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/install-bun.ts` | L2 | 1.0.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/vsp-publish.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/vsp-task.ts` | L2 | 1.0.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `helpers/gitleaks-merge.ts` | L0+L1 | 1.0.0 | active | v1.0.0 (2026-10-13, T-20261013-010): extracted mergeGitleaksToml + extractGitleaksArray from upgrade-project — unit-testable gitleaks.toml merge that preserves project-only allowlist entries; replacer-function merge keeps `$''`-anchored entries literal. | — | L0+L1 | — |
-| `helpers/registry-append.ts` | L0+L1 | 1.1.0 | active | v1.0.0 (2026-10-13, T-20261013-001): shared ## Registry-table row-append mechanics (new-project §6.6 + upgrade-project VARIANT SCRIPTS SYNC dedupe). | — | L0+L1 | — |
+| `helpers/registry-append.ts` | L0+L1 | 1.2.0 | active | v1.0.0 (2026-10-13, T-20261013-001): shared ## Registry-table row-append mechanics (new-project §6.6 + upgrade-project VARIANT SCRIPTS SYNC dedupe). | — | L0+L1 | — |
 
 ---
 
