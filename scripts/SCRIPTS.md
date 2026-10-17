@@ -234,6 +234,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `co-abap/vsp-audit.ts` | L2 | 1.2.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/scratch-cleanup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/install-vsp.ts` | L2 | 1.1.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
+| `validate-abap-platform-parity.ts` | L2-only | 1.1.0 | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001): agent-shell protected-set parity checks (deny-rules SSOT; CI-checked). | —| L2-only | —|
 | `co-abap/setup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/install-bun.ts` | L2 | 1.0.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/vsp-publish.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|

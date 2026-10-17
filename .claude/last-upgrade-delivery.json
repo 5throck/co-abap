@@ -1,10 +1,14 @@
 {
-  "timestamp": "2026-10-17T01:44:28.607Z",
+  "timestamp": "2026-10-17T02:07:48.280Z",
   "files": [
+    "AGENTS.md",
     "CLAUDE.md",
     "docs/clean-abap-checklist.md",
-    "scripts/SCRIPTS.md",
-    "scripts/helpers/registry-append.ts",
-    "template-version.txt"
+    "docs/governance/agents/execution-plan-templates.md",
+    "docs/governance/agents/pm-gateway-workflow.md",
+    "docs/governance/agents/workflows.md",
+    "scripts/upgrade-project.ts",
+    "template-version.txt",
+    "scripts/validate-abap-platform-parity.ts"
   ]
 }

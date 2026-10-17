@@ -362,7 +362,7 @@ When leading execution and improvement tasks, PM MUST use the 3-Tier model strat
 - **Low-tier**: Fast, repetitive coding, script maintenance (claude-haiku-5-5 / gemini-3.8-flash / gpt-5.6-luna)
 <!-- /WORKSPACE-MANAGED -->
 <!-- WORKSPACE-MANAGED: tier-model-mapping -->
-> **Note**: The `Model` column below shows the Claude Code short alias (`sonnet`/`opus`/`haiku`/`fable`) actually passed to the `Agent()` tool's `model` parameter — not the registry ID (e.g. `claude-sonnet-5-5`). See [CLAUDE.md — Execution Plan Boilerplate (model-alias translation table)](CLAUDE.md#execution-plan-boilerplate) for the registry-ID → alias translation table. On Gemini/Antigravity, use the literal model ID instead (see GEMINI.md's equivalent example).
+> **Note**: The `Model` column below shows the Claude Code short alias (`sonnet`/`opus`/`haiku`/`fable`) actually passed to the `Agent()` tool's `model` parameter — not the registry ID (e.g. `claude-sonnet-5-5`). See [CLAUDE.md §6](CLAUDE.md#6-native-sub-agents-agent-tool) for the registry-ID → alias translation table. On Gemini/Antigravity, use the literal model ID instead (see GEMINI.md's equivalent example).
 <!-- /WORKSPACE-MANAGED -->
 
 
