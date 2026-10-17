@@ -2056,6 +2056,20 @@ if (existsSync(variantScriptsSrc)) {
       } else {
         console.log(`  OK     ${rel2}`);
       }
+      // Auto-register the delivered top-level script (same contract as the
+      // nested scan below): a delivered script without a row fails the
+      // project's first verify-scripts (T-20261012-001 lesson).
+      const regPath = join(projectDir, 'scripts', 'SCRIPTS.md');
+      if (!dryRun && existsSync(regPath)) {
+        const regText = readFileSync(regPath, 'utf-8');
+        if (!regText.split('\n').some((l) => l.includes(`\`${entry.name}\``))) {
+          const ver = tplVer;
+          appendRegistryRows(regPath, [
+            `| \`${entry.name}\` | L2-only | ${ver} | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|`,
+          ]);
+          console.log(`  📝 SCRIPTS.md: registered ${entry.name} (v${ver})`);
+        }
+      }
     }
   }
 
