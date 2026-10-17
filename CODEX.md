@@ -215,3 +215,7 @@ re-read whole files.
 After big code changes, refresh the graph with `graft build` (deterministic,
 no API key, $0).
 <!-- graft:end -->
+
+## SAP Safety (co-abap hardening)
+
+- **Approvals**: an `ask` call returns `APPROVAL_REQUIRED id=<id>`; stop and show it — a **human** runs `bun scripts/sap-approve.ts <id>` (agents must never run `sap-approve.ts`), then the identical call is repeated once.

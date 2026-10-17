@@ -300,3 +300,8 @@ out of sync); consolidated the orphaned teammateMode block into §6; kept all AB
 content (Session Start Checklist, CLI vs Desktop App, Hooks, Desktop App Manual Post-Write
 Chain) as the project-specific tail, matching the structure used across co-hr, co-safety, and
 other co-* projects.*
+
+## SAP Safety (co-abap hardening)
+
+- **Single enforcement point**: the `abap` MCP server is launched through `scripts/sap-mcp-proxy.ts`, never `vsp` directly — the proxy classifies every SAP tool call (allow / ask / deny) and writes the audit line.
+- **Approvals**: an `ask` call returns `APPROVAL_REQUIRED id=<id>`; stop and show it — a **human** runs `bun scripts/sap-approve.ts <id>` (agents must never run `sap-approve.ts`), then the identical call is repeated once.
