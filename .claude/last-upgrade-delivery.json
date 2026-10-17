@@ -1,12 +1,10 @@
 {
-  "timestamp": "2026-10-14T16:59:21.347Z",
+  "timestamp": "2026-10-17T01:44:28.607Z",
   "files": [
     "CLAUDE.md",
     "docs/clean-abap-checklist.md",
     "scripts/SCRIPTS.md",
     "scripts/helpers/registry-append.ts",
-    "scripts/upgrade-project.ts",
-    "scripts/validate-templates.ts",
     "template-version.txt"
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-14",
+  "created": "2026-10-17",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -200,7 +200,7 @@
       "status": "active"
     },
     "helpers/registry-append.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "render-commands.ts": {
