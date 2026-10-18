@@ -4,7 +4,7 @@
 - **Date:** 2026-10-10
 - **Decider:** PM
 - **Related design:** [SAP NL Analytics Semantic Layer Design](../designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md)
-- **Review evidence:** [CDS semantic layer meeting](../../memory/meeting-2026-10-10-cds-semantic-layer.md)
+- **Review evidence:** [CDS semantic layer meeting](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-cds-semantic-layer.md)
 
 ## Context
 

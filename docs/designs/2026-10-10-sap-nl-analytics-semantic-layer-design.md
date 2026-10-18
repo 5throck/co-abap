@@ -83,7 +83,7 @@ The 10,000-row cap and 30 s timeout are unvalidated starting values. Calibrate t
 
 #### Cost threshold calibration
 
-Decided 2026-10-10 ([meeting synthesis](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
+Decided 2026-10-10 ([meeting synthesis](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
 
 | Item | Rule |
 |------|------|
@@ -171,7 +171,7 @@ The CO-PA type determines the margin source (see [Profitability analysis branch]
 
 ## Metric governance
 
-Decided 2026-10-10 ([meeting synthesis](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
+Decided 2026-10-10 ([meeting synthesis](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
 
 ### Ownership: two-key approval
 
@@ -226,7 +226,7 @@ A successful query does not mean a correct answer. Required checks:
 
 ### Golden question set
 
-Decided 2026-10-10 ([meeting synthesis](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
+Decided 2026-10-10 ([meeting synthesis](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md)).
 
 **Size.** Sized by a coverage matrix with a floor: every hard problem x source x CO-PA type has at least one case.
 
@@ -312,9 +312,9 @@ CDS views and analytic models settle much in advance, but not every business rul
 5. ~~Query-limit calibration: which golden-question percentile and safety factor set the cost threshold, and does the target analytics layer expose an `EXPLAIN PLAN` equivalent?~~ **Decided 2026-10-10 (meeting synthesis)**: per source/path/table class thresholds with per-source estimators (see [Cost threshold calibration](#cost-threshold-calibration)).
 6. Corporate default for bare "revenue": billed net revenue or FI revenue? Owner: Finance (see [Metric governance](#metric-governance)).
 
-Decisions 3-5 follow the [meeting synthesis](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md).
+Decisions 3-5 follow the [meeting synthesis](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md).
 
-> **Dissent on record**: red-team objected to setting thresholds and golden-set sizes before named owners and a target system exist, and set withdrawal conditions (one source end to end first; free-form SQL off by default behind role and kill switches). These conditions were not adopted; see the [meeting record](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md).
+> **Dissent on record**: red-team objected to setting thresholds and golden-set sizes before named owners and a target system exist, and set withdrawal conditions (one source end to end first; free-form SQL off by default behind role and kill switches). These conditions were not adopted; see the [meeting record](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md).
 
 ## Constraints
 

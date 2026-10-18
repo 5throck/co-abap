@@ -1,12 +1,19 @@
 {
-  "timestamp": "2026-10-17T03:23:40.335Z",
+  "timestamp": "2026-10-18T21:25:51.792Z",
   "files": [
+    ".claude/settings.json",
+    ".gemini/settings.json",
     "CLAUDE.md",
     "docs/clean-abap-checklist.md",
     "docs/governance/agents/execution-plan-templates.md",
     "docs/governance/agents/pm-gateway-workflow.md",
     "docs/governance/agents/workflows.md",
+    "scripts/SCRIPTS.md",
+    "scripts/audit.ts",
+    "scripts/hooks/pm-role-bootstrap.ts",
     "scripts/upgrade-project.ts",
-    "template-version.txt"
+    "template-version.txt",
+    "scripts/hooks/codex-user-prompt-gate.ts",
+    "scripts/hooks/pm-dispatch-gate.ts"
   ]
 }

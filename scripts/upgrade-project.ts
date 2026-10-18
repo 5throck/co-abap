@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
-// @version 1.70.6
+// @version 1.71.0
+// v1.71.0 (2026-10-17, T-20261017-001 canary): VARIANT SCRIPTS SYNC gains the
+//          variant OVERLAY top-level walk — templates/<variant>/scripts/*.ts deliver
+//          to project scripts/ root (new-project §6.6 parity; co-abap's
+//          validate-abap-platform-parity.ts was CI-referenced but never delivered).
 // v1.70.6 (2026-10-14, T-20261014-002): reconcileScriptRegistry's append arm
 //          delegates its boundary scan to helpers/registry-append.ts
 //          registryAppendIndex (1.1.0) — retires the second inline
