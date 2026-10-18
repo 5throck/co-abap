@@ -4,15 +4,16 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-19](2026-10-19.md) | chore: upgrade template to 0.20.0 (canary) |
 | [2026-10-17](2026-10-17.md) | chore: upgrade template to 0.19.2 (canary) |
 | [2026-10-15](2026-10-15.md) | chore(scripts): workspace sync (11 files) |
 | [2026-10-14](2026-10-14.md) | chore(scripts): workspace sync (23 files) |
 | [2026-10-13](2026-10-13.md) | chore: update |
-| [2026-10-11](2026-10-11.md) | chore: upgrade template to 0.16.0 |
+| 2026-10-11 | chore: upgrade template to 0.16.0 |
 | [2026-10-12](2026-10-12.md) | --help |
-| [2026-10-11](2026-10-11.md) | update |
-| [2026-10-10](2026-10-10.md) | feat: enforce CDS-first data access in ABAP coding rules |
-| [2026-10-11](2026-10-11.md) | chore: upgrade template to 0.16.0 |
+| 2026-10-11 | update |
+| 2026-10-10 | feat: enforce CDS-first data access in ABAP coding rules |
+| 2026-10-11 | chore: upgrade template to 0.16.0 |
 | 2026-10-08 | chore: upgrade template to 0.14.0 |
 | 2026-10-07 | chore: upgrade template to 0.13.1 |
 | 2026-10-05 | chore: upgrade template to 0.12.0 |

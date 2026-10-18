@@ -484,11 +484,7 @@
         ".agents/skills/abap-dev/SKILL.md",
         ".codex/skills/abap-dev/SKILL.md",
         ".hermes/skills/abap-dev/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 1,
-        "last_used": "2026-10-10"
-      }
+      ]
     },
     {
       "id": "skill:root/accessibility-audit",
@@ -956,11 +952,7 @@
         ".agents/skills/project-review/SKILL.md",
         ".codex/skills/project-review/SKILL.md",
         ".hermes/skills/project-review/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 1,
-        "last_used": "2026-10-10"
-      }
+      ]
     },
     {
       "id": "skill:root/research-analysis",
@@ -1232,7 +1224,7 @@
         ".hermes/skills/sync/SKILL.md"
       ],
       "usage": {
-        "sessions": 3,
+        "sessions": 2,
         "last_used": "2026-10-13"
       }
     },
