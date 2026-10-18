@@ -4,7 +4,7 @@
 - **Date:** 2026-10-10
 - **Decider:** PM
 - **Related design:** [SAP NL Analytics Semantic Layer Design](../designs/2026-10-10-sap-nl-analytics-semantic-layer-design.md)
-- **Review evidence:** [Open questions 3-5 synthesis](../../memory/meeting-2026-10-10-semantic-layer-open-questions.md)
+- **Review evidence:** [Open questions 3-5 synthesis](https://github.com/5throck/ai-workspace-standards/blob/main/memory/meeting-2026-10-10-semantic-layer-open-questions.md)
 
 ## Context
 
