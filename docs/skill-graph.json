@@ -1222,11 +1222,7 @@
         ".agents/skills/sync/SKILL.md",
         ".codex/skills/sync/SKILL.md",
         ".hermes/skills/sync/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 2,
-        "last_used": "2026-10-13"
-      }
+      ]
     },
     {
       "id": "skill:root/team-builder",

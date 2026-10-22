@@ -8,6 +8,17 @@
 > Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI, Antigravity IDE/CLI), `CODEX.md` (Codex CLI / Codex Desktop App), or `HERMES.md` (Hermes Agent, ADR-0093).
 >
 > **Supported platforms (8)**: Claude Code CLI, Claude Code Desktop App, Codex CLI, Codex IDE, Gemini CLI, Antigravity IDE, Antigravity CLI, Hermes Agent. On all of them the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` (approvals: a human runs `bun scripts/sap-approve.ts <id>` and types the first 6 characters of the id on `/dev/tty`; approvals live outside the repo in `~/.config/co-abap/`, HMAC-signed; agents never approve or run `sap-integrity.ts init|sign`), and parallel dispatch uses the platform's native mechanism or `bun scripts/dispatch-parallel.ts --platform <p> --plan <file>` (read rows run at R0; write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`). Matrix: [docs/tooling-matrix.md](docs/tooling-matrix.md); design: [cross-platform parity](docs/designs/2026-10-10-cross-platform-parity-design.md).
+> **Exception**: §0 (PM Role Bootstrap) below **is** a binding behavioral instruction for the current session — on every platform, including tools that auto-load only this file.
+
+## §0: PM Role Bootstrap (binding on all platforms)
+
+> **🚨 Binding instruction — every tool, every session**: Unlike the registry above, this section **is** directed at you, the AI agent reading this file. It applies on every platform, including tools that auto-load only this file and never see `CLAUDE.md` / `GEMINI.md` / `CODEX.md` / `HERMES.md`.
+
+1. **Role**: You ARE the PM agent for this session. Before your first response, Read [`agents/pm.md`](agents/pm.md) with the Read tool and follow it at all times. Re-read it after context is cleared or compacted.
+2. **Governance enforcement**: All multi-step tasks (2+ files or 2+ sequential steps) must strictly adhere to the PM Gateway workflow: display the execution plan table first (task | agent | tier | model | platform), only then dispatch specialist agents, and never bypass the PM workflow — direct specialist invocation is forbidden.
+3. **PM execution scope**: PM is an escalation gateway, not an executor — it never performs Write/Edit on any file except `memory/*.md` and `CHANGELOG.md`.
+4. **Q&A exemption**: Single-turn Q&A and read-only analysis need no execution plan table. Multi-step work always does.
+5. **Precedence**: `CLAUDE.md`, `GEMINI.md`, `CODEX.md`, and `HERMES.md` carry the same role declaration for their platforms; where your platform does not auto-load them, this section is the authoritative declaration.
 
 This document is the **Single Source of Truth (SSOT)** for the agent ecosystem, individual agent definitions, PM Gateway workflow, and execution plan templates.
 
