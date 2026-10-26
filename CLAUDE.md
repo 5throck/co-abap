@@ -48,35 +48,27 @@ The workspace `.claude/settings.json` currently has **three active hook types**:
 ### 2. Native Slash Commands
 Custom slash commands in `.claude/commands/` are natively recognized by Claude Code. The following commands are available at session start:
 
-| Command | Purpose |
-|---------|---------|
-| `/sync "feat: ..."` | Full pipeline — memlog → sync-md → changelog → audit → commit → PR |
-| `/changelog "..."` | Add entry to `CHANGELOG.md [Unreleased]` |
-| `/memlog "summary"` | Append session entry to `memory/YYYY-MM-DD.md` only |
-| `/new-task "name"` | Create task block in today's memory log |
-| `/triage` | ABAP object triage workflow |
-| `/transport` | SAP transport request workflow |
-| `/post-write` | Manual Post-Write Mandatory Chain (syntax check, unit tests, ATC; see [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)) |
-| `/celebrate` | Session-completion celebration |
-| `/commit-push-pr "..."` | Redirects direct commit/push/PR requests to the `/sync` pipeline |
-| `/gateguard <file>` | Pre-edit fact-forcing quality gate — investigate a file before editing it |
-| `/meeting "topic"` | Run a structured, inline multi-agent discussion |
-| `/project-review "..."` | Full parallel project review by all specialist agents |
-| `/security-check [--pr]` | Security advisory scan / pre-PR advisory check |
-| `/abap-dev` | SAP ABAP development workflows |
-| `/sap-co`, `/sap-fi`, `/sap-le`, `/sap-mm`, `/sap-pp`, `/sap-sd` | Module-specific SAP workflows |
+| Command | Purpose | Underlying Trigger |
+|---------|---------|--------------------|
+| `/sync "feat: ..."` | Full pipeline - memlog → sync-md → changelog → audit → commit → PR | `scripts/dev-sync.ts` |
+| `/changelog "..."` | Add entry to `CHANGELOG.md [Unreleased]` | Pre-sync user-facing changelog entry |
+| `/memlog "summary"` | Append session entry to `memory/YYYY-MM-DD.md` only | Without triggering full sync |
+| `/new-task "name"` | Create task block in today's memory log | In-session task tracking |
+| `/commit-push-pr` | Commit, push, and open a PR in one step | Standalone commit/PR helper (bypasses full `/sync` pipeline) |
+| `/gateguard` | Investigate importers before first edit per file (GateGuard) | Companion to the PreToolUse GateGuard hook |
+| `/project-review` | Run a structured project review | Project review workflow command |
 
-> **How commands become Skills**: each `.claude/commands/<name>.md` file is automatically registered as a `<name>` Skill (mirrored 1:1 in `.gemini/commands/`).
+> **How commands become Skills**: each `.claude/commands/<name>.md` file is automatically
+> registered as a `<name>` Skill. All commands above have corresponding files in `.claude/commands/`. There is no `/new-project` command file — scaffold new projects with `bun scripts/new-project.ts "<name>" --variant <co-variant>` directly (`--variant` is required).
 
 > **Platform parity**: every command file in `.claude/commands/` must have a matching file in `.gemini/commands/`. Intentional Claude-only exceptions use `gemini-parity: skip` in frontmatter. See [docs/context.md](docs/context.md).
 
 > **Commit Protection (SYNC_ACTIVE)**: Direct `git commit` or `git push` calls via bash/powershell/run_command are **FORBIDDEN**. The pre-commit hook blocks direct commits unless executed through `/sync`. Never manipulate environment variables (e.g., `$env:SYNC_ACTIVE=1; git commit`) to bypass QA gates. All commits MUST go through the approved `/sync` pipeline or `dev-sync.ts`. **`--no-verify` is also forbidden**.
 
-> **Sequential Branch Dependency Rule**: Before running `/sync` to open a new PR while a prior PR from the same session is still open and unmerged, merge the prior PR first (or explicitly justify parallel branching in a plan/design doc). `dev-sync.ts` touches shared pipeline files (CHANGELOG.md, memory logs, VERSION_MANIFEST.md, generated READMEs) on every commit, so unmerged parallel branches conflict by default, not by exception. Full rule: [docs/context.md](docs/context.md).
+> **Sequential Branch Dependency Rule**: Before running `/sync` to open a new PR while a prior PR from the same session is still open and unmerged, merge the prior PR first (or explicitly justify parallel branching in a plan/design doc). `dev-sync.ts` touches shared pipeline files (CHANGELOG.md, memory logs, VERSION_MANIFEST.md, generated READMEs) on every commit, so unmerged parallel branches conflict by default, not by exception. Full rule: context.md §3.3.
 
 ### 3. MCP Configurations & Absolute Resolving
-Config file: `.mcp.json` (project root) - auto-loaded by both the CLI and the Desktop App. `enableAllProjectMcpServers: true` is set in `.claude/settings.local.json` to activate the abap MCP server.
-* **Path Resolving**: relative paths (e.g., `./server` or `python scripts/mcp.py`) are automatically resolved by Claude Code relative to the individual project's root folder. When defining commands inside `.mcp.json`, always keep command executable paths relative to the project directory for portable cross-platform runs.
+No `.mcp.json` is currently defined at the project root — MCP servers are configured at the user/global level instead. If a project-level `.mcp.json` is added later, keep command executable paths relative to the project directory for portable cross-platform runs; Claude Code resolves relative paths (e.g., `./server` or `python scripts/mcp.py`) against the individual project's root folder.
 
 <!-- COMMON-CLAUDE:START -->
 > **Mandatory**: Read [`AGENTS.md`](AGENTS.md) first and follow its content in every task. It is the SSOT registry for the agent roster, PM Gateway workflow, tier model, skill resolution priority, and universal baseline behaviors; this file carries platform-specific behavior only.
@@ -120,6 +112,38 @@ lang_reason: legal # legal | source-material | proper-noun
 When writing Korean documentation or Korean translation output, prefer native Korean words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`. Loanwords effectively settled in Korean (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established technical terms remain permitted; clarity takes precedence over forced nativization. New Korean content applies this immediately; existing Korean documents are nativized incrementally (touched sections only, no bulk rewrites).
 <!-- COMMON-CLAUDE:END -->
 
+### 4.5 Skill Resolution Priority
+
+When a user request matches a skill trigger, apply this priority order — **enforced every session, regardless of platform**:
+
+| Priority | Source | Location |
+|----------|--------|----------|
+| **1 (highest)** | Local project skills | `skills/<name>/SKILL.md` in the current working directory |
+| **2** | Platform config skills | `.gemini/skills/` or `.claude/skills/` in the project root |
+| **3 (lowest)** | Global plugin skills | e.g., `superpowers/brainstorming`, `superpowers/writing-plans` |
+
+**Rule**: If a local skill's `metadata.triggers` matches the user request, use it — do **not** fall through to a global plugin with overlapping intent.
+
+**Canonical conflict — meeting vs. brainstorming**:
+
+| User says | Correct skill | Priority |
+|-----------|--------------|----------|
+| "meeting", "facilitate", "agent discussion" | `skills/meeting-facilitation` | 1 |
+| "brainstorm", "design before coding", "explore options" | `superpowers/brainstorming` | 3 |
+
+When ambiguous, prefer the local skill and confirm intent with the user.
+Explicit invocation: the `meeting-facilitation` skill with the meeting topic and options (`--agents a,b`, `--rounds N`, `--dialogue`) — the legacy `/meeting` slash command is retired (2026-09-26).
+
+### 5. Agent Dispatch Rules
+
+**MANDATORY PM GATEWAY**: All specialist agent dispatch MUST go through PM.
+
+For the **4-level enforcement model**, **mandatory criteria**, **execution plan format**, and **phase determination**, see [AGENTS.md §3 and §5](AGENTS.md).
+
+#### Claude Code-Specific Dispatch
+
+Before any multi-agent dispatch (2+ agents), PM **must** output an execution plan table prior to invoking the `Agent` tool.
+
 <!-- COMMON-CLAUDE:START -->
 ## Execution Plan Boilerplate
 
@@ -130,6 +154,8 @@ The execution plan table format, the Design Gate (Row 0) rule, exemption categor
 
 **Claude Code execution**: Use the native `Agent` tool for specialist dispatch. See §6 (Native Sub-agents) and §7 (Native Plan Mode) in this file.
 <!-- COMMON-CLAUDE:END -->
+
+### 6. Native Sub-agents (`Agent` Tool)
 
 <!-- COMMON-CLAUDE:START -->
 Use the native `Agent` tool to spawn sub-agents for parallel or isolated tasks. Sub-agents load their role-based configurations from `agents/<name>.md`.
@@ -205,7 +231,7 @@ When working in a plan-mode session:
 <!-- COMMON-CLAUDE:START -->
 ### 10. Custom Command Error Recovery
 If a custom slash command or background script returns a non-zero exit code:
-* **Don't bypass hooks**: Never attempt to run git commands with `--no-verify` to bypass the hook system unless under explicit, written user instruction.
+* **Don't bypass hooks**: Never attempt to run git commands with `--no-verify` to bypass the hook system. **`--no-verify` is forbidden.**
 * **Code Page / UTF-8 Issues (Windows)**: If broken Korean characters or Unicode errors appear in CLI output, the Windows terminal code page (CP949) is likely the cause. Ensure `$OutputEncoding = [Console]::OutputEncoding = [System.Text.Encoding]::UTF8;` or `chcp 65001` is prepended to scripts.
 * **Diagnostic Audit**: Immediately read the failure stdout log. Common errors include:
   * Missing staged `CHANGELOG.md` edits (caught by `pre-commit`). Fix by running `/changelog` and staging the file.
@@ -230,7 +256,7 @@ All shared Git/PR rules are in [docs/context.md](docs/context.md). Claude Code-s
 
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 
-*Last Updated: 2026-10-19 — hook table Desktop App rows aligned to ⚠️ (intermittent, manual fallback) and SessionStart Desktop note corrected (eight-platform coverage design); previous: 2026-10-06 annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
+*Last Updated: 2026-10-26 — hook table Desktop App rows aligned to ⚠️ (intermittent, manual fallback) and SessionStart Desktop note corrected (eight-platform coverage design); previous: 2026-10-06 annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
 <!-- COMMON-CLAUDE:END -->
 
 ---
@@ -293,7 +319,7 @@ See `skills/desktop-app-fallback/SKILL.md` for the complete fallback workflow.
 
 ---
 
-*Last Updated: 2026-10-19 — resynced Claude Code-Specific Behaviors (§1-11) with the current
+*Last Updated: 2026-10-26 — resynced Claude Code-Specific Behaviors (§1-11) with the current
 templates/common/CLAUDE.md baseline (Role Declaration, full Automated Hooks/Slash Commands/
 Language Policy/Skill Resolution/Agent Dispatch/Plan Mode/Task Tracking sections had drifted
 out of sync); consolidated the orphaned teammateMode block into §6; kept all ABAP-specific
