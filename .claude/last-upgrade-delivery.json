@@ -1,31 +1,7 @@
 {
-  "timestamp": "2026-10-26T11:50:36.858Z",
+  "timestamp": "2026-10-26T12:33:13.163Z",
   "files": [
-    "AGENTS.md",
-    "CLAUDE.md",
-    "CODEX.md",
-    "GEMINI.md",
     "docs/clean-abap-checklist.md",
-    "docs/governance/agents/execution-plan-templates.md",
-    "docs/governance/agents/pm-gateway-workflow.md",
-    "docs/governance/agents/workflows.md",
-    "docs/workspace-schema.json",
-    "scripts/SCRIPTS.md",
-    "scripts/audit.ts",
-    "scripts/design-lint.ts",
-    "scripts/dev-sync.ts",
-    "scripts/hooks/pm-dispatch-gate.ts",
-    "scripts/hooks/pm-role-bootstrap.ts",
-    "scripts/hooks/pre-push.ts",
-    "scripts/lib/constitution-scrub.ts",
-    "scripts/lib/upgrade-policy.ts",
-    "scripts/upgrade-project.ts",
-    "scripts/validate-agents.ts",
-    "scripts/validate-docs-links.ts",
-    "scripts/validate-model-registry.ts",
-    "scripts/validate-templates.ts",
-    "template-version.txt",
-    "scripts/helpers/variant-context.ts",
-    "scripts/lib/platform-skeleton-merge.ts"
+    "template-version.txt"
   ]
 }
