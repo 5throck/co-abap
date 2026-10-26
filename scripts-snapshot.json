@@ -12,7 +12,7 @@
       "status": "active"
     },
     "agent-lifecycle-audit.ts": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "status": "active"
     },
     "agent-list.ts": {
@@ -76,7 +76,7 @@
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.30.0",
+      "version": "1.31.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -108,7 +108,7 @@
       "status": "active"
     },
     "generate-version-manifest.ts": {
-      "version": "1.10.0",
+      "version": "1.10.1",
       "status": "active"
     },
     "graph-delta-log.ts": {
@@ -240,7 +240,7 @@
       "status": "active"
     },
     "hooks/pre-push.ts": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "status": "active"
     },
     "regenerate-agents-md.ts": {
@@ -364,7 +364,7 @@
       "status": "active"
     },
     "lifecycle-sync-audit.ts": {
-      "version": "1.18.1",
+      "version": "1.19.0",
       "status": "active"
     },
     "lint-instructions.ts": {
@@ -428,7 +428,7 @@
       "status": "active"
     },
     "team-builder.ts": {
-      "version": "1.4.1",
+      "version": "1.5.0",
       "status": "active"
     },
     "test-runner.ts": {
@@ -564,7 +564,7 @@
       "status": "active"
     },
     "validate-model-registry.ts": {
-      "version": "1.5.0",
+      "version": "2.0.0",
       "status": "active"
     },
     "validate-surface-registry.ts": {
@@ -592,7 +592,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.59.1",
+      "version": "1.60.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {

@@ -1,7 +1,29 @@
 {
-  "timestamp": "2026-10-26T12:33:13.163Z",
+  "timestamp": "2026-10-26T16:41:47.125Z",
   "files": [
+    ".agents/skills/agent-lifecycle-manager/SKILL.md",
+    ".agents/skills/team-builder/SKILL.md",
+    ".claude/skills/agent-lifecycle-manager/SKILL.md",
+    ".claude/skills/team-builder/SKILL.md",
+    ".codex/skills/agent-lifecycle-manager/SKILL.md",
+    ".codex/skills/team-builder/SKILL.md",
+    ".gemini/skills/agent-lifecycle-manager/SKILL.md",
+    ".gemini/skills/team-builder/SKILL.md",
+    ".hermes/skills/agent-lifecycle-manager/SKILL.md",
+    ".hermes/skills/team-builder/SKILL.md",
     "docs/clean-abap-checklist.md",
+    "docs/workspace-schema.json",
+    "scripts/SCRIPTS.md",
+    "scripts/agent-lifecycle-audit.ts",
+    "scripts/dev-sync.ts",
+    "scripts/generate-version-manifest.ts",
+    "scripts/hooks/pre-push.ts",
+    "scripts/lifecycle-sync-audit.ts",
+    "scripts/team-builder.ts",
+    "scripts/validate-model-registry.ts",
+    "scripts/validate-templates.ts",
+    "skills/agent-lifecycle-manager/SKILL.md",
+    "skills/team-builder/SKILL.md",
     "template-version.txt"
   ]
 }
