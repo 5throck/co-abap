@@ -4,10 +4,11 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-26](2026-10-26.md) | chore(scripts): workspace sync (32 files) |
 | [2026-10-22](2026-10-22.md) | feat(governance): bind PM role bootstrap in AGENTS.md |
 | [2026-10-19](2026-10-19.md) | chore: upgrade template to 0.20.0 (canary) |
-| [2026-10-17](2026-10-17.md) | chore: upgrade template to 0.19.2 (canary) |
-| [2026-10-15](2026-10-15.md) | chore(scripts): workspace sync (11 files) |
+| 2026-10-17 | chore: upgrade template to 0.19.2 (canary) |
+| 2026-10-15 | chore(scripts): workspace sync (11 files) |
 | 2026-10-14 | chore(scripts): workspace sync (23 files) |
 | 2026-10-13 | chore: update |
 | 2026-10-11 | chore: upgrade template to 0.16.0 |

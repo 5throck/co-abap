@@ -1509,6 +1509,12 @@
     {
       "type": "cites_skill",
       "from": "doc:CLAUDE.md",
+      "to": "skill:root/meeting-facilitation",
+      "source": "workflow-doc"
+    },
+    {
+      "type": "cites_skill",
+      "from": "doc:CLAUDE.md",
       "to": "skill:root/post-write-chain",
       "source": "workflow-doc"
     },
