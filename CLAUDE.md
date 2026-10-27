@@ -67,6 +67,28 @@ Custom slash commands in `.claude/commands/` are natively recognized by Claude C
 
 > **Sequential Branch Dependency Rule**: Before running `/sync` to open a new PR while a prior PR from the same session is still open and unmerged, merge the prior PR first (or explicitly justify parallel branching in a plan/design doc). `dev-sync.ts` touches shared pipeline files (CHANGELOG.md, memory logs, VERSION_MANIFEST.md, generated READMEs) on every commit, so unmerged parallel branches conflict by default, not by exception. Full rule: context.md §3.3.
 
+### 2.5 Native Slash Commands
+Custom slash commands in `.claude/commands/` are natively recognized by Claude Code. The following commands are available at session start:
+
+| Command | Purpose | Underlying Trigger |
+|---------|---------|--------------------|
+| `/sync "feat: ..."` | Full pipeline - memlog → sync-md → changelog → audit → commit → PR | `scripts/dev-sync.ts` |
+| `/changelog "..."` | Add entry to `CHANGELOG.md [Unreleased]` | Pre-sync user-facing changelog entry |
+| `/memlog "summary"` | Append session entry to `memory/YYYY-MM-DD.md` only | Without triggering full sync |
+| `/new-task "name"` | Create task block in today's memory log | In-session task tracking |
+| `/commit-push-pr` | Commit, push, and open a PR in one step | Standalone commit/PR helper (bypasses full `/sync` pipeline) |
+| `/gateguard` | Investigate importers before first edit per file (GateGuard) | Companion to the PreToolUse GateGuard hook |
+| `/project-review` | Run a structured project review | Project review workflow command |
+
+> **How commands become Skills**: each `.claude/commands/<name>.md` file is automatically
+> registered as a `<name>` Skill. All commands above have corresponding files in `.claude/commands/`. There is no `/new-project` command file — scaffold new projects with `bun scripts/new-project.ts "<name>" --variant <co-variant>` directly (`--variant` is required).
+
+> **Platform parity**: every command file in `.claude/commands/` must have a matching file in `.gemini/commands/`. Intentional Claude-only exceptions use `gemini-parity: skip` in frontmatter. See [docs/context.md](docs/context.md).
+
+> **Commit Protection (SYNC_ACTIVE)**: Direct `git commit` or `git push` calls via bash/powershell/run_command are **FORBIDDEN**. The pre-commit hook blocks direct commits unless executed through `/sync`. Never manipulate environment variables (e.g., `$env:SYNC_ACTIVE=1; git commit`) to bypass QA gates. All commits MUST go through the approved `/sync` pipeline or `dev-sync.ts`. **`--no-verify` is also forbidden**.
+
+> **Sequential Branch Dependency Rule**: Before running `/sync` to open a new PR while a prior PR from the same session is still open and unmerged, merge the prior PR first (or explicitly justify parallel branching in a plan/design doc). `dev-sync.ts` touches shared pipeline files (CHANGELOG.md, memory logs, VERSION_MANIFEST.md, generated READMEs) on every commit, so unmerged parallel branches conflict by default, not by exception. Full rule: context.md §3.3.
+
 ### 3. MCP Configurations & Absolute Resolving
 No `.mcp.json` is currently defined at the project root — MCP servers are configured at the user/global level instead. If a project-level `.mcp.json` is added later, keep command executable paths relative to the project directory for portable cross-platform runs; Claude Code resolves relative paths (e.g., `./server` or `python scripts/mcp.py`) against the individual project's root folder.
 
@@ -256,7 +278,7 @@ All shared Git/PR rules are in [docs/context.md](docs/context.md). Claude Code-s
 
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 
-*Last Updated: 2026-10-26 — hook table Desktop App rows aligned to ⚠️ (intermittent, manual fallback) and SessionStart Desktop note corrected (eight-platform coverage design); previous: 2026-10-06 annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
+*Last Updated: 2026-10-28 — hook table Desktop App rows aligned to ⚠️ (intermittent, manual fallback) and SessionStart Desktop note corrected (eight-platform coverage design); previous: 2026-10-06 annotated the L0-only agent dispatch examples (`docs-writer` / `automation-engineer`) as workspace-root agents (U-20261006-006); previous: 2026-10-02 removed redundant N-1/N boilerplate rows; /sync already covers lifecycle + audit + commit + push + PR*
 <!-- COMMON-CLAUDE:END -->
 
 ---
@@ -319,7 +341,7 @@ See `skills/desktop-app-fallback/SKILL.md` for the complete fallback workflow.
 
 ---
 
-*Last Updated: 2026-10-26 — resynced Claude Code-Specific Behaviors (§1-11) with the current
+*Last Updated: 2026-10-28 — resynced Claude Code-Specific Behaviors (§1-11) with the current
 templates/common/CLAUDE.md baseline (Role Declaration, full Automated Hooks/Slash Commands/
 Language Policy/Skill Resolution/Agent Dispatch/Plan Mode/Task Tracking sections had drifted
 out of sync); consolidated the orphaned teammateMode block into §6; kept all ABAP-specific

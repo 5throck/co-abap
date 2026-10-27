@@ -1,28 +1,1030 @@
 {
-  "timestamp": "2026-10-26T21:03:16.484Z",
+  "schemaVersion": 2,
+  "timestamp": "2026-10-27T18:33:31.321Z",
+  "project": "co-abap",
+  "templateVersion": "0.22.0",
+  "templateSha": "6e60ebdb09c04b0e21089160dc66d32de85d79b5",
+  "baseSha": "4988e54d37b49b566d1d8d3e99313210a77468ae",
   "files": [
-    "agents/architect.md",
-    "agents/co-analyst.md",
-    "agents/code-writer.md",
-    "agents/dba.md",
-    "agents/devops-admin.md",
-    "agents/fi-analyst.md",
-    "agents/fiori-developer.md",
-    "agents/form-expert.md",
-    "agents/gui-scripter.md",
-    "agents/interface-expert.md",
-    "agents/le-analyst.md",
-    "agents/mm-analyst.md",
-    "agents/pp-analyst.md",
-    "agents/read-only-analyst.md",
-    "agents/sap-investigator.md",
-    "agents/schema-inspector.md",
-    "agents/sd-analyst.md",
-    "agents/security-monitor.md",
-    "agents/test-runner.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "agents/i18n-specialist.md",
+    "agents/pm.md",
     "docs/clean-abap-checklist.md",
+    "docs/design-foundation.md",
+    "docs/governance/agents/workflows.md",
     "scripts/SCRIPTS.md",
-    "scripts/verify-scripts.ts",
-    "template-version.txt"
+    "scripts/audit.ts",
+    "scripts/compile-tokens.ts",
+    "scripts/design-lint.ts",
+    "scripts/dev-sync.ts",
+    "scripts/helpers/upgrade-versions.ts",
+    "scripts/hooks/pre-commit.ts",
+    "scripts/lib/platform-skeleton-merge.ts",
+    "scripts/lib/upgrade-policy.ts",
+    "scripts/validate-md-language.ts",
+    "scripts/validate-model-registry.ts",
+    "scripts/validate-templates.ts",
+    "scripts/verify-readme-sync.ts",
+    "template-version.txt",
+    "scripts/helpers/design-lint-roots.ts",
+    "scripts/helpers/pre-commit-script-gate.ts",
+    "scripts/helpers/theme-token-policy.ts"
+  ],
+  "baselines": {
+    ".githooks/commit-msg": {
+      "hash": "cd819a49144f4f94ce66ba590dc07d1508dc70238b97d0eeeea047acc3ba950c",
+      "templateVersion": "0.22.0"
+    },
+    ".githooks/post-checkout": {
+      "hash": "53c0cb9125f5d772e128f49cd4d8f21a4ea196d1ec5af6557ff49a3a5484db96",
+      "templateVersion": "0.22.0"
+    },
+    ".githooks/pre-commit": {
+      "hash": "737e7f7e55f1c3498308aa7f8c88313e21d6a4b7c54f64e6d82b54a96c7490a0",
+      "templateVersion": "0.22.0"
+    },
+    ".githooks/pre-push": {
+      "hash": "1d30c52e9bc760e38fbb699c60f8aa1daed7f456a540356c7112a4932098cb95",
+      "templateVersion": "0.22.0"
+    },
+    ".githooks/pre-rebase": {
+      "hash": "a21b3982b59015250a23e3095b646d82faf1cd53b8250078948769cf626a8906",
+      "templateVersion": "0.22.0"
+    },
+    ".gitignore": {
+      "hash": "91d3b7908e28da581f822de6551afcbe953ee099dd70818994796df8129a401c",
+      "templateVersion": "0.22.0"
+    },
+    "AGENTS.md": {
+      "hash": "0b543cd6e525177a7fc6306213ca8be2146c9526a41fc2d2d43cd0edd66f0491",
+      "templateVersion": "0.22.0"
+    },
+    "CLAUDE.md": {
+      "hash": "85200d030ff57593f4b24a1ba7462742b6e0c941283bb793230cb82b14f33a50",
+      "templateVersion": "0.22.0"
+    },
+    "CODEX.md": {
+      "hash": "695a77fa42777de8da6c0e0d3aaf41abaa365b6e942cbcccce7b1317163b5dcb",
+      "templateVersion": "0.22.0"
+    },
+    "GEMINI.md": {
+      "hash": "d4307c998cdd38e75097f4851a025b85db51055cf12997cfe38ecf5b9ee7ff2e",
+      "templateVersion": "0.22.0"
+    },
+    "HERMES.md": {
+      "hash": "a7c14e3e0998dc16bc62fde921ae8edbb0a888235f5bacbc2e1f587d537f3fff",
+      "templateVersion": "0.22.0"
+    },
+    "agents/i18n-specialist.md": {
+      "hash": "5f06f176497b71af7cd3101a57d427b36e2a07cbcfecd461da7b18b22e76a243",
+      "templateVersion": "0.22.0"
+    },
+    "agents/pm.md": {
+      "hash": "f3a837eea362090ee4a65065616c19038f2ada9e147ace19d9b6d6032172e2d5",
+      "templateVersion": "0.22.0"
+    },
+    "docs/clean-abap-checklist.md": {
+      "hash": "61c45a5a431bdc2269d11382ca4ad8ea892d499a0cd23e88e0249f36cc0375f7",
+      "templateVersion": "0.22.0"
+    },
+    "docs/co-abap.context.md": {
+      "hash": "f3a63ee7bf64abe7e9f2c7e19942d5036e1fd97aaa62e5d9aa0bdfde3fd04a6d",
+      "templateVersion": "0.22.0"
+    },
+    "docs/design-foundation.md": {
+      "hash": "c38750a09393225fa5cb3c144fc47713d3e5f98c574126d2b7dc02661c15f4a4",
+      "templateVersion": "0.22.0"
+    },
+    "docs/governance/agents/workflows.md": {
+      "hash": "00b2137ca57a2e7afd0a9537fa25287b565530a2b8730fc18bc5a977415b14c3",
+      "templateVersion": "0.22.0"
+    },
+    "docs/phase-definitions.md": {
+      "hash": "ffbf296d2232c00cfe4d363f75b07cb0745b9dc9871f2209ff89bba01ee38b0f",
+      "templateVersion": "0.22.0"
+    },
+    "docs/security.md": {
+      "hash": "6424d80604638ae56523d66a6a3447b3bb14ec249afb20d2fe70f75bca30f87d",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/audit.ts": {
+      "hash": "eb2433ba5164f19c9217ecb22cbb31e102156fb6a230ea3f8c8b43cfeaf02ccb",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/compile-tokens.ts": {
+      "hash": "ed08b09a92ff8044ccb4503c79219d3090cd7cbc35d60845fcb812875f257057",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/design-lint.ts": {
+      "hash": "09b55f2089c93a21d7152594ac40314e6ed1faa755bfa2e242bf1ec3f4376800",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/dev-sync.ts": {
+      "hash": "c462de64594e5154202116806d7bb0b8ac389e8d758e92b2e9d692164970d3be",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/helpers/design-lint-roots.ts": {
+      "hash": "b6c0634a0826dbf31be88914246771a0e71881488e03c70a73d0c4633e6e6309",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/helpers/pre-commit-script-gate.ts": {
+      "hash": "fdaacb7748ad8e0b87ef941029a35ace76a874d573e6fe6ce6e3a4032442a803",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/helpers/theme-token-policy.ts": {
+      "hash": "f37942ee6b97c6e8b8871faf676c91fd684c567a3c2ba44c3cf584fc672579d6",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/helpers/upgrade-versions.ts": {
+      "hash": "d31a19ab2ef93917661bbd0e550b2b9e64b7c80c13b0ec78e6e729a23191a5e9",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/hooks/pre-commit.ts": {
+      "hash": "4e21283f8c70e82eecb758e18a741106a11622bb267571c952347e1289528876",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/lib/platform-skeleton-merge.ts": {
+      "hash": "b4cc6399b5bdc08a98c7e3c298eb64915075333bff60cbf3497e0f1033690c0f",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/lib/upgrade-policy.ts": {
+      "hash": "b3924b25e36de9e9726ff629eb7c9da642cdd0b8c4357c08069592c470bb7115",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/validate-md-language.ts": {
+      "hash": "c054a9c36571396d4393f3a8a26777458e20c6a91e04b755deb6aebad6f483cb",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/validate-model-registry.ts": {
+      "hash": "9bc2d53701593ce8f3c97aae6593361bcef8f35d9aabaabdf6ba015c1f10d50e",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/validate-templates.ts": {
+      "hash": "e20fab8f82eb158a0b04f055d8beee6b4ccd44f5994f23e210f889165e2e0f04",
+      "templateVersion": "0.22.0"
+    },
+    "scripts/verify-readme-sync.ts": {
+      "hash": "e13115800a29891e598a24e053801e41d8539a0f023199be3ece6cb383e01ab6",
+      "templateVersion": "0.22.0"
+    }
+  },
+  "decisions": [
+    {
+      "path": "CLAUDE.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "GEMINI.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "CODEX.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "HERMES.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": ".gitignore",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "agents/pm.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "agents/pm.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
+      "verdict": "ADOPT",
+      "detail": "tier frontmatter normalized to template scalar 'medium' (ADR-0102, T-20261027-005 delivery)",
+      "severity": "INFO"
+    },
+    {
+      "path": "AGENTS.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "DOCS_MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/co-abap.context.md",
+      "policy": "MERGE_MANAGED",
+      "pass": "DOCS_MERGE",
+      "verdict": "MERGE",
+      "detail": "managed-zone merge delivered (non-destructive union/insert)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/phase-definitions.md",
+      "policy": "OVERWRITE",
+      "pass": "DOCS_OVERWRITE",
+      "verdict": "ADOPT",
+      "detail": "project copy already matches the template (in sync)",
+      "severity": "INFO"
+    },
+    {
+      "path": "README.md",
+      "policy": "PRESERVE",
+      "pass": "PRESERVE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    },
+    {
+      "path": "README_ko.md",
+      "policy": "PRESERVE",
+      "pass": "PRESERVE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/audit.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "2.55.0 → 2.56.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/compile-tokens.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.2.0 → 1.3.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/design-lint.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "2.2.0 → 2.3.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/dev-sync.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.31.0 → 1.32.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/helpers/design-lint-roots.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "NEW",
+      "detail": "delivered (none) → 1.0.0",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/helpers/pre-commit-script-gate.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "NEW",
+      "detail": "delivered (none) → 1.1.0",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/helpers/theme-token-policy.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "NEW",
+      "detail": "delivered (none) → 1.0.0",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/helpers/upgrade-versions.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.0.2 → 1.1.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/hooks/pre-commit.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.10.0 → 1.11.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/lib/platform-skeleton-merge.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.0.0 → 1.1.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/lib/upgrade-policy.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.22.0 → 1.25.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/validate-md-language.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.15.0 → 1.16.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/validate-model-registry.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "2.0.0 → 2.1.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/validate-templates.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.60.0 → 1.62.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/verify-readme-sync.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.4.1 → 1.5.0 — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "agents/pm.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: agents/",
+      "verdict": "STUB_SKIP",
+      "detail": "template extends-stub never delivers through this pass — resolved at scaffold (MERGE pass owns the body)",
+      "severity": "INFO"
+    },
+    {
+      "path": "agents/i18n-specialist.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: agents/",
+      "verdict": "ADOPT",
+      "detail": "1.0.0 → 1.3.0 — version-gated delivery over the delivered baseline (lifecycle block preserved)",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/k-opendata/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.2.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/project-review/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/k-kosis/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.0.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/k-krx/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.0.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/finishing-a-development-branch/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/k-ecos/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.0.0",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/k-dart/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 2.1.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/k-law/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.0.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sync/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/evidence-ledger/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/fiori-rap-dev/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-mm/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/abap-dev/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/post-write-chain/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/performance-tuning/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/source-command-celebrate/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-fi/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/dump-monitor/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-sd/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-pp/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/abap-code-review/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/desktop-app-fallback/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-co/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/sap-le/",
+      "policy": "PRESERVE",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "SKIP",
+      "detail": "project-only skill — no template counterpart, preserved",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/abap-dev/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/post-write-chain/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/performance-tuning/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/dump-monitor/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/abap-code-review/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "skills/desktop-app-fallback/SKILL.md",
+      "policy": "SYNC",
+      "pass": "VARIANT SKILLS",
+      "verdict": "DRIFT_PRESERVE",
+      "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
+      "severity": "WARN"
+    },
+    {
+      "path": "LICENSE",
+      "policy": "ADD_IF_MISSING",
+      "pass": "GOVERNANCE FILES",
+      "verdict": "SEED_SKIP",
+      "detail": "project copy exists — add-if-missing seed withheld (licenses are intentionally forkable)",
+      "severity": "INFO"
+    },
+    {
+      "path": "SECURITY.md",
+      "policy": "ADD_IF_MISSING",
+      "pass": "GOVERNANCE FILES",
+      "verdict": "SEED_SKIP",
+      "detail": "project copy exists — add-if-missing seed withheld (licenses are intentionally forkable)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/security-closeout-review/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/solution-blueprint/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/transport-release/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/security-readiness-baseline/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/requirements-analysis/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "procedures/custom-dev-delivery/",
+      "policy": "ADD_IF_MISSING",
+      "pass": "PROCEDURES",
+      "verdict": "SEED_SKIP",
+      "detail": "project-owned procedure entry exists — add-if-missing seed withheld (project-local workflow edits are intentional)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/clean-abap-checklist.md",
+      "policy": "SYNC",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "ADOPT",
+      "detail": "(content changed) — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/fiori-developer.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/le-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/security-monitor.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/test-runner.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/dba.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/schema-inspector.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/architect.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/co-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/read-only-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/sap-investigator.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/code-writer.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/mm-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/devops-admin.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/sd-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/interface-expert.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/pp-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/form-expert.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/gui-scripter.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/pm.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/fi-analyst.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/agents/i18n-specialist.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": ".codex/rules/default.rules",
+      "policy": "ADD_IF_MISSING",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project copy exists — add-if-missing seed withheld (project-owned config)",
+      "severity": "INFO"
+    },
+    {
+      "path": ".codex/config.toml",
+      "policy": "ADD_IF_MISSING",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project copy exists — add-if-missing seed withheld (project-owned config)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/specs/registry.json",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/i18n-formatting.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/i18n-audit.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/i18n-locale-config.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/handbook.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/i18n-layout.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/decision-record.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/evidence-ledger.md",
+      "policy": "WORKSPACE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project workspace file exists — seed-only claim withheld (never overwritten, never pruned)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/governance/agents/workflows.md",
+      "policy": "SYNC",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "ADOPT",
+      "detail": "(content changed) — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/design-foundation.md",
+      "policy": "SYNC",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "ADOPT",
+      "detail": "(content changed) — version-gated delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": ".codex/hooks.json",
+      "policy": "ADD_IF_MISSING",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "SEED_SKIP",
+      "detail": "project copy exists — add-if-missing seed withheld (project-owned config)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/security.md",
+      "policy": "OVERWRITE",
+      "pass": "DOCS_OVERWRITE",
+      "verdict": "ADOPT",
+      "detail": "template copy delivered over the delivered baseline (version-gated)",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/phase-definitions.md",
+      "policy": "PRESERVE",
+      "pass": "OVERWRITE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/context.md",
+      "policy": "PRESERVE",
+      "pass": "OVERWRITE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/README.md",
+      "policy": "PRESERVE",
+      "pass": "OVERWRITE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/README_ko.md",
+      "policy": "PRESERVE",
+      "pass": "OVERWRITE",
+      "verdict": "SKIP",
+      "detail": "preserve-listed — never modified by the upgrade",
+      "severity": "INFO"
+    }
   ]
 }

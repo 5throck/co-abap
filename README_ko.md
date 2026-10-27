@@ -1,5 +1,7 @@
 ---
-translated_from_hash: 74e8d306e81c9149b917343049f9ad34545878a03bbb624e804b21696c1ce3c6
+translated_from_hash: 4b6f0ace94b741e721885c749c809f4a0e5db9dc0e769c7ef347759a85bd795f
+lang: ko
+lang_reason: source-material
 ---
 # SAP ABAP를 위한 Harness Engineering
 

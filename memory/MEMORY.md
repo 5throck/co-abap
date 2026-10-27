@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-28](2026-10-28.md) | chore: workspace sync (0 files) |
 | [2026-10-27](2026-10-27.md) | chore: upgrade template delivery (0.20.1 tree sync) |
 | [2026-10-26](2026-10-26.md) | chore(scripts): workspace sync (32 files) |
 | [2026-10-22](2026-10-22.md) | feat(governance): bind PM role bootstrap in AGENTS.md |
