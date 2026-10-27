@@ -1,5 +1,5 @@
 ---
-content_hash: 74e8d306e81c9149b917343049f9ad34545878a03bbb624e804b21696c1ce3c6
+content_hash: 4b6f0ace94b741e721885c749c809f4a0e5db9dc0e769c7ef347759a85bd795f
 ---
 # Harness Engineering for SAP ABAP
 
@@ -112,7 +112,7 @@ For detailed roles, trigger keywords, and handoff protocols, see [AGENTS.md](AGE
 | **[docs/context.md](docs/context.md)** | **Shared** project context: build commands, codebase map, and development rules. |
 | **[skills/abap-dev/SKILL.md](skills/abap-dev/SKILL.md)** | Specialized AI skills (BAPI explorer, memory intelligence) and QA chains. |
 | **[docs/platform-setup/setup-guide.md](docs/platform-setup/setup-guide.md)** | Step-by-step environment setup (MCP, SAP, abapGit). |
-| **[docs/user-guide.md](docs/user-guide.md)** | Task-level guide — how to hand SAP work to the agent team (한국어: [user-guide_ko.md](docs/user-guide_ko.md)). |
+| **[docs/user-guide.md](docs/user-guide.md)** | Task-level guide — how to hand SAP work to the agent team ([한국어](docs/user-guide_ko.md)). |
 | **[deliverables/index.md](deliverables/index.md)** | Requirements Traceability Matrix (RTM) — Stage 1–5 tracking for every requirement. |
 | **[SECURITY.md](SECURITY.md)** | Vulnerability reporting and the MCP-driven SAP access threat model. |
 | **[docs/tooling-matrix.md](docs/tooling-matrix.md)** | 8-platform matrix: configs, dispatch, hooks, deny rules. |
@@ -243,4 +243,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-10-13*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-10-28*

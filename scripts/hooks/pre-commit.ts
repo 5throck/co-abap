@@ -2,8 +2,28 @@
 /**
  * pre-commit.ts — TS-based pre-commit hook.
  * Replaces the legacy bash/ps1 hooks.
- * @version 1.10.0
+ * @version 1.11.0
  *
+ * v1.11.0 (2026-10-27, T-20261027-010): check 6c's content gate was DEAD — it
+ *  parsed `parsed.results` from `lifecycle-sync-audit.ts --json`, but the
+ *  AuditResult wire shape is {passed, errors, warnings, registry}: `results`
+ *  never existed, checkAErrors was always empty, and version mismatches never
+ *  blocked. Rewired to the real wire shape via the shared extractor
+ *  parseCheckAErrorsDetailed (helpers/pre-commit-script-gate.ts v1.1.0, same
+ *  module as the T-20261027-009 merge gate) so the extraction cannot drift
+ *  between the two call sites; the fixData-driven "→ Fix:" output is kept.
+ * v1.10.0 (2026-10-27, T-20261027-009): check 6 becomes merge-aware. The
+ *  "scripts/*.ts staged AND scripts/SCRIPTS.md not staged → FAIL" rule is a
+ *  staged-file-set proxy and false-positives on merge commits where the
+ *  merged-in side carries script changes whose SCRIPTS.md rows pre-exist on
+ *  the receiving branch (zero delta) — observed 2026-10-27 concluding
+ *  main→PR #1643 after #1644 landed while content-based lifecycle-sync-audit
+ *  Check A passed. When a merge is in progress (MERGE_HEAD present, resolved
+ *  via `git rev-parse --git-path MERGE_HEAD` so worktrees are covered), check
+ *  6 delegates to the content invariant the proxy stands for — the Check A
+ *  rows==@version-headers comparison (scripts/helpers/pre-commit-script-gate.ts)
+ *  — instead of failing, and logs a one-line notice. Non-merge commits keep
+ *  the exact prior behavior.
  * v1.9.0 (2026-10-02): check 6b command counterpart check becomes L0-only —
  *  skipped when templates/common does not exist (recorded exclusion, D8 style
  *  like .agents/commands): L2 projects and scaffold commits have no mapping
@@ -21,7 +41,12 @@ import { $ } from "bun";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { hasNonEnglish } from "../lib/language-guard.ts";
 import { localDateISO } from "../lib/local-date.ts";
-import { SECRET_PATTERNS } from "../lib/secret-patterns.ts";
+import {
+  evaluateScriptsMdGate,
+  MERGE_GATE_NOTICE,
+  parseCheckAErrorsDetailed,
+  runScriptsMdContentGate,
+} from "../helpers/pre-commit-script-gate.ts";
 
 async function main() {
   const stagedOutput = await $`git diff --cached --name-only`.text();
@@ -63,12 +88,6 @@ async function main() {
           await $`git add ${file}`;
         }
       } catch (e) { /* ignore */ }
-    }
-    // LOCAL-PATCH(upstream-request: pending): stamping config/commands sources makes the
-    // rendered platform copies stale — re-render and stage them in the same commit.
-    if (mdStaged.some(f => f.startsWith('config/commands/'))) {
-      await $`bun scripts/render-commands.ts`.quiet();
-      await $`git add .claude/commands .codex/prompts .gemini/commands`;
     }
   }
 
@@ -220,7 +239,26 @@ async function main() {
   const scriptStaged = staged.filter(f => /^scripts\/.*\.ts$/.test(f.replace(/\\/g, '/')));
   const scriptsMdStaged = staged.includes('scripts/SCRIPTS.md');
 
+  // T-20261027-009: merge-in-progress detection — resolved via --git-path so
+  // linked worktrees (MERGE_HEAD under .git/worktrees/<name>/) are covered.
+  // Probed lazily, only when the staged-file-set proxy would otherwise arm.
+  let mergeInProgress = false;
   if (scriptStaged.length > 0 && !scriptsMdStaged) {
+    try {
+      const mergeHeadPath = (await $`git rev-parse --git-path MERGE_HEAD`.text()).trim();
+      mergeInProgress = mergeHeadPath.length > 0 && existsSync(mergeHeadPath);
+    } catch {
+      mergeInProgress = false; // outside a repo cannot happen here; treat as non-merge
+    }
+  }
+
+  const scriptsGate = evaluateScriptsMdGate({
+    scriptsStagedCount: scriptStaged.length,
+    scriptsMdStaged,
+    mergeInProgress,
+  });
+
+  if (scriptsGate === 'proxy-fail') {
     console.log("\n=== Lifecycle Compliance Check ===");
     console.error("\x1b[31m[FAIL]\x1b[0m scripts/*.ts files were modified but scripts/SCRIPTS.md was not updated.");
     console.error("");
@@ -238,7 +276,34 @@ async function main() {
     process.exit(1);
   }
 
+  if (scriptsGate === 'merge-verify') {
+    // T-20261027-009: the merged-in side may carry script changes whose
+    // SCRIPTS.md rows pre-exist on this branch (zero delta), so the
+    // staged-file-set proxy does not apply. Verify the content invariant the
+    // proxy stands for instead — the Check A rows == @version-headers
+    // comparison run by lifecycle-sync-audit.ts (exit code is the gate).
+    console.log(`\n=== Lifecycle Compliance Check ===\n${MERGE_GATE_NOTICE}`);
+    const { pass, checkAErrors } = await runScriptsMdContentGate(async () => {
+      const result = await $`bun scripts/lifecycle-sync-audit.ts --json`.quiet().nothrow();
+      return { exitCode: result.exitCode, stdout: result.stdout.toString() };
+    });
+    if (!pass) {
+      console.error("\x1b[31m[FAIL]\x1b[0m Merge commit fails the SCRIPTS.md content check (lifecycle-sync-audit Check A):");
+      for (const err of checkAErrors) {
+        console.error(`  - ${err.file}: ${err.message}`);
+      }
+      if (checkAErrors.length === 0) {
+        console.error("  (lifecycle-sync-audit.ts exited non-zero without parseable Check A detail — run 'bun scripts/lifecycle-sync-audit.ts' to see the failure)");
+      }
+      console.error("");
+      process.exit(1);
+    }
+  }
+
   // 6c. Check A version blocking: @version in scripts/*.ts must match SCRIPTS.md
+  // (T-20261027-010: this gate was dead until v1.11.0 — it read `parsed.results`,
+  // a key that never exists on the AuditResult wire shape, so Check A mismatches
+  // never blocked. Extraction now goes through the shared, tested helper.)
   const scriptOrMdStaged = staged.some(f => {
     const normalized = f.replace(/\\/g, '/');
     return /^scripts\/.*\.ts$/.test(normalized) || normalized === 'scripts/SCRIPTS.md';
@@ -248,12 +313,11 @@ async function main() {
     console.log("\n=== Script Version Sync Check (Check A) ===");
     try {
       const auditResult = await $`bun scripts/lifecycle-sync-audit.ts --json`.quiet().nothrow();
-      const raw = auditResult.stdout.toString().trim();
-      let checkAErrors: Array<{ file: string; message: string; fixData?: { scriptName: string; fileVersion: string; registryVersion: string } }> = [];
+      let checkAErrors: Awaited<ReturnType<typeof parseCheckAErrorsDetailed>> = [];
       try {
-        const parsed = JSON.parse(raw);
-        const results: Array<{ level: string; file: string; message: string; fix?: string; fixData?: { scriptName: string; fileVersion: string; registryVersion: string } }> = parsed.results ?? [];
-        checkAErrors = results.filter(r => r.level === 'error' && r.message.includes('Check A:'));
+        // AuditResult wire shape: {passed, errors, warnings, registry} — Check A
+        // errors live in `errors` (level === 'error', message includes 'Check A:').
+        checkAErrors = parseCheckAErrorsDetailed(auditResult.stdout.toString().trim());
       } catch {
         console.error("\x1b[33m[WARN]\x1b[0m lifecycle-sync-audit.ts returned non-JSON output — skipping Check A version block");
       }
@@ -341,7 +405,17 @@ async function main() {
   const regexScanPassed = (() => {
     const diff = $`git diff --cached -U0`.nothrow().quiet();
     // We need the text synchronously; use sync-safe approach
-    const patterns = SECRET_PATTERNS; // shared list: scripts/lib/secret-patterns.ts
+    const patterns = [
+      /(password|passwd|secret|api_key|apikey|access_token|auth_token)\s*=\s*['"][^'"]{8,}['"]/i,
+      /AKIA[0-9A-Z]{16}/,
+      /ghp_[0-9a-zA-Z]{36}/,
+      /sk-[0-9a-zA-Z]{48}/,
+      /sk-ant-[a-zA-Z0-9\-_]{95,}/,    // H-07: Anthropic API keys (sk-ant-api03-...)
+      /sk-proj-[a-zA-Z0-9\-_]{48,}/,   // H-07: Anthropic project keys
+      /gho_[A-Za-z0-9]{30,}/,          // GitHub OAuth tokens (shorter than ghp_)
+      /github_pat_[A-Za-z0-9_]{20,}/,  // GitHub fine-grained PATs
+      /xox[baprs]-[A-Za-z0-9-]{10,}/,  // Slack tokens
+    ];
     return async () => {
       const diffText = await diff.text();
       const added = diffText.split('\n').filter(l => l.startsWith('+') && !l.startsWith('+++')).join('\n');

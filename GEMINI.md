@@ -142,6 +142,16 @@ lang_reason: legal # legal | source-material | proper-noun
 When writing Korean documentation or Korean translation output, prefer native Korean words (`순우리말`) over loanwords (`외래어`) whenever a natural, widely-understood native equivalent exists — e.g. prefer `만들기` over `크리에이션`, `알림` over `노티피케이션`. Loanwords effectively settled in Korean (`컴퓨터`, `데이터`, `소프트웨어`, `파일`) and established technical terms remain permitted; clarity takes precedence over forced nativization. New Korean content applies this immediately; existing Korean documents are nativized incrementally (touched sections only, no bulk rewrites).
 <!-- COMMON-GEMINI:END -->
 
+### 5. Agent Dispatch Rules
+
+**MANDATORY PM GATEWAY**: All specialist agent dispatch MUST go through PM.
+
+For the **4-level enforcement model**, **mandatory criteria**, **execution plan format**, and **phase determination**, see [AGENTS.md §3 and §5](AGENTS.md).
+
+#### Antigravity-Specific Dispatch
+
+Before any multi-agent dispatch (2+ agents), PM **must** output an execution plan table prior to invoking the agent orchestration tool.
+
 <!-- COMMON-GEMINI:START -->
 ## Execution Plan Boilerplate
 
@@ -292,7 +302,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-27 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-10-28 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,
