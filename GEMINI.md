@@ -107,11 +107,6 @@ After changes are verified, summarize outcomes in `memory/YYYY-MM-DD.md` and upd
 Interact with spawned agents via their unique `conversationID`.
 **Reactive Wakeup**: Do not poll in a loop — simply yield execution and the platform wakes you automatically when an agent replies or a background task completes.
 
-### 5. Agent Dispatch Rules
-
-<!-- LOCAL-PATCH(upstream-request: pending): heading added for governance anchors -->
-Dispatch specialist agents with `define_subagent` / `invoke_subagent` (see §3 above), passing the tier-appropriate model per the Cost Optimization mapping below.
-
 ---
 
 <!-- COMMON-GEMINI:START -->
@@ -297,7 +292,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-26 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-10-27 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,
