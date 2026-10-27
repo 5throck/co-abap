@@ -161,13 +161,13 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `team-builder.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
 | `test-runner.ts` | L0 | 1.5.0 | active | `--parallel`, `--sequential`, `--concurrency <n>`, `--timeout <ms>` | —| L0+L1 | —|
 | `translate-readme.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `validate-agents.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `validate-agents.ts` | L0 | 1.4.1 | active | —| —| L0+L1 | —|
 | `validate-doc-folder.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `validate-docs-links.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.16.0 | active | —| —| L0+L1 | —|
 | `validate-model-registry.ts` | L0 | 2.1.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `validate-skills.ts` | L0 | 1.5.1 | active | —| —| L0+L1 | —|
+| `validate-skills.ts` | L0 | 1.5.2 | active | —| —| L0+L1 | —|
 | `validate-decisions.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `verify-agent-deliverables.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `verify-skill-graph.ts` | L0 | 2.0.0 | active | —| —| L0+L1 | —|
