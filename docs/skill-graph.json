@@ -44,8 +44,8 @@
       "name": "architect",
       "scope": "root",
       "capability": "architect",
-      "content_hash": "66d4f1e9420726c7",
-      "version": "1.1.0",
+      "content_hash": "0ffa59e9579c9ca0",
+      "version": "1.1.1",
       "mirrors": [
         "agents/architect.md"
       ]
@@ -57,8 +57,8 @@
       "name": "co-analyst",
       "scope": "root",
       "capability": "co-analyst",
-      "content_hash": "2ab8e8d22db6cb3d",
-      "version": "1.1.0",
+      "content_hash": "f80a3778a26ba466",
+      "version": "1.1.1",
       "mirrors": [
         "agents/co-analyst.md"
       ]
@@ -70,8 +70,8 @@
       "name": "code-writer",
       "scope": "root",
       "capability": "code-writer",
-      "content_hash": "1c190d21490a6eb9",
-      "version": "1.1.0",
+      "content_hash": "abbe5ab6d3d1abae",
+      "version": "1.1.1",
       "mirrors": [
         "agents/code-writer.md"
       ]
@@ -83,8 +83,8 @@
       "name": "dba",
       "scope": "root",
       "capability": "dba",
-      "content_hash": "fec23b657744e2dc",
-      "version": "1.1.0",
+      "content_hash": "062d3d8ae82ed8a3",
+      "version": "1.1.1",
       "mirrors": [
         "agents/dba.md"
       ]
@@ -96,8 +96,8 @@
       "name": "devops-admin",
       "scope": "root",
       "capability": "devops-admin",
-      "content_hash": "ab11c0f1c5679653",
-      "version": "1.1.0",
+      "content_hash": "91dc50c299b36cbb",
+      "version": "1.1.1",
       "mirrors": [
         "agents/devops-admin.md"
       ]
@@ -109,8 +109,8 @@
       "name": "fi-analyst",
       "scope": "root",
       "capability": "fi-analyst",
-      "content_hash": "dfed3bc2669781a7",
-      "version": "1.1.0",
+      "content_hash": "ce37431a7dba746d",
+      "version": "1.1.1",
       "mirrors": [
         "agents/fi-analyst.md"
       ]
@@ -122,8 +122,8 @@
       "name": "fiori-developer",
       "scope": "root",
       "capability": "fiori-developer",
-      "content_hash": "14d55d7ced5d2ce3",
-      "version": "1.1.0",
+      "content_hash": "3cf8bee968528d4a",
+      "version": "1.1.1",
       "mirrors": [
         "agents/fiori-developer.md"
       ]
@@ -135,8 +135,8 @@
       "name": "form-expert",
       "scope": "root",
       "capability": "form-expert",
-      "content_hash": "4b12e07c3f029ce0",
-      "version": "1.1.0",
+      "content_hash": "fc041cd14d40e955",
+      "version": "1.1.1",
       "mirrors": [
         "agents/form-expert.md"
       ]
@@ -148,8 +148,8 @@
       "name": "gui-scripter",
       "scope": "root",
       "capability": "gui-scripter",
-      "content_hash": "789f13adb0c9d9e7",
-      "version": "1.1.0",
+      "content_hash": "aa69d4e46bcc627f",
+      "version": "1.1.1",
       "mirrors": [
         "agents/gui-scripter.md"
       ]
@@ -161,8 +161,8 @@
       "name": "i18n-specialist",
       "scope": "root",
       "capability": "i18n-specialist",
-      "content_hash": "7f0d76fd50676291",
-      "version": "1.1.0",
+      "content_hash": "141dc987bf0f5884",
+      "version": "1.1.1",
       "mirrors": [
         "agents/i18n-specialist.md"
       ]
@@ -174,8 +174,8 @@
       "name": "interface-expert",
       "scope": "root",
       "capability": "interface-expert",
-      "content_hash": "e4f3aec7672507db",
-      "version": "1.1.0",
+      "content_hash": "cf5df51f17141928",
+      "version": "1.1.1",
       "mirrors": [
         "agents/interface-expert.md"
       ]
@@ -187,8 +187,8 @@
       "name": "le-analyst",
       "scope": "root",
       "capability": "le-analyst",
-      "content_hash": "cff70d6c5e19ec37",
-      "version": "1.1.0",
+      "content_hash": "a9e535e2e41b9a62",
+      "version": "1.1.1",
       "mirrors": [
         "agents/le-analyst.md"
       ]
@@ -200,8 +200,8 @@
       "name": "mm-analyst",
       "scope": "root",
       "capability": "mm-analyst",
-      "content_hash": "1f713fcb83a7591c",
-      "version": "1.1.0",
+      "content_hash": "822ecb5ee6a200d0",
+      "version": "1.1.1",
       "mirrors": [
         "agents/mm-analyst.md"
       ]
@@ -213,7 +213,7 @@
       "name": "pm",
       "scope": "root",
       "capability": "pm",
-      "content_hash": "f5244861a46916ea",
+      "content_hash": "7b07380c59ea7256",
       "version": "1.3.0",
       "mirrors": [
         "agents/pm.md"
@@ -226,8 +226,8 @@
       "name": "pp-analyst",
       "scope": "root",
       "capability": "pp-analyst",
-      "content_hash": "e263d118d781fb83",
-      "version": "1.1.0",
+      "content_hash": "50b8d1976c281ef4",
+      "version": "1.1.1",
       "mirrors": [
         "agents/pp-analyst.md"
       ]
@@ -239,8 +239,8 @@
       "name": "read-only-analyst",
       "scope": "root",
       "capability": "read-only-analyst",
-      "content_hash": "4502e468ea090b51",
-      "version": "1.1.0",
+      "content_hash": "98b6efeae654dd42",
+      "version": "1.1.1",
       "mirrors": [
         "agents/read-only-analyst.md"
       ]
@@ -252,8 +252,8 @@
       "name": "sap-investigator",
       "scope": "root",
       "capability": "sap-investigator",
-      "content_hash": "5ca771a49d9cc013",
-      "version": "1.1.0",
+      "content_hash": "b7fa9ff995fa3f1e",
+      "version": "1.1.1",
       "mirrors": [
         "agents/sap-investigator.md"
       ]
@@ -265,8 +265,8 @@
       "name": "schema-inspector",
       "scope": "root",
       "capability": "schema-inspector",
-      "content_hash": "a5fde9bfa85c218a",
-      "version": "1.1.0",
+      "content_hash": "baa98b7ecf57c825",
+      "version": "1.1.1",
       "mirrors": [
         "agents/schema-inspector.md"
       ]
@@ -278,8 +278,8 @@
       "name": "sd-analyst",
       "scope": "root",
       "capability": "sd-analyst",
-      "content_hash": "a201c782314df0e3",
-      "version": "1.1.0",
+      "content_hash": "a97543ebec67bc63",
+      "version": "1.1.1",
       "mirrors": [
         "agents/sd-analyst.md"
       ]
@@ -291,8 +291,8 @@
       "name": "security-monitor",
       "scope": "root",
       "capability": "security-monitor",
-      "content_hash": "647ac5d87606d63c",
-      "version": "1.1.0",
+      "content_hash": "97203d768774c36d",
+      "version": "1.1.1",
       "mirrors": [
         "agents/security-monitor.md"
       ]
@@ -304,8 +304,8 @@
       "name": "test-runner",
       "scope": "root",
       "capability": "test-runner",
-      "content_hash": "6f04c1b4489d8138",
-      "version": "1.1.0",
+      "content_hash": "0f94408dd5db683e",
+      "version": "1.1.1",
       "mirrors": [
         "agents/test-runner.md"
       ]

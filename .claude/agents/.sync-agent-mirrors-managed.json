@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "generated": [
+    "architect",
+    "co-analyst",
+    "code-writer",
+    "dba",
+    "devops-admin",
+    "fi-analyst",
+    "fiori-developer",
+    "form-expert",
+    "gui-scripter",
+    "i18n-specialist",
+    "interface-expert",
+    "le-analyst",
+    "mm-analyst",
+    "pm",
+    "pp-analyst",
+    "read-only-analyst",
+    "sap-investigator",
+    "schema-inspector",
+    "sd-analyst",
+    "security-monitor",
+    "test-runner"
+  ]
+}
