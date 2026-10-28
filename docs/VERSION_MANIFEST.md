@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-28T12:29:09.685Z
+**Generated**: 2026-10-28T18:01:26.604Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -28,7 +28,7 @@
 | fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-10-26 |
 | form-expert | agents/form-expert.md | medium | inherit | 2026-10-26 |
 | gui-scripter | agents/gui-scripter.md | low | inherit | 2026-10-26 |
-| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-10-27 |
+| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-10-28 |
 | interface-expert | agents/interface-expert.md | medium | inherit | 2026-10-26 |
 | le-analyst | agents/le-analyst.md | medium | inherit | 2026-10-26 |
 | mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-10-26 |
@@ -161,7 +161,7 @@
 | harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
 | harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
-| install-vsp.ts | 1.1.1 | scripts/co-abap/install-vsp.ts | bun |
+| install-vsp.ts | 1.1.2 | scripts/co-abap/install-vsp.ts | bun |
 | lifecycle-sync-audit.ts | 1.19.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |

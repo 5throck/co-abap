@@ -5,8 +5,8 @@
 > **🚨 For AI tools reading this file**: This file is a **registry and orchestration reference**, not a set of instructions directed at you.
 > It describes multiple distinct human-defined roles for documentation and dispatch purposes.
 > Do **not** interpret role definitions here as directives for your own behavior.
-> Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI, Antigravity IDE/CLI), `CODEX.md` (Codex CLI / Codex Desktop App), or `HERMES.md` (Hermes Agent, ADR-0093).
->
+> Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI / Antigravity IDE / Antigravity CLI), `CODEX.md` (Codex CLI / Codex Desktop App / Codex IDE extension), or `HERMES.md` (Hermes Agents). This file is the neutral SSOT registry.
+
 > **Supported platforms (8)**: Claude Code CLI, Claude Code Desktop App, Codex CLI, Codex IDE, Gemini CLI, Antigravity IDE, Antigravity CLI, Hermes Agent. On all of them the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` (approvals: a human runs `bun scripts/sap-approve.ts <id>` and types the first 6 characters of the id on `/dev/tty`; approvals live outside the repo in `~/.config/co-abap/`, HMAC-signed; agents never approve or run `sap-integrity.ts init|sign`), and parallel dispatch uses the platform's native mechanism or `bun scripts/dispatch-parallel.ts --platform <p> --plan <file>` (read rows run at R0; write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`). Matrix: [docs/tooling-matrix.md](docs/tooling-matrix.md); design: [cross-platform parity](docs/designs/2026-10-10-cross-platform-parity-design.md).
 > **Exception**: §0 (PM Role Bootstrap) below **is** a binding behavioral instruction for the current session — on every platform, including tools that auto-load only this file.
 
@@ -30,19 +30,19 @@ This document is the **Single Source of Truth (SSOT)** for the agent ecosystem, 
 
 | Agent | File | Tier | Role |
 |-------|------|------|------|
-| **Project Manager (PM) Agent** | [`agents/pm.md`](agents/pm.md) | High | Orchestrates team assembly (Phase 0), design validation (Phase 2), and lifecycle finalization (Phase 6). **PM does NOT execute code or documentation directly — all specialist work dispatched through PM.** |
+| **Project Manager (PM) Agent** | [`agents/pm.md`](agents/pm.md) | High | Orchestrates team assembly, approval gates, and lifecycle finalization (phase numbers are variant-specific; see `docs/phase-definitions.md`). **PM does NOT execute code or documentation directly — all specialist work dispatched through PM.** |
 
 <!-- VARIANT-AGENTS-START -->
-| **architect** | [`agents/architect.md`](agents/architect.md) | High | SAP Technical Architect |
+| **architect** | [`agents/architect.md`](agents/architect.md) | Medium | SAP Technical Architect |
 | **co-analyst** | [`agents/co-analyst.md`](agents/co-analyst.md) | Medium | CO Module Analyst |
-| **code-writer** | [`agents/code-writer.md`](agents/code-writer.md) | Low | SAP ABAP Code Implementation Specialist |
+| **code-writer** | [`agents/code-writer.md`](agents/code-writer.md) | Medium | SAP ABAP Code Implementation Specialist |
 | **dba** | [`agents/dba.md`](agents/dba.md) | Medium | SAP DBA (Database Agent) |
 | **devops-admin** | [`agents/devops-admin.md`](agents/devops-admin.md) | Medium | SAP DevOps / Admin |
 | **fi-analyst** | [`agents/fi-analyst.md`](agents/fi-analyst.md) | Medium | FI Module Analyst |
 | **fiori-developer** | [`agents/fiori-developer.md`](agents/fiori-developer.md) | Medium | SAP Fiori & UI5 Implementation Specialist |
 | **form-expert** | [`agents/form-expert.md`](agents/form-expert.md) | Medium | SAP Document Output & Form Specialist |
-| **gui-scripter** | [`agents/gui-scripter.md`](agents/gui-scripter.md) | Low | SAP GUI Scripting & Automation Specialist (LAST RESORT) |
-| **i18n-specialist** | [`agents/i18n-specialist.md`](agents/i18n-specialist.md) | Medium | Internationalization & Localization Guidance Specialist |
+| **gui-scripter** | [`agents/gui-scripter.md`](agents/gui-scripter.md) | Medium | SAP GUI Scripting & Automation Specialist (LAST RESORT) |
+| **i18n-specialist** | [`agents/i18n-specialist.md`](agents/i18n-specialist.md) | Medium | specialist |
 | **interface-expert** | [`agents/interface-expert.md`](agents/interface-expert.md) | Medium | SAP Interface Expert |
 | **le-analyst** | [`agents/le-analyst.md`](agents/le-analyst.md) | Medium | LE Module Analyst |
 | **mm-analyst** | [`agents/mm-analyst.md`](agents/mm-analyst.md) | Medium | MM Module Analyst |
@@ -51,8 +51,8 @@ This document is the **Single Source of Truth (SSOT)** for the agent ecosystem, 
 | **sap-investigator** | [`agents/sap-investigator.md`](agents/sap-investigator.md) | Medium | SAP Codebase Intelligence Scanner (read-only) |
 | **schema-inspector** | [`agents/schema-inspector.md`](agents/schema-inspector.md) | Medium | SAP Data Schema & Dependency Inspector (read-only) |
 | **sd-analyst** | [`agents/sd-analyst.md`](agents/sd-analyst.md) | Medium | SD Module Analyst |
-| **security-monitor** | [`agents/security-monitor.md`](agents/security-monitor.md) | Low | Security Monitor |
-| **test-runner** | [`agents/test-runner.md`](agents/test-runner.md) | Low | SAP Quality Assurance Specialist |
+| **security-monitor** | [`agents/security-monitor.md`](agents/security-monitor.md) | Medium | Security Monitor |
+| **test-runner** | [`agents/test-runner.md`](agents/test-runner.md) | Medium | SAP Quality Assurance Specialist |
 <!-- VARIANT-AGENTS-END -->
 ---
 
@@ -66,7 +66,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | Field | Value |
 |-------|-------|
 | **File** | [`agents/architect.md`](agents/architect.md) |
-| **Tier** | high |
+| **Tier** | medium |
 | **Phases** | 1, 2 |
 | **Role** | SAP Technical Architect |
 
@@ -84,7 +84,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | Field | Value |
 |-------|-------|
 | **File** | [`agents/code-writer.md`](agents/code-writer.md) |
-| **Tier** | low |
+| **Tier** | medium |
 | **Phases** | 3 |
 | **Role** | SAP ABAP Code Implementation Specialist |
 
@@ -138,7 +138,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | Field | Value |
 |-------|-------|
 | **File** | [`agents/gui-scripter.md`](agents/gui-scripter.md) |
-| **Tier** | low |
+| **Tier** | medium |
 | **Phases** | 3 |
 | **Role** | SAP GUI Scripting & Automation Specialist (LAST RESORT) |
 
@@ -149,7 +149,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | **File** | [`agents/i18n-specialist.md`](agents/i18n-specialist.md) |
 | **Tier** | medium |
 | **Phases** | — |
-| **Role** | Internationalization & Localization Guidance Specialist |
+| **Role** | specialist |
 
 ### interface-expert
 
@@ -202,7 +202,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 |-------|-------|
 | **File** | [`agents/sap-investigator.md`](agents/sap-investigator.md) |
 | **Tier** | medium |
-| **Phases** | 3 |
+| **Phases** | 1 |
 | **Role** | SAP Codebase Intelligence Scanner (read-only) |
 
 ### schema-inspector
@@ -228,8 +228,8 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | Field | Value |
 |-------|-------|
 | **File** | [`agents/security-monitor.md`](agents/security-monitor.md) |
-| **Tier** | low |
-| **Phases** | 0, 5 |
+| **Tier** | medium |
+| **Phases** | 5 |
 | **Role** | Security Monitor |
 
 ### test-runner
@@ -237,7 +237,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 | Field | Value |
 |-------|-------|
 | **File** | [`agents/test-runner.md`](agents/test-runner.md) |
-| **Tier** | low |
+| **Tier** | medium |
 | **Phases** | 3, 4 |
 | **Role** | SAP Quality Assurance Specialist |
 <!-- VARIANT-AGENT-DETAILS-END -->
@@ -245,7 +245,7 @@ See [`agents/pm.md`](agents/pm.md) for the PM Agent full definition.
 
 ## §3: PM Gateway Workflow
 
-**Thin-dispatcher section (ADR-0090)**: the PM Gateway is MANDATORY for all substantive work. Core MUST policy (§3.1), the 3-Tier model table (§3.6), meeting facilitation (§3.7), and the L0-only governance-backlog dispatch (§3.7.5) remain below. The detailed phase protocol, permission-denial procedure, and ADR-0078/0079/0080 policy summaries live in [`docs/governance/agents/pm-gateway-workflow.md`](docs/governance/agents/pm-gateway-workflow.md) — **Read it before dispatching specialists or adjudicating governance backlog items.**
+**Thin-dispatcher section (ADR-0090)**: the PM Gateway is MANDATORY for all substantive work. Core MUST policy (§3.1), the 3-Tier model table (§3.6), meeting facilitation (§3.7), and the L0-only governance-backlog dispatch (§3.7.5) remain below. The detailed phase protocol, permission-denial procedure, and ADR-0078/0079/0080 policy summaries are workspace-root-only (L0) and are not delivered to projects; the core MUST policy in §3.1–§3.7 above plus [`agents/pm.md`](agents/pm.md) carry the project-applicable rules — **read them before dispatching specialists.**
 
 ### §3.1 PM Gateway Policy
 
@@ -266,7 +266,7 @@ PM is an escalation gateway, not an executor. **⚠️ CRITICAL**: PM MUST NOT p
 
 **Rationale**: PM is orchestrator, not executor. Direct execution violates governance separation of concerns. See [Role Clarification](agents/pm.md#-role-clarification) in `agents/pm.md` and the Task Owner vs Executor Distinction below.
 
-When a specialist agent's required tool is denied, PM applies the [Permission Denial Protocol](#38-permission-denial-protocol) — never substitutes for the specialist.
+When a specialist agent's required tool is denied, PM applies the [Permission Denial Protocol](agents/pm.md#permission-denial-protocol) — never substitutes for the specialist.
 
 #### §3.1.2 PM Role Boundaries
 
@@ -289,7 +289,7 @@ When a specialist agent's required tool is denied, PM applies the [Permission De
 - PM creates tasks (owner: pm), dispatches project specialists (executor: `[specialist agent]`), and updates task status upon completion
 
 
-*Role boundaries, dispatch-communication templates, and specialist-roster detail: [`docs/governance/agents/pm-gateway-workflow.md`](docs/governance/agents/pm-gateway-workflow.md).*
+*Role boundaries: [`agents/pm.md`](agents/pm.md); dispatch-communication templates and specialist-roster detail are workspace-root-only (L0).*
 
 ### §3.7 Meeting Facilitation
 
@@ -333,34 +333,36 @@ The PM Agent follows a three-level inheritance model: **L0 (workspace root base)
 | `mm-analyst` | Phase 1 | "mm analyst" |
 | `pp-analyst` | Phase 1 | "pp analyst" |
 | `read-only-analyst` | Phase 1 | "read only analyst", "data analysis", "statistics", "data model" |
-| `sap-investigator` | Phase 3 | "sap investigator" |
+| `sap-investigator` | Phase 1 | "sap investigator" |
 | `schema-inspector` | Phase 1 | "schema inspector", "data analysis", "statistics", "data model" |
 | `sd-analyst` | Phase 1 | "sd analyst" |
-| `security-monitor` | Phase 0 | "security monitor", "security", "pentest", "vulnerability" |
+| `security-monitor` | Phase 5 | "security monitor", "security", "pentest", "vulnerability" |
 | `test-runner` | Phase 3 | "test runner" |
 <!-- VARIANT-DISPATCH-TRIGGERS-END -->
 
 <!-- VARIANT-PHASE-GATE-START -->
-| SAP Technical Architect | Phase 1, 2 | `architect` | High | |
+| Deliverable Type | Phase | Required Agent | Tier | Notes |
+|------------------|-------|----------------|------|-------|
+| SAP Technical Architect | Phase 1, 2 | `architect` | Medium | |
 | CO Module Analyst | Phase 1 | `co-analyst` | Medium | |
-| SAP ABAP Code Implementation Specialist | Phase 3 | `code-writer` | Low | |
+| SAP ABAP Code Implementation Specialist | Phase 3 | `code-writer` | Medium | |
 | SAP DBA (Database Agent) | Phase 2 | `dba` | Medium | |
 | SAP DevOps / Admin | Phase 4 | `devops-admin` | Medium | |
 | FI Module Analyst | Phase 1 | `fi-analyst` | Medium | |
 | SAP Fiori & UI5 Implementation Specialist | Phase 3 | `fiori-developer` | Medium | |
 | SAP Document Output & Form Specialist | Phase 3 | `form-expert` | Medium | |
-| SAP GUI Scripting & Automation Specialist (LAST RESORT) | Phase 3 | `gui-scripter` | Low | |
-| Internationalization & Localization Guidance Specialist | Phase ? | `i18n-specialist` | Medium | |
+| SAP GUI Scripting & Automation Specialist (LAST RESORT) | Phase 3 | `gui-scripter` | Medium | |
+| specialist | Phase — | `i18n-specialist` | Medium | |
 | SAP Interface Expert | Phase 2 | `interface-expert` | Medium | |
 | LE Module Analyst | Phase 1 | `le-analyst` | Medium | |
 | MM Module Analyst | Phase 1 | `mm-analyst` | Medium | |
 | PP Module Analyst | Phase 1 | `pp-analyst` | Medium | |
 | SAP Business Data Analyst (read-only) | Phase 1 | `read-only-analyst` | Medium | |
-| SAP Codebase Intelligence Scanner (read-only) | Phase 3 | `sap-investigator` | Medium | |
+| SAP Codebase Intelligence Scanner (read-only) | Phase 1 | `sap-investigator` | Medium | |
 | SAP Data Schema & Dependency Inspector (read-only) | Phase 1 | `schema-inspector` | Medium | |
 | SD Module Analyst | Phase 1 | `sd-analyst` | Medium | |
-| Security Monitor | Phase 0, 5 | `security-monitor` | Low | |
-| SAP Quality Assurance Specialist | Phase 3, 4 | `test-runner` | Low | |
+| Security Monitor | Phase 5 | `security-monitor` | Medium | |
+| SAP Quality Assurance Specialist | Phase 3, 4 | `test-runner` | Medium | |
 <!-- VARIANT-PHASE-GATE-END -->
 
 ### §3.6 3-Tier Strategy
@@ -376,12 +378,13 @@ When leading execution and improvement tasks, PM MUST use the 3-Tier model strat
 > **Note**: The `Model` column below shows the Claude Code short alias (`sonnet`/`opus`/`haiku`/`fable`) actually passed to the `Agent()` tool's `model` parameter — not the registry ID (e.g. `claude-sonnet-5-5`). See [CLAUDE.md — Execution Plan Boilerplate](CLAUDE.md#execution-plan-boilerplate) for the registry-ID → alias translation table. On Gemini/Antigravity, use the literal model ID instead (see GEMINI.md's equivalent example). Hermes maps to the claude model ids (it validates against the claude column), and Z.AI (zai) models take reasoning levels low/high/max (default max).
 <!-- /WORKSPACE-MANAGED -->
 
+> **Tier semantics**: see [PM Tier Semantics](#pm-tier-semantics) in the shared policy section below.
 
 ### §3.7.5 Governance Backlog Dispatch
 
-**Workspace root only** — `scripts/ticket.ts` and `tickets/` do not exist in variant projects (`@l2-propagate: false`); this section intentionally lives in `AGENTS.md` (L0-only SSOT, never propagated) rather than `agents/pm.md`, which extends into every variant's PM.
+**Workspace root only** — `scripts/ticket.ts` and `tickets/` do not exist in variant projects (`@l2-propagate: false`); this section intentionally lives in `AGENTS.md` (L0-only SSOT, never propagated) rather than `agents/pm.md`, which extends into every variant's PM. Service tickets (`tickets/*.yaml`) are gitignored by design — their `history[]` field is the audit trail; governance tickets (`tickets/governance/`) are tracked in git. Done tickets leave the live stores after a dwell of 7 days since done: `bun scripts/ticket.ts archive` prints the plan and `--apply` executes it (`--days N` overrides the dwell, `--restore <id>` reverses one move) — `tickets/archive/` (service) stays local-only and `tickets/governance/archive/` (governance) is git-tracked (spec `2026-10-04-ticket-archive-design`).
 
-Deferred governance decisions (e.g. an ADR's soak-period gate) are tracked as `kind: manual` tickets with an optional `not_before` date — see [docs/designs/2026-08-16-governance-backlog-design.md](docs/designs/2026-08-16-governance-backlog-design.md). When `bun scripts/ticket.ts list --ready --kind manual` surfaces a ticket (at session start or during the Weekly Health Check, [docs/context.md](docs/context.md) and [§9.1](docs/context.md)):
+Deferred governance decisions (e.g. an ADR's soak-period gate) are tracked as `kind: manual` tickets with an optional `not_before` date — see `docs/designs/2026-08-16-governance-backlog-design.md` (workspace-root-only design doc). When `bun scripts/ticket.ts list --ready --kind manual` surfaces a ticket (at session start or during the Weekly Health Check, [docs/context.md](docs/context.md) and [§9.1](docs/context.md)):
 
 - If it's a pure decision (approve/reject), PM reviews and moves it (`bun scripts/ticket.ts move <id> review`, then `done`) — no specialist dispatch needed.
 - If acting on it requires implementation work, PM dispatches through the normal PM Gateway path (§3.1–§3.5) like any other task — no new mechanism. If the item is independent of other in-flight work and Agent Teams is enabled for the session, PM may dispatch it as a parallel teammate instead of sequentially.
@@ -403,7 +406,7 @@ Every code change at any tier (L0–L3) must carry spec activity: create/update 
 
 ### LLM Work Routing Policy (ADR-0078)
 
-Substantive LLM-assisted development work — generation or modification of code, documents, designs, tests, or scripts — MUST be routed through this project's agent team: `user → PM triage → Design Gate (unless exempt) → specialist dispatch → QA gate → /sync PR`. Querying an external LLM directly (e.g. a web chat) and landing its output in this repository is a policy violation. IDE inline completions and one-off Q&A that never land in the repository are exempt; repository-landing work uses the E1–E5 exemption codes only. An application calling LLM APIs at runtime is an architecture concern covered by the Design Gate (ADR-0074). Enforcement is structural via the existing hard gates — see ADR-0078 (workspace root, `docs/adr/0078-agent-mediated-llm-work-routing.md`) for the full decision.
+Substantive LLM-assisted development work — generation or modification of code, documents, designs, tests, or scripts — MUST be routed through this project's agent team: `user → PM triage → Design Gate (unless exempt) → specialist dispatch → QA gate → /sync PR`. Querying an external LLM directly (e.g. a web chat) and landing its output in this repository is a policy violation. IDE inline completions and one-off Q&A that never land in the repository are exempt; repository-landing work uses the E1–E5 exemption codes only. An application calling LLM APIs at runtime is an architecture concern covered by the Design Gate (ADR-0074). Enforcement is structural via the existing hard gates — see ADR-0078; the LLM Work Routing Policy section above is the project-applicable policy summary.
 
 ### LLM Interaction Standard (Precision In, Intuition Out, ADR-0098)
 
@@ -423,15 +426,15 @@ The tier of a dispatched subagent selects the model that the platform dispatch m
 **Thin-dispatcher section (ADR-0090)**: subagent dispatch protocol, role boundary matrix, harness engineering workflow, and the lifecycle/skill-review schedules live in [`docs/governance/agents/workflows.md`](docs/governance/agents/workflows.md) — **Read it before orchestrating multi-step or multi-agent work.**
 
 <!-- VARIANT-SUBAGENT-ROSTER-START -->
-| architect | `agents/architect.md` | High | sequential (phase-ordered) | ✅ within phase scope |
+| architect | `agents/architect.md` | Medium | sequential (phase-ordered) | ✅ within phase scope |
 | co-analyst | `agents/co-analyst.md` | Medium | ❌ serial | ✅ within phase scope |
-| code-writer | `agents/code-writer.md` | Low | ❌ serial | ✅ within phase scope |
+| code-writer | `agents/code-writer.md` | Medium | ❌ serial | ✅ within phase scope |
 | dba | `agents/dba.md` | Medium | ❌ serial | ✅ within phase scope |
 | devops-admin | `agents/devops-admin.md` | Medium | ❌ serial | ✅ within phase scope |
 | fi-analyst | `agents/fi-analyst.md` | Medium | ❌ serial | ✅ within phase scope |
 | fiori-developer | `agents/fiori-developer.md` | Medium | ❌ serial | ✅ within phase scope |
 | form-expert | `agents/form-expert.md` | Medium | ❌ serial | ✅ within phase scope |
-| gui-scripter | `agents/gui-scripter.md` | Low | ❌ serial | ✅ within phase scope |
+| gui-scripter | `agents/gui-scripter.md` | Medium | ❌ serial | ✅ within phase scope |
 | i18n-specialist | `agents/i18n-specialist.md` | Medium | ❌ serial | ✅ within phase scope |
 | interface-expert | `agents/interface-expert.md` | Medium | ❌ serial | ✅ within phase scope |
 | le-analyst | `agents/le-analyst.md` | Medium | ❌ serial | ✅ within phase scope |
@@ -441,8 +444,8 @@ The tier of a dispatched subagent selects the model that the platform dispatch m
 | sap-investigator | `agents/sap-investigator.md` | Medium | ❌ serial | ✅ within phase scope |
 | schema-inspector | `agents/schema-inspector.md` | Medium | ❌ serial | ✅ within phase scope |
 | sd-analyst | `agents/sd-analyst.md` | Medium | ❌ serial | ✅ within phase scope |
-| security-monitor | `agents/security-monitor.md` | Low | sequential (phase-ordered) | ✅ within phase scope |
-| test-runner | `agents/test-runner.md` | Low | sequential (phase-ordered) | ✅ within phase scope |
+| security-monitor | `agents/security-monitor.md` | Medium | ❌ serial | ✅ within phase scope |
+| test-runner | `agents/test-runner.md` | Medium | sequential (phase-ordered) | ✅ within phase scope |
 <!-- VARIANT-SUBAGENT-ROSTER-END -->
 
 <!-- VARIANT-ROLE-BOUNDARY-START -->
@@ -455,7 +458,7 @@ The tier of a dispatched subagent selects the model that the platform dispatch m
 | SAP Fiori & UI5 Implementation Specialist | `fiori-developer` | `pm` |
 | SAP Document Output & Form Specialist | `form-expert` | `pm` |
 | SAP GUI Scripting & Automation Specialist (LAST RESORT) | `gui-scripter` | `pm` |
-| Internationalization & Localization Guidance Specialist | `i18n-specialist` | `pm` |
+| specialist | `i18n-specialist` | `pm` |
 | SAP Interface Expert | `interface-expert` | `pm` |
 | LE Module Analyst | `le-analyst` | `pm` |
 | MM Module Analyst | `mm-analyst` | `pm` |
@@ -490,7 +493,7 @@ When a user request matches a skill trigger, apply this priority order — **enf
 - **Single location requirement**: Workspace-level skills should exist **only** in `skills/` folder (priority 1). Do not duplicate these in `.claude/skills/` or `.gemini/skills/`.
 - **Platform-specific skills**: `.claude/skills/` and `.gemini/skills/` are reserved for platform-specific hooks, commands, and lifecycle management tools that differ between Claude Code and Gemini CLI.
 - **No cross-duplication**: Avoid duplicating the same skill across multiple locations. Choose the single most appropriate location based on the skill's purpose.
-- **Common (L1) skills are NOT missing from root**: Skills present in `templates/common/skills/` but absent from the root `skills/` folder (e.g. `decision-record`, `evidence-ledger`, `handbook`, `handbook-sync-audit`, `i18n-audit`, `i18n-formatting`, `i18n-layout`, `i18n-locale-config`) are **deliberate L1-only common assets** (`scope: common`), delivered to scaffolded projects via `docs/templates/common-contract.json` — not an SSOT gap to "fix" by promoting them to root. Root is L0; never deliver L1 content to the workspace root (see the 2026-09-12 root-upgrade incident, `memory/2026-09-12.md`).
+- **Common (L1) skills are NOT missing from root**: Skills present in `templates/common/skills/` but absent from the root `skills/` folder (e.g. `decision-record`, `evidence-ledger`, `handbook`, `handbook-sync-audit`, `i18n-audit`, `i18n-formatting`, `i18n-layout`, `i18n-locale-config`) are **deliberate L1-only common assets** (`scope: common`), delivered to scaffolded projects via the workspace delivery contract (workspace-root `docs/templates/common-contract.json`) — not an SSOT gap to "fix" by promoting them to root. Root is L0; never deliver L1 content to the workspace root (see the 2026-09-12 root-upgrade incident, `memory/2026-09-12.md`).
 
 **Resolution Rule**: If a higher-priority skill's `metadata.triggers` matches the user request, use it — do **not** fall through to lower-priority skills with overlapping intent.
 
@@ -521,7 +524,6 @@ Explicit invocation: the `meeting-facilitation` skill with the meeting topic and
 
 All agents, regardless of their role, must adhere to the following:
 
-- **Parallel Work Isolation**: One git worktree per parallel agent (`git worktree add`). Never use `git stash`, `git checkout -- <paths>`, `git restore` or `git clean`: they destroy other agents' uncommitted work. The platform deny lists in `config/platforms/protected-paths.json` block these where the platform allows.
 - **Security Boundaries**: Never expose or log secrets (API keys, tokens). Do not modify CI/CD pipelines without explicit permission.
 - **Communication Style**: Keep explanations concise and use markdown formatting. Always explain "why", not just "what".
 - **Conflicting Instructions**: If a user request violates project rules (e.g., bypassing tests), warn the user and request explicit confirmation before proceeding.
@@ -554,3 +556,44 @@ All agents, regardless of their role, must adhere to the following:
 - **v2.0.0 (2026-06-09)**: Restructured as SSOT - Integrated PM Gateway workflow (§3), execution plan templates (§5), and renumbered existing sections. Consolidated duplicate content from pm.md, CLAUDE.md §5, GEMINI.md §5 into single source of truth.
 - **v1.x**: Previous versions maintained agent roster and individual definitions without PM Gateway integration
 
+<!-- graft:start -->
+## Graft — repo context graph
+
+This repo is indexed in `graft/`: small linked markdown nodes that explain each
+system and carry exact file:line spans, kept in sync with the code through git.
+
+For ANY task here — understanding how something works, finding where code lives,
+or scoping a change — get context from the graph before grepping or opening
+source files. Re-ask freely (it's cheap) and reuse literal identifiers you
+already have (symbol, error string, file name) as the query. New to this repo?
+Run `graft map` first — a token-budgeted orientation (dir clusters, hubs,
+hotspots), no LLM, no key.
+
+- Run `graft ask "<your question>" --source` → ranked nodes with the relevant
+  code spans inlined (each hit's ≤8-line crux by default; `--full` for whole
+  definitions when the crux isn't enough). Match the tool to the task shape:
+  for understanding or editing, the top node IS the answer — cite its
+  `covers:` file:line spans and edit straight from `--source`. For
+  exhaustive tasks ("every occurrence / every caller of this pattern"), ranked
+  results are top-N, not complete — run `graft grep "<literal>"` instead
+  (exhaustive over indexed files, grouped by enclosing symbol), falling back
+  to raw `grep -rn` only for unindexed files.
+- `graft skeleton <file>` → every definition's signature + span, ~10× cheaper
+  than reading the file; use it to skim an API surface.
+- `graft callers <symbol>` gives precomputed, exact edges — who calls this.
+  Add `--direction out` for what it calls, or `--depth N` to walk
+  transitively for the full blast radius. For structural questions, skip
+  ranking and use this directly.
+- Or browse: `graft/INDEX.md` lists every node; follow the links.
+- Monorepos and folders of multiple repos rank fairly across sub-projects —
+  hits carry `[scope/]` labels naming which one they're from. Narrow with
+  `graft ask "<task>" --in <scope>/` once you know where you're working.
+
+If a returned span is truncated ("+N more lines"), open the file at that exact
+range before finalizing. Only open source files when a node genuinely lacks a
+needed detail, and then at the exact file:line the node points to — never
+re-read whole files.
+
+After big code changes, refresh the graph with `graft build` (deterministic,
+no API key, $0).
+<!-- graft:end -->
