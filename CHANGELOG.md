@@ -8,6 +8,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+- **[2026-10-28]**: chore(upgrade): **retire the L0-only governance doc mirror + template delivery wave (DEC-20261028-05 phase 2).** Deleted `docs/governance/agents/pm-gateway-workflow.md` (workspace-root operational reference, retired from L1 delivery by root PR #1696; pointer links retargeted to `agents/pm.md` anchors). Same wave: `execution-plan-templates.md` fork header refresh, HERMES.md pointer retarget, i18n-specialist stub delivery, workspace-schema rootAllowlist cleanup, engine script updates, template-version bump, regenerated derived artifacts.
 
 ### Added
 - **[2026-10-13]**: feat(abap): deliver SFLIGHT query report ZR_SFLIGHT_QUERY (PROG, `$TMP`) through the full PM Gateway flow — design doc `docs/designs/2026-10-13-zr-sflight-query-design.md` registered (Pattern B, data access level 3 with rationale: demo flight model, no released VDM CDS on this on-prem system); code-writer create consumed 3 single-use human approvals via the sap-mcp-proxy (target-shape fix, ADT 70-char description limit); syntax PASSED, ATC 0×P1 / 0×P2 / 2×P3 informational; existing ZSFLIGHT_REPORT (REQ-002) untouched; source copy `scratch/zr_sflight_query.prog.abap`.
