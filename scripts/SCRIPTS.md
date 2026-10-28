@@ -1,6 +1,6 @@
 # SCRIPTS.md —Script Lifecycle Registry
 
-> This file is the Single Source of Truth (Tier 1 SSOT) for all directly-invokable scripts in `scripts/` (workspace root) — i.e. scripts run via `bun scripts/<name>.ts` or `bun run <alias>`. Internal library/helper modules under `scripts/lib/` and `scripts/helpers/` that are imported by other scripts but never run standalone (e.g. `auth.ts`, `security-validator.ts`, `pipeline-state.ts`) are intentionally excluded — they have no independent CLI usage to register.
+> This file is the Single Source of Truth (Tier 1 SSOT) for all directly-invokable scripts in `scripts/` (workspace root) — i.e. scripts run via `bun scripts/<name>.ts` or `bun run <alias>`. Internal library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, `scripts/tests/`, and `scripts/co-abap/` that are imported by other scripts rather than run standalone are ALSO registered below — the Registry is the full tracked-script inventory (130 of 205 rows live in subdirectories), which keeps every file's `@version` header under Check A comparison. LOCAL-PATCH(upstream-request: U-20261028-012): corrected 2026-10-28 — the previous "intentionally excluded" prose contradicted the registry (design docs/designs/2026-10-28-project-review-remediation-design.md).
 > Template `templates/common/scripts/` (Tier 2) is a snapshot published from here via `bun run propagate:apply`.
 > Project `scripts/` (Tier 3) is a snapshot created from Tier 2 at `new-project` time.
 >
@@ -137,7 +137,6 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/fixtures/stub-vsp.ts` | L3 | 1.1.0 | active | Stub vsp (echo MCP server, optional delay, logs EOF/SIGTERM) used by the proxy tests | — | L3 | — |
 | `tests/fixtures/sap-secure-home.ts` | L3 | 1.0.0 | active | Test helper: temp HOME with approval key and signed manifest | — | L3 | — |
 | `sap-integrity.ts` | L3 | 1.0.0 | active | Human CLI: init/sign the HMAC-signed integrity manifest (policy + enforcement code), verify, verify-audit | — | L3 | — |
-| `lib/secret-patterns.ts` | L3 | 1.0.0 | active | Shared secret pattern list (TOKEN_PATTERNS, ASSIGNMENT_PATTERN, SECRET_ERE) used by hooks/pre-commit.ts and hooks/pre-push.ts. LOCAL-PATCH: hooks are template-managed, so re-apply on upgrade (pre-push SECRET_ERE patch re-applied 2026-10-12 at pre-push.ts @1.4.2 after the unit suite was platform-neutralized (issue #203)) | —| L3 | —|
 | `lib/context-md-schema.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
