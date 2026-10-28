@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-29](2026-10-29.md) | chore: workspace sync — session residue (Step 1 local-work) |
 | [2026-10-28](2026-10-28.md) | chore: workspace sync (0 files) |
 | [2026-10-27](2026-10-27.md) | chore: upgrade template delivery (0.20.1 tree sync) |
 | [2026-10-26](2026-10-26.md) | chore(scripts): workspace sync (32 files) |
