@@ -1,6 +1,10 @@
 #!/usr/bin/env bun
-// @version 1.1.2
-// LOCAL-PATCH(upstream-request: U-20261028-015): post-install guidance uses .env (chmod 600) / OS keychain instead of `export SAP_PASSWORD`
+// @version 1.2.0
+// v1.2.0 (2026-10-29, U-20261028-015): post-install guidance no longer tells
+//           the operator to export SAP_PASSWORD — credentials go in a .env
+//           file (chmod 600, gitignored) or the OS keychain. Ports the
+//           delivered project's LOCAL-PATCH(U-20261028-015) wording into the
+//           template so re-delivery clears the patch by version.
 // install-vsp.ts - Downloads and installs the vsp binary from GitHub Releases
 // Canonical source (verified 2026-10-06 via GitHub API): oisee/vibing-steampunk
 // publishes actual vsp release assets (vsp-<os>-<arch>[.exe] + checksums.txt);

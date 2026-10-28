@@ -8,6 +8,7 @@ Versions follow [Semantic Versioning](https://semver.org/).
 ---
 
 ## [Unreleased]
+- **[2026-10-29]**: chore(upgrade): **template v0.23.0 delivery with the mirror-gate CI fix (audit v2.58.0).** The 0.23.0 wave content (146 cleaned agent frontmatters, platform_surfaces registry, sync-agent-mirrors capability, engine updates) plus the T-20261029-008 fix: the agent-mirror parity check degrades to WARN in standalone CI checkouts (no workspace root discoverable), unblocking real-CI delivery PRs. Supersedes the gate-blocked 0.23.0 PR.
 - **[2026-10-28]**: chore(upgrade): **retire the L0-only governance doc mirror + template delivery wave (DEC-20261028-05 phase 2).** Deleted `docs/governance/agents/pm-gateway-workflow.md` (workspace-root operational reference, retired from L1 delivery by root PR #1696; pointer links retargeted to `agents/pm.md` anchors). Same wave: `execution-plan-templates.md` fork header refresh, HERMES.md pointer retarget, i18n-specialist stub delivery, workspace-schema rootAllowlist cleanup, engine script updates, template-version bump, regenerated derived artifacts.
 
 ### Added

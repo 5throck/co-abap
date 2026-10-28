@@ -32,7 +32,7 @@
       "status": "active"
     },
     "audit.ts": {
-      "version": "2.56.0",
+      "version": "2.58.0",
       "status": "active"
     },
     "bootstrap-stages.ts": {
@@ -60,7 +60,7 @@
       "status": "active"
     },
     "design-lint.ts": {
-      "version": "2.3.0",
+      "version": "2.4.0",
       "status": "active"
     },
     "lib/self-managed-tools.ts": {
@@ -76,7 +76,7 @@
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.33.0",
+      "version": "1.34.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -108,7 +108,7 @@
       "status": "active"
     },
     "generate-version-manifest.ts": {
-      "version": "1.10.2",
+      "version": "1.11.0",
       "status": "active"
     },
     "graph-delta-log.ts": {
@@ -252,11 +252,11 @@
       "status": "active"
     },
     "hooks/pre-push.ts": {
-      "version": "1.6.0",
+      "version": "1.7.0",
       "status": "active"
     },
     "regenerate-agents-md.ts": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "status": "active"
     },
     "lib/context-md-schema.ts": {
@@ -420,7 +420,7 @@
       "status": "active"
     },
     "skill-lifecycle-audit.ts": {
-      "version": "1.8.0",
+      "version": "1.9.0",
       "status": "active"
     },
     "skill-session-review.ts": {
@@ -433,6 +433,10 @@
     },
     "sync-skill-status.ts": {
       "version": "1.1.0",
+      "status": "active"
+    },
+    "sync-agent-mirrors.ts": {
+      "version": "1.2.0",
       "status": "active"
     },
     "sync-skills.ts": {
@@ -576,7 +580,7 @@
       "status": "active"
     },
     "validate-model-registry.ts": {
-      "version": "2.1.0",
+      "version": "2.2.0",
       "status": "active"
     },
     "validate-surface-registry.ts": {
@@ -604,7 +608,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.63.0",
+      "version": "1.64.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
