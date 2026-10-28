@@ -58,8 +58,8 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 |--------|--------|---------|--------|--------------|-------------------|-------|------|
 | `helpers/upgrade-versions.ts` | L0+L1 | 1.1.0 | active | —| —| L0+L1 | —|
 | `resolve-variants.ts` | L0 | 1.0.3 | active | —| —| L0+L1 | —|
-| `regenerate-agents-md.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `validate-templates.ts` | L0 | 1.63.0 | active | —| —| L0+L1 | —|
+| `regenerate-agents-md.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
+| `validate-templates.ts` | L0 | 1.64.0 | active | —| —| L0+L1 | —|
 | `agent-create.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-delete.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
 | `agent-lifecycle-audit.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
@@ -67,17 +67,17 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `agent-verify.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `analyze-git-history.ts` | L0 | 1.0.2 | active | —| —| L0+L1 | —|
 | `archive-memory.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
-| `audit.ts` | L0 | 2.56.0 | active | —| —| L0+L1 | —|
+| `audit.ts` | L0 | 2.58.0 | active | —| —| L0+L1 | —|
 | `cleanup-completed-md.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `clear-pm-approval.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `compile-tokens.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
-| `design-lint.ts` | L0 | 2.3.0 | active | —| —| L0+L1 | —|
+| `design-lint.ts` | L0 | 2.4.0 | active | —| —| L0+L1 | —|
 | `retry-handler.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `setup-github-branch-protection.ts` | L0 | 1.0.1 | active | `--repo`, `--branch`, `--check` (repeatable), `--dry-run` | —| L0+L1 | —|
 | `sync-md.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
 | `sync-skills.ts` | L0 | 1.11.0 | active | `--dir <path>`, `--all-variants` | — | L0+L1 | — |
 | `verify-skills.ts` | L0 | 1.5.2 | active | —| —| L0+L1 | —|
-| `dev-sync.ts` | L0 | 1.33.0 | active | —| —| L0+L1 | —|
+| `dev-sync.ts` | L0 | 1.34.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 2.4.1 | active | —| —| L0+L1 | —|
 | `render-commands.ts` | L3 | 1.1.0 | active | Renders config/commands/*.md into .claude/commands, .codex/prompts and .gemini/commands/*.toml (--check fails on drift) | —| L3 | —|
 | `validate-platform-parity.ts` | L3 | 1.0.0 | active | Cross-platform parity validator: rendered commands, MCP proxy routing, instruction sections, skills mirrors, schema models | —| L3 | —|
@@ -126,7 +126,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `hooks/pre-commit.ts` | L0 | 1.11.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
-| `hooks/pre-push.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
+| `hooks/pre-push.ts` | L0 | 1.7.0 | active | —| —| L0+L1 | —|
 | `hooks/sap-action-gate.ts` | L3 | 3.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); R3 always needs a proxy approval (legacy session approval files removed); advisory-only when run as a hook — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
 | `hooks/sap-action-audit.ts` | L3 | 2.0.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts; HMAC-signed evidence entries, clientId/grant fields (hashes only) | —| L3 | —|
 | `lib/sap-action-lib.ts` | L3 | 2.1.0 | active | Shared policy/evidence/audit logic; secure store outside the workspace (~/.config/co-abap: HMAC key, signed approvals/pending, integrity manifest, dispatch grants), HMAC'd evidence and audit hash chain | —| L3 | —|
@@ -155,7 +155,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `harness-metrics.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `tests/harness-metrics.test.ts` | L3 | 1.0.0 | active | — | — | L3 | — |
 | `render-pdf-deck.ts` | L0 | 1.0.1 | active | —| —| L0+L1 | —|
-| `skill-lifecycle-audit.ts` | L0 | 1.8.0 | active | —| —| L0+L1 | —|
+| `skill-lifecycle-audit.ts` | L0 | 1.9.0 | active | —| —| L0+L1 | —|
 | `skill-session-review.ts` | L0 | 1.2.0 | active | `--date`, `--json`, `--dry-run` | —| L0+L1 | —|
 | `sync-skill-status.ts` | L0 | 1.1.0 | active | — | — | L0+L1 | — |
 | `team-builder.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
@@ -165,7 +165,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `validate-doc-folder.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `validate-docs-links.ts` | L0 | 1.6.0 | active | —| —| L0+L1 | —|
 | `validate-md-language.ts` | L0 | 1.16.1 | active | —| —| L0+L1 | —|
-| `validate-model-registry.ts` | L0 | 2.1.0 | active | —| —| L0+L1 | —|
+| `validate-model-registry.ts` | L0 | 2.2.0 | active | —| —| L0+L1 | —|
 | `validate-procedures.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `validate-skills.ts` | L0 | 1.5.2 | active | —| —| L0+L1 | —|
 | `validate-decisions.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
@@ -186,7 +186,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/propagation-map-schema.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/markers.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `helpers/layer-filter.ts` | L0 | 1.5.0 | active | —| —| L0+L1 | —|
-| `generate-version-manifest.ts` | L0 | 1.10.2 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
+| `generate-version-manifest.ts` | L0 | 1.11.0 | active | shallow-tolerant `--check` (T-20260916-013); emits `validate-md-language:allowlist` markers around the generated Skills table (T-20260912-015) | —| L0+L1 | —|
 | `helpers/rollback-partial-project.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `helpers/scaffold-markers.ts` | L0 | 1.9.0 | active | Shared scaffold marker constants + (marker→source) mapping + delivery-tree derivations + transient test-fixture predicate (T-20260916-001) | —| L0+L1 | —|
 | `lib/managed-block-parity.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
@@ -232,7 +232,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/model-literal-patterns.ts` | L0 | 1.0.0 | active | v1.0.0 (2026-10-11, T-20261011-015): shared model-ID literal detection for skill-lifecycle-audit Check MM and sync-model-registry.ts — versioned claude-/gemini-/gpt-5.* regex set + pure findModelLiterals; registry model IDs live only in docs/workspace-schema.json (models.*) and the CLAUDE.md §6 / AGENTS.md §3.6 managed prose, never in skills | —| L0+L1 | —|
 | `co-abap/vsp-audit.ts` | L2 | 1.2.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/scratch-cleanup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
-| `co-abap/install-vsp.ts` | L2 | 1.1.2 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001); v1.1.2 LOCAL-PATCH marker annotated U-20261028-015 (adjudication batch) | —| L2-only | —|
+| `co-abap/install-vsp.ts` | L2 | 1.2.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001); v1.2.0 post-install credential guidance uses .env (chmod 600) or OS keychain — never export SAP_PASSWORD (U-20261028-015, template-side fix) | —| L2-only | —|
 | `validate-abap-platform-parity.ts` | L3 | 1.1.0 | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001): agent-shell protected-set parity checks (deny-rules SSOT; CI-checked). | —| L3 | —|
 | `co-abap/setup.ts` | L2 | 1.1.0 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
 | `co-abap/install-bun.ts` | L2 | 1.0.1 | active | Variant-delivered script (auto-registered at upgrade, T-20261012-001) | —| L2-only | —|
@@ -247,6 +247,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `helpers/design-lint-roots.ts` | L0+L1 | 1.0.0 | active | v1.0.0 (2026-10-26, U-20261026-006): pure design-lint scan-root resolver — configured designLint.scanRoots filtered by existence; when none exist, falls back to the design-lint.ts conventional uiSourceRoots default (./playground/src, ./src) so audit.ts and the standalone lint agree on the same schema; skip verdict names both the configured roots and the conventional candidates; fs injected for fixtures; consumed by audit.ts v2.56.0 design-lint gate. | — | L0+L1 | — |
 | `helpers/pre-commit-script-gate.ts` | L0 | 1.1.0 | active | v1.1.0 (2026-10-27, T-20261027-010): parseCheckAErrorsDetailed — Check A extraction from AuditResult.errors that PRESERVES the fixData payload so pre-commit check 6c keeps its actionable "→ Fix:" output while finally reading the real wire shape; parseCheckAErrors delegates to it so the two extractions cannot drift. v1.0.0 (2026-10-27, T-20261027-009): import-safe merge-aware SCRIPTS.md gate for pre-commit check 6 — gate decision (pass / proxy-fail / merge-verify), Check A error parsing from `lifecycle-sync-audit.ts --json` (AuditResult.errors, level==error), exit-code content gate with an injectable audit-runner seam so unit tests target the module (pre-commit.ts itself runs main() at import) | —| L0+L1 | —|
 | `helpers/theme-token-policy.ts` | L0 | 1.0.0 | active | v1.0.0 (2026-10-27, U-20261027-005): DESIGN-R2 theme-invariance key classification — theme presets in tokens.json may override only color/shadow tokens (typography/spacing/borderRadius/target-size are theme-invariant); shared by compile-tokens.ts v1.3.0 (hard compile error) and design-lint.ts v2.3.0 (themes sub-check) so the two enforcement points cannot drift; kebab-normalized membership test | —| L0+L1 | —|
+| `sync-agent-mirrors.ts` | L0 | 1.2.0 | active | v1.2.0 (2026-10-28, T-20261029-008): CHECK-mode out-of-root degrade — a standalone CI checkout has no workspace ancestor, so extends-stub discovery hard-threw inside the SSOT parse and the audit gate blocked every real-CI project PR (co-abap #227, co-safety #220); when no templates root is discoverable AND generated mirrors exist, --check returns green with an explicit WARN (parity cannot be verified out-of-root — run inside a workspace checkout or pass --templates-root), write mode keeps the hard error (deliberate write, never auto-repair); discovery extracted to the exported pure discoverTemplatesRoot({root, searched}) reused by resolveTemplatesRoot (same bounded walk, same error text). Prior: v1.1.0 (2026-10-28, canary finding on Projects/co-newbiz — design §4.2 flagged ASSUMPTION verified with a real gap): extends-stub L1 bodies are sourced via templates-root DISCOVERY — the first ancestor of the target root carrying templates/common/agents (bounded 8-level walk), with an explicit `--templates-root <workspace>/templates` override (validated against the common/agents shape before any per-file work) taking precedence; not-found is a hard error naming every searched ancestor, never a silent fallback. In-project runs previously resolved the stub source against <project>/templates, which never exists in a delivered project. Mirror OUTPUT bytes unchanged — only where the stub body is sourced from; new-project/adopt-project wiring passes the workspace templates/ explicitly. Prior: v1.0.0 v1.0.0 (2026-10-28, spec docs/designs/2026-10-28-platform-agent-mirror-design.md, DEC-20261028-06, PR-1 root scope): initial — one template-managed generator projecting the platform-neutral agents/*.md SSOT (scalar `tier:` only, NO `model:` field) into the mirror directory of every registry-marked agents-capable platform (docs/workspace-schema.json platform_surfaces; v1 = Claude Code only). Idempotent compare-then-write with atomic writes, provenance manifest (.sync-agent-mirrors-managed.json) so user-added mirrors are never removed and no/corrupt manifest removes nothing, PID-stamped advisory lock with stale-lock recovery (sync-skills T-20260912-017 pattern), extends-stubs project as self-contained resolved personas via the scaffold-time composer (helpers/resolve-pm-stub.ts composeResolvedAgentContent — import-verified pure), exported resolvePlatformModel ports the agent-model-gate v1.2.0 claude-<alias>-<ver> → <alias> rule, and the B-PGW-pattern registry↔adapter coverage guard fails loud before any per-file work. Mirrors are project-scoped: a root without variant.json is a green no-op (design §12). `--check` is the blocking parity gate consumed by the audit arm (spawn-if-exists, the validate-model-registry precedent) and dev-sync step 4.61. CLI: `--check`, `--dir <path>`. | — | L0+L1 | — |
 
 ---
 

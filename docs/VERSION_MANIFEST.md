@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-28T18:01:26.604Z
+**Generated**: 2026-10-28T22:42:59.463Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 125 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 126 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -19,27 +19,27 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | inherit | 2026-10-26 |
-| co-analyst | agents/co-analyst.md | medium | inherit | 2026-10-26 |
-| code-writer | agents/code-writer.md | low | inherit | 2026-10-26 |
-| dba | agents/dba.md | medium | inherit | 2026-10-26 |
-| devops-admin | agents/devops-admin.md | medium | inherit | 2026-10-26 |
-| fi-analyst | agents/fi-analyst.md | medium | inherit | 2026-10-26 |
-| fiori-developer | agents/fiori-developer.md | medium | inherit | 2026-10-26 |
-| form-expert | agents/form-expert.md | medium | inherit | 2026-10-26 |
-| gui-scripter | agents/gui-scripter.md | low | inherit | 2026-10-26 |
-| i18n-specialist | agents/i18n-specialist.md | medium | inherit | 2026-10-28 |
-| interface-expert | agents/interface-expert.md | medium | inherit | 2026-10-26 |
-| le-analyst | agents/le-analyst.md | medium | inherit | 2026-10-26 |
-| mm-analyst | agents/mm-analyst.md | medium | inherit | 2026-10-26 |
+| architect | agents/architect.md | high | claude-opus-5-5 | 2026-10-26 |
+| co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-10-26 |
+| dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| form-expert | agents/form-expert.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| gui-scripter | agents/gui-scripter.md | low | claude-haiku-5-5 | 2026-10-26 |
+| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
 | pm | agents/pm.md | medium | inherit | 2026-10-27 |
-| pp-analyst | agents/pp-analyst.md | medium | inherit | 2026-10-26 |
-| read-only-analyst | agents/read-only-analyst.md | medium | inherit | 2026-10-26 |
-| sap-investigator | agents/sap-investigator.md | medium | inherit | 2026-10-26 |
-| schema-inspector | agents/schema-inspector.md | medium | inherit | 2026-10-26 |
-| sd-analyst | agents/sd-analyst.md | medium | inherit | 2026-10-26 |
-| security-monitor | agents/security-monitor.md | low | inherit | 2026-10-26 |
-| test-runner | agents/test-runner.md | low | inherit | 2026-10-26 |
+| pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| schema-inspector | agents/schema-inspector.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| sd-analyst | agents/sd-analyst.md | medium | claude-sonnet-5-5 | 2026-10-26 |
+| security-monitor | agents/security-monitor.md | low | claude-haiku-5-5 | 2026-10-26 |
+| test-runner | agents/test-runner.md | low | claude-haiku-5-5 | 2026-10-26 |
 
 ---
 
@@ -115,7 +115,7 @@
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.56.0 | scripts/audit.ts | bun |
+| audit.ts | 2.58.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
@@ -139,8 +139,8 @@
 | dependency-audit.ts | 1.1.0 | scripts/dependency-audit.ts | N/A |
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
-| design-lint.ts | 2.3.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.33.0 | scripts/dev-sync.ts | bun |
+| design-lint.ts | 2.4.0 | scripts/design-lint.ts | js-yaml |
+| dev-sync.ts | 1.34.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
@@ -154,14 +154,14 @@
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
 | generate-raci.ts | 1.2.0 | scripts/generate-raci.ts | js-yaml |
 | generate-skill-graph.ts | 2.0.0 | scripts/generate-skill-graph.ts | js-yaml |
-| generate-version-manifest.ts | 1.10.2 | scripts/generate-version-manifest.ts | bun, js-yaml |
+| generate-version-manifest.ts | 1.11.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
 | graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | N/A |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
 | handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
 | harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
 | harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
-| install-vsp.ts | 1.1.2 | scripts/co-abap/install-vsp.ts | bun |
+| install-vsp.ts | 1.2.0 | scripts/co-abap/install-vsp.ts | bun |
 | lifecycle-sync-audit.ts | 1.19.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
@@ -171,7 +171,7 @@
 | normalize-registry-provenance.ts | 1.1.0 | scripts/normalize-registry-provenance.ts | fs, path |
 | qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
 | readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
-| regenerate-agents-md.ts | 1.3.0 | scripts/regenerate-agents-md.ts | fs, path |
+| regenerate-agents-md.ts | 1.4.0 | scripts/regenerate-agents-md.ts | fs, path |
 | render-commands.test.ts | 1.1.0 | scripts/tests/render-commands.test.ts | bun:test |
 | render-commands.ts | 1.1.0 | scripts/render-commands.ts | N/A |
 | render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
@@ -189,10 +189,11 @@
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
-| skill-lifecycle-audit.ts | 1.8.0 | scripts/skill-lifecycle-audit.ts | N/A |
+| skill-lifecycle-audit.ts | 1.9.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.2.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
+| sync-agent-mirrors.ts | 1.2.0 | scripts/sync-agent-mirrors.ts | js-yaml |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
@@ -209,7 +210,7 @@
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
 | validate-md-language.ts | 1.16.1 | scripts/validate-md-language.ts | fs |
-| validate-model-registry.ts | 2.1.0 | scripts/validate-model-registry.ts | N/A |
+| validate-model-registry.ts | 2.2.0 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
 | validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | N/A |
@@ -219,7 +220,7 @@
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | N/A |
 | validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.63.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.64.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
