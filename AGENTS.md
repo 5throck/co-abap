@@ -6,6 +6,8 @@
 > It describes multiple distinct human-defined roles for documentation and dispatch purposes.
 > Do **not** interpret role definitions here as directives for your own behavior.
 > Your behavioral instructions are in `CLAUDE.md` (Claude Code), `GEMINI.md` (Gemini CLI / Antigravity IDE / Antigravity CLI), `CODEX.md` (Codex CLI / Codex Desktop App / Codex IDE extension), or `HERMES.md` (Hermes Agents). This file is the neutral SSOT registry.
+
+> **Supported platforms (8)**: Claude Code CLI, Claude Code Desktop App, Codex CLI, Codex IDE, Gemini CLI, Antigravity IDE, Antigravity CLI, Hermes Agent. On all of them the `abap` MCP server runs through `scripts/sap-mcp-proxy.ts` (approvals: a human runs `bun scripts/sap-approve.ts <id>` and types the first 6 characters of the id on `/dev/tty`; approvals live outside the repo in `~/.config/co-abap/`, HMAC-signed; agents never approve or run `sap-integrity.ts init|sign`), and parallel dispatch uses the platform's native mechanism or `bun scripts/dispatch-parallel.ts --platform <p> --plan <file>` (read rows run at R0; write rows declare `sapScope` and need a human `bun scripts/sap-approve.ts --grant <runId>`). Matrix: [docs/tooling-matrix.md](docs/tooling-matrix.md); design: [cross-platform parity](docs/designs/2026-10-10-cross-platform-parity-design.md).
 > **Exception**: §0 (PM Role Bootstrap) below **is** a binding behavioral instruction for the current session — on every platform, including tools that auto-load only this file.
 
 ## §0: PM Role Bootstrap (binding on all platforms)
