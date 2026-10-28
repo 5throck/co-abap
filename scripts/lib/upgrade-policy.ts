@@ -1,4 +1,84 @@
-// @version 1.25.0
+// @version 1.30.0
+// v1.30.0 (2026-10-28, design
+//          docs/designs/2026-10-28-instruction-ownership-backport-hardening-design.md
+//          D1/D2): instruction-file region taxonomy + merge-time region census.
+//          REGION_IN_SYNC (INFO) / EVOLVED_REGION (WARN) / TEMPLATE_AHEAD_REGION
+//          (WARN) join DecisionVerdict + DECISION_SEVERITY_CONTRACT; pure
+//          helpers: INSTRUCTION_FILE_RELS (the five instruction files),
+//          scanInstructionRegions (I1 managed zones + skeleton-registry
+//          sections / I2 VARIANT-* project-state marker sections / I3 free-form
+//          template-echo spans), censusInstructionRegions (out-of-zone LCS diff
+//          → per-block rows; identical files produce ZERO rows — the §6
+//          dry-run-parity guarantee), spanCarriesProjectAuthoredLines (the
+//          write-channel escalation predicate), instructionCensusGate (the
+//          shape handed to the managed-block/skeleton merge libs). Data +
+//          pure helpers only — the merge libs stay the write channels.
+// v1.29.0 (2026-10-28, T-20261028-013 — spec
+//          docs/designs/2026-10-28-instruction-ownership-backport-hardening-design.md
+//          D9/Q5): STUB_VERSION_BUMP_ADVICE (INFO) joins DecisionVerdict +
+//          DECISION_SEVERITY_CONTRACT. The upgrade-project agents/ pass emits it
+//          when a stub-composed file reaches the equal-version drift arm with
+//          templateChanged — stub-owned fields moved template-side without the
+//          stub `version` bump that would have made the change arrive as a
+//          normal version-gated ADOPT (design D9 rule). Advisory-only this wave
+//          (design §10 Q5 default); the validate-templates enforcement check is
+//          a follow-up if drift appears.
+// v1.28.0 (2026-10-28, T-20261028-010 — spec
+//          docs/designs/2026-10-28-stub-frontmatter-backfill-design.md): stub
+//          frontmatter scalar backfill. Exports backfillStubFrontmatter() —
+//          fills MISSING top-level scalar tier/version/last_updated keys in a
+//          project extends-stub from its template counterpart (tier from the
+//          counterpart's scalar, version verbatim, last_updated = the delivery
+//          date), and STUB_FM_BACKFILL (INFO) joins DecisionVerdict +
+//          DECISION_SEVERITY_CONTRACT. The validate-model-registry v2.1.0
+//          missing-tier FAIL flip (template-v0.22.0) turned stubs whose
+//          frontmatter predates the field red, and no delivery pass adds a
+//          missing key: the v1.24.0 normalizer rewrites an EXISTING tier block
+//          only, and the agents/ version-gated passes replace frontmatter
+//          wholesale. Guards: the project content must itself be stub-shaped
+//          (a column-0 `extends:` in the frontmatter — resolved agent bodies
+//          are never touched, the v1.24.0 ownership contract stays intact);
+//          MISSING = the column-0 key is absent (existing values are never
+//          overwritten — deliberate project divergence stays; empty-value keys
+//          stay out of scope; nested lifecycle-block keys are never touched);
+//          filled keys append at the end of the frontmatter body; CRLF
+//          preserved; idempotent; body bytes untouched (frontmatter scalars
+//          only — frontmatter ownership for stubs is template-side, body stays
+//          project-owned, cf. U-20261028-001).
+// v1.27.0 (2026-10-28, U-20261028-001 — spec
+//          docs/designs/2026-10-28-delivery-tombstone-ownership-design.md,
+//          D1–D3 + D6): delivery tombstones. Additive data + one pure guard
+//          predicate — NO resolver/classifier change (D6 keeps the
+//          overwrite-policy boundary). (a) `TombstoneEntry` +
+//          `DeliveryManifestV2.tombstones` (optional additive key,
+//          schemaVersion stays 2 — the same grace pattern as the v1→v2
+//          migration): `{ [rel]: { hash, templateVersion, recordedAt,
+//          reason } }`, `hash` the last delivered baseline (baselineKeyFor
+//          form) at recording time. (b) `TOMBSTONED` (ERROR — first
+//          observation of a project-side deletion of a previously delivered
+//          file; delivery refused until an explicit `--tombstone <glob>`
+//          confirms the deletion intent) and `TOMBSTONED_SKIP` (INFO — the
+//          recorded deletion is honored; the path stays absent) join
+//          DecisionVerdict + DECISION_SEVERITY_CONTRACT. (c)
+//          `tombstoneGuard(rel, prior, absent)` — the D2 fire condition
+//          `absent(project, rel) && (prior.tombstones[rel] ||
+//          prior.baselines[rel])` as a pure predicate; consulted by every
+//          absent-copy delivery branch BEFORE the copy. The guard never
+//          reads the disposition flag — per D3b `--disposition
+//          adopt-template` cannot override a tombstone (taking template
+//          content back onto a tombstoned path requires
+//          `--clear-tombstone`). Firing only for paths a pass actually
+//          walks (template-shipped candidates) makes template-side renames
+//          false-positive-free — a renamed-away path is no longer a
+//          candidate, so nothing fires.
+// v1.26.0 (2026-10-28, T-20261028-002 — spec
+//          docs/designs/2026-10-28-ticket-runner-mechanical-batch-design.md §3):
+//          globToRegExp zero-segment semantics — `/**/` also matches zero
+//          intermediate segments (a/**/b matches a/b) and a leading `**/`
+//          matches top level (**/b matches b). The old `.*`-substitution
+//          demanded literal slashes around the wildcard, so narrowed
+//          --disposition adopt-template globs silently skipped exactly those
+//          paths. Trailing `/**` and bare `**` semantics unchanged.
 // v1.25.0 (2026-10-27, T-20261027-004 — spec
 //          docs/designs/2026-10-27-sync-overwrite-policy-design.md): delivery-
 //          decision observability data + pure helpers (design D1/D2/D3). New
@@ -733,6 +813,87 @@ export function normalizeAgentTierFrontmatter(projectContent: string, templateCo
   };
 }
 
+// ── Stub frontmatter scalar backfill (T-20261028-010) ─────────────────────────
+
+export interface StubFrontmatterBackfill {
+  /** Project content after the backfill (identical to the input when nothing changed). */
+  content: string;
+  /** True when at least one missing scalar was filled. */
+  changed: boolean;
+  /** The filled top-level keys, in fill order (subset of tier/version/last_updated). */
+  filled: string[];
+}
+
+/**
+ * Backfill MISSING top-level scalar frontmatter keys (tier / version /
+ * last_updated) in a project extends-stub from its template counterpart
+ * (T-20261028-010 — spec docs/designs/2026-10-28-stub-frontmatter-backfill-
+ * design.md). The validate-model-registry v2.1.0 missing-tier FAIL flip
+ * (T-20261027-003, template-v0.22.0) turned stubs whose frontmatter predates
+ * the field red, and no delivery pass adds a missing key: the MERGE normalizer
+ * above rewrites an EXISTING tier block only, and the agents/ version-gated
+ * passes replace frontmatter wholesale — the agents/ STUB skip branch is the
+ * only place a stub-shaped file survives a run untouched.
+ *
+ * Contract:
+ *  - the PROJECT content must itself be stub-shaped (a column-0 `extends:`
+ *    inside the frontmatter) — resolved agent bodies are never touched even
+ *    when a caller mis-wires the branch (the helper-level ownership guard);
+ *  - MISSING = the top-level (column-0) key is absent from the project
+ *    frontmatter. Existing values are NEVER overwritten (deliberate project
+ *    divergence — a pinned older version — stays); an empty-value key is
+ *    treated as present (the v1.24.0 contract: never invent structure); nested
+ *    keys (the `lifecycle:` block's `last_updated:`) are never touched;
+ *  - field sources: `tier` from the template counterpart's scalar
+ *    (comment-stripped; a map-form template side fills nothing), `version`
+ *    from the counterpart's scalar verbatim (quotes preserved), `last_updated`
+ *    from the DELIVERY DATE (not the counterpart's authoring date — the same
+ *    convention as the post-delivery re-stamp); all three require the
+ *    counterpart to declare the key, and an invalid deliveryDate leaves
+ *    last_updated unfilled;
+ *  - filled keys append at the end of the frontmatter body (YAML mapping key
+ *    order is insignificant; append keeps the diff minimal and never reorders
+ *    existing keys); CRLF line endings are detected and preserved; idempotent;
+ *  - body bytes are untouched — frontmatter scalars only.
+ */
+export function backfillStubFrontmatter(
+  projectContent: string,
+  templateContent: string,
+  deliveryDate: string,
+): StubFrontmatterBackfill {
+  const unchanged: StubFrontmatterBackfill = { content: projectContent, changed: false, filled: [] };
+  const projFm = frontmatterBody(projectContent);
+  if (!projFm || !/^extends:[ \t]*\S/m.test(projFm.body)) return unchanged; // not a stub — never touch
+  const tplFm = frontmatterBody(templateContent);
+  if (!tplFm) return unchanged;
+  const present = (key: string): boolean =>
+    projFm.body.split(/\r?\n/).some((l) => new RegExp(`^${key}:(?:[ \\t].*)?$`).test(l));
+  const tplScalar = (key: string): string => {
+    const m = tplFm.body.match(new RegExp(`^${key}:[ \\t]*(\\S[^\\r\\n]*)$`, 'm'));
+    return m ? m[1].trim() : '';
+  };
+  const fills: string[] = [];
+  if (!present('tier')) {
+    const tier = stripTierComment(tplScalar('tier'));
+    if (tier) fills.push(`tier: ${tier}`);
+  }
+  if (!present('version')) {
+    const version = tplScalar('version');
+    if (version) fills.push(`version: ${version}`);
+  }
+  if (!present('last_updated') && /^\d{4}-\d{2}-\d{2}$/.test(deliveryDate)) {
+    fills.push(`last_updated: ${deliveryDate}`);
+  }
+  if (fills.length === 0) return unchanged;
+  const rebuilt = [...projFm.body.split(/\r?\n/), ...fills];
+  const fmText = `---${projFm.eol}${rebuilt.join(projFm.eol)}${projFm.eol}---`;
+  return {
+    content: projectContent.slice(0, projFm.start) + fmText + projectContent.slice(projFm.end),
+    changed: true,
+    filled: fills.map((f) => f.split(':')[0]!),
+  };
+}
+
 /** Pipeline-generated paths that never count as hand-authored code in a diff.
  *  (U-20261027-002): `scripts-snapshot.json` and `.claude/last-upgrade-pr-body.md`
  *  join the set — both are regenerated by upgrade-project AFTER
@@ -779,7 +940,19 @@ export function isDeliveredDiff(changedFiles: string[], deliveredFiles: string[]
  *  overrides to WARN when a destructive in-zone replace wrote a snapshot. */
 export type DecisionSeverity = 'INFO' | 'WARN' | 'ERROR';
 
-/** Verdicts of the unified decision log (design D3/D2 matrix). */
+/** Verdicts of the unified decision log (design D3/D2 matrix). TOMBSTONED /
+ *  TOMBSTONED_SKIP joined in v1.27.0 (tombstone-ownership design D3);
+ *  STUB_FM_BACKFILL joined in v1.28.0 (T-20261028-010 — missing stub-frontmatter
+ *  scalar backfill from the template counterpart);
+ *  STUB_VERSION_BUMP_ADVICE joined in v1.29.0 (T-20261028-013 — D9 stub-composed
+ *  compare: advisory-only INFO suggesting a stub `version` bump when stub-owned
+ *  fields changed template-side without the bump that would have version-gated
+ *  the re-delivery; the validate-templates enforcement check is a follow-up per
+ *  the approved design's Q5 default, advisory-first);
+ *  REGION_IN_SYNC / EVOLVED_REGION / TEMPLATE_AHEAD_REGION joined in v1.30.0
+ *  (instruction-ownership design D1/D2 — the instruction-file region census;
+ *  CONFLICT (ERROR) for a census-gated adapted-span replace is recorded by the
+ *  engine under the existing CONFLICT verdict). */
 export type DecisionVerdict =
   | 'NEW'
   | 'UPDATE'
@@ -790,9 +963,16 @@ export type DecisionVerdict =
   | 'DRIFT_PRESERVE'
   | 'DRIFT_RESTORED'
   | 'STUB_SKIP'
+  | 'STUB_FM_BACKFILL'
+  | 'STUB_VERSION_BUMP_ADVICE'
+  | 'REGION_IN_SYNC'
+  | 'EVOLVED_REGION'
+  | 'TEMPLATE_AHEAD_REGION'
   | 'SEED_SKIP'
   | 'SKELETON_COLLISION'
   | 'EVOLVED'
+  | 'TOMBSTONED'
+  | 'TOMBSTONED_SKIP'
   | 'CONFLICT';
 
 export const DECISION_SEVERITY_CONTRACT: Record<DecisionVerdict, DecisionSeverity> = {
@@ -803,11 +983,18 @@ export const DECISION_SEVERITY_CONTRACT: Record<DecisionVerdict, DecisionSeverit
   MERGE: 'INFO',
   SEED_SKIP: 'INFO',
   STUB_SKIP: 'INFO',
+  STUB_FM_BACKFILL: 'INFO',
+  STUB_VERSION_BUMP_ADVICE: 'INFO',
+  REGION_IN_SYNC: 'INFO',
+  EVOLVED_REGION: 'WARN',
+  TEMPLATE_AHEAD_REGION: 'WARN',
   CONTEXT_PRESERVE: 'WARN',
   DRIFT_PRESERVE: 'WARN',
   DRIFT_RESTORED: 'WARN',
   SKELETON_COLLISION: 'WARN',
   EVOLVED: 'WARN',
+  TOMBSTONED: 'ERROR',
+  TOMBSTONED_SKIP: 'INFO',
   CONFLICT: 'ERROR',
 };
 
@@ -830,9 +1017,26 @@ export interface DecisionBaseline {
   templateVersion: string;
 }
 
+/** One recorded delivery tombstone (tombstone-ownership design D1): the
+ *  project deliberately deleted a previously delivered file and the deletion
+ *  intent was confirmed with `--tombstone <glob>` (apply mode only — there is
+ *  no auto-record path). `hash` is the last delivered baseline (baselineKeyFor
+ *  form) at detection time; `recordedAt` is the ISO date of the confirming
+ *  run; `reason` is the operator-supplied or decision-referenced rationale. */
+export interface TombstoneEntry {
+  hash: string;
+  templateVersion: string;
+  recordedAt: string;
+  reason: string;
+}
+
 /** Delivery manifest v2 (design §7). The top-level `files` array is preserved
  *  verbatim so every v1 consumer (dev-sync step 3.9 isDeliveredDiff, PR-body
- *  compose) keeps working unchanged. */
+ *  compose) keeps working unchanged. `tombstones` (tombstone-ownership design
+ *  D1) is an ADDITIVE OPTIONAL key — schemaVersion stays 2; manifests without
+ *  the key stay valid (the same tolerance as the v1→v2 migration), and the
+ *  writer rule is `tombstones = (prior ∪ newly recorded) − paths delivered
+ *  this run` (delivering a path is the natural clear event). */
 export interface DeliveryManifestV2 {
   schemaVersion: 2;
   timestamp: string;
@@ -845,6 +1049,7 @@ export interface DeliveryManifestV2 {
   files: string[];
   baselines: Record<string, DecisionBaseline>;
   decisions: DeliveryDecision[];
+  tombstones?: Record<string, TombstoneEntry>;
 }
 
 /** How a project file relates to its delivered baseline and today's deliverable (design D1). */
@@ -970,14 +1175,18 @@ export function resolveDisposition(
   };
 }
 
-/** Translate a glob (`**`, `*`, `?`) into an anchored RegExp for
- *  --disposition adopt-template=<glob> path narrowing. */
+// Translate a glob (`**`, `*`, `?`) into an anchored RegExp for
+// --disposition adopt-template=<glob> path narrowing. An interior doublestar
+// between slashes also matches zero intermediate segments (a/**/b matches
+// a/b) and a leading doublestar slash matches top level (**/b matches b).
 export function globToRegExp(glob: string): RegExp {
   const src = glob
     .replace(/[.+^${}()|[\]\\]/g, '\\$&')
     .replace(/\*\*/g, '\u0000')
     .replace(/\*/g, '[^/]*')
     .replace(/\?/g, '[^/]')
+    .replace(/\/\u0000\//g, '(?:/.*)?/')
+    .replace(/^\u0000\//, '(?:.*/)?')
     .replace(/\u0000/g, '.*');
   return new RegExp(`^${src}$`);
 }
@@ -999,4 +1208,447 @@ export function manifestHasUnresolvedErrors(manifest: unknown): boolean {
   return decisions.some(
     (d) => !!d && typeof d === 'object' && (d as { severity?: unknown }).severity === 'ERROR',
   );
+}
+
+// ── Delivery tombstones (tombstone-ownership design, spec 2026-10-28-delivery-tombstone-ownership) ─
+// Design D2/D3: a project-side deletion of a previously delivered file must
+// never be re-delivered silently. The guard is a PURE predicate — the deny-list
+// resolver, the baseline classifier, and the severity contract's existing rows
+// keep their shapes (design D6).
+
+/** The prior-manifest state the guard reads (a parsed
+ *  `.claude/last-upgrade-delivery.json`). Both keys optional: v1-shaped
+ *  manifests carry no baselines, manifests without tombstones carry no
+ *  tombstones — both parse and degrade to not-firing. */
+export interface PriorDeliveryState {
+  baselines?: Record<string, DecisionBaseline>;
+  tombstones?: Record<string, TombstoneEntry>;
+}
+
+export interface TombstoneGuardOutcome {
+  /** True when the guard fires and the absent-copy delivery must be skipped. */
+  fires: boolean;
+  /** The verdict for the decision entry when the guard fires; null otherwise. */
+  verdict: DecisionVerdict | null;
+  /** Severity from the §7 contract when the guard fires; null otherwise. */
+  severity: DecisionSeverity | null;
+  /** Detail for the decision entry (names the resolution path on TOMBSTONED). */
+  detail: string;
+}
+
+const TOMBSTONE_NOT_FIRING: TombstoneGuardOutcome = {
+  fires: false, verdict: null, severity: null, detail: '',
+};
+
+/**
+ * D2/D3 tombstone guard for an absent-copy delivery candidate (tombstone
+ * -ownership design §4). Fire condition: `absent(project, rel) &&
+ * (prior.tombstones[rel] || prior.baselines[rel])` —
+ *  - recorded tombstone → `TOMBSTONED_SKIP` (INFO): the deletion intent was
+ *    confirmed in an earlier run; delivery skipped, the path stays absent;
+ *  - delivered baseline without a tombstone → `TOMBSTONED` (ERROR): first
+ *    observation of the deletion; delivery REFUSED until the operator either
+ *    confirms with `--tombstone <glob>` (apply mode) or restores the project
+ *    copy and re-runs.
+ * Not firing when the project copy exists (the version-gated passes' own
+ * evolvedDeliveryGuard owns those rows), when the path was never delivered
+ * (scaffold-time absent files, REGENERATED/PROJECT_STATE classes — no
+ * baseline, no fire), or when no prior manifest exists (first run after
+ * landing). The guard never reads the disposition flag: per D3b
+ * `--disposition adopt-template` cannot override a tombstone — taking
+ * template content back onto a tombstoned path requires `--clear-tombstone`.
+ * The caller structure provides the template-ships-this-path bound: the guard
+ * is consulted only from absent-copy branches of passes walking template-side
+ * files, so a template-side rename (old path no longer a candidate) never
+ * fires (design §4.5).
+ */
+export function tombstoneGuard(
+  rel: string,
+  prior: PriorDeliveryState | null | undefined,
+  absent: boolean,
+): TombstoneGuardOutcome {
+  if (!absent || !prior) return TOMBSTONE_NOT_FIRING;
+  const entry = prior.tombstones?.[rel];
+  if (entry) {
+    return {
+      fires: true,
+      verdict: 'TOMBSTONED_SKIP',
+      severity: 'INFO',
+      detail: `tombstoned deletion honored (recorded ${entry.recordedAt}${entry.reason ? ` — ${entry.reason}` : ''}) — delivery skipped, project copy stays absent`,
+    };
+  }
+  if (prior.baselines?.[rel]) {
+    return {
+      fires: true,
+      verdict: 'TOMBSTONED',
+      severity: 'ERROR',
+      detail: 'project deleted a previously delivered file — delivery REFUSED (severity ERROR): confirm with --tombstone <path>, or restore the project copy and re-run',
+    };
+  }
+  return TOMBSTONE_NOT_FIRING;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Instruction-file region taxonomy + census (design D1/D2, spec
+// docs/designs/2026-10-28-instruction-ownership-backport-hardening-design.md).
+// The delivery engine owns regions INSIDE agents/*.md (the tombstone design's
+// R1–R3) — this section extends the same ownership model to the five
+// instruction files (AGENTS.md, CLAUDE.md, GEMINI.md, CODEX.md, HERMES.md):
+//
+//   I1 — engine zones: every MANAGED_PATTERNS marker zone plus every
+//        ADR-0101 skeleton-registry section. Template-authoritative; the
+//        MERGE/DOCS_MERGE passes deliver them exactly as today.
+//   I2 — project-state marker sections: scaffold-rendered VARIANT-* marker
+//        spans NOT in MANAGED_PATTERNS. Project state; preserved; census-only
+//        (never diffed for content beyond existence — Q2 default).
+//   I3 — free-form template-echo regions: all remaining out-of-zone content.
+//        Template-canonical by default, project adaptation is a first-class,
+//        classified disposition (EVOLVED_REGION, WARN) and promotion runs
+//        through the adjudicated-port procedure (overwrite-policy §6, D4).
+//
+// Pure layer only: scanning, diffing, and classification. The write channels
+// (unlabeled reconcile, skeleton replace) stay in the merge libs, which consult
+// instructionCensusGate; the engine records the decision rows.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+import { MANAGED_PATTERNS } from './managed-block-merge.ts';
+import { MANAGED_SKELETON_SECTIONS } from './platform-skeleton-merge.ts';
+import { VARIANT_SCAFFOLD_MARKER_NAMES } from '../helpers/scaffold-markers.ts';
+
+/** The five instruction files the D1 taxonomy covers (tombstone-design D4
+ *  extended from agents/*.md). */
+export const INSTRUCTION_FILE_RELS: readonly string[] = [
+  'AGENTS.md',
+  'CLAUDE.md',
+  'GEMINI.md',
+  'CODEX.md',
+  'HERMES.md',
+];
+
+/** D1 region kinds. */
+export type InstructionRegionKind = 'I1' | 'I2' | 'I3';
+
+/** One classified region: a half-open line-index span [start, end) over
+ *  `content.split('\n')`. */
+export interface InstructionRegion {
+  kind: InstructionRegionKind;
+  /** Human name: managed-zone label, VARIANT marker name, skeleton-registry
+   *  section id, or `free-form #N`. */
+  name: string;
+  start: number;
+  end: number;
+}
+
+interface LineSpan {
+  start: number;
+  end: number; // exclusive
+}
+
+const trimmedLines = (content: string): string[] => content.split('\n').map((l) => l.trim());
+
+function zoneLineSpans(lines: string[]): LineSpan[] {
+  const spans: LineSpan[] = [];
+  const trimmed = lines.map((l) => l.trim());
+  for (let i = 0; i < lines.length; i++) {
+    const open = MANAGED_PATTERNS.find((p) => p.open.test(trimmed[i]!));
+    if (!open) continue;
+    for (let j = i + 1; j < lines.length; j++) {
+      if (trimmed[j] === open.close) {
+        spans.push({ start: i, end: j + 1 });
+        i = j;
+        break;
+      }
+    }
+  }
+  return spans;
+}
+
+function variantMarkerLineSpans(lines: string[]): LineSpan[] {
+  const spans: LineSpan[] = [];
+  const trimmed = lines.map((l) => l.trim());
+  for (const name of VARIANT_SCAFFOLD_MARKER_NAMES) {
+    const open = `<!-- ${name}-START -->`;
+    const close = `<!-- ${name}-END -->`;
+    const start = trimmed.indexOf(open);
+    if (start < 0) continue;
+    const end = trimmed.indexOf(close, start + 1);
+    if (end < 0) continue; // unterminated — treated as free-form, not project state
+    spans.push({ start, end: end + 1 });
+  }
+  return spans;
+}
+
+function overlaps(spans: LineSpan[], idx: number): boolean {
+  return spans.some((s) => idx >= s.start && idx < s.end);
+}
+
+/**
+ * D1 region resolution (design §4.1): parse `content` into I1 / I2 / I3 line
+ * spans. Pure. Zone membership is structural — read off the content's own
+ * markers and the existing registries; no per-project claim manifest, no new
+ * marker syntax.
+ */
+export function scanInstructionRegions(content: string, rel: string): InstructionRegion[] {
+  const lines = content.split('\n');
+  const regions: InstructionRegion[] = [];
+  const claimed = new Array<boolean>(lines.length).fill(false);
+
+  // I1 — managed marker zones.
+  for (const span of zoneLineSpans(lines)) {
+    const label = MANAGED_PATTERNS.find((p) => openLineMatches(p, lines[span.start]!))?.label ?? 'managed-zone';
+    regions.push({ kind: 'I1', name: label, ...span });
+    for (let i = span.start; i < span.end; i++) claimed[i] = true;
+  }
+
+  // I1 — ADR-0101 skeleton-registry sections for this rel (out-of-zone heading
+  // spans; the same span shape the guarded skeleton replace uses).
+  const entries = MANAGED_SKELETON_SECTIONS.filter((e) => e.rel === rel);
+  if (entries.length > 0) {
+    const registeredHeadings = new Set(entries.map((e) => e.heading));
+    const trimmed = trimmedLines(content);
+    for (const entry of entries) {
+      const start = lines.findIndex((l, i) => !claimed[i] && l.trim() === entry.heading);
+      if (start < 0) continue;
+      let end = lines.length;
+      for (let i = start + 1; i < lines.length; i++) {
+        const t = trimmed[i]!;
+        if (registeredHeadings.has(t) || MANAGED_PATTERNS.some((p) => p.open.test(t))) {
+          end = i;
+          break;
+        }
+      }
+      regions.push({ kind: 'I1', name: entry.id, start, end });
+      for (let i = start; i < end; i++) claimed[i] = true;
+    }
+  }
+
+  // I2 — VARIANT-* project-state marker sections (scaffold-rendered, NOT in
+  // MANAGED_PATTERNS; Q2 default: project state, no ownership change).
+  for (const span of variantMarkerLineSpans(lines)) {
+    const name = (lines[span.start]!.trim().match(/^<!-- ([A-Z-]+)-START -->$/)?.[1]) ?? 'VARIANT-marker';
+    regions.push({ kind: 'I2', name, ...span });
+    for (let i = span.start; i < span.end; i++) claimed[i] = true;
+  }
+
+  // I3 — everything else, as contiguous runs.
+  let runStart = -1;
+  for (let i = 0; i <= lines.length; i++) {
+    if (i < lines.length && !claimed[i]) {
+      if (runStart < 0) runStart = i;
+    } else if (runStart >= 0) {
+      regions.push({ kind: 'I3', name: `free-form #${regions.filter((r) => r.kind === 'I3').length + 1}`, start: runStart, end: i });
+      runStart = -1;
+    }
+  }
+
+  return regions;
+}
+
+function openLineMatches(p: { open: RegExp }, line: string): boolean {
+  return p.open.test(line.trim());
+}
+
+/** Census verdicts (D2). CONFLICT (ERROR) is NOT a census row verdict — it is
+ *  recorded by the engine when a write channel (unlabeled reconcile, skeleton
+ *  replace) targets a span carrying EVOLVED_REGION content and no
+ *  --disposition adopt-template grant covers the path. */
+export type RegionCensusVerdict = 'REGION_IN_SYNC' | 'EVOLVED_REGION' | 'TEMPLATE_AHEAD_REGION';
+
+export interface RegionCensusRow {
+  verdict: RegionCensusVerdict;
+  severity: 'INFO' | 'WARN';
+  detail: string;
+}
+
+export interface InstructionCensus {
+  rows: RegionCensusRow[];
+  /** True when at least one WARN-grade region row exists (the file carries
+   *  out-of-zone divergence). */
+  divergent: boolean;
+}
+
+/** Nearest preceding out-of-zone ATX heading (or `start of file`) — the human
+ *  anchor a census row names. */
+function contextAnchor(lines: string[], claimed: boolean[], idx: number): string {
+  for (let i = Math.min(idx, lines.length - 1); i >= 0; i--) {
+    if (claimed[i]) continue;
+    if (/^#{1,6}\s+/.test(lines[i]!.trim())) return lines[i]!.trim();
+  }
+  return 'start of file';
+}
+
+/**
+ * D2 merge-time region census (design §4.1): out-of-zone line diff between the
+ * project copy and the template side of one instruction file.
+ *
+ *   project-authored line-block (absent from the template) → EVOLVED_REGION
+ *     (WARN — project adaptation preserved; port candidate, D4).
+ *   template line-block absent from the project → TEMPLATE_AHEAD_REGION (WARN
+ *     — template content the project never received, or a deliberate project
+ *     deletion; Q1 default: WARN, never silently reverted, ERROR only when a
+ *     write channel targets the span).
+ *   identical out-of-zone content → ZERO rows (the §6 dry-run-parity
+ *     guarantee: a fleet with no I3 divergence reports zero census rows).
+ *
+ * I1 zones and I2 marker sections are never diffed (I1 is engine-owned and
+ * delivered as today; I2 is project state per Q2).
+ */
+export function censusInstructionRegions(
+  rel: string,
+  projectContent: string,
+  templateContent: string,
+): InstructionCensus {
+  const projRegions = scanInstructionRegions(projectContent, rel);
+  const tplRegions = scanInstructionRegions(templateContent, rel);
+
+  const outOfZoneLines = (content: string, regions: InstructionRegion[]): Array<{ line: string; at: number }> => {
+    const all = content.split('\n');
+    const claimed = new Array<boolean>(all.length).fill(false);
+    for (const r of regions) {
+      if (r.kind === 'I3') continue;
+      for (let i = r.start; i < r.end && i < all.length; i++) claimed[i] = true;
+    }
+    // Non-blank trimmed lines only: the census classifies CONTENT, and blank
+    // placement differences would shrapnel the diff into noise hunks. `at`
+    // keeps the ORIGINAL line index so census rows can name the nearest
+    // preceding heading.
+    const out: Array<{ line: string; at: number }> = [];
+    for (let i = 0; i < all.length; i++) {
+      if (claimed[i]) continue;
+      const t = all[i]!.trim();
+      if (t === '') continue;
+      out.push({ line: t, at: i });
+    }
+    return out;
+  };
+
+  const proj = outOfZoneLines(projectContent, projRegions);
+  const tpl = outOfZoneLines(templateContent, tplRegions);
+  const projAll = projectContent.split('\n');
+  const claimedFlags = new Array<boolean>(projAll.length).fill(false);
+  for (const r of projRegions) {
+    if (r.kind === 'I3') continue;
+    for (let i = r.start; i < r.end && i < projAll.length; i++) claimedFlags[i] = true;
+  }
+
+  // LCS line diff (exact-match) over the out-of-zone sequences.
+  const a = proj.map((p) => p.line);
+  const b = tpl.map((p) => p.line);
+  const n = a.length;
+  const m = b.length;
+  // DP table of LCS lengths (n+1) x (m+1) — instruction files are ≤ ~600
+  // out-of-zone lines, so the flat Int32Array is bounded and cheap.
+  const dp = new Int32Array((n + 1) * (m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i * (m + 1) + j] = a[i] === b[j]
+        ? dp[(i + 1) * (m + 1) + j + 1]! + 1
+        : Math.max(dp[(i + 1) * (m + 1) + j]!, dp[i * (m + 1) + j + 1]!);
+    }
+  }
+  interface Hunk { kind: 'added' | 'removed'; lines: string[]; at: number; }
+  const raw: Hunk[] = [];
+  let syncLines = 0;
+  {
+    let i = 0;
+    let j = 0;
+    while (i < n && j < m) {
+      if (a[i] === b[j]) {
+        syncLines++;
+        i++;
+        j++;
+      } else if (dp[(i + 1) * (m + 1) + j]! >= dp[i * (m + 1) + j + 1]!) {
+        raw.push({ kind: 'added', lines: [a[i]!], at: proj[i]!.at });
+        i++;
+      } else {
+        raw.push({ kind: 'removed', lines: [b[j]!], at: proj[Math.min(i, n - 1)]?.at ?? 0 });
+        j++;
+      }
+    }
+    while (i < n) {
+      raw.push({ kind: 'added', lines: [a[i]!], at: proj[i]!.at });
+      i++;
+    }
+    while (j < m) {
+      raw.push({ kind: 'removed', lines: [b[j]!], at: proj[Math.min(i, n - 1)]?.at ?? 0 });
+      j++;
+    }
+  }
+  // Merge hunks separated by fewer than 3 common lines (same kind merges;
+  // opposite kinds stay adjacent rows) so a one-word edit does not shrapnel
+  // into per-line rows.
+  const hunks: Hunk[] = [];
+  for (const h of raw) {
+    const last = hunks[hunks.length - 1];
+    if (last && last.kind === h.kind && h.at - last.at < 6) {
+      last.lines.push(...h.lines);
+    } else {
+      hunks.push({ ...h, lines: [...h.lines] });
+    }
+  }
+
+  if (hunks.length === 0) {
+    return { rows: [], divergent: false };
+  }
+
+  const PORT_HINT = 'land it template-side inside a managed zone or skeleton-registry section per the adjudicated-port procedure (sync-overwrite-policy §6)';
+  const rows: RegionCensusRow[] = [
+    {
+      verdict: 'REGION_IN_SYNC',
+      severity: 'INFO',
+      detail: `${syncLines} of ${n} out-of-zone lines byte-equal — in-sync regions carry no write channel; ${hunks.length} divergent block(s) below`,
+    },
+  ];
+  for (const h of hunks) {
+    const anchor = contextAnchor(projAll, claimedFlags, h.at);
+    if (h.kind === 'added') {
+      rows.push({
+        verdict: 'EVOLVED_REGION',
+        severity: 'WARN',
+        detail: `project-authored line-block (${h.lines.length} line(s)) after '${anchor}' — preserved (WARN — port candidate: ${PORT_HINT})`,
+      });
+    } else {
+      rows.push({
+        verdict: 'TEMPLATE_AHEAD_REGION',
+        severity: 'WARN',
+        detail: `template line-block (${h.lines.length} line(s)) absent from the project copy after '${anchor}' — template content the project never received, or a deliberate project deletion (WARN — never silently reverted; ERROR only when a write channel targets the span)`,
+      });
+    }
+  }
+  return { rows, divergent: true };
+}
+
+/**
+ * D2 write-channel predicate: true when `spanContent` carries at least one
+ * non-blank OUT-OF-ZONE line the template side does not contain anywhere
+ * (project-authored content — EVOLVED_REGION material). Lines inside managed
+ * marker zones are engine-zone (I1) delivery — the merge replaces their
+ * interiors anyway, so they are stripped before the check and never count as
+ * adaptation evidence. A span whose remaining lines are all
+ * template-vocabulary (an older template version of the same prose, zone
+ * markers, whitespace) is NOT adapted and the write channel proceeds as
+ * today.
+ */
+export function spanCarriesProjectAuthoredLines(spanContent: string, templateContent: string): boolean {
+  const tplLines = new Set(templateContent.split('\n').map((l) => l.trim()).filter((l) => l !== ''));
+  const lines = spanContent.split('\n');
+  const claimed = new Array<boolean>(lines.length).fill(false);
+  for (const span of zoneLineSpans(lines)) {
+    for (let i = span.start; i < span.end && i < lines.length; i++) claimed[i] = true;
+  }
+  return lines.some((l, i) => !claimed[i] && l.trim() !== '' && !tplLines.has(l.trim()));
+}
+
+/** The gate shape handed to mergeManagedBlocks / mergeSkeletonSections (the
+ *  two write channels that can reach an adapted out-of-zone span). */
+export interface InstructionCensusGate {
+  /** True when this file's census found out-of-zone divergence (the gate is
+   *  closed entirely for in-sync files — their reconcile/replace behavior is
+   *  unchanged). */
+  divergent: boolean;
+  /** True when the span carries project-authored content. */
+  isSpanAdapted: (spanContent: string) => boolean;
+  /** True when --disposition adopt-template[=glob] covers the path (the
+   *  replace proceeds and re-baselines, ADOPT row recorded by the engine). */
+  dispositionGranted: boolean;
 }
