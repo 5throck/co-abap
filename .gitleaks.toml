@@ -50,3 +50,66 @@ paths = [
   '''^scratch/stable/zadt_vsp_git\.prog\.abap$''',
   '''^scratch/stable/zabapgit_standalone\.prog\.abap$''',
 ]
+
+# ---------------------------------------------------------------------
+# Project-specific rules (co-abap)
+# LOCAL-PATCH(upstream-request: U-20261028-004): ported 2026-10-28 from the
+# deleted scripts/lib/secret-patterns.ts (TOKEN_PATTERNS / SECRET_ERE — the
+# hook-side patch was repeatedly lost by template upgrades). These [[rules]]
+# pin the same token shapes in gitleaks itself, on top of useDefault above.
+# Design: docs/designs/2026-10-28-project-review-remediation-design.md
+# ---------------------------------------------------------------------
+
+[[rules]]
+id = "co-abap-aws-access-key"
+description = "AWS access key id (co-abap custom pattern)"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["key", "AWS"]
+
+[[rules]]
+id = "co-abap-github-pat-classic"
+description = "GitHub classic personal access token (co-abap custom pattern)"
+regex = '''ghp_[0-9a-zA-Z]{36}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+id = "co-abap-github-oauth"
+description = "GitHub OAuth token (co-abap custom pattern)"
+regex = '''gho_[A-Za-z0-9]{30,}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+id = "co-abap-github-fine-grained-pat"
+description = "GitHub fine-grained personal access token (co-abap custom pattern)"
+regex = '''github_pat_[A-Za-z0-9_]{20,}'''
+tags = ["key", "GitHub"]
+
+[[rules]]
+id = "co-abap-anthropic-key"
+description = "Anthropic API key (co-abap custom pattern)"
+regex = '''sk-ant-[a-zA-Z0-9\-_]{20,}'''
+tags = ["key", "Anthropic"]
+
+[[rules]]
+id = "co-abap-openai-project-key"
+description = "OpenAI project API key (co-abap custom pattern)"
+regex = '''sk-proj-[a-zA-Z0-9\-_]{20,}'''
+tags = ["key", "OpenAI"]
+
+[[rules]]
+id = "co-abap-openai-legacy-key"
+description = "OpenAI legacy API key (co-abap custom pattern)"
+regex = '''sk-[0-9a-zA-Z]{48}'''
+tags = ["key", "OpenAI"]
+
+[[rules]]
+id = "co-abap-slack-token"
+description = "Slack token (co-abap custom pattern)"
+regex = '''xox[baprs]-[A-Za-z0-9-]{10,}'''
+tags = ["key", "Slack"]
+
+[[rules]]
+id = "co-abap-private-key-block"
+description = "PEM private key header (co-abap custom pattern)"
+regex = '''-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----'''
+tags = ["key", "PrivateKey"]

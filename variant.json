@@ -12,5 +12,6 @@
     "profiles_dir": "docs/countries",
     "supported": ["KR", "US", "JP"],
     "default": null
-  }
+  },
+  "promotionChecklist": "PROMOTION_CHECKLIST.md"
 }
