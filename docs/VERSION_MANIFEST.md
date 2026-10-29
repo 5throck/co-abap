@@ -1,7 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-28T22:42:59.463Z
-**Generated**: 2026-10-28T22:25:05.379Z
+**Generated**: 2026-10-29T12:39:29.686Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -33,7 +32,7 @@
 | interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| pm | agents/pm.md | medium | inherit | 2026-10-28 |
+| pm | agents/pm.md | medium | inherit | 2026-10-29 |
 | pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-10-28 |
