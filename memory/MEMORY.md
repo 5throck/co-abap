@@ -4,11 +4,12 @@
 
 | Date | Summary |
 |------|---------|
-| [2026-10-29](2026-10-29.md) | chore: workspace sync — session residue (Step 1 local-work) |
+| [2026-10-30](2026-10-30.md) | chore: workspace sync — session residue (Step 1 local-work) |
+| [2026-10-29](2026-10-29.md) | PM review remediation re-land (PR #229) + upstream tickets U-20261029-001/-008/-009/-010 |
 | [2026-10-28](2026-10-28.md) | PM project review + upstream ticket filing (U-20261028-004…015) |
 | [2026-10-27](2026-10-27.md) | chore: upgrade template delivery (0.20.1 tree sync) |
 | [2026-10-26](2026-10-26.md) | chore(scripts): workspace sync (32 files) |
-| [2026-10-22](2026-10-22.md) | feat(governance): bind PM role bootstrap in AGENTS.md |
+| 2026-10-22 | feat(governance): bind PM role bootstrap in AGENTS.md |
 | [2026-10-19](archive/2026-10-19.md) | chore: upgrade template to 0.20.0 (canary) |
 | [2026-10-17](archive/2026-10-17.md) | chore: upgrade template to 0.19.2 (canary) |
 | [2026-10-15](archive/2026-10-15.md) | chore(scripts): workspace sync (11 files) |
