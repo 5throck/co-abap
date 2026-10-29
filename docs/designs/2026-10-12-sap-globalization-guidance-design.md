@@ -2,7 +2,7 @@
 
 - **Spec ID**: 2026-10-12-sap-globalization-guidance
 - **Date**: 2026-10-12
-- **Status**: approved (user approval 2026-10-12)
+- **Status**: implemented (user approval 2026-10-12; landed same day)
 - **Scope**: `docs/standards/sap-globalization-checklist.md`, `agents/code-writer.md`, `skills/abap-dev/SKILL.md` (+ 5 platform mirrors), `deliverables/templates/04_qa_report.md`, `docs/countries/KR.md`, `docs/countries/US.md`, `docs/countries/JP.md` (added 2026-10-12, same session), `docs/countries/ACTIVE.md`, `docs/README.md`, `docs/skill-graph.json`, `docs/skill-graph.md`, `docs/VERSION_MANIFEST.md`
 
 ## 1. Problem (verified)
