@@ -1,4 +1,29 @@
-// @version 2.58.0
+// @version 2.60.0
+// v2.60.0 (2026-10-29, U-20261028-014 — spec
+//          docs/designs/2026-10-29-owner-decision-batch-design.md §2):
+//          designLint per-variant override — a project's variant.json
+//          `designLint` block (shape-checked by the new pure helper
+//          helpers/design-lint-roots.ts v1.1.0 validateDesignLintOverride:
+//          required boolean `enabled`, optional string[] scanRoots/allowlist)
+//          replaces the workspace-schema block as checkDesignLint's effective
+//          config (order: variant.json > workspace-schema, whole-block).
+//          Invalid block = Fail naming the violation; enabled=false = explicit
+//          Skip naming the winning source; override allowlist entries ride the
+//          engine's new --allow flag (design-lint.ts v2.5.0) so project-level
+//          literal exemptions are real in L3 checkouts with no
+//          docs/workspace-schema.json. A malformed variant.json does not fail
+//          this gate (other gates own that) — schema behavior applies.
+// v2.59.0 (2026-10-29, T-20261029-002 — spec
+//          docs/designs/2026-10-29-retro-records-registration-design.md §6):
+//          spec-check Check 6 — registry-vs-design-header status consistency.
+//          For every docs/specs/registry.json entry whose file exists, the
+//          design doc's own Status header must agree with the registry status;
+//          mismatch FAILs naming the file (the class where spec-register flips
+//          the registry but the doc header stays draft/proposed — 4 instances
+//          found by T-20261029-002, repaired in d8d55f8a0). A doc without a
+//          parseable Status header line is a WARN (legacy), never a FAIL.
+//          Parsing lives in helpers/spec-header-consistency.ts (pure, unit-
+//          pinned by tests/unit/spec-header-consistency.test.ts).
 // v2.58.0 (2026-10-28, T-20261029-008): agent-mirror parity gate — on the green
 //          path, the sync-agent-mirrors --check stdout is logged when it carries the
 //          out-of-root WARN degrade, so a CI checkout's unverifiable-parity state is
@@ -241,11 +266,12 @@ import { composeResolvedAgentContent } from './helpers/resolve-pm-stub.ts';
 import { sourceShellInjectionPatterns } from './helpers/security-validator.ts';
 import { splitIntoSections, getContentLines, stripMarkerZones } from './helpers/context-sections.ts';
 import { findL0LeakLines } from './helpers/l0-ref-policy.ts';
+import { classifySpecHeader } from './helpers/spec-header-consistency.ts';
 import * as url from 'node:url';
 import { safeFetch } from './lib/ssrf.ts';
 import { detectEncoding, detectHomoglyphs, detectZeroWidthChars, readUTF8File } from './lib/encoding-utils.ts';
 import { variantContextPlacement } from './helpers/variant-context.ts';
-import { resolveDesignLintRoots } from './helpers/design-lint-roots.ts';
+import { resolveDesignLintRoots, validateDesignLintOverride, type DesignLintOverride } from './helpers/design-lint-roots.ts';
 import { PLATFORM_SKILL_BASES } from './lib/platforms.ts';
 
 const _TRACKED_CO_VARIANTS: Set<string> | null = (() => {
@@ -1750,9 +1776,35 @@ function checkDesignLint() {
         Skip('Design-lint gate: scripts/design-lint.ts not present — skipped');
         return;
     }
+    // U-20261028-014: a project's variant.json `designLint` block (shape-checked
+    // by helpers/design-lint-roots.ts validateDesignLintOverride) REPLACES the
+    // workspace-schema block as the gate's effective config — order:
+    // variant.json > workspace-schema, whole-block (`enabled` is required so no
+    // partial-merge ambiguity). An invalid block Fails naming the violation (an
+    // explicit wrong config must not silently fall back); a malformed
+    // variant.json does NOT fail this gate (other gates own that failure) and
+    // the gate falls back to schema behavior.
+    let override: DesignLintOverride | null = null;
+    if (fs.existsSync('variant.json')) {
+        let rawVariant: unknown = null;
+        try {
+            rawVariant = JSON.parse(readUTF8File('variant.json') || '{}');
+        } catch { /* malformed variant.json — schema behavior; owners are told elsewhere */ }
+        const block = (rawVariant as Record<string, unknown> | null)?.designLint;
+        if (block !== undefined) {
+            const checked = validateDesignLintOverride(block);
+            if (!checked.ok) {
+                Fail(`Design-lint gate: ${checked.error} — fix the block or remove it (order: variant.json > workspace-schema)`);
+                return;
+            }
+            override = checked.config;
+        }
+    }
     const schemaPath = path.join('docs', 'workspace-schema.json');
-    let config: { enabled?: boolean; scanRoots?: string[] } = {};
-    if (fs.existsSync(schemaPath)) {
+    let config: { enabled?: boolean; scanRoots?: string[]; allowlist?: string[] } = {};
+    if (override) {
+        config = { enabled: override.enabled, scanRoots: override.scanRoots ?? [], allowlist: override.allowlist ?? [] };
+    } else if (fs.existsSync(schemaPath)) {
         try {
             config = JSON.parse(readUTF8File(schemaPath) || '{}')?.designLint ?? {};
         } catch { /* schema unreadable — treat as disabled below */ }
@@ -1767,7 +1819,8 @@ function checkDesignLint() {
     if (config.enabled !== true) {
         // T-20261007-001: the last Pass-shaped silent skip — all three
         // design-lint self-skip branches now read [SKIP] consistently.
-        Skip('Design-lint gate: disabled (workspace-schema.json designLint.enabled) — skipped');
+        // U-20261028-014: the disabled message names the winning source.
+        Skip(`Design-lint gate: disabled (${override ? 'variant.json' : 'workspace-schema.json'} designLint.enabled) — skipped`);
         return;
     }
     const resolved = resolveDesignLintRoots(config.scanRoots ?? [], (r) => fs.existsSync(r));
@@ -1790,11 +1843,16 @@ function checkDesignLint() {
     // the same schema now agree on roots. The Pass/Fail messages below annotate
     // the fallback so the run is visible, never silent.
     const fallbackNote = resolved.source === 'conventional-fallback' ? ' (conventional fallback — configured scan roots absent)' : '';
-    const result = spawnSync('bun', [lintScript, '--dir', ...roots], { encoding: 'utf-8' });
+    const overrideNote = override ? ' (variant.json designLint override)' : '';
+    // U-20261028-014: override allowlist entries ride the engine's --allow
+    // (design-lint.ts v2.5.0) so project-level literal exemptions are real in
+    // L3 checkouts that have no docs/workspace-schema.json for the engine to read.
+    const allowArgs = (config.allowlist ?? []).flatMap((a) => ['--allow', a]);
+    const result = spawnSync('bun', [lintScript, '--dir', ...roots, ...allowArgs], { encoding: 'utf-8' });
     if (result.status === 0) {
-        Pass(`Design-lint gate: token SSOT compliance CLEAN across ${roots.length} scan root(s)${fallbackNote}`);
+        Pass(`Design-lint gate: token SSOT compliance CLEAN across ${roots.length} scan root(s)${fallbackNote}${overrideNote}`);
     } else {
-        Fail(`Design-lint gate: should-be-token finding(s) in UI source${fallbackNote} — run: bun scripts/design-lint.ts --dir ${roots.join(' --dir ')} (exempt literals with a "design-token-exempt: <reason>" comment or list them in workspace-schema.json designLint)`);
+        Fail(`Design-lint gate: should-be-token finding(s) in UI source${fallbackNote} — run: bun scripts/design-lint.ts --dir ${roots.join(' --dir ')} (exempt literals with a "design-token-exempt: <reason>" comment or list them in workspace-schema.json designLint${override ? ' or the variant.json designLint override' : ''})`);
     }
 }
 checkDesignLint();
@@ -3432,6 +3490,44 @@ if (SPEC_CHECK) {
                 Fail(`Spec check: docs/specs/registry.json is stale vs docs/specs/entries/ (${entryIds.length} entry file(s) vs ${projectionIds.length} projected) — run: bun scripts/spec-register.ts --regenerate`);
             } else {
                 Pass(`Spec check: registry projection matches ${entryIds.length} entry file(s)`);
+            }
+        }
+
+        // Check 6 (T-20261029-002): registry-vs-design-header status consistency —
+        // the registry SSOT and the design doc's own Status header must agree.
+        // The failure class: spec-register flips the registry but the doc header
+        // stays draft/proposed (4 instances repaired in d8d55f8a0). Docs without
+        // a parseable Status header line are legacy — aggregated WARN, never FAIL.
+        const headerMismatches: string[] = [];
+        const headerLegacy: string[] = [];
+        let headerCompared = 0;
+        for (const s of registry.specs) {
+            if (!fs.existsSync(s.file)) continue; // missing file already warned by Check 3
+            let docText: string | null = null;
+            try {
+                docText = readUTF8File(s.file);
+            } catch {
+                docText = null;
+            }
+            const v = classifySpecHeader(s.status, docText);
+            if (v.verdict === 'match') {
+                headerCompared++;
+            } else if (v.verdict === 'mismatch') {
+                headerCompared++;
+                headerMismatches.push(s.file);
+                Fail(`Spec check: design doc Status header disagrees with registry — ${s.file} doc says "${v.docStatus}", registry says "${v.registryStatus}" (id: ${s.id}) — update the doc's Status header via the spec-register flip (T-20261029-002)`);
+            } else {
+                headerLegacy.push(s.file);
+            }
+        }
+        if (headerMismatches.length === 0) {
+            if (headerLegacy.length > 0) {
+                const shown = headerLegacy.slice(0, 5).join(', ');
+                const more = headerLegacy.length > 5 ? ` (+${headerLegacy.length - 5} more)` : '';
+                Warn(`Spec check: ${headerLegacy.length} registered design doc(s) have no parseable Status header line (legacy — add a "- **Status**: ..." header on next edit): ${shown}${more}`);
+            }
+            if (headerCompared > 0) {
+                Pass(`Spec check: all ${headerCompared} spec doc Status header(s) agree with the registry${headerLegacy.length > 0 ? `; ${headerLegacy.length} legacy doc(s) without a header (WARN)` : ''}`);
             }
         }
         }

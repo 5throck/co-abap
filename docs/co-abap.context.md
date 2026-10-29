@@ -200,13 +200,12 @@ Manual equivalent: `bun scripts/dev-sync.ts "feat: description"`.
 
 | Item | Value |
 |------|-------|
-| Binary | `vsp` (project root; gitignored — `/vsp` in `.gitignore`) |
-| Version | `2.60.0` (pinned — see Tech Stack above and `PINNED_VERSION` in `scripts/co-abap/install-vsp.ts`) |
-| Last replaced | 2026-10-11 (SHA256-verified install via `scripts/co-abap/install-vsp.ts`) |
+| Binary | `vsp.exe` (project root) |
+| Version | `2.38.1` (commit: a75fbfd9, built: 2026-04-07) |
+| Last Modified | 2026-05-01 |
 | Mode | `hyperfocused` (see `.mcp.json`) |
 
-> Historical: the deployment before 2026-10-11 was version 2.38.1 (commit a75fbfd9, built 2026-04-07) — superseded, retained for provenance only.
-> To upgrade: run `bun scripts/co-abap/install-vsp.ts` and update this table. Agents do not execute the `vsp` binary directly — all SAP access goes through the `abap` MCP server fronted by `scripts/sap-mcp-proxy.ts` (see SECURITY.md control tiers).
+> To upgrade: replace `vsp.exe` with the new binary and update this table.
 
 ---
 
@@ -219,8 +218,6 @@ MCP servers are configured in `.mcp.json` (Single Source of Truth).
 > **Duplication Note**: MCP server definitions exist in 3 locations — `.mcp.json` (SSOT), `.claude/settings.json` (Claude Code), and `.gemini/settings.json` (Gemini CLI). The pre-commit hook (Step 5) detects drift between these files. Run `bun scripts/sync-mcp.ts` to propagate `.mcp.json` changes to the other two files automatically (`--check` for drift report only).
 
 See `.mcp.json` for the complete server list.
-
-> `opencode.json` (project root) is the OpenCode editor configuration: it registers the `graft` MCP server (`graft mcp`) so OpenCode sessions get the repo context graph. Permitted under the "Configuration, tooling files" category of the root-file allowlist (`docs/workspace-schema.json`).
 
 > **Trust decision (documented)**: `enableAllProjectMcpServers: true` in `.claude/settings.json`
 > and `.gemini/settings.json` auto-enables every MCP server declared in `.mcp.json` — including
