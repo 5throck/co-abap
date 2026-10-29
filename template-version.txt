@@ -1,5 +1,5 @@
 variant=co-abap
-version=0.23.0
+version=0.24.0
 platform=all
 country=none
-upgraded=2026-10-28T22:39:54.968Z
+upgraded=2026-10-29T23:15:41.901Z

@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-29T17:04:53.260Z
+**Generated**: 2026-10-29T23:22:35.721Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 126 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 127 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -108,14 +108,14 @@
 |------|---------|----------|--------------|
 | agent-create.ts | 1.0.1 | scripts/agent-create.ts | N/A |
 | agent-delete.ts | 1.0.1 | scripts/agent-delete.ts | N/A |
-| agent-lifecycle-audit.ts | 1.8.0 | scripts/agent-lifecycle-audit.ts | N/A |
+| agent-lifecycle-audit.ts | 1.9.0 | scripts/agent-lifecycle-audit.ts | N/A |
 | agent-list.ts | 1.1.0 | scripts/agent-list.ts | N/A |
 | agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | N/A |
 | analyze-git-history.ts | 1.0.2 | scripts/analyze-git-history.ts | child_process |
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.58.0 | scripts/audit.ts | bun |
+| audit.ts | 2.60.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
@@ -139,8 +139,8 @@
 | dependency-audit.ts | 1.1.0 | scripts/dependency-audit.ts | N/A |
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
-| design-lint.ts | 2.4.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.34.0 | scripts/dev-sync.ts | bun |
+| design-lint.ts | 2.5.0 | scripts/design-lint.ts | js-yaml |
+| dev-sync.ts | 1.35.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
@@ -178,6 +178,7 @@
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
 | retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
+| route-audit-scan.ts | 1.0.1 | scripts/route-audit-scan.ts | N/A |
 | sap-action-gate.test.ts | 2.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
 | sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
 | sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
@@ -189,16 +190,16 @@
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
-| skill-lifecycle-audit.ts | 1.9.0 | scripts/skill-lifecycle-audit.ts | N/A |
+| skill-lifecycle-audit.ts | 1.10.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.2.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
-| sync-agent-mirrors.ts | 1.2.0 | scripts/sync-agent-mirrors.ts | js-yaml |
+| sync-agent-mirrors.ts | 1.3.0 | scripts/sync-agent-mirrors.ts | js-yaml |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.5.0 | scripts/team-builder.ts | N/A |
-| test-runner.ts | 1.6.0 | scripts/test-runner.ts | fs, os, path |
+| test-runner.ts | 1.7.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
@@ -220,7 +221,7 @@
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | N/A |
 | validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.64.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.65.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
