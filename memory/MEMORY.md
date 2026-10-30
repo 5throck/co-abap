@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-10-31](2026-10-31.md) | chore: workspace sync (0 files) |
 | [2026-10-30](2026-10-30.md) | chore: workspace sync — session residue (Step 1 local-work) |
 | [2026-10-29](2026-10-29.md) | PM review remediation re-land (PR #229) + upstream tickets U-20261029-001/-008/-009/-010 |
 | [2026-10-28](2026-10-28.md) | PM project review + upstream ticket filing (U-20261028-004…015) |
