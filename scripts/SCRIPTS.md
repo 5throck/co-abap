@@ -125,7 +125,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `tests/sap-action-gate.test.ts` | L3 | 2.0.0 | active | Gate/audit tests (temp HOME); legacy approval files ignored, evidence MAC | — | L3 | — |
 | `hooks/gateguard-fact-force.ts` | L0 | 1.3.0 | active | —| —| L0+L1 | —|
 | `hooks/post-write-lifecycle-check.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
-| `hooks/pre-commit.ts` | L0 | 1.11.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
+| `hooks/pre-commit.ts` | L0 | 1.12.0 | active | Re-renders platform command copies after stamping config/commands (LOCAL-PATCH)| —| L0+L1 | —|
 | `hooks/pre-push.ts` | L0 | 1.7.0 | active | —| —| L0+L1 | —|
 | `hooks/sap-action-gate.ts` | L3 | 3.0.0 | active | Shared R0-R3 policy evaluator (used in-process by sap-mcp-proxy.ts); R3 always needs a proxy approval (legacy session approval files removed); advisory-only when run as a hook — design docs/designs/2026-10-10-sap-write-safety-gate-design.md | —| L3 | —|
 | `hooks/sap-action-audit.ts` | L3 | 2.0.0 | active | Audit/evidence recorder called by sap-mcp-proxy.ts; HMAC-signed evidence entries, clientId/grant fields (hashes only) | —| L3 | —|
@@ -141,7 +141,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `lib/auth.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/encoding-utils.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/error-handling.ts` | L0 | 1.4.0 | active | —| —| L0+L1 | —|
-| `lib/language-guard.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
+| `lib/language-guard.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|
 | `lib/pipeline-state.ts` | L0 | 1.2.0 | active | —| —| L0+L1 | —|
 | `lib/platform-context.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
 | `lib/ssrf.ts` | L0 | 1.1.0 | active | —| —| L0+L1 | —|

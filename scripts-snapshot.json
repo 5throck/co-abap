@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-29",
+  "created": "2026-10-30",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -252,7 +252,7 @@
       "status": "active"
     },
     "hooks/pre-commit.ts": {
-      "version": "1.11.0",
+      "version": "1.12.0",
       "status": "active"
     },
     "hooks/pre-push.ts": {
@@ -284,7 +284,7 @@
       "status": "active"
     },
     "lib/language-guard.ts": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "active"
     },
     "lib/git-status.ts": {
