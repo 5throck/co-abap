@@ -143,7 +143,7 @@ Inferred from procedure steps that cite the skill and are owned via `step_by_age
 
 ## Skill Usage (E3)
 
-Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-10-31), window 90 days. Skill nodes with usage: 2.
+Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-01), window 90 days. Skill nodes with usage: 2.
 
 - **used-but-unlinked** (usage > 0, no `used_by`) (2): root/project-review, root/sync
 - **unused** (0 sessions in 90 days) (47): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager, root/source-command-celebrate, root/source-command-commit-push-pr … and 7 more

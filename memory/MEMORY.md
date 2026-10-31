@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-01](2026-11-01.md) | fix(tests): converge dispatch-parallel model literals to 0.26.0 schema values |
 | [2026-10-31](2026-10-31.md) | chore: workspace sync (0 files) |
 | [2026-10-30](2026-10-30.md) | chore: workspace sync — session residue (Step 1 local-work) |
 | [2026-10-29](2026-10-29.md) | PM review remediation re-land (PR #229) + upstream tickets U-20261029-001/-008/-009/-010 |
