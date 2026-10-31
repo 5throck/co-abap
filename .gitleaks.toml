@@ -49,6 +49,10 @@ paths = [
   # Preserved from this project's prior .gitleaks.toml (not in the current common template):
   '''^scratch/stable/zadt_vsp_git\.prog\.abap$''',
   '''^scratch/stable/zabapgit_standalone\.prog\.abap$''',
+  # Historical pre-move locations of the same public abapGit bundles
+  # (open-source content, generic-api-key false positives in history scans)
+  '''^scratch/zadt_vsp_git\.prog\.abap$''',
+  '''^scratch/zabapgit_standalone\.prog\.abap$''',
 ]
 
 

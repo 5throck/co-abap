@@ -25,12 +25,16 @@ jobs:
       - name: Merge only after every required check succeeds
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.0.1
         env:
-          # Required-approval count, overridable per repository. A hard-coded 2
-          # was structurally unsatisfiable in this single-collaborator
-          # repository: GitHub blocks PR authors from approving their own PRs,
-          # so every PR failed the gate and needed a manual merge (see
+          # Required-approval count, overridable per repository via the
+          # AUTOMERGE_MIN_APPROVALS variable (set 0 to restore zero-approval
+          # automerge, or 2+ for stricter gating). Default 1: at 0 the
+          # approval check in this script is vacuous, letting any same-repo
+          # PR merge on green CI alone with zero human approvals (RT-02,
+          # 2026-10-31). A hard-coded 2 was structurally unsatisfiable in
+          # this single-collaborator repository: GitHub blocks PR authors
+          # from approving their own PRs (see
           # docs/designs/2026-10-02-automerge-approval-gate-design.md).
-          AUTOMERGE_MIN_APPROVALS: ${{ vars.AUTOMERGE_MIN_APPROVALS || '0' }}
+          AUTOMERGE_MIN_APPROVALS: ${{ vars.AUTOMERGE_MIN_APPROVALS || '1' }}
         with:
           script: |
             // Only check names this repo's CI actually produces (ci.yml:
@@ -73,7 +77,7 @@ jobs:
             const approvals = reviews.filter(
               review => review.state === 'APPROVED' && review.commit_id === pr.head.sha,
             );
-            const minApprovals = Number(process.env.AUTOMERGE_MIN_APPROVALS || 0);
+            const minApprovals = Number(process.env.AUTOMERGE_MIN_APPROVALS || 1);
             if (approvals.length < minApprovals) {
               core.setFailed(`Only ${approvals.length}/${minApprovals} current-head approvals; refusing to merge.`);
               return;
