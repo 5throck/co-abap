@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-30",
+  "created": "2026-10-31",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -39,6 +39,10 @@
       "version": "1.1.0",
       "status": "active"
     },
+    "changelog-normalize.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
     "cleanup-completed-md.ts": {
       "version": "1.1.0",
       "status": "active"
@@ -64,7 +68,7 @@
       "status": "active"
     },
     "lib/self-managed-tools.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "helpers/skills-registry.ts": {
@@ -76,7 +80,7 @@
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.35.0",
+      "version": "1.37.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -287,6 +291,10 @@
       "version": "1.1.0",
       "status": "active"
     },
+    "lib/generator-manifest.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
     "lib/git-status.ts": {
       "version": "1.1.0",
       "status": "active"
@@ -324,11 +332,15 @@
       "status": "active"
     },
     "lib/ssrf.ts": {
+      "version": "1.1.1",
+      "status": "active"
+    },
+    "lib/hook-dedupe.ts": {
       "version": "1.1.0",
       "status": "active"
     },
     "lib/upgrade-policy.ts": {
-      "version": "1.31.0",
+      "version": "1.33.0",
       "status": "active"
     },
     "lib/dependency-guard.ts": {
@@ -376,7 +388,7 @@
       "status": "active"
     },
     "lib/model-literal-patterns.ts": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "active"
     },
     "lib/env-sample.ts": {
@@ -384,7 +396,7 @@
       "status": "active"
     },
     "lifecycle-sync-audit.ts": {
-      "version": "1.19.0",
+      "version": "1.20.1",
       "status": "active"
     },
     "lint-instructions.ts": {
@@ -436,7 +448,7 @@
       "status": "active"
     },
     "skill-session-review.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "sync-md.ts": {
@@ -460,7 +472,7 @@
       "status": "active"
     },
     "test-runner.ts": {
-      "version": "1.7.0",
+      "version": "1.9.0",
       "status": "active"
     },
     "handbook/apply-handbook-theme.ts": {
@@ -580,7 +592,7 @@
       "status": "active"
     },
     "validate-doc-folder.ts": {
-      "version": "1.2.1",
+      "version": "1.2.2",
       "status": "active"
     },
     "validate-docs-links.ts": {
@@ -592,7 +604,7 @@
       "status": "active"
     },
     "validate-model-registry.ts": {
-      "version": "2.2.0",
+      "version": "2.3.0",
       "status": "active"
     },
     "validate-surface-registry.ts": {
@@ -620,7 +632,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.65.0",
+      "version": "1.67.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {

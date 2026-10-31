@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Single Source of Truth for workspace-wide invariants. All dependent documents must match these values. Validated by scripts/validate-templates.ts at pre-commit.",
   "workflow": {
     "phases": {
@@ -25,11 +25,11 @@
       ],
       "definitions": {
         "0": "Project Initiation",
-        "1-2": "Planning & Architecture",
         "3": "Design Handoff",
         "4": "Execution",
         "5": "Lifecycle Finalization",
-        "6": "Quality Assurance & Finalization"
+        "6": "Quality Assurance & Finalization",
+        "1-2": "Planning & Architecture"
       }
     }
   },
@@ -55,12 +55,25 @@
       "low": "gemini-3.8-flash"
     },
     "codex": {
-      "high": "gpt-5.6-sol",
-      "medium": "gpt-5.6-terra",
-      "low": "gpt-5.6-luna"
+      "high": "gpt-6.1-sol",
+      "medium": "gpt-6.1-terra",
+      "low": "gpt-6-luna"
     },
-    "hermes": {"high": "claude-opus-5-5", "medium": "claude-sonnet-5-5", "low": "claude-haiku-5-5"},
-    "zai": {"high": "glm-5.3", "medium": "glm-5.3-flash", "low": "glm-5.3-flash"}
+    "hermes": {
+      "high": "claude-opus-5-5",
+      "medium": "claude-sonnet-5-5",
+      "low": "claude-haiku-5-5"
+    },
+    "zai": {
+      "high": "glm-5.3",
+      "medium": "glm-5.3-flash",
+      "low": "glm-5.3-flash"
+    },
+    "zcode": {
+      "high": "glm-5.3",
+      "medium": "glm-5.3-flash",
+      "low": "glm-5.3-flash"
+    }
   },
   "variant_lifecycle": {
     "description": "Governance rules for variant lifecycle transitions",
@@ -186,7 +199,8 @@
       "propagation-map.json",
       "services.yaml",
       "fix.mjs",
-      ".DS_Store", ".zcodeignore",
+      ".DS_Store",
+      ".zcodeignore",
       ".cursorrules",
       ".clauderules",
       ".ignore",
@@ -643,38 +657,62 @@
         "agents": {
           "supported": true,
           "mirror_dir": ".claude/agents",
-          "allowed_fields": ["name", "description", "model"],
+          "allowed_fields": [
+            "name",
+            "description",
+            "model"
+          ],
           "model_format": "alias",
           "model_source": "models.claude"
         },
-        "skills": { "supported": true },
-        "commands": { "supported": true },
-        "hooks": { "supported": true }
+        "skills": {
+          "supported": true
+        },
+        "commands": {
+          "supported": true
+        },
+        "hooks": {
+          "supported": true
+        }
       },
       "gemini": {
         "agents": {
           "supported": false,
           "evidence": "subagents are defined at runtime via define_subagent/invoke_subagent (JSON config, not files); no .gemini/agents convention exists in this workspace (GEMINI.md, design §3 KNOWN)"
         },
-        "skills": { "supported": true },
-        "commands": { "supported": true },
-        "hooks": { "supported": true }
+        "skills": {
+          "supported": true
+        },
+        "commands": {
+          "supported": true
+        },
+        "hooks": {
+          "supported": true
+        }
       },
       "gemini-cli": {
         "agents": {
           "supported": false,
           "evidence": "shares Gemini CLI runtime subagent mechanics (define_subagent/invoke_subagent); no file-based agent surface"
         },
-        "skills": { "supported": true },
-        "commands": { "supported": true },
-        "hooks": { "supported": true }
+        "skills": {
+          "supported": true
+        },
+        "commands": {
+          "supported": true
+        },
+        "hooks": {
+          "supported": true
+        }
       },
       "antigravity": {
         "agents": {
           "supported": false,
           "evidence": "shares Gemini CLI runtime subagent mechanics (invoke_subagent, GEMINI.md); no file-based agent-dir evidence"
         },
-        "skills": { "supported": true },
+        "skills": {
+          "supported": true
+        },
         "commands": {
           "supported": false,
           "evidence": "no command-surface evidence in-tree (design 2026-10-28-platform-agent-mirror §3)"
@@ -689,19 +727,25 @@
           "supported": false,
           "evidence": "no native subagent tool — each plan row is executed sequentially in-session (CODEX.md execution mechanics, explicit)"
         },
-        "skills": { "supported": true },
+        "skills": {
+          "supported": true
+        },
         "commands": {
           "supported": true,
           "note": "prompts analog: .claude/commands → .codex/prompts (ADR-0077 D4)"
         },
-        "hooks": { "supported": true }
+        "hooks": {
+          "supported": true
+        }
       },
       "hermes": {
         "agents": {
           "supported": false,
           "evidence": "no agent-definition surface found; ASSUMED none — verification trigger: hermes-agent source inspection at any adoption attempt"
         },
-        "skills": { "supported": true },
+        "skills": {
+          "supported": true
+        },
         "commands": {
           "supported": false,
           "evidence": "no Phase 1b commands analog exists (sync-skills v1.9.0)"
@@ -727,6 +771,24 @@
         "hooks": {
           "supported": false,
           "evidence": "no .zai hook surface in-tree"
+        }
+      },
+      "zcode": {
+        "agents": {
+          "supported": false,
+          "evidence": "no file-based agent-definition surface in this workspace (project .zcode/ holds session plans only; no .zcode/agents/ exists) — ASSUMED none; verification trigger: harness agent-file support at any adoption attempt"
+        },
+        "skills": {
+          "supported": true,
+          "evidence": "harness loads the shared .agents/skills mirror directly (verified 2026-10-31 in-session); no .zcode/skills mirror exists"
+        },
+        "commands": {
+          "supported": false,
+          "evidence": "slash-command surface not observed; skills are invoked via the Skill tool"
+        },
+        "hooks": {
+          "supported": false,
+          "evidence": "no .zcode hook surface in-tree; harness settings live outside the repo"
         }
       }
     }
