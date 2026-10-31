@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-31T02:34:47.799Z
+**Generated**: 2026-10-31T16:13:07.285Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 49
-- **Scripts**: 127 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 128 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -118,6 +118,7 @@
 | audit.ts | 2.60.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
+| changelog-normalize.ts | 1.0.0 | scripts/changelog-normalize.ts | N/A |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
 | check-authoring.ts | 1.2.0 | scripts/handbook/check-authoring.ts | N/A |
 | check-external-links.ts | 1.2.0 | scripts/handbook/check-external-links.ts | N/A |
@@ -140,8 +141,8 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.5.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.35.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.test.ts | 1.5.1 | scripts/tests/dispatch-parallel.test.ts | bun:test |
+| dev-sync.ts | 1.37.0 | scripts/dev-sync.ts | bun |
+| dispatch-parallel.test.ts | 1.5.2 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
@@ -162,7 +163,7 @@
 | harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
 | install-vsp.ts | 1.2.0 | scripts/co-abap/install-vsp.ts | bun |
-| lifecycle-sync-audit.ts | 1.19.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
+| lifecycle-sync-audit.ts | 1.20.1 | scripts/lifecycle-sync-audit.ts | js-yaml |
 | lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
 | migrate-quality-gates.ts | 1.1.0 | scripts/migrate-quality-gates.ts | fs, js-yaml, path |
@@ -191,7 +192,7 @@
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
 | skill-lifecycle-audit.ts | 1.10.0 | scripts/skill-lifecycle-audit.ts | N/A |
-| skill-session-review.ts | 1.2.0 | scripts/skill-session-review.ts | bun |
+| skill-session-review.ts | 1.3.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
 | sync-agent-mirrors.ts | 1.3.0 | scripts/sync-agent-mirrors.ts | js-yaml |
@@ -199,19 +200,19 @@
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
 | team-builder.ts | 1.5.0 | scripts/team-builder.ts | N/A |
-| test-runner.ts | 1.7.0 | scripts/test-runner.ts | fs, os, path |
+| test-runner.ts | 1.9.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
 | validate-abap-platform-parity.ts | 1.1.0 | scripts/validate-abap-platform-parity.ts | N/A |
 | validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | N/A |
 | validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
-| validate-doc-folder.ts | 1.2.1 | scripts/validate-doc-folder.ts | fs, path |
+| validate-doc-folder.ts | 1.2.2 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test |
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
 | validate-md-language.ts | 1.16.1 | scripts/validate-md-language.ts | fs |
-| validate-model-registry.ts | 2.2.0 | scripts/validate-model-registry.ts | N/A |
+| validate-model-registry.ts | 2.3.0 | scripts/validate-model-registry.ts | N/A |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
 | validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
 | validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | N/A |
@@ -221,7 +222,7 @@
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | N/A |
 | validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.65.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.67.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |

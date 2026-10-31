@@ -1,6 +1,40 @@
 /**
  * test-runner.ts — Test Runner for TypeScript Test Suites
- * @version 1.7.0
+ * @version 1.9.0
+ *
+ * v1.9.0 (2026-10-31, T-20261030-002 stage 2 — spec
+ *         docs/designs/2026-10-31-test-budget-split-design.md): the evidence
+ *         gate passed — PR #1770's own win32 CI run (windows-latest, runs
+ *         41153388888/41153395059) measured the split
+ *         upgrade-decision-log.test.ts at 99.9s (≤ the design's ~150s gate;
+ *         ~2x headroom rule satisfied at 300s) and the extracted
+ *         upgrade-policy-decisions.test.ts at 0.34s — so the decision-log row
+ *         drops 600000 → 300000 (test ceiling stays 60s) and the file returns
+ *         to the family convention (mcp-upstream-server and upgrade-tree-sync
+ *         sit at 300s) instead of the twice-raised 600s outlier. Row-only
+ *         behavioral change; the v1.8.0 BUDGET-HEADROOM WARN and the
+ *         budget-raise policy stay on watch over the restored headroom.
+ *
+ * v1.8.0 (2026-10-31, T-20261030-002 — spec
+ *         docs/designs/2026-10-31-test-budget-split-design.md, stage 1 of 2):
+ *         the re-inflation guard. (1) BUDGET-HEADROOM WARN — every completed
+ *         test file whose elapsed time exceeds 60% of its resolved suite
+ *         budget prints a WARN row into the run log; WARN, not FAIL — CI
+ *         timing variance must not block merges, the row makes slow burn-in
+ *         visible in every CI log instead of at raise time. (2) Budget-raise
+ *         policy (recorded, enforced by review): a FILE_TIME_BUDGETS raise
+ *         requires a ticket naming the CI-run evidence that motivated it; two
+ *         raises for the same file inside one quarter trigger a mandatory
+ *         split/trim review — the rule the 3-raises-in-2-weeks pattern on
+ *         upgrade-decision-log.test.ts (v1.5.0/v1.6.0/v1.7.0) violated
+ *         silently. (3) The extracted pure-helper suite
+ *         upgrade-policy-decisions.test.ts (split out of
+ *         upgrade-decision-log.test.ts in the same change set) gets an
+ *         explicit FILE_TIME_BUDGETS row pinned at the family defaults
+ *         (suite 120s / test 15s) — its runtime is trivial today; the row
+ *         makes any drift visible. Stage 2 of the design (NOT this change)
+ *         drops the upgrade-decision-log row 600s → 300s once one green win32
+ *         CI run shows the file total ≤ ~150 s.
  *
  * v1.7.0 (2026-10-29, Windows CI timing budgets — PR #1723 CI run
  * 40799972562): `upgrade-decision-log.test.ts` suite budget 300s → 600s
@@ -106,11 +140,25 @@ const DEFAULT_TEST_TIMEOUT_MS = 15000;
  * runner kill budget, `test` is the bun per-test ceiling. Only files whose
  * win32 wall time legitimately exceeds the suite defaults are listed — every
  * individual test passing while the file hits the suite wall (CI run
- * 38412124373). Headroom ≈2.5x suite / ≥2x test over the observed win32 max. */
+ * 38412124373). Headroom ≈2.5x suite / ≥2x test over the observed win32 max.
+ *
+ * Raise policy (v1.8.0, T-20261030-002 — recorded here, enforced by review):
+ * a budget raise requires a ticket naming the CI-run evidence that motivated
+ * it, and two raises for the same file inside one quarter trigger a mandatory
+ * split/trim review. The BUDGET-HEADROOM WARN (60% of suite budget) makes
+ * slow burn-in visible in every CI log instead of at raise time. */
 const FILE_TIME_BUDGETS: Record<string, { suite: number; test: number }> = {
   'mcp-upstream-server.test.ts': { suite: 300000, test: 30000 },
   'upgrade-tree-sync.test.ts': { suite: 300000, test: 60000 },
-  'upgrade-decision-log.test.ts': { suite: 600000, test: 60000 },
+  // v1.9.0 (T-20261030-002 stage 2): 600s → 300s on the design's evidence
+  // gate — PR #1770's win32 run measured the split file at 99.9s (≤ ~150s),
+  // restoring the family's ~2x headroom at 300s.
+  'upgrade-decision-log.test.ts': { suite: 300000, test: 60000 },
+  // v1.8.0 (T-20261030-002): the pure-helper suite extracted from
+  // upgrade-decision-log.test.ts, pinned AT the family defaults — the row
+  // exists so any runtime drift on the extracted file is visible without a
+  // registry diff.
+  'upgrade-policy-decisions.test.ts': { suite: 120000, test: 15000 },
 };
 
 function getTestFiles(suite: TestSuite): string[] {
@@ -433,6 +481,15 @@ export async function runTests(
     }
 
     for (const res of results) {
+      // BUDGET-HEADROOM WARN (v1.8.0, T-20261030-002): slow burn-in against a
+      // file's resolved budget is visible in every run log, not just at raise
+      // time. WARN only — CI timing variance must not block merges; the raise
+      // policy lives in the FILE_TIME_BUDGETS doc block.
+      const budgets = resolveBudgets(res.file);
+      const headroomPct = Math.round((res.durationMs / budgets.suite) * 100);
+      if (headroomPct >= 60) {
+        console.log(`  ⚠️  BUDGET-HEADROOM: ${basename(res.file)} took ${res.durationMs}ms (${headroomPct}% of its ${budgets.suite}ms suite budget) — a raise requires a ticket with CI-run evidence; 2 raises/quarter triggers a mandatory split/trim review`);
+      }
       if (res.success) {
         console.log(`  ✓ ${res.file} (${res.durationMs}ms)`);
       } else {

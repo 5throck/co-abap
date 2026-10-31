@@ -1,4 +1,4 @@
-/** @version 1.5.1 */
+/** @version 1.5.2 */
 import { describe, expect, test, beforeAll, afterAll } from 'bun:test';
 import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -62,7 +62,7 @@ describe('prompt + models', () => {
     expect(() => buildPrompt({ ...tasks[0], role: '../x' }, root)).toThrow();
   });
   test('tier to model', () => {
-    expect(resolveModel('codex', 'high')).toBe('gpt-5.6-sol');
+    expect(resolveModel('codex', 'high')).toBe('gpt-6.1-sol');
     expect(resolveModel('claude', 'low')).toBe('haiku');
     expect(resolveModel('gemini', 'medium')).toBe('gemini-3.8-flash');
     expect(() => resolveModel('codex', 'ultra')).toThrow(/Unknown tier/);
@@ -91,7 +91,7 @@ describe('fan-out with stub CLIs', () => {
     const lines = readFileSync(log, 'utf-8').trim().split('\n').map(l => l.split(' ')[0]);
     expect(lines.slice(0, 3)).toEqual(['start', 'start', 'start']);
     const md = readFileSync(results[1].file, 'utf-8');
-    expect(md).toContain('model: gpt-5.6-terra');
+    expect(md).toContain('model: gpt-6.1-terra');
     expect(md).toContain(buildPrompt(tasks[1], root).trimEnd());
     expect(md).toContain('-s read-only');
     const summary = JSON.parse(readFileSync(join(runDir, 'summary.json'), 'utf-8'));
