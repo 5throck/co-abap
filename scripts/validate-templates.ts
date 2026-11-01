@@ -1,16 +1,62 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.67.0
+ * @version 1.70.0
+ *
+ * v1.70.0 (2026-11-01, spec docs/designs/2026-11-01-hub-consolidation-design.md
+ *          §2.4 Phase 1): additive hub_topology validator legs — new check
+ *          `checkHubTopology()` fired from main() after checkWorkspaceSchema(),
+ *          backed by the shared helpers/hub-topology.ts v1.0.0 (one derivation
+ *          shared with audit.ts's hub-resolve checker and hub-promotion.ts):
+ *          (1) hub-topology-shape — the registry section itself (enums, entry
+ *          shape, semver versions, hub capability refs) fail-closed;
+ *          (2) hub-dup-unregistered — a non-common skill/agent present in >1
+ *          variant templates must appear in hub_topology.entries or the
+ *          declared known_unregistered_duplicates soak (WARN; retire by
+ *          promotion batches B-D) — anything else FAILs; L1-common assets
+ *          (docs/templates/common-contract.json common_skills/common_agents)
+ *          are excluded because common delivery is inheritance, not
+ *          duplication; (3) hub-identity-clobber — a variant-identity entry's
+ *          asset must not exist in any foreign variant template (the PR #61
+ *          clobber class); (4) hub-consumer-min-version — a variant.json
+ *          hub.consumes {domain, minimum_version} resolved against registry
+ *          entries FAILs when the canonical is older than the declared
+ *          minimum (vacuously green while entries[] is empty). With the
+ *          registry landed empty + the 20-row pre-registry duplicate soak
+ *          declared, the battery stays green today and the legs activate as
+ *          batches B-D land entries.
+ *
+ * v1.69.0 (2026-11-01, T-20261101-003 — spec
+ *          docs/designs/2026-10-31-registry-platform-vocabulary-design.md
+ *          §R2.2): MM-01 LITERAL alternation retires the retained
+ *          `gpt-5\.6-(?:sol|terra|luna)` alternatives — the L3 tier-vocabulary
+ *          convergence window closed 2026-11-01 (all 16 projects at 0.26.0,
+ *          0 gpt-5.6 literals in delivered md surfaces), so the old ids now
+ *          FAIL loudly outside managed sections instead of being tolerated.
+ *          The generalized Codex family arm `gpt-\d+(?:\.\d+)?-` in
+ *          lib/model-literal-patterns.ts (Check MM / sync side) is unchanged.
+ *          No other check changes.
+ *
+ * v1.68.0 (2026-11-01, spec docs/designs/2026-10-31-template-security-hardening-design.md
+ *          Addendum 2026-11-01): new WARN arm `gemini-execution-policy-floor`, run inside
+ *          the VA-04 platform settings parity pass — a variant gemini overlay's
+ *          `terminal.executionPolicy` must not rank weaker than common's
+ *          (Off > Manual > Auto ordering). The overlay wins over common in the effective
+ *          template tree, so a weak overlay silently defeats the common hardening floor
+ *          (observed: the 2026-10-31 wave reached only the overlay-less project, and
+ *          co-security's overlay re-regressed its hardened Manual policy to Auto).
+ *          Missing/unknown values skip (shared-key loop and schema checks own those);
+ *          at-or-above-floor values pass. Severity: WARN per ADR-0055 soak.
  *
  * v1.67.0 (2026-10-31, T-20261031-005 — spec
  *          docs/designs/2026-10-31-registry-platform-vocabulary-design.md
  *          §R2.2 surface 6): MM-01 LITERAL alternation gains the GPT-6.x ids
  *          (`gpt-6\.1-(?:sol|terra)` + `gpt-6-luna`) so the codex column
- *          rebase keeps matching; the `gpt-5\.6` alternatives are KEPT through
- *          the L3 convergence window — delivered-side stragglers keep FAILing
- *          loudly (visible, not silent) until their upgrade visit normalizes
- *          them. No other check changes.
+ *          rebase keeps matching; the `gpt-5\.6` alternatives were KEPT through
+ *          the L3 convergence window — delivered-side stragglers kept FAILing
+ *          loudly (visible, not silent) until their upgrade visit normalized
+ *          them (retired 2026-11-01 post-convergence, T-20261101-003, in
+ *          v1.69.0). No other check changes.
  *
  * v1.66.0 (2026-10-31, U-20261029-004 — spec
  *          docs/designs/2026-10-31-variant-generators-design.md §6.3):
@@ -448,6 +494,15 @@ import { parseSkillRegistryRows, collectWorkspaceRegistryFindings } from './help
 import { getScriptLayer, getSkillLayer, includeScriptInL1, parseScriptLayers, parseSkillLayers } from './helpers/layer-filter.ts';
 import { isTransientTestFixture } from './helpers/scaffold-markers.ts';
 import { scanMirrorHygiene } from './helpers/mirror-hygiene.ts';
+import {
+  loadHubTopology,
+  validateHubTopologyShape,
+  findCrossVariantDuplicates,
+  checkUnregisteredDuplicates,
+  checkVariantIdentity,
+  checkConsumerMinimumVersions,
+  loadConsumingVariants,
+} from './helpers/hub-topology.ts';
 import { agentBodyCompletenessFinding } from './validate-agents.ts';
 import { collectMirrorFreshnessDrift, PLATFORM_MIRROR_DIRS } from './lib/platform-mirror-freshness.ts';
 import {
@@ -3440,6 +3495,59 @@ export function variantScopedSkillLeaks(
   return leaks.sort();
 }
 
+// ── Hub topology registry legs (v1.70.0; design
+//    docs/designs/2026-11-01-hub-consolidation-design.md §2.4) ──────────────
+// Four arms over docs/workspace-schema.json hub_topology, backed by the
+// shared helpers/hub-topology.ts (one derivation also feeding audit.ts's
+// hub-resolve checker and hub-promotion.ts). Absent file/section skips
+// cleanly (legacy checkouts); a present registry is fail-closed. The checks
+// are vacuously green with an empty entries[] array and activate as the
+// Phase 1 promotion batches B-D land registry rows.
+function checkHubTopology(): void {
+  if (!JSON_MODE) console.log('\n=== Check hub-topology: hub_topology registry legs (hub-consolidation design §2.4) ===');
+  const loaded = loadHubTopology(ROOT);
+  if (!loaded.ok) {
+    if (loaded.error === 'absent-file' || loaded.error === 'absent-section') {
+      pass('hub_topology: registry absent (legacy checkout) — hub legs skip cleanly');
+      return;
+    }
+    fail('root', 'hub-topology-shape', loaded.error ?? 'hub_topology unreadable');
+    return;
+  }
+  const topology = loaded.topology!;
+
+  // Leg 0 — registry shape (fail-closed per §2.4: bad enums, missing fields,
+  // non-semver versions, unknown capability keys all FAIL)
+  const shapeErrors = validateHubTopologyShape(topology);
+  for (const e of shapeErrors) {
+    fail('root', 'hub-topology-shape', `hub_topology: ${e}`, 'Fix docs/workspace-schema.json hub_topology — reconcile the hand-maintained root + L1 pair in the same commit');
+  }
+  if (shapeErrors.length === 0) pass('hub-topology-shape: registry shape valid');
+
+  // Leg 1 — unregistered cross-variant duplication (design §2.4 leg 1):
+  // L1-common assets are excluded (common delivery is inheritance, not
+  // duplication); declared soak rows WARN; everything else FAILs.
+  const dupLeg = checkUnregisteredDuplicates(topology, findCrossVariantDuplicates(ROOT));
+  for (const f of dupLeg.fails) fail('root', 'hub-dup-unregistered', f);
+  for (const w of dupLeg.warns) warn('root', 'hub-dup-unregistered', w);
+  for (const p of dupLeg.passes) pass(`hub-dup-unregistered: ${p}`);
+
+  // Leg 2 — variant-identity unauthorized promotion (design §2.4 leg 2):
+  // identity assets may not exist in foreign variant templates.
+  const identityLeg = checkVariantIdentity(topology, ROOT);
+  for (const f of identityLeg.fails) fail('root', 'hub-identity-clobber', f);
+  for (const w of identityLeg.warns) warn('root', 'hub-identity-clobber', w);
+  for (const p of identityLeg.passes) pass(`hub-identity-clobber: ${p}`);
+
+  // Leg 3 — consumer minimum_version (design §2.4 leg 3): variant.json
+  // hub.consumes resolved against registry entries; vacuously green while
+  // entries[] is empty.
+  const consumerLeg = checkConsumerMinimumVersions(topology, loadConsumingVariants(ROOT));
+  for (const f of consumerLeg.fails) fail('root', 'hub-consumer-min-version', f);
+  for (const w of consumerLeg.warns) warn('root', 'hub-consumer-min-version', w);
+  for (const p of consumerLeg.passes) pass(`hub-consumer-min-version: ${p}`);
+}
+
 export interface ScriptsRegistryRow {
   name: string;
   version: string;
@@ -4615,6 +4723,48 @@ function checkPlatformSettingsParity(variant: string): void {
       }
     }
   }
+
+  checkGeminiExecutionPolicyFloor(variant, geminiSettings);
+}
+
+// v1.68.0 (spec docs/designs/2026-10-31-template-security-hardening-design.md,
+// Addendum 2026-11-01): the variant gemini overlay WINS over common in the
+// effective template tree, so a weak overlay policy silently defeats the
+// common hardening floor (the 2026-10-31 wave delivered Manual to the one
+// overlay-less project only, and co-security's overlay re-regressed its
+// manually hardened Manual policy to Auto). WARN when a variant overlay's
+// terminal.executionPolicy ranks weaker than common's (Off > Manual > Auto).
+// Floor is a floor, not a ceiling: Off and any stricter value never warn.
+// Missing/unknown values are skipped -- the shared-key loop above already
+// reports a missing key, and an unrecognized value is a schema problem, not a
+// floor violation. Severity: WARN per ADR-0055 (soak-first for net-new arms).
+const EXECUTION_POLICY_RANK: Record<string, number> = { Auto: 0, Manual: 1, Off: 2 };
+
+function checkGeminiExecutionPolicyFloor(variant: string, geminiSettings: Record<string, unknown> | null): void {
+  if (geminiSettings === null) return; // missing/invalid overlay already WARNed by the parity loop above
+
+  const commonGeminiPath = join(TEMPLATES_DIR, 'common', '.gemini', 'settings.json');
+  if (!existsSync(commonGeminiPath)) return; // common-surface checks live elsewhere; nothing to compare against
+
+  let commonPolicy: unknown;
+  try {
+    commonPolicy = JSON.parse(readFileSync(commonGeminiPath, 'utf-8'))['terminal.executionPolicy'];
+  } catch {
+    return; // unreadable common baseline -- not this arm's failure to report
+  }
+
+  const floorRank = EXECUTION_POLICY_RANK[String(commonPolicy)];
+  if (floorRank === undefined) return; // unknown baseline value: skip (schema concern, not a floor violation)
+
+  const variantPolicy = geminiSettings['terminal.executionPolicy'];
+  const variantRank = variantPolicy === undefined ? undefined : EXECUTION_POLICY_RANK[String(variantPolicy)];
+  if (variantRank === undefined) return; // missing key -> shared-key loop; unknown value -> schema concern
+
+  if (variantRank < floorRank) {
+    warn(variant, 'gemini-execution-policy-floor', `templates/${variant}/.gemini/settings.json executionPolicy '${String(variantPolicy)}' is weaker than the common floor '${String(commonPolicy)}' -- the overlay wins over common in the effective template tree, so the template security floor is defeated; raise the overlay to 'Manual' + the common 50-entry terminal.denyList (stricter overlays are preserved verbatim; see design 2026-10-31-template-security-hardening Addendum 2026-11-01)`);
+  } else {
+    pass(`gemini-execution-policy-floor: ${variant} -- executionPolicy '${String(variantPolicy)}' at-or-above the common floor '${String(commonPolicy)}'`);
+  }
 }
 
 // Helper: extract sections marked with <!-- MARKERNAME:START --> ... <!-- MARKERNAME:END -->
@@ -4643,13 +4793,13 @@ function extractMarkedSections(content: string, markerName: string): Array<{head
 // A literal outside a managed section silently stalls at its layer on the next model refresh.
 function checkModelLiteralPlacement(): void {
   if (!JSON_MODE) console.log(`\n=== Check MM-01: Model literal placement (instruction twins) ===`);
-  // T-20261031-005 (spec docs/designs/2026-10-31-registry-platform-vocabulary-design.md
-  // §R2.2): the GPT-6.x ids (gpt-6.1-sol/terra, gpt-6-luna) join the alternation;
-  // the gpt-5.6 alternatives are KEPT through the L3 convergence window so
-  // delivered-side stragglers keep FAILing loudly (visible, not silent) until
-  // their upgrade visit normalizes them. A follow-up cleanup ticket retires the
-  // old alternation after one full upgrade cycle.
-  const LITERAL = /\b(?:gpt-5\.6-(?:sol|terra|luna)|gpt-6\.1-(?:sol|terra)|gpt-6-luna|claude-(?:opus|sonnet)-5-[05]|claude-haiku-4-5|gemini-3\.\d+(?:\.\d+)?-(?:pro|flash))\b/i;
+  // T-20261101-003 (spec docs/designs/2026-10-31-registry-platform-vocabulary-design.md
+  // §R2.2): the gpt-5.6-(sol|terra|luna) alternatives added at T-20261031-005 as a
+  // convergence-window retention were retired 2026-11-01 post-convergence —
+  // the L3 tier-vocabulary convergence is achieved (all 16 projects at 0.26.0,
+  // 0 gpt-5.6 literals in delivered md surfaces), so any future gpt-5.6
+  // literal outside a managed section FAILs loudly again.
+  const LITERAL = /\b(?:gpt-6\.1-(?:sol|terra)|gpt-6-luna|claude-(?:opus|sonnet)-5-[05]|claude-haiku-4-5|gemini-3\.\d+(?:\.\d+)?-(?:pro|flash))\b/i;
   const STARTS = /<!--\s*(?:COMMON-(?:CLAUDE|GEMINI|CODEX|AGENTS):START|WORKSPACE-MANAGED:[^>]*?)\s*-->/;
   const ENDS = /<!--\s*(?:\/WORKSPACE-MANAGED|COMMON-(?:CLAUDE|GEMINI|CODEX|AGENTS):END)\s*-->/;
   const files = [
@@ -6194,6 +6344,7 @@ function main(): number {
   }
 
   checkWorkspaceSchema();
+  checkHubTopology(); // v1.70.0: hub_topology registry legs (hub-consolidation design §2.4)
   checkCommonContract();
   checkCommonContractReverseCoverage(); // C-CM-04: exists→listed contract coverage (T-20260910-019)
   for (const [variant, manifest] of manifests) {
