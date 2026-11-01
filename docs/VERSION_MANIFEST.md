@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-10-31T16:13:07.285Z
+**Generated**: 2026-11-01T18:04:21.975Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -115,7 +115,7 @@
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
 | apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
 | archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.60.0 | scripts/audit.ts | bun |
+| audit.ts | 2.61.0 | scripts/audit.ts | bun |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
 | changelog-normalize.ts | 1.0.0 | scripts/changelog-normalize.ts | N/A |
@@ -207,7 +207,7 @@
 | validate-abap-platform-parity.ts | 1.1.0 | scripts/validate-abap-platform-parity.ts | N/A |
 | validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | N/A |
 | validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
-| validate-doc-folder.ts | 1.2.2 | scripts/validate-doc-folder.ts | fs, path |
+| validate-doc-folder.ts | 1.2.3 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test |
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
@@ -222,7 +222,7 @@
 | validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
 | validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | N/A |
 | validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.67.0 | scripts/validate-templates.ts | js-yaml |
+| validate-templates.ts | 1.70.0 | scripts/validate-templates.ts | js-yaml |
 | validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |

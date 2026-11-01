@@ -7,6 +7,14 @@
         "mcp"
       ],
       "enabled": true
+    },
+    "trail": {
+      "type": "local",
+      "command": [
+        "trail",
+        "mcp"
+      ],
+      "enabled": true
     }
   }
 }

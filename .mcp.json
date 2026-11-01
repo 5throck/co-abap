@@ -22,6 +22,12 @@
       "args": [
         "mcp"
       ]
+    },
+    "trail": {
+      "command": "trail",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

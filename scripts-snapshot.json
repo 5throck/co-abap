@@ -1,5 +1,5 @@
 {
-  "created": "2026-10-31",
+  "created": "2026-11-01",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -32,7 +32,7 @@
       "status": "active"
     },
     "audit.ts": {
-      "version": "2.60.0",
+      "version": "2.61.0",
       "status": "active"
     },
     "bootstrap-stages.ts": {
@@ -121,6 +121,10 @@
     },
     "helpers/golden-reference-loader.ts": {
       "version": "1.1.0",
+      "status": "active"
+    },
+    "helpers/hub-topology.ts": {
+      "version": "1.0.1",
       "status": "active"
     },
     "helpers/layer-filter.ts": {
@@ -316,7 +320,7 @@
       "status": "active"
     },
     "lib/managed-block-merge.ts": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "status": "active"
     },
     "lib/platform-skeleton-merge.ts": {
@@ -340,7 +344,7 @@
       "status": "active"
     },
     "lib/upgrade-policy.ts": {
-      "version": "1.33.0",
+      "version": "1.36.0",
       "status": "active"
     },
     "lib/dependency-guard.ts": {
@@ -592,7 +596,7 @@
       "status": "active"
     },
     "validate-doc-folder.ts": {
-      "version": "1.2.2",
+      "version": "1.2.3",
       "status": "active"
     },
     "validate-docs-links.ts": {
@@ -632,7 +636,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.67.0",
+      "version": "1.70.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
