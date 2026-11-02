@@ -17,6 +17,7 @@
 | `root/api-documentation` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/ci-triage` | L3 | 0.2.0 | — | — | — | — | — |
 | `root/decision-record` | L3 | 1.1.0 | — | — | — | — | — |
+| `root/delegate-to-hub` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/design-foundation` | L3 | 1.1.0 | — | — | root/accessibility-audit (composes_with), root/token-usage-lint (composes_with), root/ui-ux-design-intelligence (enables) | — | — |
 | `root/desktop-app-fallback` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/documentation-writing` | L3 | 1.0.3 | — | — | root/team-builder (composes_with) | — | — |
@@ -123,7 +124,7 @@ None — every capability has a single content hash.
 
 ## Skills Without `used_by` (G6)
 
-44 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
+45 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
 
 ### Suggested `required_by` agents (E4, report-only)
 
@@ -143,7 +144,7 @@ Inferred from procedure steps that cite the skill and are owned via `step_by_age
 
 ## Skill Usage (E3)
 
-Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-02), window 90 days. Skill nodes with usage: 2.
+Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-03), window 90 days. Skill nodes with usage: 2.
 
 - **used-but-unlinked** (usage > 0, no `used_by`) (2): root/project-review, root/sync
-- **unused** (0 sessions in 90 days) (47): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager, root/source-command-celebrate, root/source-command-commit-push-pr … and 7 more
+- **unused** (0 sessions in 90 days) (48): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/delegate-to-hub, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager, root/source-command-celebrate … and 8 more
