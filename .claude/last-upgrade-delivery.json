@@ -1,97 +1,114 @@
 {
   "schemaVersion": 2,
-  "timestamp": "2026-11-01T18:02:29.550Z",
+  "timestamp": "2026-11-02T22:47:41.115Z",
   "project": "co-abap",
-  "templateVersion": "0.27.0",
-  "templateSha": "42b72bfbe2840c7fa1c469d22131018bff136871",
-  "baseSha": "790394965e531fe77d53d783441e14ba2f7efd16",
+  "templateVersion": "0.28.0",
+  "templateSha": "0a26732b2131856f30271b7e46dae85d9028c8be",
+  "baseSha": "16e88d2137a2ccaa1054b363de095855cc7a93fd",
   "files": [
-    ".mcp.json",
     "AGENTS.md",
-    "CHANGELOG.md",
     "docs/clean-abap-checklist.md",
-    "docs/standards/llm-interaction-standard.md",
     "docs/workspace-schema.json",
-    "opencode.json",
     "scripts/SCRIPTS.md",
-    "scripts/audit.ts",
-    "scripts/helpers/template-utils.ts",
-    "scripts/lib/managed-block-merge.ts",
-    "scripts/lib/model-literal-patterns.ts",
-    "scripts/lib/upgrade-policy.ts",
-    "scripts/validate-doc-folder.ts",
-    "scripts/validate-templates.ts",
+    "scripts/helpers/hub-topology.ts",
+    "scripts/hooks/gateguard-fact-force.ts",
+    "skills/.sync-skills-managed.json",
     "template-version.txt",
-    "docs/stack-profile.json",
-    "scripts/helpers/hub-topology.ts"
+    ".agents/skills/delegate-to-hub/SKILL.md",
+    ".claude/skills/delegate-to-hub/SKILL.md",
+    ".codex/skills/delegate-to-hub/SKILL.md",
+    ".gemini/skills/delegate-to-hub/SKILL.md",
+    ".hermes/skills/delegate-to-hub/SKILL.md",
+    "scripts/hooks/agent-model-gate.ts",
+    "skills/delegate-to-hub/SKILL.md"
   ],
   "baselines": {
     ".githooks/commit-msg": {
       "hash": "cd819a49144f4f94ce66ba590dc07d1508dc70238b97d0eeeea047acc3ba950c",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     ".githooks/post-checkout": {
       "hash": "53c0cb9125f5d772e128f49cd4d8f21a4ea196d1ec5af6557ff49a3a5484db96",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     ".githooks/pre-commit": {
       "hash": "737e7f7e55f1c3498308aa7f8c88313e21d6a4b7c54f64e6d82b54a96c7490a0",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     ".githooks/pre-push": {
       "hash": "1d30c52e9bc760e38fbb699c60f8aa1daed7f456a540356c7112a4932098cb95",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     ".githooks/pre-rebase": {
       "hash": "654ed0472185851cdc45d0d6e5062425a8ecd51b8ee13d00165004939ac34973",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     ".gitignore": {
       "hash": "b4ea6d8b5df246b232a1cf5a872a0173d831b11952d924af547d2683caef098f",
-      "templateVersion": "0.27.0"
-    },
-    ".mcp.json": {
-      "hash": "ebf19b5bc2e7479eb74041ad764dc14ab54c988658d7e98132271cc50446c19f",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "AGENTS.md": {
-      "hash": "0396b77a9db7d21c071edc2b52b62e398fff841e48bc0db5898fce7275b92317",
-      "templateVersion": "0.27.0"
+      "hash": "0b5c5d92eb5b8321f4278b5e6ca9d09286865f96f38dc9f802729a1892951901",
+      "templateVersion": "0.28.0"
     },
     "CLAUDE.md": {
       "hash": "99f23422af417951bdddb93f50fde295593f80fc0b2da8a68d7c386c514e630b",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "CODEX.md": {
       "hash": "55c2ede4f2f0b739d0584562b38497d99c3896a20ab107f150d77213ea5b1bff",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "GEMINI.md": {
       "hash": "8e640746b89c155effc39191e1dc29188d2b5f504c404e0904d74ee7e4d744d2",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "HERMES.md": {
       "hash": "6b51d4acf86728891e864b1f6ff6cd30bda3dfb788e1fe22e8a3d385798d980d",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "agents/pm.md": {
       "hash": "aac95ac369cbe04aef0d8b1fa26b0f7e32c0cf57238671abfffa3c3307ce1242",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "docs/clean-abap-checklist.md": {
       "hash": "61c45a5a431bdc2269d11382ca4ad8ea892d499a0cd23e88e0249f36cc0375f7",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "docs/co-abap.context.md": {
       "hash": "f3a63ee7bf64abe7e9f2c7e19942d5036e1fd97aaa62e5d9aa0bdfde3fd04a6d",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "docs/phase-definitions.md": {
       "hash": "ffbf296d2232c00cfe4d363f75b07cb0745b9dc9871f2209ff89bba01ee38b0f",
-      "templateVersion": "0.27.0"
+      "templateVersion": "0.28.0"
     },
     "docs/security.md": {
       "hash": "6424d80604638ae56523d66a6a3447b3bb14ec249afb20d2fe70f75bca30f87d",
+      "templateVersion": "0.28.0"
+    },
+    "docs/workspace-schema.json": {
+      "hash": "5b15a1892ffade8ad9fe4c00203e01018c15f8dc938c30e9b551cb7727626f05",
+      "templateVersion": "0.28.0"
+    },
+    "scripts/helpers/hub-topology.ts": {
+      "hash": "eaeb6d932170b88da4824b311d4d3aa7ec3dce7de1072f3edfbe316c29037df3",
+      "templateVersion": "0.28.0"
+    },
+    "scripts/hooks/agent-model-gate.ts": {
+      "hash": "ce804f62f9f4c99c528c0f3bdea35ec895269d849c45cc2e29ba802bbdc14fcd",
+      "templateVersion": "0.28.0"
+    },
+    "scripts/hooks/gateguard-fact-force.ts": {
+      "hash": "c9de7f0bf96308d78fa02332d505aa95357062d60c34d35b0bbc3eaf5e9a3b47",
+      "templateVersion": "0.28.0"
+    },
+    "skills/delegate-to-hub/SKILL.md": {
+      "hash": "b244598189110854f922b52a0a6466f6515b251c4ead200fce076acb1f7f0f5c",
+      "templateVersion": "0.28.0"
+    },
+    ".mcp.json": {
+      "hash": "ebf19b5bc2e7479eb74041ad764dc14ab54c988658d7e98132271cc50446c19f",
       "templateVersion": "0.27.0"
     },
     "docs/stack-profile.json": {
@@ -102,20 +119,12 @@
       "hash": "32751a50c0f4790e640961a1588dff60de22046c42be74b475f45ef4ea87d585",
       "templateVersion": "0.27.0"
     },
-    "docs/workspace-schema.json": {
-      "hash": "5b5d62e8ed8723d5f4eb7295086f53b8fbb0fd63103e5c33898b30c23c26dfcd",
-      "templateVersion": "0.27.0"
-    },
     "opencode.json": {
       "hash": "1faea3c5c06f4d1243391a92fde32669b40418b3064fbdac9acbe4219a56396b",
       "templateVersion": "0.27.0"
     },
     "scripts/audit.ts": {
       "hash": "3ca32ead3b11d8c6b77242dd1a1ed7ce742283e628a632250c73c83b8c884c29",
-      "templateVersion": "0.27.0"
-    },
-    "scripts/helpers/hub-topology.ts": {
-      "hash": "8edd27b0195a544d86b8dd0cf4657f9fe73cede4535587373d84be960d6715e6",
       "templateVersion": "0.27.0"
     },
     "scripts/helpers/template-utils.ts": {
@@ -1693,7 +1702,7 @@
       "policy": "MERGE_MANAGED",
       "pass": "DOCS_MERGE",
       "verdict": "TEMPLATE_DELTA",
-      "detail": "template-authoritative managed block restamped (template wins): COMMON-AGENTS — project block diverged from the template and was restamped (31 line(s) → 35 line(s))",
+      "detail": "template-authoritative managed block restamped (template wins): COMMON-AGENTS — project block diverged from the template and was restamped (35 line(s) → 35 line(s))",
       "severity": "INFO"
     },
     {
@@ -1720,7 +1729,7 @@
       "detail": "project copy already matches the template (in sync)",
       "baseline": {
         "hash": "ffbf296d2232c00cfe4d363f75b07cb0745b9dc9871f2209ff89bba01ee38b0f",
-        "templateVersion": "0.26.0"
+        "templateVersion": "0.27.0"
       },
       "severity": "INFO"
     },
@@ -1741,91 +1750,31 @@
       "severity": "INFO"
     },
     {
-      "path": "scripts/audit.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "2.60.0 → 2.61.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "f0cece80ffb041ed5dc2a37693796fc707c8a18d787a6861fff460b2dc3d2fa8",
-        "templateVersion": "0.24.0"
-      },
-      "severity": "INFO"
-    },
-    {
       "path": "scripts/helpers/hub-topology.ts",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: scripts/",
+      "verdict": "ADOPT",
+      "detail": "1.0.1 → 1.1.0 — version-gated delivery over the delivered baseline",
+      "baseline": {
+        "hash": "8edd27b0195a544d86b8dd0cf4657f9fe73cede4535587373d84be960d6715e6",
+        "templateVersion": "0.27.0"
+      },
+      "severity": "INFO"
+    },
+    {
+      "path": "scripts/hooks/agent-model-gate.ts",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: scripts/",
       "verdict": "NEW",
-      "detail": "delivered (none) → 1.0.1",
+      "detail": "delivered (none) → 1.3.0",
       "severity": "INFO"
     },
     {
-      "path": "scripts/helpers/template-utils.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "DRIFT_RESTORED",
-      "detail": "1.3.0 equal-version content drift — restored to canonical (ADR-0085 D3 integrity rule)",
-      "severity": "WARN"
-    },
-    {
-      "path": "scripts/lib/managed-block-merge.ts",
+      "path": "scripts/hooks/gateguard-fact-force.ts",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: scripts/",
       "verdict": "ADOPT",
-      "detail": "1.5.0 → 1.6.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "c9228d105918b2188170478fa821198c5dbddfaa11a36025e1c5b79adf38c0ba",
-        "templateVersion": "0.22.1"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/lib/model-literal-patterns.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "DRIFT_RESTORED",
-      "detail": "1.1.0 equal-version content drift — restored to canonical (ADR-0085 D3 integrity rule)",
-      "baseline": {
-        "hash": "5febf3602e7c314582292079cbb148d0c1c76204767bd42c8f5ffc27dbe89967",
-        "templateVersion": "0.26.0"
-      },
-      "severity": "WARN"
-    },
-    {
-      "path": "scripts/lib/upgrade-policy.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.33.0 → 1.36.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "010b43c7b4c1d0b6aeb8536bc32697c32e72397f1ad28a7856f17fa13d0f5fe0",
-        "templateVersion": "0.26.0"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/validate-doc-folder.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.2.2 → 1.2.3 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "2e01dfa8f2226fd6383311615339d83bb7c98f1833731e605753480b93e83b97",
-        "templateVersion": "0.26.0"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/validate-templates.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.67.0 → 1.70.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "38631cd1115e81c1712bad2eacfe0874d0a69e0c6607cb2fb0cef924f7748111",
-        "templateVersion": "0.26.0"
-      },
+      "detail": "1.3.0 → 1.3.2 — version-gated delivery over the delivered baseline",
       "severity": "INFO"
     },
     {
@@ -1874,6 +1823,14 @@
       "pass": "SYNC_IF_NEWER: skills/",
       "verdict": "NEW",
       "detail": "whole skill directory delivered (none) → 1.0.2",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/delegate-to-hub/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "NEW",
+      "detail": "whole skill directory delivered (none) → 1.0.1",
       "severity": "INFO"
     },
     {
@@ -2157,22 +2114,6 @@
       "severity": "INFO"
     },
     {
-      "path": ".mcp.json",
-      "policy": "JSON_MERGE",
-      "pass": "TEMPLATE TREE SYNC",
-      "verdict": "MERGE",
-      "detail": "settings deep-merged — project-only entries preserved: mcpServers.graft",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/stack-profile.json",
-      "policy": "SYNC",
-      "pass": "TEMPLATE TREE SYNC",
-      "verdict": "NEW",
-      "detail": "delivered — project copy absent",
-      "severity": "INFO"
-    },
-    {
       "path": "docs/clean-abap-checklist.md",
       "policy": "SYNC",
       "pass": "TEMPLATE TREE SYNC",
@@ -2180,7 +2121,7 @@
       "detail": "project-evolved since delivery; template content unchanged — version-gated delivery proceeds (EVOLVED, WARN)",
       "baseline": {
         "hash": "61c45a5a431bdc2269d11382ca4ad8ea892d499a0cd23e88e0249f36cc0375f7",
-        "templateVersion": "0.26.0"
+        "templateVersion": "0.27.0"
       },
       "severity": "WARN"
     },
@@ -2192,7 +2133,7 @@
       "detail": "(content changed) — version-gated delivery over the delivered baseline",
       "baseline": {
         "hash": "61c45a5a431bdc2269d11382ca4ad8ea892d499a0cd23e88e0249f36cc0375f7",
-        "templateVersion": "0.26.0"
+        "templateVersion": "0.27.0"
       },
       "severity": "INFO"
     },
@@ -2393,7 +2334,7 @@
       "policy": "SCHEMA_MERGE",
       "pass": "TEMPLATE TREE SYNC",
       "verdict": "MERGE",
-      "detail": "schema merge — landed: hub_topology; preserved: —; landed template deltas: 0; template changes withheld (project-wins): 1",
+      "detail": "schema merge — landed: —; preserved: —; landed template deltas: 0; template changes withheld (project-wins): 4",
       "severity": "INFO"
     },
     {
@@ -2402,6 +2343,30 @@
       "pass": "TEMPLATE TREE SYNC",
       "verdict": "TEMPLATE_DELTA",
       "detail": "template change withheld (project-wins): rootAllowlist.dirs — project [\".git\",\"scripts\",\"tests\",\"agents\",\"skills\",\"docs\",\"memory\",\"templates\",\"tickets\",\"schemas\",\".claude\",\".gemini\",\".githo… (624 chars) vs template [\".git\",\"scripts\",\"tests\",\"agents\",\"skills\",\"docs\",\"memory\",\"templates\",\"tickets\",\"schemas\",\".claude\",\".gemini\",\".githo… (633 chars)",
+      "severity": "WARN"
+    },
+    {
+      "path": "docs/workspace-schema.json",
+      "policy": "SCHEMA_MERGE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "TEMPLATE_DELTA",
+      "detail": "template change withheld (project-wins): hub_topology.version — project \"1.2.0\" vs template \"1.3.0\"",
+      "severity": "WARN"
+    },
+    {
+      "path": "docs/workspace-schema.json",
+      "policy": "SCHEMA_MERGE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "TEMPLATE_DELTA",
+      "detail": "template change withheld (project-wins): hub_topology.hubs — project [] vs template [{\"name\":\"co-security\",\"domain\":\"co-security\",\"hub_remote\":\"https://github.com/5throck/co-security.git\",\"capabilities\":… (1920 chars)",
+      "severity": "WARN"
+    },
+    {
+      "path": "docs/workspace-schema.json",
+      "policy": "SCHEMA_MERGE",
+      "pass": "TEMPLATE TREE SYNC",
+      "verdict": "TEMPLATE_DELTA",
+      "detail": "template change withheld (project-wins): hub_topology.entries — project [{\"asset\":\"accessibility-audit\",\"domain\":\"co-design\",\"hub_variant\":\"co-design\",\"category\":\"hub-doctrine\",\"verticals\":[\"… (32502 chars) vs template [{\"asset\":\"accessibility-audit\",\"domain\":\"co-design\",\"hub_variant\":\"co-design\",\"category\":\"hub-doctrine\",\"verticals\":[\"… (33353 chars)",
       "severity": "WARN"
     },
     {
@@ -2461,27 +2426,11 @@
       "severity": "INFO"
     },
     {
-      "path": "docs/standards/llm-interaction-standard.md",
-      "policy": "SYNC",
-      "pass": "TEMPLATE TREE SYNC",
-      "verdict": "ADOPT",
-      "detail": "(content changed) — version-gated delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
       "path": ".codex/hooks.json",
       "policy": "ADD_IF_MISSING",
       "pass": "TEMPLATE TREE SYNC",
       "verdict": "SEED_SKIP",
       "detail": "project copy exists — add-if-missing seed withheld (project-owned config)",
-      "severity": "INFO"
-    },
-    {
-      "path": "opencode.json",
-      "policy": "JSON_MERGE",
-      "pass": "TEMPLATE TREE SYNC",
-      "verdict": "MERGE",
-      "detail": "settings deep-merged — project-only entries preserved: mcp.graft",
       "severity": "INFO"
     },
     {
@@ -2492,7 +2441,7 @@
       "detail": "template copy delivered over the delivered baseline (version-gated)",
       "baseline": {
         "hash": "6424d80604638ae56523d66a6a3447b3bb14ec249afb20d2fe70f75bca30f87d",
-        "templateVersion": "0.26.0"
+        "templateVersion": "0.27.0"
       },
       "severity": "INFO"
     },
