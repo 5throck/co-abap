@@ -11,17 +11,17 @@
 | Skill (scope/name) | Layer | Version | Required-by Agents | Phases | Relates-to | Inputs | Outputs |
 |--------------------|-------|---------|-------------------|--------|------------|--------|---------|
 | `root/abap-code-review` | L3 | 1.0.2 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
-| `root/abap-dev` | L3 | 1.3.0 | — | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
+| `root/abap-dev` | L3 | 1.3.0 | root/architect, root/code-writer, root/sap-investigator, root/test-runner | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/accessibility-audit` | L3 | 1.1.0 | — | — | — | — | — |
-| `root/agent-lifecycle-manager` | L3 | 1.3.1 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
+| `root/agent-lifecycle-manager` | L3 | 1.4.0 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
 | `root/api-documentation` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/ci-triage` | L3 | 0.2.0 | — | — | — | — | — |
 | `root/decision-record` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/delegate-to-hub` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/design-foundation` | L3 | 1.1.0 | — | — | root/accessibility-audit (composes_with), root/token-usage-lint (composes_with), root/ui-ux-design-intelligence (enables) | — | — |
-| `root/desktop-app-fallback` | L3 | 1.0.1 | — | — | — | — | — |
+| `root/desktop-app-fallback` | L3 | 1.0.1 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/documentation-writing` | L3 | 1.0.3 | — | — | root/team-builder (composes_with) | — | — |
-| `root/dump-monitor` | L3 | 1.0.1 | — | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
+| `root/dump-monitor` | L3 | 1.0.1 | root/devops-admin | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/evidence-ledger` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/explain-me` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/finishing-a-development-branch` | L3 | 1.0.1 | — | — | — | — | — |
@@ -31,29 +31,29 @@
 | `root/handbook-sync-audit` | L3 | 1.0.5 | — | — | — | — | — |
 | `root/i18n-audit` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-formatting` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
-| `root/i18n-layout` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-layout` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-locale-config` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
 | `root/meeting-facilitation` | L3 | 1.4.4 | — | — | — | — | — |
-| `root/performance-tuning` | L3 | 1.0.1 | — | — | — | — | — |
+| `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/platform-skill-lifecycle-manager` | L3 | 1.0.2 | — | — | — | — | — |
-| `root/post-write-chain` | L3 | 1.3.2 | — | — | — | — | — |
+| `root/post-write-chain` | L3 | 1.3.2 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/project-review` | L3 | 1.3.3 | — | — | — | — | — |
 | `root/research-analysis` | L3 | 1.0.2 | — | — | root/documentation-writing (enables) | — | — |
-| `root/sap-co` | L3 | 1.0.0 | — | — | root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (follows) | — | — |
-| `root/sap-fi` | L3 | 1.0.0 | — | — | root/sap-co (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
-| `root/sap-le` | L3 | 1.0.0 | — | — | root/sap-pp (follows), root/sap-sd (composes_with) | — | — |
-| `root/sap-mm` | L3 | 1.0.0 | — | — | root/sap-le (follows), root/sap-pp (composes_with) | — | — |
-| `root/sap-pp` | L3 | 1.0.0 | — | — | root/dump-monitor (follows), root/sap-sd (composes_with) | — | — |
-| `root/sap-sd` | L3 | 1.0.0 | — | — | root/sap-mm (follows) | — | — |
+| `root/sap-co` | L3 | 1.0.0 | root/architect, root/co-analyst, root/dba | — | root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (follows) | — | — |
+| `root/sap-fi` | L3 | 1.0.0 | root/architect, root/dba, root/fi-analyst | — | root/sap-co (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
+| `root/sap-le` | L3 | 1.0.0 | root/architect, root/dba, root/le-analyst | — | root/sap-pp (follows), root/sap-sd (composes_with) | — | — |
+| `root/sap-mm` | L3 | 1.0.0 | root/architect, root/dba, root/mm-analyst | — | root/sap-le (follows), root/sap-pp (composes_with) | — | — |
+| `root/sap-pp` | L3 | 1.0.0 | root/architect, root/dba, root/pp-analyst | — | root/dump-monitor (follows), root/sap-sd (composes_with) | — | — |
+| `root/sap-sd` | L3 | 1.0.0 | root/architect, root/dba, root/sd-analyst | — | root/sap-mm (follows) | — | — |
 | `root/script-lifecycle-manager` | L3 | 1.2.2 | — | — | — | — | — |
-| `root/security-scan` | L3 | 1.2.0 | — | — | — | — | — |
+| `root/security-scan` | L3 | 1.3.0 | — | — | — | — | — |
 | `root/service-design` | L3 | 1.1.0 | — | — | root/accessibility-audit (follows), root/token-usage-lint (follows), root/ui-ux-design-intelligence (follows) | — | — |
 | `root/skill-lifecycle-manager` | L3 | 1.5.0 | — | — | root/script-lifecycle-manager (composes_with) | — | — |
 | `root/source-command-celebrate` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/source-command-commit-push-pr` | L3 | 1.0.3 | — | — | — | — | — |
-| `root/standup-synthesizer` | L3 | 1.0.0 | — | — | — | — | — |
-| `root/sync` | L3 | 1.8.0 | — | — | — | — | — |
+| `root/standup-synthesizer` | L3 | 1.1.0 | — | — | — | — | — |
+| `root/sync` | L3 | 1.9.0 | — | — | — | — | — |
 | `root/team-builder` | L3 | 1.2.0 | — | — | — | — | — |
 | `root/token-usage-lint` | L3 | 1.1.0 | — | — | root/ui-ux-design-intelligence (follows) | — | — |
 | `root/translate` | L3 | 1.0.3 | — | — | root/documentation-writing (composes_with) | — | — |
@@ -124,7 +124,7 @@ None — every capability has a single content hash.
 
 ## Skills Without `used_by` (G6)
 
-45 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
+34 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
 
 ### Suggested `required_by` agents (E4, report-only)
 
@@ -132,19 +132,11 @@ Inferred from procedure steps that cite the skill and are owned via `step_by_age
 
 | Skill | Suggested agents (via procedures) |
 |-------|-----------------------------------|
-| `root/abap-dev` | root/architect (co-abap.solution-blueprint); root/co-analyst (co-abap.requirements-analysis); root/code-writer (co-abap.custom-dev-delivery); root/dba (co-abap.solution-blueprint); root/devops-admin (co-abap.transport-release); root/fiori-developer (co-abap.custom-dev-delivery); root/form-expert (co-abap.custom-dev-delivery); root/gui-scripter (co-abap.custom-dev-delivery); root/interface-expert (co-abap.solution-blueprint); root/sap-investigator (co-abap.custom-dev-delivery); root/schema-inspector (co-abap.requirements-analysis); root/test-runner (co-abap.custom-dev-delivery, co-abap.transport-release) |
-| `root/dump-monitor` | root/read-only-analyst (co-abap.requirements-analysis) |
 | `root/research-analysis` | root/architect (co-abap.requirements-analysis) |
-| `root/sap-co` | root/co-analyst (co-abap.requirements-analysis) |
-| `root/sap-fi` | root/fi-analyst (co-abap.requirements-analysis) |
-| `root/sap-le` | root/le-analyst (co-abap.requirements-analysis) |
-| `root/sap-mm` | root/mm-analyst (co-abap.requirements-analysis) |
-| `root/sap-pp` | root/pp-analyst (co-abap.requirements-analysis) |
-| `root/sap-sd` | root/sd-analyst (co-abap.requirements-analysis) |
 
 ## Skill Usage (E3)
 
-Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-03), window 90 days. Skill nodes with usage: 2.
+Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-08), window 90 days. Skill nodes with usage: 0.
 
-- **used-but-unlinked** (usage > 0, no `used_by`) (2): root/project-review, root/sync
-- **unused** (0 sessions in 90 days) (48): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/delegate-to-hub, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager, root/source-command-celebrate … and 8 more
+- **used-but-unlinked** (usage > 0, no `used_by`) (0): —
+- **unused** (0 sessions in 90 days) (50): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/delegate-to-hub, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/project-review, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager … and 10 more

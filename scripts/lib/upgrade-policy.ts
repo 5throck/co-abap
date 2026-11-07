@@ -1,4 +1,27 @@
-// @version 1.36.0
+// @version 1.38.0
+// v1.38.0 (2026-11-08, spec docs/designs/2026-11-08-trail-fleet-standard-design.md
+//          — DEC-20261108-01 R2): ADD_IF_MISSING_FILES gains the three .trail
+//          skeleton wiring files (`.trail/hook.cjs`, `.trail/README.md`,
+//          `.trail/.gitignore` — the vendor's tracked-but-tool-owned commit-once
+//          wiring, shipped byte-identical at templates/common/.trail/).
+//          ADD_IF_MISSING (seed-when-absent, withhold-when-present) is
+//          load-bearing here: without the claim these paths fall through to the
+//          generic VARIANT ASSET DIRS branch with wholesale SYNC, which would
+//          clobber a `trail init`-refreshed hook.cjs (self-managed surface —
+//          docs/self-managed-surfaces.json). The TRAIL_RETIRED_SEEDS guard is
+//          untouched: it withholds graft-era seeds, not these trail-era ones.
+//          TRAVERSAL_SKIP_DIRS intentionally does NOT list `.trail` — the walk
+//          must see the skeleton to deliver it.
+// v1.37.0 (2026-11-07, spec docs/designs/2026-11-07-external-deps-machinery-design.md
+//          — implements the upstream external-dependency machinery): resolveClaim gains the
+//          `external-deps.json` claim — policy PROJECT_STATE, pass EXTERNAL
+//          DEPS. The manifest is template-seeded (templates/common +
+//          templates/<variant>) but project-operated (the upgrade pass rewrites
+//          pin/commit on a compat-gated pin move), so a generic SYNC claim would
+//          escalate every pass rewrite to CONFLICT (the delivered-baseline
+//          matrix has no baseline for it). The dedicated EXTERNAL DEPS pass owns
+//          delivery (seed add-if-missing + interim-manifest reconcile) and all
+//          rewrites; TEMPLATE TREE SYNC never touches the file.
 // v1.36.0 (2026-11-01, spec docs/designs/2026-11-01-hub-consolidation-design.md
 //          Phase 1 batch D): PLACEHOLDER_ALLOWLIST gains the 2 co-develop
 //          generic-dev-spine agent canonicals that carry derivation tokens
@@ -505,7 +528,17 @@ const TEMPLATE_ONLY_FILES = new Set([
  *  the guard: if a future change ever put docs/project.md template-side, the
  *  deny-list fallback (SYNC) would wholesale-copy over user content, and this
  *  claim still blocks that (the co-abap docs/context.md regression class). */
-const ADD_IF_MISSING_FILES = new Set(['docs/project.md']);
+const ADD_IF_MISSING_FILES = new Set([
+  'docs/project.md',
+  // Trail skeleton wiring (design 2026-11-08-trail-fleet-standard-design §5.2,
+  // DEC-20261108-01 R2): seed-when-absent, withhold-when-present — a project
+  // whose copies exist (scaffold-delivered or `trail init`-refreshed) keeps
+  // them byte-for-byte. Unlike docs/project.md this claim FIRES: the files
+  // exist template-side at templates/common/.trail/ from this design on.
+  '.trail/hook.cjs',
+  '.trail/README.md',
+  '.trail/.gitignore',
+]);
 
 /** Project runtime / generated state — exists in projects but is never template-delivered. */
 const PROJECT_STATE_FILES = new Set([
@@ -593,6 +626,13 @@ export function resolveClaim(relPath: string, variant = ''): UpgradeClaim {
   if (rel.endsWith('.cmd')) return { policy: 'TEMPLATE_ONLY', pass: '(platform profile)' };
 
   if (PROJECT_STATE_FILES.has(rel)) return { policy: 'PROJECT_STATE', pass: '(project state)' };
+  // external-deps.json (design docs/designs/2026-11-07-external-deps-machinery-design.md
+  // D1/D3): the manifest is template-SEEDED (common + variant)
+  // but project-OPERATED — the pass rewrites pin/commit on a compat-gated pin move, so a
+  // generic SYNC claim would escalate every rewrite to CONFLICT. The dedicated EXTERNAL
+  // DEPS pass owns delivery (seed add-if-missing + interim-manifest reconcile) and all
+  // rewrites; TEMPLATE TREE SYNC never touches it.
+  if (rel === 'external-deps.json') return { policy: 'PROJECT_STATE', pass: 'EXTERNAL DEPS' };
   if (underDir(rel, 'memory')) return { policy: 'PROJECT_STATE', pass: '(project memory)' };
   if (rel === 'docs/countries/ACTIVE.md') return { policy: 'PROJECT_STATE', pass: '(country runtime state)' };
 

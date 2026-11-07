@@ -44,8 +44,8 @@
       "name": "architect",
       "scope": "root",
       "capability": "architect",
-      "content_hash": "0ffa59e9579c9ca0",
-      "version": "1.1.1",
+      "content_hash": "df886355fd897a2f",
+      "version": "1.1.2",
       "mirrors": [
         "agents/architect.md"
       ]
@@ -57,8 +57,8 @@
       "name": "co-analyst",
       "scope": "root",
       "capability": "co-analyst",
-      "content_hash": "f80a3778a26ba466",
-      "version": "1.1.1",
+      "content_hash": "e4da6b0f2d837de2",
+      "version": "1.1.2",
       "mirrors": [
         "agents/co-analyst.md"
       ]
@@ -70,8 +70,8 @@
       "name": "code-writer",
       "scope": "root",
       "capability": "code-writer",
-      "content_hash": "abbe5ab6d3d1abae",
-      "version": "1.1.1",
+      "content_hash": "dc70b90963e86fa7",
+      "version": "1.1.2",
       "mirrors": [
         "agents/code-writer.md"
       ]
@@ -83,8 +83,8 @@
       "name": "dba",
       "scope": "root",
       "capability": "dba",
-      "content_hash": "062d3d8ae82ed8a3",
-      "version": "1.1.1",
+      "content_hash": "f8bd3924ba9b0b3a",
+      "version": "1.1.2",
       "mirrors": [
         "agents/dba.md"
       ]
@@ -96,8 +96,8 @@
       "name": "devops-admin",
       "scope": "root",
       "capability": "devops-admin",
-      "content_hash": "91dc50c299b36cbb",
-      "version": "1.1.1",
+      "content_hash": "edb1164e3b54d7ba",
+      "version": "1.1.2",
       "mirrors": [
         "agents/devops-admin.md"
       ]
@@ -109,8 +109,8 @@
       "name": "fi-analyst",
       "scope": "root",
       "capability": "fi-analyst",
-      "content_hash": "ce37431a7dba746d",
-      "version": "1.1.1",
+      "content_hash": "61768a7787d330f1",
+      "version": "1.1.2",
       "mirrors": [
         "agents/fi-analyst.md"
       ]
@@ -161,7 +161,7 @@
       "name": "i18n-specialist",
       "scope": "root",
       "capability": "i18n-specialist",
-      "content_hash": "141dc987bf0f5884",
+      "content_hash": "bcd1b046707ffb6d",
       "version": "1.1.1",
       "mirrors": [
         "agents/i18n-specialist.md"
@@ -187,8 +187,8 @@
       "name": "le-analyst",
       "scope": "root",
       "capability": "le-analyst",
-      "content_hash": "a9e535e2e41b9a62",
-      "version": "1.1.1",
+      "content_hash": "8dd08955e50a0c51",
+      "version": "1.1.2",
       "mirrors": [
         "agents/le-analyst.md"
       ]
@@ -200,8 +200,8 @@
       "name": "mm-analyst",
       "scope": "root",
       "capability": "mm-analyst",
-      "content_hash": "822ecb5ee6a200d0",
-      "version": "1.1.1",
+      "content_hash": "4f4baa2f52c4d468",
+      "version": "1.1.2",
       "mirrors": [
         "agents/mm-analyst.md"
       ]
@@ -226,8 +226,8 @@
       "name": "pp-analyst",
       "scope": "root",
       "capability": "pp-analyst",
-      "content_hash": "50b8d1976c281ef4",
-      "version": "1.1.1",
+      "content_hash": "a1e45bf6f1f0e5bb",
+      "version": "1.1.2",
       "mirrors": [
         "agents/pp-analyst.md"
       ]
@@ -252,8 +252,8 @@
       "name": "sap-investigator",
       "scope": "root",
       "capability": "sap-investigator",
-      "content_hash": "b7fa9ff995fa3f1e",
-      "version": "1.1.1",
+      "content_hash": "605e766b16d5939e",
+      "version": "1.1.2",
       "mirrors": [
         "agents/sap-investigator.md"
       ]
@@ -278,8 +278,8 @@
       "name": "sd-analyst",
       "scope": "root",
       "capability": "sd-analyst",
-      "content_hash": "a97543ebec67bc63",
-      "version": "1.1.1",
+      "content_hash": "6189db1fe5605f1b",
+      "version": "1.1.2",
       "mirrors": [
         "agents/sd-analyst.md"
       ]
@@ -304,8 +304,8 @@
       "name": "test-runner",
       "scope": "root",
       "capability": "test-runner",
-      "content_hash": "0f94408dd5db683e",
-      "version": "1.1.1",
+      "content_hash": "f35fd9cb5b523005",
+      "version": "1.1.2",
       "mirrors": [
         "agents/test-runner.md"
       ]
@@ -527,7 +527,7 @@
       "scope": "root",
       "capability": "agent-lifecycle-manager",
       "content_hash": "230ce8c036a46601",
-      "version": "1.3.1",
+      "version": "1.4.0",
       "mirrors": [
         "skills/agent-lifecycle-manager/SKILL.md",
         ".claude/skills/agent-lifecycle-manager/SKILL.md",
@@ -850,8 +850,8 @@
       "name": "i18n-layout",
       "scope": "root",
       "capability": "i18n-layout",
-      "content_hash": "7a078ebadc5c908f",
-      "version": "1.0.0",
+      "content_hash": "3991611b47f6aac6",
+      "version": "1.0.1",
       "mirrors": [
         "skills/i18n-layout/SKILL.md",
         ".claude/skills/i18n-layout/SKILL.md",
@@ -985,11 +985,7 @@
         ".agents/skills/project-review/SKILL.md",
         ".codex/skills/project-review/SKILL.md",
         ".hermes/skills/project-review/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 1,
-        "last_used": "2026-10-29"
-      }
+      ]
     },
     {
       "id": "skill:root/research-analysis",
@@ -1142,8 +1138,8 @@
       "name": "security-scan",
       "scope": "root",
       "capability": "security-scan",
-      "content_hash": "3e12b15970e57e69",
-      "version": "1.2.0",
+      "content_hash": "6a70cb5e596dec68",
+      "version": "1.3.0",
       "mirrors": [
         "skills/security-scan/SKILL.md",
         ".claude/skills/security-scan/SKILL.md",
@@ -1232,8 +1228,8 @@
       "name": "standup-synthesizer",
       "scope": "root",
       "capability": "standup-synthesizer",
-      "content_hash": "c74ddbdf4afc867f",
-      "version": "1.0.0",
+      "content_hash": "78faf9d2096937e5",
+      "version": "1.1.0",
       "mirrors": [
         "skills/standup-synthesizer/SKILL.md",
         ".claude/skills/standup-synthesizer/SKILL.md",
@@ -1250,8 +1246,8 @@
       "name": "sync",
       "scope": "root",
       "capability": "sync",
-      "content_hash": "661843888f616b5a",
-      "version": "1.8.0",
+      "content_hash": "a0e1df01c91ed3ae",
+      "version": "1.9.0",
       "mirrors": [
         "skills/sync/SKILL.md",
         ".claude/skills/sync/SKILL.md",
@@ -1259,11 +1255,7 @@
         ".agents/skills/sync/SKILL.md",
         ".codex/skills/sync/SKILL.md",
         ".hermes/skills/sync/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 1,
-        "last_used": "2026-10-29"
-      }
+      ]
     },
     {
       "id": "skill:root/team-builder",
@@ -2017,6 +2009,50 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "skill:root/abap-dev",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/abap-dev",
+      "to": "agent:root/code-writer",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/code-writer.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/abap-dev",
+      "to": "agent:root/sap-investigator",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/sap-investigator.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/abap-dev",
+      "to": "agent:root/test-runner",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/test-runner.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
       "type": "produces",
       "from": "skill:root/abap-dev",
       "to": "output_type.acceptance_report",
@@ -2255,6 +2291,28 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "skill:root/desktop-app-fallback",
+      "to": "agent:root/code-writer",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/code-writer.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/desktop-app-fallback",
+      "to": "agent:root/test-runner",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/test-runner.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
       "type": "composes_with",
       "from": "skill:root/documentation-writing",
       "to": "skill:root/team-builder",
@@ -2263,6 +2321,17 @@
       "provenance": {
         "file": "skills/documentation-writing/SKILL.md",
         "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/dump-monitor",
+      "to": "agent:root/devops-admin",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/devops-admin.md",
+        "field": "required_skills",
         "index": 0
       }
     },
@@ -2543,6 +2612,61 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "skill:root/performance-tuning",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/performance-tuning",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/performance-tuning",
+      "to": "agent:root/sap-investigator",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/sap-investigator.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/post-write-chain",
+      "to": "agent:root/code-writer",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/code-writer.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/post-write-chain",
+      "to": "agent:root/test-runner",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/test-runner.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
       "type": "produces",
       "from": "skill:root/research-analysis",
       "to": "output_type.feasibility_findings",
@@ -2557,6 +2681,39 @@
         "file": "skills/research-analysis/SKILL.md",
         "field": "relates_to",
         "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-co",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 7
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-co",
+      "to": "agent:root/co-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/co-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-co",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 6
       }
     },
     {
@@ -2647,6 +2804,39 @@
       "from": "skill:root/sap-co",
       "to": "skill:root/sap-sd",
       "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-fi",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-fi",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-fi",
+      "to": "agent:root/fi-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/fi-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
     },
     {
       "type": "produces",
@@ -2750,6 +2940,39 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "skill:root/sap-le",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 6
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-le",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 5
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-le",
+      "to": "agent:root/le-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/le-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
       "type": "produces",
       "from": "skill:root/sap-le",
       "to": "output_type.module_impact_notes",
@@ -2813,6 +3036,39 @@
       "from": "skill:root/sap-le",
       "to": "skill:root/sap-sd",
       "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-mm",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 4
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-mm",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 3
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-mm",
+      "to": "agent:root/mm-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/mm-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
     },
     {
       "type": "produces",
@@ -2880,6 +3136,39 @@
       "source": "prose"
     },
     {
+      "type": "used_by",
+      "from": "skill:root/sap-pp",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 5
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-pp",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 4
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-pp",
+      "to": "agent:root/pp-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/pp-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
+    },
+    {
       "type": "produces",
       "from": "skill:root/sap-pp",
       "to": "output_type.module_impact_notes",
@@ -2943,6 +3232,39 @@
       "from": "skill:root/sap-pp",
       "to": "skill:root/sap-sd",
       "source": "prose"
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-sd",
+      "to": "agent:root/architect",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/architect.md",
+        "field": "required_skills",
+        "index": 2
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-sd",
+      "to": "agent:root/dba",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/dba.md",
+        "field": "required_skills",
+        "index": 1
+      }
+    },
+    {
+      "type": "used_by",
+      "from": "skill:root/sap-sd",
+      "to": "agent:root/sd-analyst",
+      "source": "required_skills",
+      "provenance": {
+        "file": "agents/sd-analyst.md",
+        "field": "required_skills",
+        "index": 0
+      }
     },
     {
       "type": "produces",

@@ -1,4 +1,81 @@
-// @version 1.37.0
+// @version 1.42.0
+// v1.42.0 (2026-11-06, DEC-20261106-03): hoisted compound Bun-shell interpolations
+//          (git show HEAD:<rel>, gh api pulls endpoint/jq) into named consts — no behaviour change.
+// v1.41.0 (2026-11-05, T-20261105-002): step 3.88 gains the repaired-at-head
+//          tier — memory-union-verify v1.1.0 re-tiers a post-activation drop
+//          finding group as 'repaired-at-head' (INFO) when the current
+//          working-tree file accounts for every parent-owed block
+//          (repairedAtHead, with the un-headed-block absorption tolerance).
+//          The gate stays FATAL for unrepaired post-activation drops;
+//          repaired groups print an INFO line so the repair stays visible in
+//          the run log. Completes design §5.3's "a repaired file passes"
+//          premise (the 2026-11-05-merge-integrity-design v1 implementation
+//          compared the merge commit's own blob, making forward repairs
+//          impossible — live-blocked since merge c8aba5d61).
+// v1.40.0 (2026-11-05, T-20261104-001 — spec
+//          docs/designs/2026-11-05-merge-integrity-design.md §5.1): new step
+//          3.88 — memory session-block union-verify, BLOCKING. On 2026-11-04
+//          two PR conflict resolutions (#1842/#1845) silently corrupted
+//          memory/YYYY-MM-DD.md session blocks (dropped blocks + fused
+//          heading/separator, no conflict markers); no machine gate compared
+//          merge results against parents. Arm A sweeps bounded recent merge
+//          commits (7 days AND 20 merges) touching flat memory logs and
+//          requires every parent block to survive into the merged result
+//          (order/dedup-tolerant, heading+firstLine fallback for cosmetic
+//          reflows) plus structural well-formedness; Arm B enforces the same
+//          structure on every flat memory log at HEAD (block count ===
+//          separator count + 1, '## '-headed blocks, no block with >= 2
+//          '## Session Summary' headings). Detection core is the pure
+//          helpers/memory-union-verify.ts v1.0.0 (unit-pinned by
+//          tests/unit/memory-union-verify.test.ts), byte-identical L1 mirror
+//          (self-contained: node:fs + git subprocess only — no guarded
+//          dynamic import needed, unlike ticket-drift.ts). Two-tier rollout
+//          (user-approved adaptation, 2026-11-05): the design's "expected
+//          pass on first run" premise was false — the 7-day window contains
+//          REAL landed union violations that immutable history cannot repair
+//          (merge 3db832974 / PR #1850 dropped ~20 session blocks) and five
+//          pre-existing malformed logs at HEAD (2026-10-29/-30/-31, 11-02,
+//          11-03). So: post-activation merges (GATE_3_88_ACTIVATED_AT, the
+//          gate landing instant) and all worktree-structure findings are
+//          FATAL with repair guidance; pre-activation merge findings are
+//          WARN and age out with the window; the five malformed logs were
+//          structurally repaired (separator restore / stub heading) in this
+//          landing commit. Absent memory/ = documented no-op.
+// v1.39.0 (2026-11-05, T-20261104-004 item 3 — spec
+//          docs/designs/2026-11-04-project-loss-hardening-design.md §5.3b
+//          decision (i)): new step 3.87 — ticket-store memory-drift check,
+//          BLOCKING. Every ticket id cited in memory/*.md
+//          (\b[TU]-\d{8}-\d{3,4}\b) must resolve via resolveTicketLocation
+//          (live stores + both archives); the pure check lives in
+//          helpers/ticket-drift.ts v1.0.0. Read-only, lock-free, placed with
+//          the other cheap gates in the 3.x band: every sync already runs
+//          after sessions write memory, and dev-sync is the workspace's
+//          strongest recurring gate — this is the check that would have caught
+//          the vanished original T-20261104-004 filing at the first
+//          post-citation sync (its id was cited at memory/2026-11-04.md:175).
+//          `ticket.ts doctor` carries the same check as the report-only
+//          diagnostic arm (design §5.3b decision (ii)). Absent memory/ =
+//          documented no-op (fresh scaffolds); session-start hook was rejected
+//          at the Design Gate (§4-B).
+// v1.38.0 (2026-11-04, U-20261104-003): new step 4.87 — agent frontmatter
+//          last_updated bump. A sync pass that mechanically rewrites an agent
+//          file's frontmatter (tier normalization, model-registry delivery,
+//          stub merges) leaves the file's `last_updated:` stale, so
+//          agent-lifecycle-audit emits an identical staleness warning for
+//          every touched file on every later run (co-newbiz: 34 warnings off
+//          the single 2026-10-28 sync commit 0b1a406c). After the pipeline's
+//          writes and before the audit gate, the pass inspects every
+//          sync-modified agent .md (agents/, templates/**/agents/) whose
+//          HEAD→worktree diff is confined to the frontmatter block and
+//          re-stamps the top-level last_updated to the run date via
+//          bumpFrontmatterLastUpdated (helpers/upgrade-versions.ts — no key
+//          injection, idempotent). Negative contracts hold by construction:
+//          body edits are never touched, unchanged files never enter the
+//          modified set (no-op syncs stay no-ops). Decision core is the pure
+//          helpers/agent-mechanical-date-bump.ts v1.0.0 (unit-pinned by
+//          tests/unit/agent-mechanical-date-bump.test.ts). Non-blocking:
+//          individual failures WARN; the lifecycle gates still see any stale
+//          date that escapes.
 // v1.37.0 (2026-10-31, U-20261029-004 — spec
 //          docs/designs/2026-10-31-variant-generators-design.md §4-§5): new
 //          step 3.86 — declared generator pre-convergence. A variant project
@@ -300,6 +377,10 @@ import { detectVersionBumps, hasTestUnitScript } from './helpers/version-bump.ts
 import { changelogGateFindings } from './helpers/changelog-duplicates.ts';
 import { runDeclaredGenerators } from './lib/generator-manifest.ts';
 import { composeCommitMessage, deriveCommitMessage, isWeakCommitMessage } from './helpers/commit-message.ts';
+import { localDateISO } from './lib/local-date.ts';
+import { isAgentMdPath, bumpMechanicalLastUpdated } from './helpers/agent-mechanical-date-bump.ts';
+import { driftCheck } from './helpers/ticket-drift.ts';
+import { unionScan, wellFormedScan } from './helpers/memory-union-verify.ts';
 
 const GREEN = '\x1b[32m';
 const RED = '\x1b[31m';
@@ -801,6 +882,102 @@ if (!generatorRun.ok) {
     console.error(`${RED}✗ Step 3.86: declared generator(s) FAILED — /sync aborted (see the [generator:<name>] rows above)${RESET}`);
     console.error('  Fix: run the failing generator by hand to inspect the full (unredacted) failure, then re-run /sync.');
     if (import.meta.main) process.exit(1);
+}
+
+// 3.87 Ticket-store memory-drift check (BLOCKING — v1.39.0, T-20261104-004
+//     item 3, spec docs/designs/2026-11-04-project-loss-hardening-design.md
+//     §5.3b decision (i)). Every ticket id CITED in memory/*.md
+//     (\b[TU]-\d{8}-\d{3,4}\b) must resolve via resolveTicketLocation (live
+//     stores + both archives). The original T-20261104-004 filing silently
+//     vanished while its id stayed cited in the same day's memory log — a
+//     within-session-detectable defect nobody could detect. This step is the
+//     PRIMARY, machine-enforced trigger (design §4-B option C): read-only,
+//     lock-free, cheap, placed with the other cheap gates in the 3.x band;
+//     every sync already runs after sessions write memory. `ticket.ts doctor`
+//     reports the same findings as the diagnostic arm (decision (ii)). The
+//     check is deliberately bounded to the citation pattern — free-text
+//     references that do not match the id shape are out of scope. Absent
+//     memory/ (fresh scaffold) is a documented no-op; absent stores make every
+//     cited id unresolved, which is exactly the silent-loss signal.
+if (fs.existsSync(path.join('memory'))) {
+    const drift = await driftCheck({
+        memoryDir: path.join('memory'),
+        serviceDir: path.join('tickets'),
+        governanceDir: path.join('tickets', 'governance'),
+    });
+    if (drift.unresolved.length > 0) {
+        console.error(`${RED}✗ Step 3.87: ticket-store memory-drift — ${drift.unresolved.length} cited ticket id(s) resolve in NO store or archive (of ${drift.cited} cited)${RESET}`);
+        for (const f of drift.unresolved) {
+            console.error(`   ${f.id} cited at ${f.file}:${f.line}`);
+        }
+        console.error('  Fix: restore the vanished ticket file (check tickets/governance/archive, git history of tickets/), or correct the citation in the named memory file if it is a typo.');
+        if (import.meta.main) process.exit(1);
+    }
+    console.log(`${GREEN}✓ Step 3.87: ticket-store memory-drift check passed (${drift.cited} distinct cited id(s), all resolve)${RESET}`);
+}
+
+// 3.88 Memory session-block union-verify (BLOCKING for post-activation merges
+//     and worktree structure — v1.40.0, T-20261104-001, spec
+//     docs/designs/2026-11-05-merge-integrity-design.md §5.1; two-tier
+//     rollout adaptation user-approved 2026-11-05). Two arms via
+//     helpers/memory-union-verify.ts v1.0.0:
+//     Arm A — merge-commit union-verify: bounded sweep (7 days AND 20 merges)
+//     of merge commits touching flat memory logs; every block owed by either
+//     parent must appear in the merged result (order/dedup-tolerant,
+//     heading+firstLine fallback absorbs cosmetic reflows) and the merged
+//     result must be structurally well-formed. Findings on merge commits
+//     committed AFTER GATE_3_88_ACTIVATED_AT are FATAL with repair guidance;
+//     findings on pre-activation history are WARN — immutable history cannot
+//     be repaired, and the design's "expected pass on first run" premise was
+//     false (the window contains real landed drops, e.g. merge 3db832974 /
+//     PR #1850); those age out with the 7-day window.
+//     Arm B — worktree structural integrity: every flat memory/*.md at HEAD
+//     must satisfy blockCount === separatorCount + 1, begin every block with
+//     a '## ' heading, and carry no block with >= 2 '## Session Summary'
+//     headings (the fused-separator signature). FATAL; the five
+//     pre-existing malformed logs (2026-10-29/-30/-31, 11-02, 11-03) were
+//     structurally repaired in the landing commit itself.
+//     Drops via non-merge commits are not detectable (no parents to compare;
+//     design §5.3 documented limit). Read-only, lock-free, in the cheap-gates
+//     band; absent memory/ is a documented no-op (fresh scaffolds).
+const GATE_3_88_ACTIVATED_AT = '2026-11-05T07:00:00+09:00'; // gate landing instant (PR #1856 commit 2)
+if (fs.existsSync(path.join('memory'))) {
+    const merges = unionScan({ sinceDays: 7, maxCommits: 20, activationIso: GATE_3_88_ACTIVATED_AT });
+    const blocking = merges.filter((r) => r.tier === 'blocking');
+    const historical = merges.filter((r) => r.tier === 'historical');
+    const repaired = merges.filter((r) => r.tier === 'repaired-at-head');
+    if (blocking.length > 0) {
+        console.error(`${RED}✗ Step 3.88: memory union-verify — ${blocking.length} post-activation merge finding group(s)${RESET}`);
+        for (const r of blocking) {
+            console.error(`   ${r.file} @ merge ${r.commit.slice(0, 12)}:`);
+            for (const f of r.findings) console.error(`     [${f.kind}] ${f.detail}`);
+            console.error(`   Fix: compare git show ${r.commit}:${r.file} against git show ${r.commit}^1:${r.file} and git show ${r.commit}^2:${r.file}; restore the named block(s) in the working tree and re-commit (history is immutable — the repair lands forward).`);
+        }
+        if (import.meta.main) process.exit(1);
+    }
+    if (historical.length > 0) {
+        console.log(`${YELLOW}⚠️  Step 3.88: ${historical.length} pre-activation merge finding group(s) (WARN — immutable history, ages out with the 7-day window):${RESET}`);
+        for (const r of historical) {
+            for (const f of r.findings) console.log(`   [${f.kind}] ${r.file} @ merge ${r.commit.slice(0, 12)}: ${f.detail}`);
+        }
+    }
+    if (repaired.length > 0) {
+        console.log(`${GREEN}ℹ️  Step 3.88: ${repaired.length} repaired-at-head merge finding group(s) (INFO — the merge-time drop is restored in the current working tree; ages out with the window):${RESET}`);
+        for (const r of repaired) {
+            for (const f of r.findings) console.log(`   [${f.kind}] ${r.file} @ merge ${r.commit.slice(0, 12)}: ${f.detail}`);
+        }
+    }
+    const wf = wellFormedScan({ memoryDir: path.join('memory') });
+    if (wf.length > 0) {
+        console.error(`${RED}✗ Step 3.88: memory structural integrity — ${wf.length} malformed memory log(s) at HEAD${RESET}`);
+        for (const r of wf) {
+            console.error(`   ${r.file}:`);
+            for (const f of r.findings) console.error(`     [${f.kind}] ${f.detail}`);
+        }
+        console.error(`  Fix: repair the named file(s) structurally (restore the missing '---' separator(s) / '## Session Summary' block heading), then re-run /sync.`);
+        if (import.meta.main) process.exit(1);
+    }
+    console.log(`${GREEN}✓ Step 3.88: memory union-verify passed (Arm A: ${merges.length} finding group(s), ${blocking.length} blocking / ${historical.length} historical / ${repaired.length} repaired-at-head; Arm B: worktree clean)${RESET}`);
 }
 
 // 3.9 Spec registry check (BLOCKING since ADR-0055 Stage 2 — the relevance check
@@ -1392,6 +1569,55 @@ if (fs.existsSync(genManifestTs)) {
     }
 }
 
+// 4.87 Agent frontmatter last_updated bump (U-20261104-003) — when a sync
+//     pipeline pass mechanically rewrites an agent file's YAML frontmatter
+//     (tier normalization, model-registry delivery, stub merges) the body is
+//     byte-identical but the frontmatter `last_updated:` date stays stale, so
+//     agent-lifecycle-audit emits identical "last_updated older than the
+//     last git commit" warning for every touched file on every later run
+//     (co-newbiz: 34 warnings from the single 2026-10-28 tier-collapse sync
+//     commit 0b1a406c). This pass walks the sync-run's modified agent files,
+//     and for each one whose HEAD→worktree diff is confined to the
+//     frontmatter block, re-stamps the top-level `last_updated:` to the run
+//     date via the shared bumpFrontmatterLastUpdated primitive. Body edits
+//     are never touched (the author dates those); unchanged files never enter
+//     the modified set (no-op syncs stay no-ops); files without a top-level
+//     `last_updated:` key are never injected. Decision core is pure
+//     (helpers/agent-mechanical-date-bump.ts v1.0.0, unit-pinned by
+//     tests/unit/agent-mechanical-date-bump.test.ts). Hygiene pass:
+//     non-blocking — failures WARN and the lifecycle gates still see the
+//     stale dates, so nothing silently weakens.
+try {
+    const agentBumpStatus = await $`git status --porcelain=v1 -z -uall`.quiet().nothrow();
+    if (agentBumpStatus.exitCode === 0) {
+        const changedPaths = parseStatusPorcelain(agentBumpStatus.stdout.toString());
+        const bumpDate = localDateISO();
+        let bumpedCount = 0;
+        for (const rel of changedPaths) {
+            if (!isAgentMdPath(rel)) continue;
+            let headText: string | null = null;
+            const headRef = 'HEAD:' + rel;
+            const headRes = await $`git show ${headRef}`.quiet().nothrow();
+            if (headRes.exitCode === 0) headText = headRes.stdout.toString();
+            // exitCode !== 0 → untracked/new file: not a mechanical rewrite of
+            // an existing agent, skip (a new file's date is authored content).
+            const worktreePath = path.resolve(rel);
+            if (!fs.existsSync(worktreePath)) continue;
+            const currentText = fs.readFileSync(worktreePath, 'utf8');
+            const result = bumpMechanicalLastUpdated(headText, currentText, bumpDate);
+            if (!result.bumped) continue;
+            fs.writeFileSync(worktreePath, result.text, 'utf8');
+            await $`git add -- ${rel}`.nothrow();
+            bumpedCount++;
+        }
+        if (bumpedCount > 0) {
+            console.log(`${GREEN}✅ Step 4.87: bumped frontmatter last_updated to ${bumpDate} on ${bumpedCount} mechanically rewritten agent file(s) (U-20261104-003)${RESET}`);
+        }
+    }
+} catch (err) {
+    console.warn(`${YELLOW}⚠️  Step 4.87: agent frontmatter last_updated bump failed (non-blocking): ${String(err)}${RESET}`);
+}
+
 // 4.9 Audit gate — call audit.ts directly (platform-independent, no shell intermediary)
 //     Runs AFTER publish + skill sync so templates/common/ is up-to-date with scrub.
 const auditRes = await $`bun scripts/audit.ts`.nothrow();
@@ -1862,7 +2088,9 @@ if (!existingPrUrl && isGraphqlBlocked(existingPrRes)) {
     const originUrl = await $`git remote get-url origin`.quiet().nothrow();
     const slugMatch = originUrl.stdout.toString().trim().match(/github\.com[:/]([^/]+\/[^/]+?)(?:\.git)?$/);
     if (slugMatch) {
-        const rest = await $`gh api ${`repos/${slugMatch[1]}/pulls?head=${slugMatch[1].split('/')[0]}:${branch}&state=open`} --jq ${'.[0].html_url // ""'}`.quiet().nothrow();
+        const prsEndpoint = `repos/${slugMatch[1]}/pulls?head=${slugMatch[1].split('/')[0]}:${branch}&state=open`;
+        const prsJqExpr = '.[0].html_url // ""';
+        const rest = await $`gh api ${prsEndpoint} --jq ${prsJqExpr}`.quiet().nothrow();
         if (rest.exitCode === 0) {
             const restUrl = rest.stdout.toString().trim();
             if (restUrl) {
