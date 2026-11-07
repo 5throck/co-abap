@@ -1,4 +1,31 @@
-// @version 2.61.0
+// @version 2.64.0
+// v2.64.0 (2026-11-07, spec docs/designs/2026-11-07-fleet-membership-ssot-design.md
+//          §5, DEC-20261107-01): fleet membership SSOT —
+//          checkProjectDocMarkerDrift (A6) derives fleet members from
+//          lib/fleet.ts listFleetProjects() (Projects/co-* minus the
+//          docs/fleet-membership.json exclusions — co-abap-plugin carries
+//          no COMMON-CLAUDE/GEMINI/CODEX managed-block obligation); a
+//          malformed registry emits a controlled FAIL row (fail-closed)
+//          instead of guessing membership from the raw glob.
+// v2.63.0 (2026-11-06, DEC-20261106-03, docs/designs/2026-11-06-ci-warning-cleanup-design.md):
+//          (a) shell-injection source scan skips comment-line matches
+//          (helpers/security-validator.ts isSourceCommentLine); (c) workspace-root
+//          "docs/context.md not found" is INFO; (d) USER RULING 2026-11-06: the
+//          context-commonization heuristic (ADR-0050 Part 3) is INFO, not WARN
+//          (check and output retained). New Info() reporter.
+// v2.62.0 (2026-11-04, U-20261104-001): §28 standing audit-hook regression
+//          check no longer emits a permanent false-positive WARN in variant/
+//          PROJECT layouts. The §28 sweep core (templates co-* variant.json
+//          manifest parsing + hook resolution) moved verbatim to the new
+//          helpers/audit-hook-sweep.ts v1.0.0 collectTemplateAuditHooks()
+//          (unit-pinned by tests/unit/audit-hook-sweep.test.ts). When the
+//          sweep finds zero template hooks AND §27 resolved + executed the
+//          root variant.json audit-variant hook (variantAuditPath), §28 now
+//          emits a PASS naming the already-covered hook instead of the
+//          legacy "nothing to regression-check" WARN; the WARN survives only
+//          when no hook ran anywhere. Also updates the co-abap residual pin
+//          comment in tests/unit/hub-topology-legs.test.ts to the re-created
+//          ticket id T-20261104-002 (comment-only).
 // v2.61.0 (2026-11-01, spec docs/designs/2026-11-01-hub-consolidation-design.md
 //          §2.4 leg 3 / §7.3 Phase 1): hub-resolve checker — workspace-root-only
 //          additive gate over the docs/workspace-schema.json hub_topology
@@ -276,12 +303,14 @@ import { parsePmMd, extractVariantOverrides } from './helpers/pm-md-parser.ts';
 import { canonicalOrderViolation } from './spec-register.ts';
 import { AGENT_LAYER1_SECTIONS } from './helpers/golden-reference-loader.ts';
 import { composeResolvedAgentContent } from './helpers/resolve-pm-stub.ts';
-import { sourceShellInjectionPatterns } from './helpers/security-validator.ts';
+import { sourceShellInjectionPatterns, isSourceCommentLine } from './helpers/security-validator.ts';
+import { collectTemplateAuditHooks } from './helpers/audit-hook-sweep.ts';
 import { splitIntoSections, getContentLines, stripMarkerZones } from './helpers/context-sections.ts';
 import { findL0LeakLines } from './helpers/l0-ref-policy.ts';
 import { classifySpecHeader } from './helpers/spec-header-consistency.ts';
 import * as url from 'node:url';
 import { safeFetch } from './lib/ssrf.ts';
+import { listFleetProjects } from './lib/fleet.ts';
 import { detectEncoding, detectHomoglyphs, detectZeroWidthChars, readUTF8File } from './lib/encoding-utils.ts';
 import { variantContextPlacement } from './helpers/variant-context.ts';
 import { resolveDesignLintRoots, validateDesignLintOverride, type DesignLintOverride } from './helpers/design-lint-roots.ts';
@@ -362,6 +391,10 @@ function Warn(msg: string) {
 // U-20261006-004: a gate that determines it does not apply in this context is
 // SKIPPED, not PASSED — the verdict is counted separately so the summary can
 // distinguish "all gates ran and passed" from "some gates did not run".
+// DEC-20261106-03: informational result — printed, never a WARN annotation.
+function Info(msg: string) {
+    console.log(`${CYAN}[INFO] ${msg}${RESET}`);
+}
 function Skip(msg: string) {
     console.log(`${CYAN}[SKIP] ${msg}${RESET}`);
     skippedChecks++;
@@ -829,7 +862,7 @@ if (!LIFECYCLE_ONLY) {
         }
     }
 } else if (isWorkspaceRoot) {
-    Warn('docs/context.md not found - skipping project-level checks (workspace root)');
+    Info('docs/context.md not found - workspace root: project-level checks not applicable');
 } else {
     Fail('docs/context.md missing — every scaffolded L2/L3 project must carry an immutable docs/context.md (SSOT: templates/common/docs/context.md). This usually means the project was created before create-l3-scaffold.ts copied this file (fixed in v1.10.1) — copy templates/common/docs/context.md into docs/context.md to repair it.');
 }
@@ -1763,6 +1796,7 @@ function checkShellInjectionPatterns() {
                 const matches = content.matchAll(sourcePattern.pattern);
                 for (const foundMatch of matches) {
                     const matchIndex = foundMatch.index ?? 0;
+                    if (isSourceCommentLine(content, matchIndex)) continue;
                     const upToMatch = content.slice(0, matchIndex);
                     const lineNo = upToMatch.split('\n').length;
                     const remediationText = sourcePattern.remediation;
@@ -2233,10 +2267,21 @@ function checkProjectDocMarkerDrift() {
     const expectedCodex = countMarkers(path.join('templates', 'common', 'CODEX.md'), 'COMMON-CODEX');
 
     let warnCount = 0;
-    for (const entry of fs.readdirSync(projectsDir)) {
-        if (!entry.startsWith('co-')) continue;
-        const projectDir = path.join(projectsDir, entry);
-        if (!fs.statSync(projectDir).isDirectory()) continue;
+    // Fleet membership SSOT (design docs/designs/2026-11-07-fleet-membership-ssot-design.md
+    // §5, DEC-20261107-01): fleet members come from lib/fleet.ts listFleetProjects()
+    // (Projects/co-* minus the docs/fleet-membership.json exclusions —
+    // co-abap-plugin carries no managed-block obligation, A6); no co-
+    // prefix filter here. Malformed registry → controlled FAIL (fail-closed,
+    // never guess membership from the raw glob).
+    let fleetDirs: string[];
+    try {
+        fleetDirs = listFleetProjects();
+    } catch (err) {
+        Fail(`Project CLAUDE.md/GEMINI.md marker drift check: fleet registry failed to load — ${err instanceof Error ? err.message : String(err)}`);
+        return;
+    }
+    for (const projectDir of fleetDirs) {
+        const entry = path.basename(projectDir);
 
         if (expectedClaude > 0) {
             const actual = countMarkers(path.join(projectDir, 'CLAUDE.md'), 'COMMON-CLAUDE');
@@ -2269,7 +2314,7 @@ function checkProjectDocMarkerDrift() {
 }
 checkProjectDocMarkerDrift();
 
-// Cross-variant context commonization check (WARN-only, first-pass heuristic).
+// Cross-variant context commonization check (INFO-only since 2026-11-06, DEC-20261106-03, first-pass heuristic).
 // Flags docs/<variant>.context.md sections that duplicate the SAME-heading section in
 // another variant's context.md by >50% content overlap — a candidate for promotion into
 // the shared docs/context.md (ADR-0050 Part 3), or extraction into a shared skill if only
@@ -2336,14 +2381,14 @@ function checkVariantContextCommonization() {
             flaggedHeadings++;
             const range = minSim === maxSim ? `${(minSim * 100).toFixed(0)}%` : `${(minSim * 100).toFixed(0)}-${(maxSim * 100).toFixed(0)}%`;
             const variantList = [...involved].sort().join(', ');
-            Warn(`Context commonization candidate: "${heading}" section is >50% similar (${range} overlap) across ${involved.size}/${totalVariantCount} variants: ${variantList} — consider promoting to docs/context.md if shared by most variants, or a shared skill if only a subset (ADR-0050 Part 3)`);
+            Info(`Context commonization candidate: "${heading}" section is >50% similar (${range} overlap) across ${involved.size}/${totalVariantCount} variants: ${variantList} — consider promoting to docs/context.md if shared by most variants, or a shared skill if only a subset (ADR-0050 Part 3)`);
         }
     }
 
     if (flaggedHeadings === 0) {
         Pass('Context commonization check: no high-similarity cross-variant sections found');
     } else {
-        Warn(`Context commonization check: ${flaggedHeadings} section heading(s) flagged across variants (WARN-only, first-pass heuristic — see ADR-0050 Part 3)`);
+        Info(`Context commonization check: ${flaggedHeadings} section heading(s) flagged across variants (INFO-only, first-pass heuristic — see ADR-0050 Part 3 Addendum, DEC-20261106-03)`);
     }
 }
 checkVariantContextCommonization();
@@ -3300,42 +3345,35 @@ if (variantAuditPath) {
 // unnoticed until someone ran an in-variant audit. This standing check sweeps every
 // templates/*/variant.json: each declared audit-variant hook must resolve to a file AND
 // execute cleanly (spawned the same way section 27 runs it, from the workspace root).
+// U-20261104-001: in a variant/PROJECT layout there are no templates/co-* manifests,
+// but §27 above may have resolved and executed the project's own variant.json
+// audit-variant hook. When the sweep finds zero template hooks AND §27 executed a
+// hook, the standing regression check already ran there — emit a PASS noting the
+// coverage instead of the legacy permanent false-positive WARN.
 {
     const templatesDir = path.join('templates');
     if (fs.existsSync(templatesDir)) {
-        let hookCount = 0;
-        for (const entry of fs.readdirSync(templatesDir, { withFileTypes: true })) {
-            if (!entry.isDirectory() || !entry.name.startsWith('co-')) continue;
-            const variantJsonPath = path.join(templatesDir, entry.name, 'variant.json');
-            if (!fs.existsSync(variantJsonPath)) continue;
-            let manifest: any;
-            try {
-                manifest = JSON.parse(readUTF8File(variantJsonPath));
-            } catch {
-                continue; // malformed variant.json is reported by the schema checks
+        const sweep = collectTemplateAuditHooks(templatesDir);
+        for (const hook of sweep.hooks) {
+            if (!fs.existsSync(hook.resolvedPath)) {
+                Fail(`Variant audit hook regression: ${hook.variant}/variant.json declares audit-variant hook at '${hook.declaredPath}' but templates/${hook.variant}/${hook.declaredPath} does not exist`);
+                continue;
             }
-            const local = manifest?.script_manifest?.local;
-            if (!Array.isArray(local)) continue;
-            for (const hook of local) {
-                if (hook?.name !== 'audit-variant' || typeof hook.path !== 'string' || !hook.path) continue;
-                hookCount++;
-                const hookPath = path.join(templatesDir, entry.name, hook.path);
-                if (!fs.existsSync(hookPath)) {
-                    Fail(`Variant audit hook regression: ${entry.name}/variant.json declares audit-variant hook at '${hook.path}' but templates/${entry.name}/${hook.path} does not exist`);
-                    continue;
-                }
-                const { status, stdout, stderr } = spawnSync('bun', [hookPath], { encoding: 'utf-8', timeout: 120_000 });
-                if (status !== 0) {
-                    if (stdout) console.log(stdout);
-                    if (stderr) console.error(stderr);
-                    Fail(`Variant audit hook regression: ${entry.name} hook (${hook.path}) exited with status ${status} — the hook must execute cleanly`);
-                } else {
-                    Pass(`Variant audit hook: ${entry.name} (${hook.path}) resolves and executes`);
-                }
+            const { status, stdout, stderr } = spawnSync('bun', [hook.resolvedPath], { encoding: 'utf-8', timeout: 120_000 });
+            if (status !== 0) {
+                if (stdout) console.log(stdout);
+                if (stderr) console.error(stderr);
+                Fail(`Variant audit hook regression: ${hook.variant} hook (${hook.declaredPath}) exited with status ${status} — the hook must execute cleanly`);
+            } else {
+                Pass(`Variant audit hook: ${hook.variant} (${hook.declaredPath}) resolves and executes`);
             }
         }
-        if (hookCount === 0) {
-            Warn('No variant declares an audit-variant hook in script_manifest.local — nothing to regression-check');
+        if (sweep.hooks.length === 0) {
+            if (variantAuditPath) {
+                Pass(`Variant audit hook regression: no templates/co-* manifest declares an audit-variant hook — the root variant.json hook (${variantAuditPath}) was already resolved and executed by §27 (U-20261104-001)`);
+            } else {
+                Warn('No variant declares an audit-variant hook in script_manifest.local — nothing to regression-check');
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-02",
+  "created": "2026-11-07",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -32,7 +32,7 @@
       "status": "active"
     },
     "audit.ts": {
-      "version": "2.61.0",
+      "version": "2.64.0",
       "status": "active"
     },
     "bootstrap-stages.ts": {
@@ -63,6 +63,10 @@
       "version": "1.1.0",
       "status": "active"
     },
+    "external-deps.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
     "design-lint.ts": {
       "version": "2.5.0",
       "status": "active"
@@ -76,11 +80,11 @@
       "status": "active"
     },
     "evidence-backport-scan.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.37.0",
+      "version": "1.42.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -108,7 +112,7 @@
       "status": "active"
     },
     "generate-skill-graph.ts": {
-      "version": "2.0.0",
+      "version": "2.0.1",
       "status": "active"
     },
     "generate-version-manifest.ts": {
@@ -124,7 +128,7 @@
       "status": "active"
     },
     "helpers/hub-topology.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "helpers/layer-filter.ts": {
@@ -143,8 +147,16 @@
       "version": "1.8.6",
       "status": "active"
     },
+    "helpers/agent-mechanical-date-bump.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/audit-hook-sweep.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
     "helpers/security-validator.ts": {
-      "version": "1.1.1",
+      "version": "1.3.0",
       "status": "active"
     },
     "helpers/l0-ref-policy.ts": {
@@ -180,7 +192,7 @@
       "status": "active"
     },
     "helpers/pre-commit-script-gate.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "helpers/theme-token-policy.ts": {
@@ -239,12 +251,24 @@
       "version": "1.1.0",
       "status": "active"
     },
+    "helpers/ticket-drift.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "helpers/memory-union-verify.ts": {
+      "version": "1.2.0",
+      "status": "active"
+    },
     "hooks/agent-model-gate.ts": {
       "version": "1.3.0",
       "status": "active"
     },
     "hooks/codex-user-prompt-gate.ts": {
       "version": "1.0.0",
+      "status": "active"
+    },
+    "hooks/delete-guard.ts": {
+      "version": "1.2.0",
       "status": "active"
     },
     "hooks/gateguard-fact-force.ts": {
@@ -264,11 +288,11 @@
       "status": "active"
     },
     "hooks/pre-commit.ts": {
-      "version": "1.12.0",
+      "version": "1.14.0",
       "status": "active"
     },
     "hooks/pre-push.ts": {
-      "version": "1.7.0",
+      "version": "1.7.1",
       "status": "active"
     },
     "regenerate-agents-md.ts": {
@@ -295,8 +319,16 @@
       "version": "1.4.0",
       "status": "active"
     },
+    "lib/external-deps.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
     "lib/language-guard.ts": {
       "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/fleet.ts": {
+      "version": "1.0.0",
       "status": "active"
     },
     "lib/generator-manifest.ts": {
@@ -305,6 +337,10 @@
     },
     "lib/git-status.ts": {
       "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/git-aware-scan.ts": {
+      "version": "1.0.0",
       "status": "active"
     },
     "lib/pipeline-state.ts": {
@@ -347,8 +383,12 @@
       "version": "1.1.0",
       "status": "active"
     },
+    "lib/trail-block-parity.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
     "lib/upgrade-policy.ts": {
-      "version": "1.36.0",
+      "version": "1.38.0",
       "status": "active"
     },
     "lib/dependency-guard.ts": {
@@ -404,7 +444,7 @@
       "status": "active"
     },
     "lifecycle-sync-audit.ts": {
-      "version": "1.20.1",
+      "version": "1.21.0",
       "status": "active"
     },
     "lint-instructions.ts": {
@@ -480,7 +520,7 @@
       "status": "active"
     },
     "test-runner.ts": {
-      "version": "1.9.0",
+      "version": "1.10.0",
       "status": "active"
     },
     "handbook/apply-handbook-theme.ts": {
@@ -496,7 +536,7 @@
       "status": "active"
     },
     "handbook/check-authoring.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "handbook/check-external-links.ts": {
@@ -600,7 +640,7 @@
       "status": "active"
     },
     "validate-doc-folder.ts": {
-      "version": "1.2.3",
+      "version": "1.3.0",
       "status": "active"
     },
     "validate-docs-links.ts": {
@@ -640,7 +680,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.70.0",
+      "version": "1.75.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
@@ -668,7 +708,7 @@
       "status": "active"
     },
     "verify-scripts.ts": {
-      "version": "1.13.0",
+      "version": "1.14.0",
       "status": "active"
     },
     "normalize-registry-provenance.ts": {

@@ -1,7 +1,68 @@
 #!/usr/bin/env bun
 /**
  * Template Lifecycle Validation Script
- * @version 1.70.0
+ * @version 1.75.0
+ *
+ * v1.75.0 (2026-11-08, spec docs/designs/2026-11-08-trail-fleet-standard-design.md
+ *          §5.4 — DEC-20261108-01 R1/R3): new arm `trail-block-parity` (TB-01) —
+ *          the AGENTS.md trail marker block (`trail:start/end`) is pinned across
+ *          the template tree: root (tool-written reference) == templates/common
+ *          (canonical L1 seed) == every variant, byte-identical after line
+ *          normalization. Error on template missing/duplicate/diverged; WARN on
+ *          root divergence (root's block is tool-owned — reconcileWiring
+ *          re-appends it, so a vendor text update lands at root first and the
+ *          WARN names the re-sync instead of fighting upsertSection). The block
+ *          sits outside every COMMON-zoned / WORKSPACE-MANAGED zone, so the pre-arm
+ *          state (2 of 16 template files, unvalidated) was invisible drift.
+ *          Primitives: scripts/lib/trail-block-parity.ts (new, unit-tested).
+ * v1.74.0 (2026-11-07, spec docs/designs/2026-11-07-external-deps-standard-design.md
+ *          §5.4 E2 + Addendum, DEC-20261107-02, T-20261107-005): new arm
+ *          `external-dep-license` — every external-deps.json seed (common +
+ *          co-*) is strictly parsed (schema v1/v2, R3 collisions) and gated:
+ *          license deny / undeclared / GPL-without-decision FAIL,
+ *          review-without-decision WARN; a NEW entry off external/<id> FAIL
+ *          (installed → WARN); adapter not delivered by the variant/common
+ *          tree FAIL; excluded component named on a template install surface
+ *          FAIL. Verdicts come from lib/external-deps.ts v1.1.0 (single policy
+ *          constant).
+ *
+ * v1.73.0 (2026-11-07, spec docs/designs/2026-11-07-fleet-membership-ssot-design.md
+ *          §5/§6.1, DEC-20261107-01): fleet membership SSOT —
+ *          checkProjectIdentityPlaceholders (A8) iterates actual fleet
+ *          members from lib/fleet.ts listFleetProjects() (Projects/co-*
+ *          minus the docs/fleet-membership.json exclusions) instead of
+ *          sweeping every Projects/* directory (co-abap-plugin was
+ *          previously swept with no co- filter at all — intended semantic
+ *          alignment per design §6.1). Malformed registry → FAIL row
+ *          (fail-closed). checkProjectCountryConfigDeclarations (A7)
+ *          unchanged — the variant.json gate already scopes out
+ *          non-member projects.
+ *
+ * v1.72.0 (2026-11-07, design docs/designs/2026-11-07-external-deps-machinery-design.md
+ *          D4 — implements the upstream external-dependency machinery): new FAIL arm
+ *          `external-dep-vendoring` — if any external-deps.json manifest
+ *          install_dir path exists as a real directory (or any file below one)
+ *          inside templates/common or a templates/co-* tree, validation FAILS.
+ *          This is the vendoring guard: the fastest way to detect a
+ *          `external/ppt-master/` accidentally committed into a template —
+ *          external code is cloned at scaffold time into a gitignored
+ *          project-local directory and never vendors into a template. Variant
+ *          promotion inherits the guard (it runs through this validation).
+ *          Detection core: scripts/lib/external-deps.ts v1.0.0
+ *          (findVendoredInstallDirs + extractInstallDirsLoose, loose parse so
+ *          the guard works on legacy/interim manifest shapes too).
+ *
+ * v1.71.0 (2026-11-05, design docs/designs/2026-11-04-project-loss-hardening-design
+ *          §5.4 / T-20261104-004 item 4): new WARN arm `agents-md-destructive-file-ops-pin`
+ *          — every template AGENTS.md §7 (templates/common + every co-* variant) must
+ *          carry the "Destructive File Operations" baseline bullet (the 2026-11-04
+ *          `rm -rf Projects` incident lesson: never recursive-delete a workspace path
+ *          that does or could contain .git children; dry-run list the resolved target
+ *          first; the ALLOW_RECURSIVE_DELETE=1 escape is for reviewed scripted cases only).
+ *          A missing §7 section or a missing marker phrase warns, so the multi-file §7
+ *          propagation wave cannot silently rot (design §5.4: PM-04b checks only the
+ *          COMMON-AGENTS marker zone — §7 variant parity was not machine-checked before).
+ *          Severity: WARN per design — visibility pin, no FAIL promotion.
  *
  * v1.70.0 (2026-11-01, spec docs/designs/2026-11-01-hub-consolidation-design.md
  *          §2.4 Phase 1): additive hub_topology validator legs — new check
@@ -516,9 +577,12 @@ import { scrubConstitutionRefs } from './lib/constitution-scrub.ts';
 import { PLATFORMS } from './validate-model-registry.ts';
 import { PLATFORM_AGENT_ADAPTERS } from './sync-agent-mirrors.ts';
 import { loadSkillGraph, findCapabilityDivergence } from './lib/skill-graph-compat.ts';
+import { listFleetProjects } from './lib/fleet.ts';
 import { evaluateScaffoldPackageContract } from './lib/package-merge.ts';
 import { parseGeneratorManifest, validateManifestAgainstRoot } from './lib/generator-manifest.ts';
+import { extractInstallDirsLoose, findVendoredInstallDirs, parseExternalDepsManifest, evaluateLicensePolicy, evaluateInstallDirConvention, scanExcludedComponents } from './lib/external-deps.ts';
 import { extractKeyedBlocks, compareKeyedBlocks, isExtendsStub, extractCommonAgentsBlock, compareCommonAgentsBlock } from './lib/managed-block-parity.ts';
+import { extractTrailBlock, compareTrailBlock } from './lib/trail-block-parity.ts';
 import { MANAGED_SKELETON_SECTIONS, validateSkeletonRegistry } from './lib/platform-skeleton-merge.ts';
 import { MERGE_MANAGED_FILES, SCAFFOLD_COMMON_OWNED_FILES } from './lib/upgrade-policy.ts';
 import {
@@ -2450,6 +2514,114 @@ function checkVariantScopedSkillLeak(): void {
     fail('root', 'B-11', `variant-exclusive skill '${skill}' (owner: ${ownerBySkill.get(skill)}) exists in templates/common/${leak}/`, `Delete templates/common/${leak}/ — mirror copies of a variant-scoped skill contradict its variant-overlay re-delivery at scaffold time and break delivery-derivation parity (the 2026-09-27 sound-synth orphan class)`);
   }
   if (leaks.length === 0) pass('templates/common (skills/ + 5 platform mirrors): no variant-scoped skill leaks');
+}
+
+// Check: external-dep-vendoring (v1.72.0, design
+// docs/designs/2026-11-07-external-deps-machinery-design.md D4) — the vendoring
+// guard. The fastest way to detect a
+// `external/ppt-master/` accidentally committed into a template tree: if
+// ANY manifest install_dir path exists as a real directory (or any file below
+// one) inside templates/common or templates/<variant>, FAIL. External code is
+// cloned at scaffold time into a gitignored project-local directory — it never
+// vendors into a template. Variant promotion inherits the guard because it runs
+// through this validation.
+function checkExternalDepVendoring(): void {
+  if (!JSON_MODE) console.log('\n=== Check external-dep-vendoring: no manifest install_dir vendored into a template tree (D4) ===');
+  // Union of every declared install_dir (common seed + all variant seeds) — a
+  // superset is the safe direction for a guard.
+  const installDirs = new Set<string>();
+  const seeds: Array<{ variant: string; path: string }> = [
+    { variant: 'common', path: join(TEMPLATES_DIR, 'common', 'external-deps.json') },
+  ];
+  if (existsSync(TEMPLATES_DIR)) {
+    for (const entry of readdirSync(TEMPLATES_DIR, { withFileTypes: true })) {
+      if (entry.isDirectory() && entry.name.startsWith('co-')) {
+        seeds.push({ variant: entry.name, path: join(TEMPLATES_DIR, entry.name, 'external-deps.json') });
+      }
+    }
+  }
+  for (const seed of seeds) {
+    if (!existsSync(seed.path)) continue;
+    try {
+      for (const dir of extractInstallDirsLoose(readFileSync(seed.path, 'utf-8'))) installDirs.add(dir);
+    } catch { /* unreadable seed — the strict manifest validation owns that failure */ }
+  }
+  if (installDirs.size === 0) {
+    pass('external-dep-vendoring: no external-deps seeds declare install_dirs (guard vacuous)');
+    return;
+  }
+  let totalHits = 0;
+  for (const tplDir of [join(TEMPLATES_DIR, 'common'), ...seeds.filter((s) => s.variant !== 'common').map((s) => join(TEMPLATES_DIR, s.variant))]) {
+    const hits = findVendoredInstallDirs(tplDir, [...installDirs]);
+    for (const hit of hits) {
+      totalHits++;
+      fail('root', 'external-dep-vendoring',
+        `template tree ${tplDir} contains a vendored external-dependency path: ${hit}/`,
+        `Delete ${join(tplDir, hit)} — external code is cloned at scaffold time into the gitignored project-local install_dir (design 2026-11-07-external-deps-machinery D4); it never vendors into a template`);
+    }
+  }
+  if (totalHits === 0) {
+    pass(`external-dep-vendoring: no install_dir path vendored in templates/common or any co-* template (${installDirs.size} declared dir(s))`);
+  }
+}
+
+// Check: external-dep-license (v1.74.0, design
+// docs/designs/2026-11-07-external-deps-standard-design.md §5.4 E2 + Addendum,
+// DEC-20261107-02) — every external-deps.json seed (templates/common + each
+// templates/co-*) is gated the moment it changes: strict parse (schema v1/v2,
+// R3 install_dir collisions) FAIL; license policy deny / undeclared /
+// GPL-without-decision FAIL, review-without-decision WARN; R3 convention — a
+// NEW entry (no recorded commit) off external/<id> FAIL, an installed one
+// WARN; the adapter must exist in the variant (or common) tree FAIL; the
+// excluded components must stay off the template's own install surfaces (V5,
+// heuristic) FAIL. All verdicts come from scripts/lib/external-deps.ts — one
+// policy constant, no copy here.
+function checkExternalDepLicense(): void {
+  if (!JSON_MODE) console.log('\n=== Check external-dep-license: seed manifests pass the license policy + coupling contract (standard §5.4 E2) ===');
+  const seeds: Array<{ variant: string; dir: string }> = [{ variant: 'common', dir: join(TEMPLATES_DIR, 'common') }];
+  if (existsSync(TEMPLATES_DIR)) {
+    for (const entry of readdirSync(TEMPLATES_DIR, { withFileTypes: true })) {
+      if (entry.isDirectory() && entry.name.startsWith('co-')) seeds.push({ variant: entry.name, dir: join(TEMPLATES_DIR, entry.name) });
+    }
+  }
+  let checked = 0;
+  let entries = 0;
+  let problems = 0;
+  for (const seed of seeds) {
+    const manifestPath = join(seed.dir, 'external-deps.json');
+    if (!existsSync(manifestPath)) continue;
+    checked++;
+    let manifest;
+    try {
+      manifest = parseExternalDepsManifest(readFileSync(manifestPath, 'utf-8'), `templates/${seed.variant}/external-deps.json`);
+    } catch (err) {
+      problems++;
+      fail(seed.variant, 'external-dep-license', (err as Error).message, 'Fix the seed to schema v2 (standard §5.2) — the loader in scripts/lib/external-deps.ts is the schema SSOT');
+      continue;
+    }
+    if (manifest.schema_version === 1 && manifest.dependencies.length > 0) {
+      problems++;
+      fail(seed.variant, 'external-dep-license', `templates/${seed.variant}/external-deps.json is schema v1 with dependencies — license undeclared`, 'Bump the seed to schema_version 2 and declare license / usage / adapter per entry (standard §5.2)');
+    }
+    for (const dep of manifest.dependencies) {
+      entries++;
+      const lic = evaluateLicensePolicy(dep);
+      if (lic.severity === 'fail') { problems++; fail(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${lic.message}`, 'Only a reviewed change to EXTERNAL_DEP_LICENSE_POLICY (L1 release + decision record) can admit a deny-class dependency; GPL used as a separate process needs license_decision'); }
+      else if (lic.severity === 'warn') warn(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${lic.message}`);
+      const conv = evaluateInstallDirConvention(dep);
+      if (conv.severity === 'fail') { problems++; fail(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${conv.message}`, `Use install_dir "external/${dep.id}" (R3, DEC-20261107-02)`); }
+      else if (conv.severity === 'warn') warn(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${conv.message}`);
+      if (dep.adapter && !existsSync(join(seed.dir, dep.adapter)) && !existsSync(join(TEMPLATES_DIR, 'common', dep.adapter))) {
+        problems++;
+        fail(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${dep.id}: adapter ${dep.adapter} is not delivered by the variant or common tree`, 'The single coupling file named in the seed must ship with the template (standard §5.2)');
+      }
+      for (const hit of scanExcludedComponents(dep, seed.dir)) {
+        problems++;
+        fail(seed.variant, 'external-dep-license', `templates/${seed.variant}: ${dep.id}: excluded component ${hit.component} is named on install surface ${hit.file} (heuristic name match)`, 'Remove the excluded component from the install surface — it must never be installed (standard §5.3 V5)');
+      }
+    }
+  }
+  if (problems === 0) pass(`external-dep-license: ${checked} seed manifest(s), ${entries} entr${entries === 1 ? 'y' : 'ies'} — license policy, R3 convention, adapter delivery, and exclusions all clean`);
 }
 
 // Check: platform-mirror-freshness — L1 platform skill mirrors must carry the
@@ -5510,6 +5682,72 @@ function checkCommonAgentsBlockParity(): void {
   }
 }
 
+// Check TB-01: trail marker-block parity (design docs/designs/2026-11-08-trail-fleet-standard-design.md
+// §5.4; DEC-20261108-01 R1+R3). The AGENTS.md trail block
+// (`<!-- trail:start -->…<!-- trail:end -->`) is TOOL-OWNED — trail init's
+// reconcileWiring re-appends it (upsertSection on the tool's markers,
+// skills/trail/SKILL.md) — but its PRESENCE and BYTES across the template tree
+// are workspace-pinned. The block sits outside every COMMON-*/WORKSPACE-MANAGED
+// zone, so PM-04b/VA-05/MM-01 cannot see it: the pre-arm state was 2 of 16
+// template AGENTS.md files carrying it with zero validation. Contract: root
+// AGENTS.md (tool-written reference) == templates/common/AGENTS.md (canonical
+// L1 seed) == every variant copy, byte-identical after line normalization
+// (managed-block-parity's normalizeBlockContent — the PM-04b contract).
+// Severity (R3): Error on templates (common missing/diverged, variant
+// missing/duplicate/diverged); WARN on root divergence (root's block is
+// tool-owned — a vendor text update lands there first and the WARN names the
+// re-sync; the workspace must not fight upsertSection with a hard gate).
+// Primitives: lib/trail-block-parity.ts (unit-tested).
+function checkTrailBlockParity(): void {
+  if (!JSON_MODE) console.log('\n=== Check TB-01: trail marker-block parity (root → common → every variant AGENTS.md) ===');
+
+  const rootContent = readFileSync(join(ROOT, 'AGENTS.md'), 'utf-8');
+  const rootBlock = extractTrailBlock(rootContent);
+  const commonPath = join(TEMPLATES_DIR, 'common', 'AGENTS.md');
+  const commonContent = readFileSync(commonPath, 'utf-8');
+  const commonBlock = extractTrailBlock(commonContent);
+
+  if (rootBlock === null) {
+    warn('root', 'trail-block-parity', 'AGENTS.md carries no trail marker block (tool-owned block absent — run `trail init` or restore it)', 'Re-run `trail init` in the workspace root (the tool re-appends its block; do NOT hand-write the prose)');
+  } else if (commonBlock === null) {
+    fail('common', 'trail-block-parity', 'templates/common/AGENTS.md carries no trail marker block', `Copy the root AGENTS.md "<!-- trail:start -->…<!-- trail:end -->" block (byte-identical) to the end of templates/common/AGENTS.md`);
+  } else if (normalizeForTrail(rootBlock) !== normalizeForTrail(commonBlock)) {
+    warn('common', 'trail-block-parity', 'templates/common/AGENTS.md trail block diverges from the root (tool-owned) block — a vendor update landed at root; re-sync the template wave', `Copy the root AGENTS.md trail block over templates/common/AGENTS.md's, then re-verify variant parity`);
+  }
+
+  if (commonBlock === null) return;
+
+  const variants = readdirSync(TEMPLATES_DIR, { withFileTypes: true })
+    .filter(e => e.isDirectory() && e.name.startsWith('co-') && !isTransientTestFixture(e.name))
+    .map(e => e.name)
+    .sort();
+
+  let checked = 0;
+  for (const variant of variants) {
+    const variantContent = readFileSync(join(TEMPLATES_DIR, variant, 'AGENTS.md'), 'utf-8');
+    const violation = compareTrailBlock(commonBlock, variantContent);
+    if (violation === 'missing') {
+      fail(variant, 'trail-block-parity', `templates/${variant}/AGENTS.md carries no trail marker block — the fleet standard (DEC-20261108-01 R1) ships it in every variant`, `Append the templates/common/AGENTS.md "<!-- trail:start -->…<!-- trail:end -->" block (byte-identical) to the end of templates/${variant}/AGENTS.md`);
+    } else if (violation === 'duplicate') {
+      fail(variant, 'trail-block-parity', `templates/${variant}/AGENTS.md carries MULTIPLE trail marker blocks — a hand copy landed next to a tool-managed copy`, `Delete all but one block, keeping the copy that is byte-identical to templates/common/AGENTS.md's`);
+    } else if (violation === 'mismatch') {
+      fail(variant, 'trail-block-parity', `templates/${variant}/AGENTS.md trail block diverges from templates/common/AGENTS.md`, `Replace the variant's trail block with the common copy (markers included), byte-identical after line normalization`);
+    } else {
+      checked++;
+    }
+  }
+  if (checked > 0) {
+    pass(`trail-block-parity: ${checked}/${variants.length} variant AGENTS.md files carry the trail block with content parity`);
+  }
+}
+
+/** Line normalization for trail-block comparison (mirrors managed-block-parity's
+ *  normalizeBlockContent: CRLF → LF, strip trailing whitespace, collapse blank
+ *  edges). Local alias keeps the arm's import surface minimal. */
+function normalizeForTrail(raw: string): string {
+  return raw.replace(/\r\n/g, '\n').split('\n').map(l => l.replace(/\s+$/, '')).join('\n').replace(/^\n+/, '').replace(/\n+$/, '');
+}
+
 // Check WS-11: bilingual user-guide pair (docs/user-guide.md + docs/user-guide_ko.md)
 // Standard defined in docs/governance/variant-contract.md "User-Guide Standard".
 // Unlike Variant Contract required files, templates/common/ does NOT satisfy this
@@ -6252,10 +6490,25 @@ function checkProjectIdentityPlaceholders(): void {
   const projectsDir = join(ROOT, 'Projects');
   if (!existsSync(projectsDir)) return;
   const placeholderRe = /\[(Project Name|One-sentence description[^\]]*|TODO|TBD)\]|<variant-name>|<project-name>/i;
-  for (const entry of readdirSync(projectsDir, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    if (isTransientTestFixture(entry.name)) continue; // E2E staging dirs (T-20260916-001)
-    const project = entry.name;
+  // Fleet membership SSOT (design docs/designs/2026-11-07-fleet-membership-ssot-design.md
+  // §5/§6.1, DEC-20261107-01): this sweep previously covered EVERY Projects/*
+  // directory (no co- filter at all — it swept co-abap-plugin and any other
+  // non-member); it now iterates actual fleet members from lib/fleet.ts
+  // listFleetProjects() (Projects/co-* minus the docs/fleet-membership.json
+  // exclusions, A8 — the intended semantic alignment). Malformed registry →
+  // FAIL rows (fail-closed), never a fallback sweep.
+  let fleetDirs: string[];
+  try {
+    fleetDirs = listFleetProjects(ROOT);
+  } catch (err) {
+    fail('fleet-membership', 'project-identity-placeholder',
+      `docs/fleet-membership.json failed to load: ${err instanceof Error ? err.message : String(err)}`,
+      'Fix or remove the malformed registry — fleet tooling must hard-fail rather than guess membership');
+    return;
+  }
+  for (const fleetPath of fleetDirs) {
+    const project = fleetPath.split(/[\\/]/).pop() ?? fleetPath;
+    if (isTransientTestFixture(project)) continue; // E2E staging dirs (T-20260916-001)
     const projectMdPath = join(projectsDir, project, 'docs', 'project.md');
     const contextMdPath = join(projectsDir, project, 'docs', 'context.md');
     if (existsSync(projectMdPath) && placeholderRe.test(readFileSync(projectMdPath, 'utf-8'))) {
@@ -6306,6 +6559,8 @@ function main(): number {
   checkTwinCommonSectionParity(); // VA-06: CLAUDE/GEMINI/CODEX twins carry the shared policy set
   // Script parity check removed (dead code after ADR-0036 TypeScript migration)
   checkVariantScopedSkillLeak();  // B-11: variant_scoped_skills must not live in common
+  checkExternalDepVendoring();    // v1.72.0: no manifest install_dir vendored into a template tree (design D4)
+  checkExternalDepLicense();      // v1.74.0: seed manifests pass the license policy + coupling contract (standard §5.4 E2)
   checkPlatformMirrorFreshness(); // T-20260916-008: platform skill mirrors carry SSOT versions
   checkVariantMirrorParity();     // T-20260921-009: variant mirrors carry the variant skill set
   checkSkillRegistrySync();       // VA-08: registry rows match SKILL.md frontmatter (WARN soak, T-20260925-007)
@@ -6446,6 +6701,52 @@ function checkAgentsMdPointerIntegrity(): void {
   }
 }
 
+const DESTRUCTIVE_FILE_OPS_MARKER = 'Destructive File Operations';
+
+/**
+ * §7 destructive-file-operations pin (design 2026-11-04-project-loss-hardening-design §5.4,
+ * T-20261104-004 item 4): every template AGENTS.md §7 (templates/common + every co-*
+ * variant) must carry the "Destructive File Operations" baseline bullet, so the multi-file
+ * §7 propagation wave cannot silently rot. Severity: WARN per design (visibility pin,
+ * not a structural failure; PM-04b covers only the COMMON-AGENTS zone, not §7).
+ */
+function checkAgentsMdDestructiveFileOpsPin(): void {
+  if (!JSON_MODE) console.log('\n=== Check agents-md-destructive-file-ops-pin: §7 carries the destructive-file-operations baseline (project-loss-hardening design §5.4) ===');
+  const targets: Array<{ variant: string; path: string }> = [
+    { variant: 'common', path: join(TEMPLATES_DIR, 'common', 'AGENTS.md') },
+  ];
+  if (existsSync(TEMPLATES_DIR)) {
+    for (const entry of readdirSync(TEMPLATES_DIR, { withFileTypes: true })) {
+      if (entry.isDirectory() && entry.name.startsWith('co-')) {
+        targets.push({ variant: entry.name, path: join(TEMPLATES_DIR, entry.name, 'AGENTS.md') });
+      }
+    }
+  }
+  let checked = 0;
+  for (const t of targets) {
+    if (!existsSync(t.path)) continue;
+    checked++;
+    const content = readFileSync(t.path, 'utf-8');
+    const sectionMatch = content.match(/^## §7: Universal Baseline Behaviors\n([\s\S]*?)(?=^## )/m);
+    if (!sectionMatch) {
+      warn(t.variant, 'agents-md-destructive-file-ops-pin',
+        `${t.path}: no "§7: Universal Baseline Behaviors" section found — the destructive-file-operations baseline pin cannot hold`,
+        `Restore the §7 section (copy from templates/common/AGENTS.md) including the "Destructive File Operations" bullet (design 2026-11-04-project-loss-hardening-design §5.4)`);
+      continue;
+    }
+    if (!sectionMatch[1].includes(DESTRUCTIVE_FILE_OPS_MARKER)) {
+      warn(t.variant, 'agents-md-destructive-file-ops-pin',
+        `${t.path} §7 is missing the "Destructive File Operations" baseline bullet — the 2026-11-04 rm -rf Projects incident lesson must ride on every template AGENTS.md`,
+        `Add the "Destructive File Operations" bullet to §7 (copy verbatim from templates/common/AGENTS.md §7; design 2026-11-04-project-loss-hardening-design §5.4)`);
+    } else {
+      pass(`agents-md-destructive-file-ops-pin: ${t.path} §7 carries the baseline`);
+    }
+  }
+  if (checked === 0) {
+    pass('agents-md-destructive-file-ops-pin: no template AGENTS.md found — vacuous pass');
+  }
+}
+
   checkVariantIndexCoverage(manifests);                          // WS-12
   checkMirrorHygiene();                                          // R6: mirrors carry only skill dirs (spec 2026-09-25-verifier-platform-expansion-design)
 
@@ -6460,6 +6761,7 @@ function checkAgentsMdPointerIntegrity(): void {
   checkSkeletonRegistry();                                       // SK-01: platform skeleton section registry vs templates/common CLAUDE/GEMINI (spec 2026-10-25-managed-platform-skeleton-design, ADR-0101)
   checkL1ImportClosure();                                        // IC-01: delivered-tree static import closure (T-20261026-011, spec 2026-10-26-project-review-remediation-design D4, ADR-0073 Amd. 4)
   checkCommonAgentsBlockParity();                                // PM-04b: COMMON-AGENTS marker-inject zone, common → every variant AGENTS.md (ADR-0081, T-20260919-001)
+  checkTrailBlockParity();                                       // TB-01: trail marker block, root → common → every variant AGENTS.md (design 2026-11-08-trail-fleet-standard-design §5.4, DEC-20261108-01 R1/R3)
   checkPropagationTargets();                                     // PM-03: target lists vs actual templates/co-* dir set (T-20260915-005)
   checkScaffoldMarkerSources();                                  // T-20260915-002: scaffolder markers vs source templates
   checkPmExtendsStubBodies();                                    // T-20260915-010: variant pm.md extends-stub bodies
@@ -6468,6 +6770,7 @@ function checkAgentsMdPointerIntegrity(): void {
   checkProjectCountryConfigDeclarations(); // T-20260927-012: project-side half of the ADR-0091 R3 uniform declaration
   checkAgentsMdSizeBudget();          // ADR-0090 W0: thin-dispatcher ≤15k budget (WARN; FAIL promotion at W4)
   checkAgentsMdPointerIntegrity();    // ADR-0090 W0: pointer-table references resolve on disk
+  checkAgentsMdDestructiveFileOpsPin(); // §7 baseline pin: destructive-file-operations bullet on every template AGENTS.md (WARN; T-20261104-004 item 4)
   checkSkillGraphVersionDrift();      // skill-graph v2 E2: same-version-different-content across scopes (WARN)
 
   // B-07: Sync validated variant info back to VERSION_REGISTRY.json
