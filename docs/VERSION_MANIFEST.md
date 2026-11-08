@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-07T22:28:32.948Z
+**Generated**: 2026-11-08T03:51:00.803Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 50
-- **Scripts**: 129 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 128 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -19,27 +19,27 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | claude-opus-5-5 | 2026-10-28 |
-| co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-10-28 |
-| dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| architect | agents/architect.md | high | claude-opus-5-5 | 2026-11-07 |
+| co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-11-07 |
+| dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | form-expert | agents/form-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | gui-scripter | agents/gui-scripter.md | low | claude-haiku-5-5 | 2026-10-28 |
-| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | pm | agents/pm.md | medium | inherit | 2026-10-29 |
-| pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | schema-inspector | agents/schema-inspector.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| sd-analyst | agents/sd-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| sd-analyst | agents/sd-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | security-monitor | agents/security-monitor.md | low | claude-haiku-5-5 | 2026-10-28 |
-| test-runner | agents/test-runner.md | low | claude-haiku-5-5 | 2026-10-28 |
+| test-runner | agents/test-runner.md | low | claude-haiku-5-5 | 2026-11-07 |
 
 ---
 
@@ -69,7 +69,7 @@
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
 | i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
 | i18n-formatting | 1.0.0 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | pm |
-| i18n-layout | 1.0.1 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
+| i18n-layout | 1.1.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
 | i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
 | meeting-facilitation | 1.4.4 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
@@ -142,7 +142,7 @@
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
 | design-lint.ts | 2.5.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.42.0 | scripts/dev-sync.ts | bun |
+| dev-sync.ts | 1.43.0 | scripts/dev-sync.ts | bun |
 | dispatch-parallel.test.ts | 1.5.2 | scripts/tests/dispatch-parallel.test.ts | bun:test |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
@@ -193,7 +193,7 @@
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
-| skill-lifecycle-audit.ts | 1.10.0 | scripts/skill-lifecycle-audit.ts | N/A |
+| skill-lifecycle-audit.ts | 1.11.0 | scripts/skill-lifecycle-audit.ts | N/A |
 | skill-session-review.ts | 1.3.0 | scripts/skill-session-review.ts | bun |
 | spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
@@ -206,7 +206,6 @@
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
-| validate-abap-platform-parity.ts | 1.1.0 | scripts/validate-abap-platform-parity.ts | N/A |
 | validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | N/A |
 | validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
 | validate-doc-folder.ts | 1.3.0 | scripts/validate-doc-folder.ts | fs, path |

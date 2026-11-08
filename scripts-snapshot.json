@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-07",
+  "created": "2026-11-08",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -72,7 +72,7 @@
       "status": "active"
     },
     "lib/self-managed-tools.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "helpers/skills-registry.ts": {
@@ -84,7 +84,7 @@
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.42.0",
+      "version": "1.43.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -320,7 +320,7 @@
       "status": "active"
     },
     "lib/external-deps.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "lib/language-guard.ts": {
@@ -492,7 +492,7 @@
       "status": "active"
     },
     "skill-lifecycle-audit.ts": {
-      "version": "1.10.0",
+      "version": "1.11.0",
       "status": "active"
     },
     "skill-session-review.ts": {
