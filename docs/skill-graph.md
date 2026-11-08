@@ -31,7 +31,7 @@
 | `root/handbook-sync-audit` | L3 | 1.0.5 | — | — | — | — | — |
 | `root/i18n-audit` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-formatting` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
-| `root/i18n-layout` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-layout` | L3 | 1.1.0 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-locale-config` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
 | `root/meeting-facilitation` | L3 | 1.4.4 | — | — | — | — | — |
 | `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
