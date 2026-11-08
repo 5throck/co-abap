@@ -17,12 +17,6 @@
       "type": "http",
       "url": "https://mcp-sap-docs.marianzeis.de/mcp"
     },
-    "graft": {
-      "command": "graft",
-      "args": [
-        "mcp"
-      ]
-    },
     "trail": {
       "command": "trail",
       "args": [
