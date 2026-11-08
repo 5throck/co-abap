@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-07T22:28:32.948Z
+**Generated**: 2026-11-08T04:01:35.735Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -19,27 +19,27 @@
 
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
-| architect | agents/architect.md | high | claude-opus-5-5 | 2026-10-28 |
-| co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-10-28 |
-| dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| architect | agents/architect.md | high | claude-opus-5-5 | 2026-11-07 |
+| co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-11-07 |
+| dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | form-expert | agents/form-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | gui-scripter | agents/gui-scripter.md | low | claude-haiku-5-5 | 2026-10-28 |
-| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | pm | agents/pm.md | medium | inherit | 2026-10-29 |
-| pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | schema-inspector | agents/schema-inspector.md | medium | claude-sonnet-5-5 | 2026-10-28 |
-| sd-analyst | agents/sd-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
+| sd-analyst | agents/sd-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | security-monitor | agents/security-monitor.md | low | claude-haiku-5-5 | 2026-10-28 |
-| test-runner | agents/test-runner.md | low | claude-haiku-5-5 | 2026-10-28 |
+| test-runner | agents/test-runner.md | low | claude-haiku-5-5 | 2026-11-07 |
 
 ---
 
