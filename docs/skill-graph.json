@@ -850,8 +850,8 @@
       "name": "i18n-layout",
       "scope": "root",
       "capability": "i18n-layout",
-      "content_hash": "3991611b47f6aac6",
-      "version": "1.0.1",
+      "content_hash": "a043d20f098dd093",
+      "version": "1.1.0",
       "mirrors": [
         "skills/i18n-layout/SKILL.md",
         ".claude/skills/i18n-layout/SKILL.md",
