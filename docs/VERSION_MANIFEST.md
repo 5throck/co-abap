@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-08T04:09:33.232Z
+**Generated**: 2026-11-08T04:12:50.001Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 21
 - **Skills**: 50
-- **Scripts**: 128 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 129 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 20
 
 ---
@@ -206,6 +206,7 @@
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
 | update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
+| validate-abap-platform-parity.ts | 1.1.0 | scripts/validate-abap-platform-parity.ts | N/A |
 | validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | N/A |
 | validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
 | validate-doc-folder.ts | 1.3.0 | scripts/validate-doc-folder.ts | fs, path |

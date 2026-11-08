@@ -80,6 +80,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `dev-sync.ts` | L0 | 1.43.0 | active | —| —| L0+L1 | —|
 | `dispatch-parallel.ts` | L0 | 2.4.1 | active | —| —| L0+L1 | —|
 | `render-commands.ts` | L3 | 1.1.0 | active | Renders config/commands/*.md into .claude/commands, .codex/prompts and .gemini/commands/*.toml (--check fails on drift) | —| L3 | —|
+| `validate-abap-platform-parity.ts` | L3 | 1.1.0 | active | Variant-delivered top-level script (auto-registered at upgrade, T-20261012-001): agent-shell protected-set parity checks (deny-rules SSOT; CI-checked). Restored 2026-11-08 after prune loss — T-20261108-008 | —| L3 | —|
 | `validate-platform-parity.ts` | L3 | 1.0.0 | active | Cross-platform parity validator: rendered commands, MCP proxy routing, instruction sections, skills mirrors, schema models | —| L3 | —|
 | `tests/dispatch-parallel.test.ts` | L3 | 1.5.2 | active | Stub-CLI tests for fan-out, prompt identity, timeout, failure isolation | — | L3 | — |
 | `tests/render-commands.test.ts` | L3 | 1.1.0 | active | v1.1.0 (2026-10-14, T-20261013-009 phase 2): re-homed to the fleet .claude-SSOT renderer model. Renderer and drift tests | — | L3 | — |
