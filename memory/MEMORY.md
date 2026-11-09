@@ -4,10 +4,11 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-10](2026-11-10.md) | chore(skills): remove stale /meeting command stubs (retired 2026-09-26; workspace-root T-20261109-003) |
 | [2026-11-08](2026-11-08.md) | chore(scripts): workspace sync (92 files) |
 | [2026-11-03](2026-11-03.md) | docs(skills): workspace sync (21 files) |
-| [2026-11-02](2026-11-02.md) | chore(templates): upgrade template delivery 0.26.0 -> 0.27.0 |
-| [2026-11-01](2026-11-01.md) | fix(tests): converge dispatch-parallel model literals to 0.26.0 schema values |
+| 2026-11-02 | chore(templates): upgrade template delivery 0.26.0 -> 0.27.0 |
+| 2026-11-01 | fix(tests): converge dispatch-parallel model literals to 0.26.0 schema values |
 | 2026-10-31 | chore: workspace sync (0 files) |
 | 2026-10-30 | chore: workspace sync — session residue (Step 1 local-work) |
 | 2026-10-29 | PM review remediation re-land (PR #229) + upstream tickets U-20261029-001/-008/-009/-010 |
