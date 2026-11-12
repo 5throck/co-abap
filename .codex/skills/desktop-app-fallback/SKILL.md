@@ -23,7 +23,7 @@ Use this skill when working in the **Claude Code Desktop App**, where `PostToolU
 
 ## Trigger
 
-After any `WriteSource` or `EditSource` operation (`SAP(action="edit", ...)`, R2) in the Desktop App. Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
+After any `WriteSource` or `EditSource` operation (`SAP(action="edit", ...)`, R2) in the Desktop App. Tool names and gate classes: see docs/co-abap.context.md#upstream-vsp-reference-build--test.
 
 ## Manual QA Chain
 

@@ -1,5 +1,5 @@
 ---
-translated_from_hash: 4b6f0ace94b741e721885c749c809f4a0e5db9dc0e769c7ef347759a85bd795f
+translated_from_hash: 86837b4cab163b383b44df0924a60fef44332b0a6ab20bb1dde93f76f652bfb7
 lang: ko
 lang_reason: source-material
 ---
@@ -137,7 +137,7 @@ AI 에이전트는 **PM 주도 거버넌스** 모델 하에 두 가지 전략 �
 # 에이전트 단계별 협업:
 # Phase 1: sap-investigator + read-only-analyst + schema-inspector (병렬)
 # Phase 2: architect 설계 → code-writer 구현
-# Phase 3: test-runner 검증 (구문 검사 → 단위 테스트 → 커버리지 → ATC; 도구 이름은 [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) 참조)
+# Phase 3: test-runner 검증 (구문 검사 → 단위 테스트 → 커버리지 → ATC; 도구 이름은 [vsp Tool Reference](docs/co-abap.context.md#upstream-vsp-reference-build--test) 참조)
 # Phase 4: 트랜스포트 릴리즈 + git 동기화
 ```
 

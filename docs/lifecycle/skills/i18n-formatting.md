@@ -1,27 +1,31 @@
+<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of delivered record -->
 # I18N Formatting Skill Lifecycle
 
-## Created
-
-2026-09-21 (record backfill — the skill predates this record; active since at least 2026-08-24 per frontmatter `last_reviewed`)
+## Metadata
+- **Skill**: i18n-formatting
+- **Status**: active
+- **Version**: 1.0.0
+- **Owner**: pm
+- **Created**: 2026-09-21 (record backfill — the skill predates this record; active since at least 2026-08-24 per frontmatter `last_reviewed`)
+- **Last Updated**: 2026-11-12
 
 ## Phase History
-
 | Date | From | To | Reason | Approver |
 |------|------|-----|---------|----------|
-| 2026-09-21 | (pre-record) | production | Record backfill — active skill without a lifecycle record (2026-09-21 project review H-9) | pm |
+| 2026-09-21 | (pre-record) | production | Record backfill — active skill without a lifecycle record (upstream 2026-09-21 project review H-9) | pm |
+| 2026-11-12 | production | production | Record rewritten to project-local form; dual Metadata added so skill-lifecycle-audit Check MV evaluates it (U-20261112-011) | pm |
 
 ## Acceptance Criteria
 
 ### Production Phase
-
-- [x] Skill SKILL.md exists at `templates/common/skills/i18n-formatting/SKILL.md`
+- [x] Skill SKILL.md exists at `skills/i18n-formatting/SKILL.md`
 - [x] Frontmatter valid: name, description, status, scope (`common`), version, owner populated
-- [x] Member of the i18n suite (constitution §4.4) dispatched by the `i18n-specialist` agent
-- [x] L1-only asset — deliberately absent from workspace-root `skills/` (2026-09-12 root-upgrade incident rule)
+- [x] Member of the i18n suite dispatched by the `i18n-specialist` agent (present in this project's roster)
+- [x] Common-layer asset delivered to this project via the variant template pipeline
 
 ## Metadata
-
 - **Current Phase**: production
+- **Version**: 1.0.0
 - **Owner**: pm
-- **Version at record creation**: 1.0.0
-- **Last Updated**: 2026-09-21
+- **Last Updated**: 2026-11-12
+- **Last Reviewer**: pm

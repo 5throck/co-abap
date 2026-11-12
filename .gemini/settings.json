@@ -22,11 +22,10 @@
       "type": "http",
       "url": "https://mcp-sap-docs.marianzeis.de/mcp"
     },
-    "graft": {
-      "command": "graft",
+    "trail": {
+      "command": "trail",
       "args": [
-        "mcp",
-        "@nanonets/graft"
+        "mcp"
       ]
     }
   },

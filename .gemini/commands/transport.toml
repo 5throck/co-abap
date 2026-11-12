@@ -48,7 +48,7 @@ Calls `SAP(action="system", params={"type":"get_transport", ...})` and displays 
 
 ## Notes
 
-- All calls use the single `mcp__abap__SAP` tool; see [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+- All calls use the single `mcp__abap__SAP` tool; see [vsp Tool Reference](../../docs/co-abap.context.md#upstream-vsp-reference-build--test).
 
 - Transport operations affect the shared SAP system ??always confirm with the user before `release`.
 - After release, remind the user to run `/sync` to log the transport number in today's memory file.

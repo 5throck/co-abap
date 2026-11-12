@@ -41,7 +41,7 @@ This skill defines the ABAP development capabilities and optimized workflow patt
 
 ## Core Capabilities
 
-> The vsp server runs in hyperfocused mode: one `SAP(action, target, params)` tool. Legacy names below (EditSource, GetContext, SyntaxCheck, ...) are conceptual labels; callable forms are in brackets. Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode. GetAPIReleaseState has no equivalent (check C1 manually in ADT per DA-3); UI5* tools need `SAP_FEATURE_UI5` (off).
+> The vsp server runs in hyperfocused mode: one `SAP(action, target, params)` tool. Legacy names below (EditSource, GetContext, SyntaxCheck, ...) are conceptual labels; callable forms are in brackets. Tool names and gate classes: see docs/co-abap.context.md#upstream-vsp-reference-build--test. GetAPIReleaseState has no equivalent (check C1 manually in ADT per DA-3); UI5* tools need `SAP_FEATURE_UI5` (off).
 
 - **Surgical Edits**: Use `EditSource` [`edit` `target=EDITSOURCE`] for changes under 50 lines to ensure syntax safety and atomicity.
 - **Context Awareness**: Use `GetContext` [`analyze` `type=context`] when analyzing large classes to save tokens and focus on structural understanding.

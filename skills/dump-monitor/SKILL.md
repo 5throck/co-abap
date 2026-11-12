@@ -47,7 +47,7 @@ may run it as part of a health check.
 
 ## Workflow
 
-> `ListDumps` / `GetDump` are conceptual labels; in hyperfocused mode they are `SAP(action="analyze", ...)` calls (R0). Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
+> `ListDumps` / `GetDump` are conceptual labels; in hyperfocused mode they are `SAP(action="analyze", ...)` calls (R0). Tool names and gate classes: see docs/co-abap.context.md#upstream-vsp-reference-build--test.
 
 ```
 1. List recent dumps

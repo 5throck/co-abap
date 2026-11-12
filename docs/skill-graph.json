@@ -331,6 +331,11 @@
       "layer": "L3"
     },
     {
+      "id": "dec:DEC-20261112-01",
+      "type": "decision",
+      "layer": "L3"
+    },
+    {
       "id": "doc:AGENTS.md",
       "type": "doc",
       "layer": "L3"
@@ -472,7 +477,7 @@
       "name": "abap-code-review",
       "scope": "root",
       "capability": "abap-code-review",
-      "content_hash": "c7b2b5ccb5239df0",
+      "content_hash": "631b7c9f0806d165",
       "version": "1.0.2",
       "mirrors": [
         "skills/abap-code-review/SKILL.md",
@@ -490,7 +495,7 @@
       "name": "abap-dev",
       "scope": "root",
       "capability": "abap-dev",
-      "content_hash": "63d69a8fcd084ede",
+      "content_hash": "420801b6435f3bc8",
       "version": "1.3.0",
       "mirrors": [
         "skills/abap-dev/SKILL.md",
@@ -634,7 +639,7 @@
       "name": "desktop-app-fallback",
       "scope": "root",
       "capability": "desktop-app-fallback",
-      "content_hash": "6d7bab2deb163ff1",
+      "content_hash": "3356f562a371bf51",
       "version": "1.0.1",
       "mirrors": [
         "skills/desktop-app-fallback/SKILL.md",
@@ -670,7 +675,7 @@
       "name": "dump-monitor",
       "scope": "root",
       "capability": "dump-monitor",
-      "content_hash": "7ccdcd8748f3e45b",
+      "content_hash": "95cb4b7a26177b6c",
       "version": "1.0.1",
       "mirrors": [
         "skills/dump-monitor/SKILL.md",
@@ -742,7 +747,7 @@
       "name": "fiori-rap-dev",
       "scope": "root",
       "capability": "fiori-rap-dev",
-      "content_hash": "cf716e9912ace877",
+      "content_hash": "8d62d2f04b239119",
       "version": "1.0.0",
       "mirrors": [
         "skills/fiori-rap-dev/SKILL.md",
@@ -904,7 +909,7 @@
       "name": "performance-tuning",
       "scope": "root",
       "capability": "performance-tuning",
-      "content_hash": "8cf13ddf2cea1410",
+      "content_hash": "49b7323c3701e7dd",
       "version": "1.0.1",
       "mirrors": [
         "skills/performance-tuning/SKILL.md",
@@ -958,7 +963,7 @@
       "name": "post-write-chain",
       "scope": "root",
       "capability": "post-write-chain",
-      "content_hash": "6c17f28edd83809d",
+      "content_hash": "38a3654dc4584c85",
       "version": "1.3.2",
       "mirrors": [
         "skills/post-write-chain/SKILL.md",
@@ -985,7 +990,11 @@
         ".agents/skills/project-review/SKILL.md",
         ".codex/skills/project-review/SKILL.md",
         ".hermes/skills/project-review/SKILL.md"
-      ]
+      ],
+      "usage": {
+        "sessions": 1,
+        "last_used": "2026-11-12"
+      }
     },
     {
       "id": "skill:root/research-analysis",
@@ -1255,7 +1264,11 @@
         ".agents/skills/sync/SKILL.md",
         ".codex/skills/sync/SKILL.md",
         ".hermes/skills/sync/SKILL.md"
-      ]
+      ],
+      "usage": {
+        "sessions": 1,
+        "last_used": "2026-11-12"
+      }
     },
     {
       "id": "skill:root/team-builder",
@@ -1458,6 +1471,12 @@
     {
       "type": "cites_skill",
       "from": "dec:DEC-20261028-09",
+      "to": "skill:root/decision-record",
+      "source": "skills_used"
+    },
+    {
+      "type": "cites_skill",
+      "from": "dec:DEC-20261112-01",
       "to": "skill:root/decision-record",
       "source": "skills_used"
     },

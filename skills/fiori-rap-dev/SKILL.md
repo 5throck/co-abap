@@ -30,7 +30,7 @@ metadata:
 
 # Fiori and RAP Development (vsp)
 
-Workflow for Fiori / UI5 front ends and the RAP backend that feeds them. Owner: `fiori-developer`. Legacy vsp tool names map to hyperfocused `SAP(...)` calls per the SSOT: [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode). Data-access and naming rules are cited, not restated: DA-3, DA-5, DA-8 in [Data Access Rules](../../docs/co-abap.context.md#da-3-priority-order-when-in-scope).
+Workflow for Fiori / UI5 front ends and the RAP backend that feeds them. Owner: `fiori-developer`. Legacy vsp tool names map to hyperfocused `SAP(...)` calls per the SSOT: [vsp Tool Reference](../../docs/co-abap.context.md#upstream-vsp-reference-build--test). Data-access and naming rules are cited, not restated: DA-3, DA-5, DA-8 in [Data Access Rules](../../docs/co-abap.context.md#da-3-priority-order-when-in-scope).
 
 ## 0. Feature preflight
 

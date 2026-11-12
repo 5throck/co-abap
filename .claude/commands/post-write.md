@@ -9,7 +9,7 @@ Load and apply the full Post-Write Mandatory Chain from `skills/post-write-chain
 
 Read the file at `skills/post-write-chain/SKILL.md` now and follow all instructions within it.
 
-Chain via the single `mcp__abap__SAP` tool (mapping: [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
+Chain via the single `mcp__abap__SAP` tool (mapping: [vsp Tool Reference](../../docs/co-abap.context.md#upstream-vsp-reference-build--test)):
 1. `SAP(action="analyze", params={"type":"syntax_check", ...})`
 2. `SAP(action="test", params={"object_url":"...", "with_coverage":true})`
 3. `SAP(action="test", params={"type":"atc", ...})`

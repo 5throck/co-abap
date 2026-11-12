@@ -4,9 +4,10 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-12](2026-11-12.md) | chore(review): 2026-11-12 remediation — trail doc completion, lifecycle records, content restores |
 | [2026-11-10](2026-11-10.md) | chore(skills): remove stale /meeting command stubs (retired 2026-09-26; workspace-root T-20261109-003) |
 | [2026-11-08](2026-11-08.md) | chore(scripts): workspace sync (92 files) |
-| [2026-11-03](2026-11-03.md) | docs(skills): workspace sync (21 files) |
+| 2026-11-03 | docs(skills): workspace sync (21 files) |
 | 2026-11-02 | chore(templates): upgrade template delivery 0.26.0 -> 0.27.0 |
 | 2026-11-01 | fix(tests): converge dispatch-parallel model literals to 0.26.0 schema values |
 | 2026-10-31 | chore: workspace sync (0 files) |
@@ -14,8 +15,6 @@
 | 2026-10-29 | PM review remediation re-land (PR #229) + upstream tickets U-20261029-001/-008/-009/-010 |
 | 2026-10-28 | PM project review + upstream ticket filing (U-20261028-004…015) |
 | 2026-10-27 | chore: upgrade template delivery (0.20.1 tree sync) |
-| 2026-10-26 | chore(scripts): workspace sync (32 files) |
-| 2026-10-22 | feat(governance): bind PM role bootstrap in AGENTS.md |
 | [2026-10-19](archive/2026-10-19.md) | chore: upgrade template to 0.20.0 (canary) |
 | [2026-10-17](archive/2026-10-17.md) | chore: upgrade template to 0.19.2 (canary) |
 | [2026-10-15](archive/2026-10-15.md) | chore(scripts): workspace sync (11 files) |

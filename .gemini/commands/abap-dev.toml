@@ -7,5 +7,5 @@ Read the file at `skills/abap-dev/SKILL.md` now and follow all instructions with
 
 After reading, confirm: "ABAP Dev skill loaded ??workflows active: bapi-explorer, transport-manager, unit-architect, performance-analyzer, impact-architecture, documentation-audit."
 
-SAP access: vsp runs in hyperfocused mode, so use the single `mcp__abap__SAP` tool as `SAP(action, target, params)`. Legacy tool names in the skill map per [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode); writes (`edit`, `create`, `ACTIVATE`) are R2-gated.
+SAP access: vsp runs in hyperfocused mode, so use the single `mcp__abap__SAP` tool as `SAP(action, target, params)`. Legacy tool names in the skill map per [vsp Tool Reference](../../docs/co-abap.context.md#upstream-vsp-reference-build--test); writes (`edit`, `create`, `ACTIVATE`) are R2-gated.
 '''

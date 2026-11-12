@@ -117,7 +117,7 @@ revision, `scripts/hooks/gui-script-gate.ts` does not exist, so item 1 is proced
    `SAP_FEATURE_TRANSPORT`, `SAP_FEATURE_ABAPGIT`): turning one on is a deliberate configuration change
    that requires PM approval. The deploy and publish tools these features unlock are R3 (denied by
    default, human approval per run). Tool mapping: see the
-   [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+   [vsp Tool Reference](docs/co-abap.context.md#upstream-vsp-reference-build--test).
 
 #### Guidance that is not enforced
 
@@ -197,3 +197,15 @@ server does not expose, regardless of what the conversation asks for.
 BAPI-based workflows. Restrict RFC calls to read-only or well-documented BAPIs listed in the
 `skills/sap-*/SKILL.md` files; calling an unlisted or write-capable RFC requires the same
 destructive-operation approval gate described above.
+
+### Local tool hooks
+
+The Trail session hook (`.trail/hook.cjs`) is a tool-managed vendored artifact — installed
+and updated by the trail/graft CLI, not authored or pinned by this repository. 2026-11-12
+review observations: it is fail-open (every stage ends `|| exit 0`, so a broken hook never
+blocks a session), and no secret access or network calls were observed. Residual supply-chain
+trust assumption: the hook resolves its modules from the highest-versioned installed
+`trail`/`graft` package without version pinning, and when the module is absent it injects
+vendor-authored context. Treat the locally installed trail/graft package as trusted software
+supply chain and re-review it on tool upgrades. Recorded per the 2026-09-25 review
+recommendation to document local tool hooks in SECURITY.md.
