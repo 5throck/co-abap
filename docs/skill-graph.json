@@ -161,7 +161,7 @@
       "name": "i18n-specialist",
       "scope": "root",
       "capability": "i18n-specialist",
-      "content_hash": "bcd1b046707ffb6d",
+      "content_hash": "3965e06d6ed7e780",
       "version": "1.1.1",
       "mirrors": [
         "agents/i18n-specialist.md"
@@ -1412,6 +1412,12 @@
       "type": "references",
       "from": "agent:root/i18n-specialist",
       "to": "skill:root/i18n-locale-config",
+      "source": "prose"
+    },
+    {
+      "type": "references",
+      "from": "agent:root/i18n-specialist",
+      "to": "skill:root/meeting-facilitation",
       "source": "prose"
     },
     {
