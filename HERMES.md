@@ -92,7 +92,7 @@ Same rules on every platform; only the config file differs. Platform: **Hermes A
 
 ---
 
-<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-002): trail block adopted ahead of delivery -->
 <!-- trail:start -->
 ## Trail — repo context graph
 

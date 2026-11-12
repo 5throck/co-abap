@@ -1,7 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-12T01:32:15.472Z
-**Generated**: 2026-11-10T02:04:25.823Z
+**Generated**: 2026-11-12T22:18:13.002Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -29,11 +28,11 @@
 | fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | form-expert | agents/form-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | gui-scripter | agents/gui-scripter.md | low | claude-haiku-5-5 | 2026-10-28 |
-| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-10 |
 | interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
-| pm | agents/pm.md | medium | inherit | 2026-10-29 |
+| pm | agents/pm.md | medium | inherit | 2026-11-12 |
 | pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-11-07 |

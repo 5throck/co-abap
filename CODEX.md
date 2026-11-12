@@ -73,7 +73,7 @@ Codex consumes slash-style workflows as **custom prompts** mirrored from the com
 
 ### 4. MCP Configurations
 
-<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-002): trail block adopted ahead of delivery -->
 Codex registers MCP servers in **TOML**: project scope at `.codex/config.toml`, machine-global fallback at `~/.codex/config.toml` (ADR-0076 per-host matrix). The workspace registers the trail context-graph server (vendor rename graft → Trail, 0.28; design 2026-10-31-graft-trail-migration R2.5 addendum):
 
 ```toml
@@ -175,7 +175,7 @@ All shared Git/PR rules are in [docs/context.md](docs/context.md). Codex-specifi
 - **PR Language**: Governed by [docs/context.md](docs/context.md). All PR titles, bodies, and review comments must be written in English - no exceptions.
 <!-- COMMON-CODEX:END -->
 
-<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-002): trail block adopted ahead of delivery -->
 <!-- trail:start -->
 ## Trail — repo context graph
 

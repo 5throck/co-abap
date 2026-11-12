@@ -219,6 +219,8 @@ MCP servers are configured in `.mcp.json` (Single Source of Truth).
 
 > **Duplication Note**: MCP server definitions live across 6 surfaces — `.mcp.json`, `.claude/settings.json`, `.gemini/settings.json`, `.agents/mcp.json`, `.codex/config.toml`, and `opencode.json`. Drift between these surfaces is controlled by the mcp-proxy-routing parity gate in `scripts/validate-abap-platform-parity.ts` (no propagation script; keep all six in step when adding or retiring a server).
 
+`opencode.json` (repo root) is the opencode editor surface config registering the trail MCP server — schema-permitted per `docs/workspace-schema.json`, drift control same as the other five MCP surfaces.
+
 See `.mcp.json` for the complete server list.
 
 > **Trust decision (documented)**: `enableAllProjectMcpServers: true` in `.claude/settings.json`

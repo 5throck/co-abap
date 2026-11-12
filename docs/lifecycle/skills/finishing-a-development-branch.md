@@ -1,4 +1,4 @@
-<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/finishing-a-development-branch.md) -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-003): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/finishing-a-development-branch.md) -->
 # Finishing-a-Development-Branch Skill — Lifecycle Record
 
 ## Metadata

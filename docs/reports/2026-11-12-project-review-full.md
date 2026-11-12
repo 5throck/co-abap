@@ -122,3 +122,15 @@ Notable honest deviations: REQ-002 record rules the gate **rework/not-passed** (
 | `bun run typecheck` / `bun test scripts` | ✅ clean / 213 pass 0 fail |
 | `bun scripts/validate-decisions.ts` | ✅ 0 errors |
 | Acceptance greps | graft:start = 0 and trail:start = 1 in all 5 instruction docs; dead vsp anchor = 0 live citations; pm.md single last_updated; fixtures end with newline |
+
+---
+
+## Addendum (2026-11-13) — ticket id migration
+
+U-20261112-010/-011 left the upstream live store overnight after filing (individual
+lookup "not found"; believed merged into same-day co-develop requests — discovered
+during the ledger consolidation pass). Re-filed as **U-20261113-002** (trail
+fleet-standard delivery gap) and **U-20261113-003** (skill lifecycle-records delivery
+gap); all live LOCAL-PATCH markers migrated to the new ids. The consolidated upstream
+ledger now lives in docs/upstream-fix-list.md (single UR-keyed ledger, §-series
+superseded with per-item dispositions — H-3 closed).

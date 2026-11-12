@@ -302,7 +302,7 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-11-12 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-11-13 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,
@@ -310,7 +310,7 @@ vsp MCP Configuration, Gemini Skill Additions, `.claude/` coexistence) as the pr
 tail, matching the structure used across co-hr, co-safety, and other co-* projects. Companion
 fix to the CLAUDE.md correction (PR #102).*
 
-<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-002): trail block adopted ahead of delivery -->
 <!-- trail:start -->
 ## Trail — repo context graph
 
