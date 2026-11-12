@@ -35,7 +35,7 @@ instead of ad-hoc `RunQuery` sampling. Owned by the **DBA** agent (`agents/dba.m
 
 ## Workflow
 
-> Legacy vsp tool names below are conceptual labels; the callable form is `SAP(action="analyze"|"read"|"query", ...)` (shown in brackets). Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode.
+> Legacy vsp tool names below are conceptual labels; the callable form is `SAP(action="analyze"|"read"|"query", ...)` (shown in brackets). Tool names and gate classes: see docs/co-abap.context.md#upstream-vsp-reference-build--test.
 
 ```
 1. Baseline trace

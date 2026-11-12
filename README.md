@@ -1,5 +1,5 @@
 ---
-content_hash: 4b6f0ace94b741e721885c749c809f4a0e5db9dc0e769c7ef347759a85bd795f
+content_hash: 86837b4cab163b383b44df0924a60fef44332b0a6ab20bb1dde93f76f652bfb7
 ---
 # Harness Engineering for SAP ABAP
 
@@ -135,7 +135,7 @@ For the detailed execution sequence, see [AGENTS.md § Collaborative Workflow](A
 # Agents collaborate in phases:
 # Phase 1: sap-investigator + read-only-analyst + schema-inspector (parallel)
 # Phase 2: architect designs → code-writer implements
-# Phase 3: test-runner verifies (syntax check → unit tests → coverage → ATC; tool names per [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode))
+# Phase 3: test-runner verifies (syntax check → unit tests → coverage → ATC; tool names per [vsp Tool Reference](docs/co-abap.context.md#upstream-vsp-reference-build--test))
 # Phase 4: transport release + git sync
 ```
 
@@ -243,4 +243,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-*Maintained by the Harness Engineering Team | Last Updated: 2026-10-28*
+*Maintained by the Harness Engineering Team | Last Updated: 2026-11-12*

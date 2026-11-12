@@ -13,7 +13,6 @@ lifecycle:
   created: "2026-08-15"
   last_updated: 2026-10-29
   governance: docs/lifecycle/agents/pm.md
-last_updated: 2026-10-29
 ---
 
 

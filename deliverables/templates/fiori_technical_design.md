@@ -83,7 +83,7 @@ flowchart LR
 
 ## 5. Backend Service & RAP Design
 
-> Tool names follow [vsp Tool Reference (Hyperfocused Mode)](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode); naming follows [DA-8](../../docs/co-abap.context.md#da-8-custom-cds-naming-vdm-aligned).
+> Tool names follow [vsp Tool Reference (Hyperfocused Mode)](../../docs/co-abap.context.md#upstream-vsp-reference-build--test); naming follows [DA-8](../../docs/co-abap.context.md#da-8-custom-cds-naming-vdm-aligned).
 
 ### 5.1 OData Version Choice
 - **Protocol**: OData V4 (default for new RAP/Fiori Elements) / OData V2 (justify: e.g. legacy SEGW service, UI5 < 1.84, offline or V2-only floorplan)

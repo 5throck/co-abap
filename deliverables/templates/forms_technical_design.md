@@ -78,7 +78,7 @@ flowchart TD
 
 ## 5. Capability, Output Management & Localization
 
-> Tool names follow [vsp Tool Reference (Hyperfocused Mode)](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode).
+> Tool names follow [vsp Tool Reference (Hyperfocused Mode)](../../docs/co-abap.context.md#upstream-vsp-reference-build--test).
 
 ### 5.1 Tooling Capability Note
 - Form **layouts** (SAPscript SE71, Smart Forms, Adobe Forms SFP/LiveCycle Designer) are **not editable via ADT/vsp**; they are a human GUI step. Owner: [...]

@@ -71,7 +71,7 @@ Severity values: `blocker` / `should` / `note`. End with a verdict line: `Review
 
 ## Relationship to ATC
 
-This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (`SAP(action="test", params={"type":"atc"})`; Tool names and gate classes: see docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/standards/clean-abap-checklist.md`, so:
+This skill is the agent-side review pass over source before activation or release. `scripts/co-abap/atc-rulepack.json` plus VSP's `RunATCCheck` (`SAP(action="test", params={"type":"atc"})`; Tool names and gate classes: see docs/co-abap.context.md#upstream-vsp-reference-build--test) (selection printed by `scripts/co-abap/vsp-audit.ts --change-type <type>`) is the system-side execution of the same checklist. Both derive from `docs/standards/clean-abap-checklist.md`, so:
 
 - **Agreement expected** - a blocker this skill finds that maps to a rule-pack check should also surface as a Priority-1 ATC finding
 - **Disagreement means investigate** - ATC passing while this skill fails usually indicates a prose-only rule (naming clarity, comment quality, abstraction level) that ATC cannot check; this skill failing while ATC passes on a mapped check suggests the wrong change-type selection or a suppressed finding

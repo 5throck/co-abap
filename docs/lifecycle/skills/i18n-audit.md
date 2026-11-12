@@ -1,21 +1,31 @@
+<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of delivered record -->
 # I18N Audit Skill Lifecycle
 
-## Created
-
-2026-08-29
+## Metadata
+- **Skill**: i18n-audit
+- **Status**: active
+- **Version**: 1.0.0
+- **Owner**: pm
+- **Created**: 2026-08-29
+- **Last Updated**: 2026-11-12
 
 ## Phase History
-
 | Date | From | To | Reason | Approver |
 |------|------|-----|---------|----------|
-| 2026-08-29 | - | production | Common `i18n-audit` skill created (generalized from the co-price specialization) as part of the I18N audit consolidation (`reledgev` design) | pm |
+| 2026-08-29 | - | production | Common `i18n-audit` skill created (generalized from a variant specialization) as part of the I18N audit consolidation (upstream `reledgev` design) | pm |
+| 2026-11-12 | production | production | Record rewritten to project-local form; dual Metadata added so skill-lifecycle-audit Check MV evaluates it (U-20261112-011) | pm |
 
 ## Acceptance Criteria
 
 ### Production Phase
-
-- [x] Skill SKILL.md exists at `templates/common/skills/i18n-audit/SKILL.md`
+- [x] Skill SKILL.md exists at `skills/i18n-audit/SKILL.md`
 - [x] Frontmatter valid: name, description, status, scope, version, owner populated
 - [x] Triggers defined: i18n audit, locale parity, translation parity, glossary audit, L10N parity
-- [x] co-price `i18n-audit` re-anchored as a variant specialization of this common base (v2.1.0)
-- [x] `i18n-specialist` agent routing table and `required_skills` updated
+- [x] Member of the i18n suite dispatched by the `i18n-specialist` agent (present in this project's roster)
+
+## Metadata
+- **Current Phase**: production
+- **Version**: 1.0.0
+- **Owner**: pm
+- **Last Updated**: 2026-11-12
+- **Last Reviewer**: pm

@@ -11,17 +11,17 @@
 > beta phase was ever run, so the beta-window criteria are explicitly waived — marked
 > "N/A per ADR-0099 — migration fast-track", not "met" — and the remaining criteria are
 > verified against the 2026-10-05 scoped review evidence. Governing policy:
-> `docs/adr/0099-template-migration-admission-policy.md`. ADR-0051's statements that
+> (workspace-root: `docs/adr/0099-template-migration-admission-policy.md`). ADR-0051's statements that
 > "the promotion checklist criteria have been met" and that the lifecycle is "defined in
-> CONSTITUTION.md" are incorrect and superseded by ADR-0099 §3. <!-- intentional-duplicate: ADR-0051 quotation inside the ADR-0099 ratification record — quotes the superseded text verbatim; source: docs/adr/0051-co-abap-stable-promotion.md -->
+> CONSTITUTION.md" are incorrect and superseded by ADR-0099 §3. <!-- intentional-duplicate: ADR-0051 quotation inside the ADR-0099 ratification record — quotes the superseded text verbatim; source: workspace-root docs/adr/0051-co-abap-stable-promotion.md -->
 
 ## Promotion Criteria (beta -> stable)
 
 | # | Criterion | Status | Evidence / Notes |
 |---|-----------|--------|-----------------|
-| 1 | **Phase A complete** | Done | `phaseAComplete: true` in variant.json; agent manifest (21), skill manifest (13), documentation present. |
+| 1 | **Phase A complete** | Done | `phaseAComplete: true` in variant.json; agent manifest (21) and skill manifest (50) per `docs/VERSION_MANIFEST.md`; documentation present. |
 | 2 | **Agent roster completeness** | Done | All 21 agents defined with substantive content (agent files verified in the 2026-10-05 scoped review; roster-surface drift for i18n-specialist found and remediated under T-20261005-025). |
-| 3 | **Skills coverage** | Done | 13 variant-specific skills registered in variant.json `skills[]`, each with a shipped SKILL.md (`abap-code-review` included — added post-README and reconciled under T-20261005-032); validator phantom-skill check green. |
+| 3 | **Skills coverage** | Done | 50 skills in the skill manifest (`docs/VERSION_MANIFEST.md` — variant.json has no `skills[]` key; the manifest is the count source), each with a shipped SKILL.md (`abap-code-review` included — added post-README and reconciled under T-20261005-032); validator phantom-skill check green. |
 | 4 | **Documentation completeness** | Done | README.md, docs/co-abap.context.md, AGENTS.md, user-guide, phase-definitions, and variant.json present. The 2026-10-05 scoped review logged doc drift (phase-model contradictions, phantom commands, stale rosters); remediated in the same wave (T-20261005-021..032). |
 | 5 | **Audit pass rate** | Done | 2026-10-05 scoped review ran the contract-truth validator suite; residual findings were remediated in the same wave (T-20261005-021..032). The 4 `bun` import findings are confirmed false positives (runtime builtin). No recorded audit run exists at the 2026-08-15 promotion date itself — this review-based attestation governs per ADR-0099. |
 | 6 | **Real engagements** | N/A per ADR-0099 — migration fast-track | Source project was conversion-eligible per `skills/project-to-variant` (tested in 2+ engagements); no separate beta engagement log exists for the variant. |
@@ -34,4 +34,4 @@
 
 | Date | Reviewer | Outcome | Notes |
 |------|----------|---------|-------|
-| 2026-10-05 | pm | Stable (ratified) | Migration admission ratified per ADR-0099; ADR-0051's criteria-met claim corrected. Evidence: `docs/reports/2026-10-05-project-review-scoped-co-consult-co-abap-co-develop.md`; remediation T-20261005-021..032. |
+| 2026-10-05 | pm | Stable (ratified) | Migration admission ratified per ADR-0099; ADR-0051's criteria-met claim corrected. Evidence: (workspace-root: `docs/reports/2026-10-05-project-review-scoped-co-consult-co-abap-co-develop.md`); remediation T-20261005-021..032. |

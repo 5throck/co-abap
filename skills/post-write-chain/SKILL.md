@@ -77,7 +77,7 @@ Action required: Add ABAP Unit test cases covering the uncovered branches,
 3. If RunUnitTests fails, do not run GetCodeCoverage or RunATCCheck until the test logic is fixed.
 4. If GetCodeCoverage falls below threshold (or regresses on an existing object) without a recorded waiver, do not proceed to RunATCCheck.
 5. Priority-1 ATC findings block all further steps including transport release.
-6. In Gemini / Antigravity sessions: route all four steps through the `SAP` tool per the [vsp Tool Reference](../../docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT): `SAP(action="analyze", params={"type":"syntax_check", ...})`, `SAP(action="test", ...)` for unit tests (with `with_coverage=true` for coverage), and `SAP(action="test", params={"type":"atc", ...})`.
+6. In Gemini / Antigravity sessions: route all four steps through the `SAP` tool per the [vsp Tool Reference](../../docs/co-abap.context.md#upstream-vsp-reference-build--test) (SSOT): `SAP(action="analyze", params={"type":"syntax_check", ...})`, `SAP(action="test", ...)` for unit tests (with `with_coverage=true` for coverage), and `SAP(action="test", params={"type":"atc", ...})`.
 
 ## Enforcement
 

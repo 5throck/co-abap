@@ -260,7 +260,7 @@ contains `["--mode", "hyperfocused"]` before starting a session.
 
 ### Tool Usage in Hyperfocused Mode
 
-All operations go through the `SAP` tool. Legacy tool names map to `SAP(...)` calls per the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode) (SSOT). Examples:
+All operations go through the `SAP` tool. Legacy tool names map to `SAP(...)` calls per the [vsp Tool Reference](docs/co-abap.context.md#upstream-vsp-reference-build--test) (SSOT). Examples:
 
 ```
 SAP(action="read", target="CLAS ZCL_X")
@@ -282,7 +282,7 @@ The following capabilities extend those in [skills/abap-dev/SKILL.md](skills/aba
   keep write operations (edit/create via `SAP`) in the primary session.
 - **Advanced Diagnostics**: Use `vsp health` to validate architecture and
   `vsp slim` for context optimization before large read sessions.
-- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via the `SAP` tool (see the [vsp Tool Reference](docs/co-abap.context.md#vsp-tool-reference-hyperfocused-mode)):
+- **Post-Write Test Chain**: Hooks are not supported. After any write operation, execute the mandatory chain manually via the `SAP` tool (see the [vsp Tool Reference](docs/co-abap.context.md#upstream-vsp-reference-build--test)):
   ```
   SAP(action="analyze", params={"type":"syntax_check", ...})
   SAP(action="test", params={"object_url":"/sap/bc/adt/..."})
@@ -302,13 +302,56 @@ This project contains a `.claude/` directory. To prevent configuration drift and
 
 ---
 
-*Last Updated: 2026-10-28 — resynced Gemini-Specific & Antigravity Workflows with the current
+*Last Updated: 2026-11-12 — resynced Gemini-Specific & Antigravity Workflows with the current
 templates/common/GEMINI.md baseline (Role Declaration, Language Policy, Execution Plan
 Boilerplate, Git & PR Additions, Pre-Edit Quality Gate had drifted out of sync — only 1 of 4
 COMMON-GEMINI markers remained); kept all vsp/ABAP-specific content (Session Start Checklist,
 vsp MCP Configuration, Gemini Skill Additions, `.claude/` coexistence) as the project-specific
 tail, matching the structure used across co-hr, co-safety, and other co-* projects. Companion
 fix to the CLAUDE.md correction (PR #102).*
+
+<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- trail:start -->
+## Trail — repo context graph
+
+This repo is indexed in `.trail/cache/`: small linked markdown nodes that explain each
+system and carry exact file:line spans, kept in sync with the code through git.
+
+For ANY task here — understanding how something works, finding where code lives,
+or scoping a change — get context from the graph before grepping or opening
+source files. Re-ask freely (it's cheap) and reuse literal identifiers you
+already have (symbol, error string, file name) as the query. New to this repo?
+Run `trail map` first — a token-budgeted orientation (dir clusters, hubs,
+hotspots), no LLM, no key.
+
+- Run `trail ask "<your question>" --source` → ranked nodes with the relevant
+  code spans inlined (each hit's ≤8-line crux by default; `--full` for whole
+  definitions when the crux isn't enough). Match the tool to the task shape:
+  for understanding or editing, the top node IS the answer — cite its
+  `covers:` file:line spans and edit straight from `--source`. For
+  exhaustive tasks ("every occurrence / every caller of this pattern"), ranked
+  results are top-N, not complete — run `trail grep "<literal>"` instead
+  (exhaustive over indexed files, grouped by enclosing symbol), falling back
+  to raw `grep -rn` only for unindexed files.
+- `trail skeleton <file>` → every definition's signature + span, ~10× cheaper
+  than reading the file; use it to skim an API surface.
+- `trail callers <symbol>` gives precomputed, exact edges — who calls this.
+  Add `--direction out` for what it calls, or `--depth N` to walk
+  transitively for the full blast radius. For structural questions, skip
+  ranking and use this directly.
+- Or browse: `.trail/cache/INDEX.md` lists every node; follow the links.
+- Monorepos and folders of multiple repos rank fairly across sub-projects —
+  hits carry `[scope/]` labels naming which one they're from. Narrow with
+  `trail ask "<task>" --in <scope>/` once you know where you're working.
+
+If a returned span is truncated ("+N more lines"), open the file at that exact
+range before finalizing. Only open source files when a node genuinely lacks a
+needed detail, and then at the exact file:line the node points to — never
+re-read whole files.
+
+After big code changes, refresh the graph with `trail build` (deterministic,
+no API key, $0).
+<!-- trail:end -->
 
 ## SAP Safety (co-abap hardening)
 
