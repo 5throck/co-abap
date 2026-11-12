@@ -423,13 +423,18 @@ copies inherit L0 SSOT review evidence and lifecycle records; the audit emits `[
 for those L0-owned checks rather than treating local upgrade commits as unreviewed skill
 changes. L0 authoring contexts continue to require lifecycle records.
 
-#### `review-baseline.ts`
-**Purpose**: Runs the deterministic detached-L3 project-review baseline. It runs only
-delivered checks and reports `validate-templates` and propagation drift as N/A because
-they depend on the absent L0 template source tree.
-**Usage**: `bun scripts/review-baseline.ts [--quiet]`
-**v1.4.0**: adds `validate-platform-parity`.
-**v1.3.0**: adds `validate-docs-links --all`, `check-project-meta`, and `test:unit`; each check runs with a 300 s timeout (TIMEOUT reported as FAIL).
+#### `review-baseline.ts` (retired 2026-10-13)
+**Status**: RETIRED — the script no longer exists. Removed at the 0.18.0 wave
+(commit 78adacd, 2026-10-13) once its checks were delivered into the template
+toolset; it has no Registry row (so `verify-scripts.ts --verify` does not expect
+the file) and its former `**Usage**` line is void.
+**Purpose (historical)**: ran the deterministic detached-L3 project-review baseline —
+delivered checks only, reporting `validate-templates` and propagation drift as N/A
+because they depended on the absent L0 template source tree.
+**Successors**: `bun scripts/audit.ts` (delivered baseline, incl. the former
+`validate-docs-links --all` leg), `bun scripts/check-project-meta.ts` (delivered at the
+same wave), and the CI docs-link gate (`validate-docs-links.ts --all` in
+`.github/workflows/ci.yml`). Provenance: ledger `docs/upstream-fix-list.md` UR-1.
 
 #### `check-project-meta.ts`
 **Purpose**: Deterministic project metadata checks: CHANGELOG `[Unreleased]` heading uniqueness/position, entry format (subheading + `(#PR)` for entries dated on/after 2026-10-11), and version/`last_updated` bumps for agents/skills changed since the merge-base with `origin/main` (`[SKIP]` without origin/main), plus `vsp-version-pin` (PINNED_VERSION in `scripts/co-abap/install-vsp.ts` must equal every vsp version claim in co-abap.context.md, setup-guide.md and the write-safety-gate design).

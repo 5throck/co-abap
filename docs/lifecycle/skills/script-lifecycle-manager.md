@@ -1,4 +1,4 @@
-<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/script-lifecycle-manager.md) -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-003): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/script-lifecycle-manager.md) -->
 # Script-Lifecycle-Manager Skill Lifecycle
 
 ## Metadata

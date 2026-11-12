@@ -1,4 +1,4 @@
-<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/source-command-commit-push-pr.md) -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-003): project-local adaptation of the delivered record (seed: workspace-root docs/lifecycle/skills/source-command-commit-push-pr.md) -->
 # Source-Command-Commit-Push-PR Skill — Lifecycle Record
 
 ## Metadata

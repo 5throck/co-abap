@@ -1,4 +1,4 @@
-<!-- LOCAL-PATCH(upstream-request: U-20261112-011): project-local adaptation of delivered record -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-003): project-local adaptation of delivered record -->
 # I18N Locale Config Skill Lifecycle
 
 ## Metadata
@@ -13,7 +13,7 @@
 | Date | From | To | Reason | Approver |
 |------|------|-----|---------|----------|
 | 2026-09-21 | (pre-record) | production | Record backfill — active skill without a lifecycle record (upstream 2026-09-21 project review H-9) | pm |
-| 2026-11-12 | production | production | Record rewritten to project-local form; dual Metadata added so skill-lifecycle-audit Check MV evaluates it (U-20261112-011) | pm |
+| 2026-11-12 | production | production | Record rewritten to project-local form; dual Metadata added so skill-lifecycle-audit Check MV evaluates it (U-20261113-003) | pm |
 
 ## Acceptance Criteria
 

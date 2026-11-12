@@ -561,7 +561,7 @@ All agents, regardless of their role, must adhere to the following:
 - **v2.0.0 (2026-06-09)**: Restructured as SSOT - Integrated PM Gateway workflow (§3), execution plan templates (§5), and renumbered existing sections. Consolidated duplicate content from pm.md, CLAUDE.md §5, GEMINI.md §5 into single source of truth.
 - **v1.x**: Previous versions maintained agent roster and individual definitions without PM Gateway integration
 
-<!-- LOCAL-PATCH(upstream-request: U-20261112-010): trail block adopted ahead of delivery -->
+<!-- LOCAL-PATCH(upstream-request: U-20261113-002): trail block adopted ahead of delivery -->
 <!-- trail:start -->
 ## Trail — repo context graph
 

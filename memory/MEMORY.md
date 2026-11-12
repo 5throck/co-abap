@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-13](2026-11-13.md) | docs(review): consolidate upstream ledger, migrate ticket ids, document opencode surface |
 | [2026-11-12](2026-11-12.md) | chore(review): 2026-11-12 remediation — trail doc completion, lifecycle records, content restores |
 | [2026-11-10](2026-11-10.md) | chore(skills): remove stale /meeting command stubs (retired 2026-09-26; workspace-root T-20261109-003) |
 | [2026-11-08](2026-11-08.md) | chore(scripts): workspace sync (92 files) |
