@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-15T13:33:01.341Z
+**Generated**: 2026-11-15T15:11:53.126Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -20,24 +20,24 @@
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | claude-opus-5-5 | 2026-11-07 |
-| automation-engineer | agents/automation-engineer.md | medium | claude-sonnet-5-5 | N/A |
+| automation-engineer | agents/automation-engineer.md | medium | claude-sonnet-5-5 | 2026-11-15 |
 | co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-11-07 |
-| contract-gate-engineer | agents/contract-gate-engineer.md | medium | claude-sonnet-5-5 | N/A |
+| contract-gate-engineer | agents/contract-gate-engineer.md | medium | claude-sonnet-5-5 | 2026-11-15 |
 | dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-11-07 |
-| design-system-lead | agents/design-system-lead.md | medium | claude-sonnet-5-5 | N/A |
+| design-system-lead | agents/design-system-lead.md | medium | claude-sonnet-5-5 | 2026-11-15 |
 | devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | form-expert | agents/form-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | gui-scripter | agents/gui-scripter.md | low | claude-haiku-5-5 | 2026-10-28 |
-| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-10 |
+| i18n-specialist | agents/i18n-specialist.md | medium | claude-sonnet-5-5 | 2026-11-15 |
 | interface-expert | agents/interface-expert.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | le-analyst | agents/le-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
-| pm | agents/pm.md | medium | inherit | 2026-11-12 |
+| pm | agents/pm.md | medium | inherit | 2026-11-15 |
 | pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
-| public-data-analyst | agents/public-data-analyst.md | medium | claude-sonnet-5-5 | N/A |
+| public-data-analyst | agents/public-data-analyst.md | medium | claude-sonnet-5-5 | 2026-11-15 |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | schema-inspector | agents/schema-inspector.md | medium | claude-sonnet-5-5 | 2026-10-28 |
