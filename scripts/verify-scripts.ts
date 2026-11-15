@@ -1,7 +1,14 @@
 #!/usr/bin/env bun
 /**
  * verify-scripts.ts — Script Lifecycle Registry Verifier
- * @version 1.14.0
+ * @version 1.15.0
+ *         v1.15.0 (2026-11-13, U-20261112-014): new Check 10 `workflow-script-ref` —
+ *         every `bun scripts/<name>.ts` reference in .github/workflows/*.yml|*.yaml
+ *         must resolve to an existing file under scripts/ (the 2026-11-08 co-abap
+ *         prune-recurrence class: upgrade deleted scripts/validate-abap-platform-parity.ts
+ *         while ci.yml still invoked it, and no gate scanned workflow files). Error-level,
+ *         mirroring the ghost-entry convention. Pure scanner
+ *         findDanglingWorkflowScriptRefs exported for unit tests.
  *         v1.14.0 (2026-11-06, DEC-20261106-03): Ghost-entry check skips L0+L2 rows whose
  *         script exists under templates/co-X/scripts/ (variant-scoped, co-abap registry rows).
  *         v1.13.0 (2026-10-27, U-20261026-010): --check-drift equal-version divergence
@@ -78,10 +85,10 @@
  *   hand-writes the row. Descriptions are left as placeholders to fill in.
  */
 
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { createHash } from "node:crypto";
-import { readFileSync, readdirSync, existsSync, writeFileSync } from "fs";
-import { join, dirname, relative } from "path";
+import { readFileSync, readdirSync, existsSync, writeFileSync } from "node:fs";
+import { join, dirname, relative } from "node:path";
 import { scrubConstitutionRefs } from "./lib/constitution-scrub.ts";
 
 // ── --fix helpers (ADR-0081 / T-20260919-002; pure, unit-tested) ────────────
@@ -102,13 +109,19 @@ export function buildFixRow(script: string, version: string, source: string, lay
  * Returns null when the Registry table cannot be located (leave the file
  * untouched and let the regular error message guide the operator).
  */
-export function insertRowsIntoRegistry(content: string, rows: string[]): { content: string; insertedAt: number } | null {
+export function insertRowsIntoRegistry(
+  content: string,
+  rows: string[],
+): { content: string; insertedAt: number } | null {
   const lines = content.split("\n");
   let inRegistry = false;
   let lastRowIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.startsWith("## Registry")) { inRegistry = true; continue; }
+    if (line.startsWith("## Registry")) {
+      inRegistry = true;
+      continue;
+    }
     if (inRegistry && line.startsWith("## ")) break;
     if (!inRegistry) continue;
     const t = line.trim();
@@ -170,9 +183,9 @@ function findTrueWorkspaceRoot(startDir: string): string | null {
 const scriptDir = import.meta.dir;
 const workspaceRoot = findWorkspaceRoot(scriptDir);
 const trueWorkspaceRoot = findTrueWorkspaceRoot(scriptDir);
-const scriptsDir = join(workspaceRoot, "scripts");        // L0 SSOT (or nearest context root)
+const scriptsDir = join(workspaceRoot, "scripts"); // L0 SSOT (or nearest context root)
 const l1TemplateDir = trueWorkspaceRoot
-  ? join(trueWorkspaceRoot, "templates", "common", "scripts")  // L1 snapshot, always resolved from the true root
+  ? join(trueWorkspaceRoot, "templates", "common", "scripts") // L1 snapshot, always resolved from the true root
   : join(workspaceRoot, "templates", "common", "scripts");
 const scriptsMdPath = join(scriptsDir, SCRIPTS_MD_FILENAME);
 
@@ -231,7 +244,7 @@ interface RegistryEntry {
   removalDate: string; // "—" or "YYYY-MM-DD"
   securityAdvisory: string; // "—" or "CVE-XXXX"
   layer: "common" | "L0-only" | "L1-only" | "L0+L1" | "L0+L1+L2" | string;
-  pair: string;  // "—" or "<script-name>" (.sh declares its .ps1 pair)
+  pair: string; // "—" or "<script-name>" (.sh declares its .ps1 pair)
 }
 
 // ── Registry Parser ──────────────────────────────────────────────────────────
@@ -244,13 +257,23 @@ export function findMalformedRegistryRows(content: string): { script: string; co
   let inRegistry = false;
   let headerParsed = false;
   for (const line of content.split("\n")) {
-    if (line.startsWith("## Registry")) { inRegistry = true; headerParsed = false; continue; }
+    if (line.startsWith("## Registry")) {
+      inRegistry = true;
+      headerParsed = false;
+      continue;
+    }
     if (inRegistry && line.startsWith("## ")) break;
     if (!inRegistry) continue;
     const trimmed = line.trim();
     if (!trimmed.startsWith("|") || trimmed.startsWith("|-")) continue;
-    const cols = trimmed.split("|").slice(1, -1).map((c) => c.trim());
-    if (!headerParsed) { headerParsed = true; continue; }
+    const cols = trimmed
+      .split("|")
+      .slice(1, -1)
+      .map((c) => c.trim());
+    if (!headerParsed) {
+      headerParsed = true;
+      continue;
+    }
     if (cols.length !== REGISTRY_COLUMN_COUNT) {
       bad.push({ script: (cols[0] ?? "").replace(/`/g, ""), columns: cols.length });
     }
@@ -422,7 +445,12 @@ export interface L0L1Classification {
  * canonicalization must be applied to the L0 side only, with the same
  * implementation the publisher uses.
  */
-export function classifyL0L1Pair(l0Content: string, l1Content: string, l0Path: string, l1Path: string): L0L1Classification {
+export function classifyL0L1Pair(
+  l0Content: string,
+  l1Content: string,
+  l0Path: string,
+  l1Path: string,
+): L0L1Classification {
   const l0Version = extractHeaderVersion(l0Content);
   const l1Version = extractHeaderVersion(l1Content);
   const canonicalL0 = scrubConstitutionRefs(l0Content, l0Path, l1Path);
@@ -439,6 +467,33 @@ export function classifyL0L1Pair(l0Content: string, l1Content: string, l0Path: s
 /** Short sha256 prefix for compact drift reports. */
 export function shortContentHash(content: string): string {
   return createHash("sha256").update(content).digest("hex").slice(0, 12);
+}
+
+// ── CI workflow reference scanner (U-20261112-014; pure, unit-tested) ────────
+
+/**
+ * Every `bun scripts/<name>.ts` reference inside the given workflow files.
+ * v1.15.0 (U-20261112-014): the prune-recurrence class — an upgrade deletes a
+ * script while .github/workflows/ci.yml still invokes it — silently broke CI
+ * because no gate scanned workflow files (T-20261108-008). Pure: callers feed
+ * the workflow contents and do the existence check themselves.
+ */
+export function findDanglingWorkflowScriptRefs(
+  workflows: Array<{ name: string; content: string }>,
+): Array<{ workflow: string; script: string }> {
+  const refs: Array<{ workflow: string; script: string }> = [];
+  for (const wf of workflows) {
+    const re = /\bbun\s+(scripts\/[A-Za-z0-9/_.-]+\.ts)\b/g;
+    let m: RegExpExecArray | null = re.exec(wf.content);
+    while (m !== null) {
+      const script = m[1];
+      if (!refs.some((r) => r.workflow === wf.name && r.script === script)) {
+        refs.push({ workflow: wf.name, script });
+      }
+      m = re.exec(wf.content);
+    }
+  }
+  return refs;
 }
 
 interface DriftPair {
@@ -459,8 +514,8 @@ function detectDrift(registry: RegistryEntry[]): { drifted: DriftPair[]; clean: 
   for (const entry of registry) {
     if (entry.source !== "L0") continue;
 
-    const l0Path = join(scriptsDir, entry.script);       // workspace L0
-    const l1Path = join(l1TemplateDir, entry.script);    // template L1
+    const l0Path = join(scriptsDir, entry.script); // workspace L0
+    const l1Path = join(l1TemplateDir, entry.script); // template L1
 
     if (!existsSync(l0Path) || !existsSync(l1Path)) continue;
 
@@ -514,17 +569,23 @@ function checkDriftReport(): void {
     console.log(`✅ No unintentional drift detected (${clean.length} L0/L1 pairs in sync)`);
   } else {
     if (equalVersion.length > 0) {
-      const label = blocking ? "❌ Equal-version content divergence" : "⚠️  Equal-version content divergence (warning, non-blocking in this context)";
+      const label = blocking
+        ? "❌ Equal-version content divergence"
+        : "⚠️  Equal-version content divergence (warning, non-blocking in this context)";
       console.log(`${label} (${equalVersion.length} script(s)) — ${blocking ? "BLOCKING" : "WARNING"}:`);
       for (const d of equalVersion) {
-        console.log(`   ${d.script}  @${d.l0Version}  L0 ${d.l0Hash} (${d.l0Lines} lines)  vs  L1 ${d.l1Hash} (${d.l1Lines} lines)`);
+        console.log(
+          `   ${d.script}  @${d.l0Version}  L0 ${d.l0Hash} (${d.l0Lines} lines)  vs  L1 ${d.l1Hash} (${d.l1Lines} lines)`,
+        );
       }
       if (blocking) {
         console.log("\n   Same-@version copies must be byte-identical modulo the sanctioned");
         console.log("   CONSTITUTION.md→context.md comment scrub (scripts/lib/constitution-scrub.ts).");
         console.log("   Fix: correct the diverged copy or re-publish: bun run propagate:apply\n");
       } else {
-        console.log("\n   Run upgrade-project to reconcile with the workspace template (project-vs-upstream divergence is not a mirror violation).\n");
+        console.log(
+          "\n   Run upgrade-project to reconcile with the workspace template (project-vs-upstream divergence is not a mirror violation).\n",
+        );
       }
     }
     if (pending.length > 0) {
@@ -532,7 +593,9 @@ function checkDriftReport(): void {
       for (const d of pending) {
         const diff = d.l1Lines - d.l0Lines;
         const sign = diff >= 0 ? "+" : "";
-        console.log(`   ${d.script}  L0 @${d.l0Version}: ${d.l0Lines} lines  L1 @${d.l1Version}: ${d.l1Lines} lines  (${sign}${diff})`);
+        console.log(
+          `   ${d.script}  L0 @${d.l0Version}: ${d.l0Lines} lines  L1 @${d.l1Version}: ${d.l1Lines} lines  (${sign}${diff})`,
+        );
       }
       console.log("\n   Fix: edit L0 (workspace scripts/) then run bun run propagate:apply to push to L1.\n");
     }
@@ -553,7 +616,6 @@ function checkDriftReport(): void {
   process.exit(0);
 }
 
-
 // ── Verify Mode ──────────────────────────────────────────────────────────────
 
 function verify(): boolean {
@@ -563,9 +625,7 @@ function verify(): boolean {
 
   if (!existsSync(scriptsMdPath)) {
     console.error(`❌ SCRIPTS.md not found at: ${scriptsMdPath}`);
-    console.error(
-      "   Run: bun scripts/verify-scripts.ts --generate  to create a draft"
-    );
+    console.error("   Run: bun scripts/verify-scripts.ts --generate  to create a draft");
     return false;
   }
 
@@ -575,7 +635,7 @@ function verify(): boolean {
 
   for (const row of findMalformedRegistryRows(content)) {
     errors.push(
-      `Malformed registry row: \`${row.script}\` has ${row.columns} columns, expected ${REGISTRY_COLUMN_COUNT} (script|source|version|status|removal-date|security-advisory|layer|pair)`
+      `Malformed registry row: \`${row.script}\` has ${row.columns} columns, expected ${REGISTRY_COLUMN_COUNT} (script|source|version|status|removal-date|security-advisory|layer|pair)`,
     );
   }
 
@@ -584,7 +644,7 @@ function verify(): boolean {
   if (contextLayer === "L0") {
     for (const dup of findDivergentDuplicateRows(content)) {
       errors.push(
-        `Divergent duplicate registry rows: \`${dup.script}\` appears with versions ${dup.versions.join(" vs ")} — doc-tail fragments must match the authoritative ## Registry row`
+        `Divergent duplicate registry rows: \`${dup.script}\` appears with versions ${dup.versions.join(" vs ")} — doc-tail fragments must match the authoritative ## Registry row`,
       );
     }
   }
@@ -593,9 +653,9 @@ function verify(): boolean {
   const actualNames = new Set(actualScripts);
 
   // Check 0: Architecture compliance (.sh/.ps1 pairs and .ts orchestration)
-  const shScripts = actualScripts.filter(s => s.endsWith('.sh')).map(s => s.replace('.sh', ''));
-  const ps1Scripts = actualScripts.filter(s => s.endsWith('.ps1')).map(s => s.replace('.ps1', ''));
-  const tsBaseNames = new Set(actualScripts.filter(s => s.endsWith('.ts')).map(s => s.replace('.ts', '')));
+  const shScripts = actualScripts.filter((s) => s.endsWith(".sh")).map((s) => s.replace(".sh", ""));
+  const ps1Scripts = actualScripts.filter((s) => s.endsWith(".ps1")).map((s) => s.replace(".ps1", ""));
+  const tsBaseNames = new Set(actualScripts.filter((s) => s.endsWith(".ts")).map((s) => s.replace(".ts", "")));
 
   for (const name of shScripts) {
     if (!ps1Scripts.includes(name)) {
@@ -608,19 +668,23 @@ function verify(): boolean {
     }
   }
   for (const script of actualScripts) {
-    const baseName = script.replace(/\.(sh|ps1)$/, '');
-    const isOrchestrationKeyword = script.includes('lifecycle') || script.includes('verify') || script.includes('validate') || script.includes('agent-') || script.includes('dispatch');
-    const isTsWrapper = !script.endsWith('.ts') && tsBaseNames.has(baseName);
-    if (isOrchestrationKeyword && !script.endsWith('.ts') && !script.endsWith('.md') && !isTsWrapper) {
+    const baseName = script.replace(/\.(sh|ps1)$/, "");
+    const isOrchestrationKeyword =
+      script.includes("lifecycle") ||
+      script.includes("verify") ||
+      script.includes("validate") ||
+      script.includes("agent-") ||
+      script.includes("dispatch");
+    const isTsWrapper = !script.endsWith(".ts") && tsBaseNames.has(baseName);
+    if (isOrchestrationKeyword && !script.endsWith(".ts") && !script.endsWith(".md") && !isTsWrapper) {
       errors.push(`Architecture violation: Orchestration script \`${script}\` must use Bun (.ts)`);
     }
   }
 
   // Check 1: Scripts on disk but not in registry
   // In L1/L2/L3, build a set of relevant (non-L0-only) registered names only
-  const relevantRegisteredNames = contextLayer === "L0"
-    ? registeredNames
-    : new Set(registry.filter(isLayerRelevant).map((e) => e.script));
+  const relevantRegisteredNames =
+    contextLayer === "L0" ? registeredNames : new Set(registry.filter(isLayerRelevant).map((e) => e.script));
   for (const script of actualScripts) {
     if (!relevantRegisteredNames.has(script)) {
       errors.push(`Unregistered script: \`${script}\` — add to SCRIPTS.md Registry`);
@@ -633,9 +697,7 @@ function verify(): boolean {
     if (!isLayerRelevant(entry)) continue;
     if (entry.layer === "L0+L2" && variantScopedScriptExists(entry.script)) continue;
     if (!existsSync(join(scriptsDir, entry.script))) {
-      errors.push(
-        `Ghost entry: \`${entry.script}\` in Registry but not on disk — remove from SCRIPTS.md`
-      );
+      errors.push(`Ghost entry: \`${entry.script}\` in Registry but not on disk — remove from SCRIPTS.md`);
     }
   }
 
@@ -649,11 +711,11 @@ function verify(): boolean {
     for (const d of drifted) {
       if (d.classification === "equal-version-divergence") {
         errors.push(
-          `Equal-version L0/L1 content divergence: \`${d.script}\` @${d.l0Version} — L0 ${d.l0Hash} (${d.l0Lines} lines) vs L1 ${d.l1Hash} (${d.l1Lines} lines). Same-@version copies must be byte-identical modulo the sanctioned CONSTITUTION.md→context.md comment scrub (scripts/lib/constitution-scrub.ts); fix the diverged copy or re-publish with propagate-to-templates`
+          `Equal-version L0/L1 content divergence: \`${d.script}\` @${d.l0Version} — L0 ${d.l0Hash} (${d.l0Lines} lines) vs L1 ${d.l1Hash} (${d.l1Lines} lines). Same-@version copies must be byte-identical modulo the sanctioned CONSTITUTION.md→context.md comment scrub (scripts/lib/constitution-scrub.ts); fix the diverged copy or re-publish with propagate-to-templates`,
         );
       } else {
         warnings.push(
-          `L0/L1 drift (publish pending): \`${d.script}\` — L0 @${d.l0Version} (${d.l0Lines} lines), L1 @${d.l1Version} (${d.l1Lines} lines).`
+          `L0/L1 drift (publish pending): \`${d.script}\` — L0 @${d.l0Version} (${d.l0Lines} lines), L1 @${d.l1Version} (${d.l1Lines} lines).`,
         );
       }
     }
@@ -664,7 +726,7 @@ function verify(): boolean {
   for (const entry of registry) {
     if (entry.securityAdvisory !== "—" && entry.securityAdvisory !== "") {
       errors.push(
-        `🔒 SECURITY ADVISORY on \`${entry.script}\`: ${entry.securityAdvisory} — update or remove this script immediately`
+        `🔒 SECURITY ADVISORY on \`${entry.script}\`: ${entry.securityAdvisory} — update or remove this script immediately`,
       );
     }
   }
@@ -674,25 +736,20 @@ function verify(): boolean {
     if (entry.status === "deprecated" && entry.removalDate !== "—" && entry.removalDate !== "") {
       if (entry.removalDate <= today) {
         errors.push(
-          `⏰ EXPIRED: \`${entry.script}\` removal-date ${entry.removalDate} has passed — delete this script and remove from Registry`
+          `⏰ EXPIRED: \`${entry.script}\` removal-date ${entry.removalDate} has passed — delete this script and remove from Registry`,
         );
       } else {
         // Upcoming removal — warn only
-        const daysLeft = Math.ceil(
-          (new Date(entry.removalDate).getTime() - new Date(today).getTime()) /
-            86400000
-        );
+        const daysLeft = Math.ceil((new Date(entry.removalDate).getTime() - new Date(today).getTime()) / 86400000);
         warnings.push(
-          `⚠️  DEPRECATED: \`${entry.script}\` — scheduled removal on ${entry.removalDate} (${daysLeft} days remaining)`
+          `⚠️  DEPRECATED: \`${entry.script}\` — scheduled removal on ${entry.removalDate} (${daysLeft} days remaining)`,
         );
       }
     }
 
     // Check 5: deprecated without removal-date
     if (entry.status === "deprecated" && (entry.removalDate === "—" || entry.removalDate === "")) {
-      errors.push(
-        `Missing removal-date for deprecated script: \`${entry.script}\` — add YYYY-MM-DD (min 90 days)`
-      );
+      errors.push(`Missing removal-date for deprecated script: \`${entry.script}\` — add YYYY-MM-DD (min 90 days)`);
     }
 
     // Check 5b: deprecated .sh/.ps1 with pair field should be thin wrappers (≤8 lines)
@@ -705,10 +762,10 @@ function verify(): boolean {
       const scriptPath = join(scriptsDir, entry.script);
       if (existsSync(scriptPath)) {
         const scriptContent = readFileSync(scriptPath, "utf-8");
-        const lineCount = scriptContent.split("\n").filter(l => l.trim()).length;
+        const lineCount = scriptContent.split("\n").filter((l) => l.trim()).length;
         if (lineCount > 8) {
           warnings.push(
-            `⚠️  FAT DEPRECATED WRAPPER: \`${entry.script}\` has ${lineCount} non-empty lines — deprecated scripts with a TS pair should be thin wrappers (≤8 lines). Convert to: exec bun $SCRIPT_DIR/${entry.pair.replace('.ps1', '.ts').replace('.sh', '.ts')} "$@"`
+            `⚠️  FAT DEPRECATED WRAPPER: \`${entry.script}\` has ${lineCount} non-empty lines — deprecated scripts with a TS pair should be thin wrappers (≤8 lines). Convert to: exec bun $SCRIPT_DIR/${entry.pair.replace(".ps1", ".ts").replace(".sh", ".ts")} "$@"`,
           );
         }
       }
@@ -716,14 +773,12 @@ function verify(): boolean {
   }
 
   // Check 6: pair field horizontal sync — .sh declares pair, verify version match
-  const byScript = new Map(registry.map(e => [e.script, e]));
+  const byScript = new Map(registry.map((e) => [e.script, e]));
   for (const entry of registry) {
     if (entry.pair === "—" || entry.pair === "") continue;
     const pairEntry = byScript.get(entry.pair);
     if (!pairEntry) {
-      warnings.push(
-        `⚠️  PAIR MISSING: \`${entry.script}\` declares pair \`${entry.pair}\` but it is not in registry`
-      );
+      warnings.push(`⚠️  PAIR MISSING: \`${entry.script}\` declares pair \`${entry.pair}\` but it is not in registry`);
       continue;
     }
     // Version sync check: both files should have same major.minor version
@@ -731,13 +786,13 @@ function verify(): boolean {
     const [ps1Maj, ps1Min] = pairEntry.version.split(".").map(Number);
     if (shMaj !== ps1Maj || shMin !== ps1Min) {
       warnings.push(
-        `⚠️  PAIR VERSION DRIFT: \`${entry.script}\` v${entry.version} ↔ \`${entry.pair}\` v${pairEntry.version} — consider aligning versions`
+        `⚠️  PAIR VERSION DRIFT: \`${entry.script}\` v${entry.version} ↔ \`${entry.pair}\` v${pairEntry.version} — consider aligning versions`,
       );
     }
     // Status sync check: both should have same status
     if (entry.status !== pairEntry.status) {
       warnings.push(
-        `⚠️  PAIR STATUS DRIFT: \`${entry.script}\` (${entry.status}) ↔ \`${entry.pair}\` (${pairEntry.status}) — statuses should match`
+        `⚠️  PAIR STATUS DRIFT: \`${entry.script}\` (${entry.status}) ↔ \`${entry.pair}\` (${pairEntry.status}) — statuses should match`,
       );
     }
   }
@@ -751,7 +806,7 @@ function verify(): boolean {
   const templateScriptsMd = join(templateScriptsDir, SCRIPTS_MD_FILENAME);
   if (contextLayer === "L0" && existsSync(templateScriptsMd)) {
     const templateRegistry = parseRegistry(readFileSync(templateScriptsMd, "utf-8"));
-    const templateRegistered = new Map(templateRegistry.map(e => [e.script, e]));
+    const templateRegistered = new Map(templateRegistry.map((e) => [e.script, e]));
     const templateFiles = walkScripts(templateScriptsDir)
       .map((absPath) => relative(templateScriptsDir, absPath).replace(/\\/g, "/"))
       .sort();
@@ -759,11 +814,11 @@ function verify(): boolean {
       const entry = templateRegistered.get(file);
       if (!entry) {
         errors.push(
-          `Template registry gap: \`${file}\` ships in templates/common/scripts/ but has no row in its SCRIPTS.md Registry — add a row or remove the file`
+          `Template registry gap: \`${file}\` ships in templates/common/scripts/ but has no row in its SCRIPTS.md Registry — add a row or remove the file`,
         );
       } else if (L0_ONLY_LAYERS.has(entry.layer)) {
         errors.push(
-          `Template propagation mismatch: \`${file}\` ships in templates/common/scripts/ but its template-registry row is tagged \`${entry.layer}\` — fix the propagation tag to L0+L1 or remove the file from the template`
+          `Template propagation mismatch: \`${file}\` ships in templates/common/scripts/ but its template-registry row is tagged \`${entry.layer}\` — fix the propagation tag to L0+L1 or remove the file from the template`,
         );
       }
     }
@@ -787,7 +842,7 @@ function verify(): boolean {
     const constant = content.match(/const VERSION\s*=\s*["'](\d+\.\d+\.\d+)["']/);
     if (header && constant && header[1] !== constant[1]) {
       errors.push(
-        `Version-const drift: \`${script}\` header @version ${header[1]} ≠ const VERSION ${constant[1]} — align the two (the const is what --help prints)`
+        `Version-const drift: \`${script}\` header @version ${header[1]} ≠ const VERSION ${constant[1]} — align the two (the const is what --help prints)`,
       );
     }
   }
@@ -800,7 +855,7 @@ function verify(): boolean {
     const baselinePath = join(scriptsDir, "helpers", "typecheck-baseline.json");
     if (!existsSync(baselinePath)) {
       errors.push(
-        `Typecheck baseline missing: \`scripts/helpers/typecheck-baseline.json\` — the typecheck gate cannot run without it`
+        `Typecheck baseline missing: \`scripts/helpers/typecheck-baseline.json\` — the typecheck gate cannot run without it`,
       );
     } else {
       try {
@@ -809,11 +864,41 @@ function verify(): boolean {
           errors.push(`Typecheck baseline malformed: \`count\` is not a number`);
         } else if (baseline.count > 0) {
           errors.push(
-            `Typecheck baseline loosened: \`count\` is ${baseline.count}, recorded policy is 0 (2026-09-11 triage: any type error fails) — fix the errors instead of raising the baseline`
+            `Typecheck baseline loosened: \`count\` is ${baseline.count}, recorded policy is 0 (2026-09-11 triage: any type error fails) — fix the errors instead of raising the baseline`,
           );
         }
       } catch {
         errors.push(`Typecheck baseline unparseable: \`scripts/helpers/typecheck-baseline.json\` is not valid JSON`);
+      }
+    }
+  }
+
+  // Check 10: CI workflow script references (U-20261112-014). Every
+  // `bun scripts/<name>.ts` invocation in .github/workflows/*.yml|*.yaml must
+  // resolve to an existing file under scripts/ — the prune-recurrence class
+  // (T-20261108-008: a deleted script left ci.yml invoking it) silently broke
+  // CI. Error-level, mirroring the ghost-entry convention. Runs wherever a
+  // .github/workflows directory exists relative to the context root (L0 and
+  // projects carry one; L1/L2 template trees do not).
+  const workflowsDir = join(workspaceRoot, ".github", "workflows");
+  if (existsSync(workflowsDir)) {
+    const workflows: Array<{ name: string; content: string }> = [];
+    for (const entry of fs.readdirSync(workflowsDir)) {
+      if (!entry.endsWith(".yml") && !entry.endsWith(".yaml")) continue;
+      const abs = join(workflowsDir, entry);
+      if (!fs.statSync(abs).isFile()) continue;
+      try {
+        workflows.push({ name: entry, content: readFileSync(abs, "utf-8") });
+      } catch {
+        continue; // unreadable workflow — CI itself will fail on it, not this gate
+      }
+    }
+    const scriptsExist = (script: string): boolean => existsSync(join(workspaceRoot, script));
+    for (const ref of findDanglingWorkflowScriptRefs(workflows)) {
+      if (!scriptsExist(ref.script)) {
+        errors.push(
+          `Dangling CI workflow reference: \`.github/workflows/${ref.workflow}\` invokes \`${ref.script}\` but the file does not exist at the context root — restore the script or update the workflow (U-20261112-014)`,
+        );
       }
     }
   }
@@ -840,9 +925,7 @@ function verify(): boolean {
     console.log(`\n❌ ${errors.length} error(s) found — pre-commit blocked`);
     passed = false;
   } else {
-    console.log(
-      `✅ All ${registry.length} registered scripts verified (${warnings.length} warning(s))`
-    );
+    console.log(`✅ All ${registry.length} registered scripts verified (${warnings.length} warning(s))`);
   }
 
   return passed;
@@ -877,23 +960,17 @@ function generate(): void {
 
     const updated = existing.replace(
       /(\| script \|.*?\n\|[-| ]+\|\n)([\s\S]*?)(?=\n---|\n## )/,
-      `${header}\n${rows.join("\n")}\n`
+      `${header}\n${rows.join("\n")}\n`,
     );
 
     writeFileSync(scriptsMdPath, updated, "utf-8");
-    console.log(
-      `✅ Registry updated: ${rows.length} scripts (${actualScripts.length} on disk)`
-    );
+    console.log(`✅ Registry updated: ${rows.length} scripts (${actualScripts.length} on disk)`);
     console.log(`   Review SCRIPTS.md before committing — metadata is preserved for known scripts`);
     return;
   }
 
   // Fresh generate
-  const rows = actualScripts
-    .map(
-      (s) => `| \`${s}\` | L0 | 1.0.0 | active | — | — | common | — |`
-    )
-    .join("\n");
+  const rows = actualScripts.map((s) => `| \`${s}\` | L0 | 1.0.0 | active | — | — | common | — |`).join("\n");
 
   const draft = `# SCRIPTS.md — Script Lifecycle Registry
 
@@ -939,9 +1016,10 @@ function fixUnregistered(): void {
   const content = readFileSync(scriptsMdPath, "utf-8");
   const registry = parseRegistry(content);
   const actualScripts = getActualScripts();
-  const relevantRegisteredNames = contextLayer === "L0"
-    ? new Set(registry.map((e) => e.script))
-    : new Set(registry.filter(isLayerRelevant).map((e) => e.script));
+  const relevantRegisteredNames =
+    contextLayer === "L0"
+      ? new Set(registry.map((e) => e.script))
+      : new Set(registry.filter(isLayerRelevant).map((e) => e.script));
   const unregistered = actualScripts.filter((s) => !relevantRegisteredNames.has(s));
   if (unregistered.length === 0) {
     console.log(`✅ --fix: no unregistered scripts — Registry is in sync with scripts/`);
@@ -952,7 +1030,9 @@ function fixUnregistered(): void {
     let version = "1.0.0";
     try {
       version = extractHeaderVersion(readFileSync(join(scriptsDir, script), "utf-8"));
-    } catch { /* header unreadable — default 1.0.0 */ }
+    } catch {
+      /* header unreadable — default 1.0.0 */
+    }
     return buildFixRow(script, version, contextLayer, contextLayer, today);
   });
   const result = insertRowsIntoRegistry(content, rows);

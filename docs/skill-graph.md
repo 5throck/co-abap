@@ -15,25 +15,25 @@
 | `root/accessibility-audit` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/agent-lifecycle-manager` | L3 | 1.4.0 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
 | `root/api-documentation` | L3 | 1.0.2 | — | — | — | — | — |
-| `root/ci-triage` | L3 | 0.2.0 | — | — | — | — | — |
+| `root/ci-triage` | L3 | 0.2.0 | root/automation-engineer | — | — | — | — |
 | `root/decision-record` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/delegate-to-hub` | L3 | 1.0.1 | — | — | — | — | — |
-| `root/design-foundation` | L3 | 1.1.0 | — | — | root/accessibility-audit (composes_with), root/token-usage-lint (composes_with), root/ui-ux-design-intelligence (enables) | — | — |
+| `root/design-foundation` | L3 | 1.1.1 | root/design-system-lead | — | root/accessibility-audit (composes_with), root/token-usage-lint (composes_with), root/ui-ux-design-intelligence (enables) | — | — |
 | `root/desktop-app-fallback` | L3 | 1.0.1 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/documentation-writing` | L3 | 1.0.3 | — | — | root/team-builder (composes_with) | — | — |
 | `root/dump-monitor` | L3 | 1.0.1 | root/devops-admin | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/evidence-ledger` | L3 | 1.1.0 | — | — | — | — | — |
-| `root/explain-me` | L3 | 1.0.0 | — | — | — | — | — |
+| `root/explain-me` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/finishing-a-development-branch` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/fiori-rap-dev` | L3 | 1.0.0 | — | — | root/abap-dev (composes_with), root/accessibility-audit (composes_with), root/post-write-chain (follows) | — | — |
-| `root/gateguard` | L3 | 1.0.2 | — | — | — | — | — |
+| `root/gateguard` | L3 | 1.0.2 | root/automation-engineer | — | — | — | — |
 | `root/handbook` | L3 | 0.6.0 | — | — | — | — | — |
 | `root/handbook-sync-audit` | L3 | 1.0.5 | — | — | — | — | — |
-| `root/i18n-audit` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
-| `root/i18n-formatting` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
-| `root/i18n-layout` | L3 | 1.1.0 | root/i18n-specialist | — | — | — | — |
-| `root/i18n-locale-config` | L3 | 1.0.0 | root/i18n-specialist | — | — | — | — |
-| `root/meeting-facilitation` | L3 | 1.4.4 | — | — | — | — | — |
+| `root/i18n-audit` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-formatting` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-layout` | L3 | 1.1.1 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-locale-config` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
+| `root/meeting-facilitation` | L3 | 1.5.0 | — | — | — | — | — |
 | `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/platform-skill-lifecycle-manager` | L3 | 1.0.2 | — | — | — | — | — |
@@ -46,20 +46,20 @@
 | `root/sap-mm` | L3 | 1.0.0 | root/architect, root/dba, root/mm-analyst | — | root/sap-le (follows), root/sap-pp (composes_with) | — | — |
 | `root/sap-pp` | L3 | 1.0.0 | root/architect, root/dba, root/pp-analyst | — | root/dump-monitor (follows), root/sap-sd (composes_with) | — | — |
 | `root/sap-sd` | L3 | 1.0.0 | root/architect, root/dba, root/sd-analyst | — | root/sap-mm (follows) | — | — |
-| `root/script-lifecycle-manager` | L3 | 1.2.2 | — | — | — | — | — |
+| `root/script-lifecycle-manager` | L3 | 1.2.2 | root/automation-engineer | — | — | — | — |
 | `root/security-scan` | L3 | 1.3.0 | — | — | — | — | — |
 | `root/service-design` | L3 | 1.1.0 | — | — | root/accessibility-audit (follows), root/token-usage-lint (follows), root/ui-ux-design-intelligence (follows) | — | — |
 | `root/skill-lifecycle-manager` | L3 | 1.5.0 | — | — | root/script-lifecycle-manager (composes_with) | — | — |
 | `root/source-command-celebrate` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/source-command-commit-push-pr` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/standup-synthesizer` | L3 | 1.1.0 | — | — | — | — | — |
-| `root/sync` | L3 | 1.9.0 | — | — | — | — | — |
+| `root/sync` | L3 | 1.9.1 | root/automation-engineer | — | — | — | — |
 | `root/team-builder` | L3 | 1.2.0 | — | — | — | — | — |
 | `root/token-usage-lint` | L3 | 1.1.0 | — | — | root/ui-ux-design-intelligence (follows) | — | — |
 | `root/translate` | L3 | 1.0.3 | — | — | root/documentation-writing (composes_with) | — | — |
 | `root/ui-ux-design-intelligence` | L3 | 1.0.1 | — | — | root/documentation-writing (follows) | — | — |
 | `root/update-bun-packages` | L3 | 1.3.1 | — | — | — | — | — |
-| `root/zod-contract-gate` | L3 | 1.0.2 | — | — | — | — | — |
+| `root/zod-contract-gate` | L3 | 1.0.3 | root/contract-gate-engineer | — | — | — | — |
 
 ## Lifecycle Phase Grouping
 
@@ -121,11 +121,11 @@ None — every capability has a single content hash.
 | Type | Count | Nodes |
 |------|-------|-------|
 | adr | 7 | (expected until docs `references` edges are mined) |
-| skill | 9 | root/api-documentation, root/finishing-a-development-branch, root/gateguard, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/source-command-celebrate, root/source-command-commit-push-pr, root/standup-synthesizer, root/zod-contract-gate |
+| skill | 7 | root/api-documentation, root/finishing-a-development-branch, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/source-command-celebrate, root/source-command-commit-push-pr, root/standup-synthesizer |
 
 ## Skills Without `used_by` (G6)
 
-34 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
+28 skill nodes have no `used_by` edge (no agent `required_skills` / manifest `used_by_agents` entry).
 
 ### Suggested `required_by` agents (E4, report-only)
 
@@ -137,7 +137,7 @@ Inferred from procedure steps that cite the skill and are owned via `step_by_age
 
 ## Skill Usage (E3)
 
-Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-13), window 90 days. Skill nodes with usage: 2.
+Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-15), window 90 days. Skill nodes with usage: 2.
 
-- **used-but-unlinked** (usage > 0, no `used_by`) (2): root/project-review, root/sync
+- **used-but-unlinked** (usage > 0, no `used_by`) (1): root/project-review
 - **unused** (0 sessions in 90 days) (48): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/delegate-to-hub, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager, root/source-command-celebrate … and 8 more

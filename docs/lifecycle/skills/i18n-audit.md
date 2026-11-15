@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: i18n-audit
 - **Status**: active
-- **Version**: 1.0.0
+- **Version**: 1.0.1
 - **Owner**: pm
 - **Created**: 2026-08-29
 - **Last Updated**: 2026-11-12
@@ -25,7 +25,7 @@
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.0.0
+- **Version**: 1.0.1
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

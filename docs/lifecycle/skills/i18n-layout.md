@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: i18n-layout
 - **Status**: active
-- **Version**: 1.1.0
+- **Version**: 1.1.1
 - **Owner**: pm
 - **Created**: 2026-09-21 (record backfill — the skill predates this record; active since at least 2026-08-24 per frontmatter `last_reviewed`)
 - **Last Updated**: 2026-11-12
@@ -25,7 +25,7 @@
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.1.0
+- **Version**: 1.1.1
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

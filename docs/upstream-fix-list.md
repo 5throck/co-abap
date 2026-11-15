@@ -162,6 +162,10 @@ After **every** `upgrade-project` delivery (and at project-review time):
    patch hunk.
 5. Record the reconciliation pass (date + delta) in the session memory log.
 
+2026-11-13: 0.30.0-refresh delivery shipped lifecycle records for country-skills (k-*) not delivered to country=none projects — records pruned locally; upstream: lifecycle-record delivery must filter to delivered skills (U-20261113-003 family)
+
+2026-11-13: vsp-publish.ts equal-version drift — project copy canonical (docs/platform-setup path), template comment path stale; port-to-template pending upstream; delivery preserves project copy
+
 *Consolidated from: the pre-2026-11-13 §-series of this file (2026-08-23/24 and
 2026-09-26 review cycles), the 2026-10-10 UR-series
 (`docs/reports/2026-10-10-project-review-full.md:124`, CHANGELOG #190/#191/#192),

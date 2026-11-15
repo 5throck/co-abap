@@ -1,4 +1,6 @@
 ## [Unreleased]
+- **[2026-11-13]**: chore(upgrade): template 0.30.0 refresh delivery — codex hooks wiring, hook-target/CI-ref gates, parity surface coverage, lifecycle-record tooling (#1991/#1993/#1994 family)
+
 - **[2026-11-01]**: chore(upgrade): template sync v0.27.0 (29 file(s) delivered; engine-scaffolded — edit or merge before commit; see templates/CHANGELOG.md v0.27.0)
 
 - **[2026-10-29]**: chore(upgrade): **template v0.23.0 delivery with the mirror-gate CI fix (audit v2.58.0).** The 0.23.0 wave content (146 cleaned agent frontmatters, platform_surfaces registry, sync-agent-mirrors capability, engine updates) plus the T-20261029-008 fix: the agent-mirror parity check degrades to WARN in standalone CI checkouts (no workspace root discoverable), unblocking real-CI delivery PRs. Supersedes the gate-blocked 0.23.0 PR.

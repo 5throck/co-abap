@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: meeting-facilitation
 - **Status**: active
-- **Version**: 1.4.4
+- **Version**: 1.5.0
 - **Owner**: pm
 - **Created**: 2026-05-29
 - **Last Updated**: 2026-11-12
@@ -47,7 +47,7 @@ cross-domain synthesis, and transcript recording to `memory/meeting-*.md`
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.4.4
+- **Version**: 1.5.0
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

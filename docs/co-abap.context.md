@@ -219,8 +219,6 @@ MCP servers are configured in `.mcp.json` (Single Source of Truth).
 
 > **Duplication Note**: MCP server definitions live across 6 surfaces — `.mcp.json`, `.claude/settings.json`, `.gemini/settings.json`, `.agents/mcp.json`, `.codex/config.toml`, and `opencode.json`. Drift between these surfaces is controlled by the mcp-proxy-routing parity gate in `scripts/validate-abap-platform-parity.ts` (no propagation script; keep all six in step when adding or retiring a server).
 
-`opencode.json` (repo root) is the opencode editor surface config registering the trail MCP server — schema-permitted per `docs/workspace-schema.json`, drift control same as the other five MCP surfaces.
-
 See `.mcp.json` for the complete server list.
 
 > **Trust decision (documented)**: `enableAllProjectMcpServers: true` in `.claude/settings.json`
@@ -337,6 +335,7 @@ A "Z wrapper CDS" is a `ZI_` view whose main source is a Z/Y table.
 | Access control (DCLS) | same name as the protected view | DA-5 |
 | Service definition (SRVD) | `ZUI_<Entity>` (UI) / `ZAPI_<Entity>` (Web API) | exposes `ZC_` entities only |
 | Service binding (SRVB) | `ZUI_<Entity>_O4` / `ZUI_<Entity>_O2` / `ZAPI_<Entity>_O4` | suffix = protocol (`_O2` OData V2, `_O4` OData V4) |
+
 
 ### ABAP SQL Reference (All Agents)
 

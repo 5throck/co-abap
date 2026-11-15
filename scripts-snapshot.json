@@ -1,5 +1,5 @@
 {
-  "created": "2026-11-08",
+  "created": "2026-11-12",
   "variant": "co-abap",
   "l1_source": "templates/common/scripts",
   "scripts": {
@@ -12,7 +12,7 @@
       "status": "active"
     },
     "agent-lifecycle-audit.ts": {
-      "version": "1.9.0",
+      "version": "1.9.1",
       "status": "active"
     },
     "agent-list.ts": {
@@ -32,7 +32,7 @@
       "status": "active"
     },
     "audit.ts": {
-      "version": "2.64.0",
+      "version": "2.66.1",
       "status": "active"
     },
     "bootstrap-stages.ts": {
@@ -72,7 +72,7 @@
       "status": "active"
     },
     "lib/self-managed-tools.ts": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "status": "active"
     },
     "helpers/skills-registry.ts": {
@@ -80,11 +80,11 @@
       "status": "active"
     },
     "evidence-backport-scan.ts": {
-      "version": "1.3.0",
+      "version": "1.4.0",
       "status": "active"
     },
     "dev-sync.ts": {
-      "version": "1.43.0",
+      "version": "1.47.0",
       "status": "active"
     },
     "dispatch-parallel.ts": {
@@ -115,8 +115,12 @@
       "version": "2.0.1",
       "status": "active"
     },
+    "generate-skill-lifecycle-records.ts": {
+      "version": "1.3.0",
+      "status": "active"
+    },
     "generate-version-manifest.ts": {
-      "version": "1.11.0",
+      "version": "1.12.1",
       "status": "active"
     },
     "graph-delta-log.ts": {
@@ -144,7 +148,7 @@
       "status": "active"
     },
     "helpers/merge-frontmatter.ts": {
-      "version": "1.8.6",
+      "version": "1.8.7",
       "status": "active"
     },
     "helpers/agent-mechanical-date-bump.ts": {
@@ -160,7 +164,7 @@
       "status": "active"
     },
     "helpers/l0-ref-policy.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "helpers/context-sections.ts": {
@@ -176,7 +180,7 @@
       "status": "active"
     },
     "helpers/scaffold-markers.ts": {
-      "version": "1.9.0",
+      "version": "1.10.2",
       "status": "active"
     },
     "helpers/pm-md-parser.ts": {
@@ -292,11 +296,11 @@
       "status": "active"
     },
     "hooks/pre-push.ts": {
-      "version": "1.7.1",
+      "version": "1.9.0",
       "status": "active"
     },
     "regenerate-agents-md.ts": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "status": "active"
     },
     "lib/context-md-schema.ts": {
@@ -308,11 +312,11 @@
       "status": "active"
     },
     "lib/constitution-scrub.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "lib/encoding-utils.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "lib/error-handling.ts": {
@@ -328,7 +332,7 @@
       "status": "active"
     },
     "lib/fleet.ts": {
-      "version": "1.0.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "lib/generator-manifest.ts": {
@@ -340,7 +344,11 @@
       "status": "active"
     },
     "lib/git-aware-scan.ts": {
-      "version": "1.0.0",
+      "version": "1.0.1",
+      "status": "active"
+    },
+    "lib/git-env.ts": {
+      "version": "1.2.0",
       "status": "active"
     },
     "lib/pipeline-state.ts": {
@@ -383,12 +391,32 @@
       "version": "1.1.0",
       "status": "active"
     },
-    "lib/trail-block-parity.ts": {
+    "lib/post-delivery-verify.ts": {
       "version": "1.0.0",
       "status": "active"
     },
+    "lib/hermetic-test-roots.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/trail-block-parity.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
+    "lib/workspace-hygiene.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/repo-integrity.ts": {
+      "version": "1.1.0",
+      "status": "active"
+    },
     "lib/upgrade-policy.ts": {
-      "version": "1.38.0",
+      "version": "1.44.0",
+      "status": "active"
+    },
+    "lib/template-vintage.ts": {
+      "version": "1.0.0",
       "status": "active"
     },
     "lib/dependency-guard.ts": {
@@ -428,7 +456,7 @@
       "status": "active"
     },
     "helpers/changelog-duplicates.ts": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "status": "active"
     },
     "helpers/ignored-tooling.ts": {
@@ -440,6 +468,10 @@
       "status": "active"
     },
     "lib/env-sample.ts": {
+      "version": "1.0.0",
+      "status": "active"
+    },
+    "lib/country-scoped-agents.ts": {
       "version": "1.0.0",
       "status": "active"
     },
@@ -492,7 +524,7 @@
       "status": "active"
     },
     "skill-lifecycle-audit.ts": {
-      "version": "1.11.0",
+      "version": "1.13.0",
       "status": "active"
     },
     "skill-session-review.ts": {
@@ -520,7 +552,7 @@
       "status": "active"
     },
     "test-runner.ts": {
-      "version": "1.10.0",
+      "version": "1.15.0",
       "status": "active"
     },
     "handbook/apply-handbook-theme.ts": {
@@ -640,7 +672,7 @@
       "status": "active"
     },
     "validate-doc-folder.ts": {
-      "version": "1.3.0",
+      "version": "1.5.0",
       "status": "active"
     },
     "validate-docs-links.ts": {
@@ -656,7 +688,7 @@
       "status": "active"
     },
     "validate-surface-registry.ts": {
-      "version": "1.1.1",
+      "version": "1.1.2",
       "status": "active"
     },
     "validate-process.ts": {
@@ -680,7 +712,7 @@
       "status": "active"
     },
     "validate-templates.ts": {
-      "version": "1.75.0",
+      "version": "1.81.0",
       "status": "active"
     },
     "validate-variant-readiness.ts": {
@@ -696,7 +728,7 @@
       "status": "active"
     },
     "verify-memory.ts": {
-      "version": "1.2.0",
+      "version": "1.3.0",
       "status": "active"
     },
     "verify-platform-lifecycle.ts": {
@@ -708,7 +740,7 @@
       "status": "active"
     },
     "verify-scripts.ts": {
-      "version": "1.14.0",
+      "version": "1.15.0",
       "status": "active"
     },
     "normalize-registry-provenance.ts": {

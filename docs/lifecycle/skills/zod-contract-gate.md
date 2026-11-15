@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: zod-contract-gate
 - **Status**: active
-- **Version**: 1.0.2
+- **Version**: 1.0.3
 - **Owner**: architect
 - **Created**: 2026-08-16
 - **Last Updated**: 2026-11-12
@@ -41,7 +41,7 @@ Defines Zod runtime schema validation patterns, interface boundaries, and contra
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.0.2
+- **Version**: 1.0.3
 - **Owner**: architect
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

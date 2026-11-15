@@ -6,7 +6,7 @@ description: >-
   "internationalization"
 variant: co-abap
 version: 1.1.1
-last_updated: 2026-11-07
+last_updated: 2026-11-15
 status: active
 tier: medium
 formal_name: I18N Specialist Agent
@@ -15,7 +15,7 @@ domain: _shared
 lifecycle:
   phase: production
   created: "2026-08-24"
-  last_updated: 2026-11-07
+  last_updated: 2026-11-10
   governance: docs/lifecycle/agents/i18n-specialist.md
 last_reviewed: '2026-11-06'
 color: cyan
