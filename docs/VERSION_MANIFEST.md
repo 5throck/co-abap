@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-12T22:18:13.002Z
+**Generated**: 2026-11-15T13:33:01.341Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -8,9 +8,9 @@
 
 ## Summary
 
-- **Agents**: 21
+- **Agents**: 25
 - **Skills**: 50
-- **Scripts**: 129 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 130 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 19
 
 ---
@@ -20,9 +20,12 @@
 | Name | File | Tier | Model | Last Modified |
 |------|------|------|-------|---------------|
 | architect | agents/architect.md | high | claude-opus-5-5 | 2026-11-07 |
+| automation-engineer | agents/automation-engineer.md | medium | claude-sonnet-5-5 | N/A |
 | co-analyst | agents/co-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | code-writer | agents/code-writer.md | low | claude-haiku-5-5 | 2026-11-07 |
+| contract-gate-engineer | agents/contract-gate-engineer.md | medium | claude-sonnet-5-5 | N/A |
 | dba | agents/dba.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| design-system-lead | agents/design-system-lead.md | medium | claude-sonnet-5-5 | N/A |
 | devops-admin | agents/devops-admin.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fi-analyst | agents/fi-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | fiori-developer | agents/fiori-developer.md | medium | claude-sonnet-5-5 | 2026-10-28 |
@@ -34,6 +37,7 @@
 | mm-analyst | agents/mm-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | pm | agents/pm.md | medium | inherit | 2026-11-12 |
 | pp-analyst | agents/pp-analyst.md | medium | claude-sonnet-5-5 | 2026-11-07 |
+| public-data-analyst | agents/public-data-analyst.md | medium | claude-sonnet-5-5 | N/A |
 | read-only-analyst | agents/read-only-analyst.md | medium | claude-sonnet-5-5 | 2026-10-28 |
 | sap-investigator | agents/sap-investigator.md | medium | claude-sonnet-5-5 | 2026-11-07 |
 | schema-inspector | agents/schema-inspector.md | medium | claude-sonnet-5-5 | 2026-10-28 |
@@ -56,22 +60,22 @@
 | ci-triage | 0.2.0 | active | skills/ci-triage/SKILL.md | workspace | ci failure, triage failure, audit gate failed, scaffold failed, fix the pipeline | pm |
 | decision-record | 1.1.0 | active | skills/decision-record/SKILL.md | workspace | decision record, gate ruling, go/no-go decision, escalation decision, record a decision | pm |
 | delegate-to-hub | 1.0.1 | active | skills/delegate-to-hub/SKILL.md | workspace | delegate to hub, delegation ticket, hub delegation, escalate to hub, file delegation | pm |
-| design-foundation | 1.1.0 | active | skills/design-foundation/SKILL.md | workspace | design foundation, design principles, design guide, design tokens setup, design decision record | architect |
+| design-foundation | 1.1.1 | active | skills/design-foundation/SKILL.md | workspace | design foundation, design principles, design guide, design tokens setup, design decision record | design-system-lead |
 | desktop-app-fallback | 1.0.1 | active | skills/desktop-app-fallback/SKILL.md | workspace | desktop-app-fallback, manual QA, Desktop App | test-runner |
 | documentation-writing | 1.0.3 | active | skills/documentation-writing/SKILL.md | workspace | write documentation, create guide, draft communication, write manual, create tutorial, documentation, technical writing | pm |
 | dump-monitor | 1.0.1 | active | skills/dump-monitor/SKILL.md | workspace | dump-monitor, ListDumps, GetDump, short dump, system health | devops-admin |
 | evidence-ledger | 1.1.0 | active | skills/evidence-ledger/SKILL.md | workspace | evidence ledger, citation ledger, claim verification, source verification, evidence tracking | pm |
-| explain-me | 1.0.0 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
+| explain-me | 1.0.1 | experimental | skills/explain-me/SKILL.md | workspace | /explain-me, /reportme, make a report, create report, explain this topic | pm |
 | finishing-a-development-branch | 1.0.1 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | fiori-rap-dev | 1.0.0 | active | skills/fiori-rap-dev/SKILL.md | workspace | fiori-rap-dev, Fiori, UI5, RAP, BDEF, SRVD, SRVB, Fiori Elements, OData V4 | fiori-developer |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
 | handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
-| i18n-audit | 1.0.0 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | pm |
-| i18n-formatting | 1.0.0 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | pm |
-| i18n-layout | 1.1.0 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | pm |
-| i18n-locale-config | 1.0.0 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | pm |
-| meeting-facilitation | 1.4.4 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
+| i18n-audit | 1.0.1 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | i18n-specialist |
+| i18n-formatting | 1.0.1 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | i18n-specialist |
+| i18n-layout | 1.1.1 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | i18n-specialist |
+| i18n-locale-config | 1.0.1 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | i18n-specialist |
+| meeting-facilitation | 1.5.0 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.2 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
@@ -91,13 +95,13 @@
 | source-command-celebrate | 1.0.0 | active | skills/source-command-celebrate/SKILL.md | workspace | source-command-celebrate, celebrate, task complete | pm |
 | source-command-commit-push-pr | 1.0.3 | active | skills/source-command-commit-push-pr/SKILL.md | workspace | commit-push-pr, commit and push, create PR | pm |
 | standup-synthesizer | 1.1.0 | active | skills/standup-synthesizer/SKILL.md | workspace | standup digest, daily standup, synthesize standup, work summary | pm |
-| sync | 1.9.0 | active | skills/sync/SKILL.md | workspace | sync, /sync, commit and push, create PR | pm |
+| sync | 1.9.1 | active | skills/sync/SKILL.md | workspace | sync, /sync, commit and push, create PR | automation-engineer |
 | team-builder | 1.2.0 | active | skills/team-builder/SKILL.md | workspace | build new agent team, create agent team, agent team setup, team builder | pm |
 | token-usage-lint | 1.1.0 | active | skills/token-usage-lint/SKILL.md | workspace | token lint, hardcoded color, design token compliance, raw hex values, hardcoded spacing | pm |
 | translate | 1.0.3 | active | skills/translate/SKILL.md | workspace | translate, translation, Korean translation | pm |
 | ui-ux-design-intelligence | 1.0.1 | active | skills/ui-ux-design-intelligence/SKILL.md | workspace | design system, ui design, ux design, component design, visual design, design tokens, interface design | pm |
 | update-bun-packages | 1.3.1 | active | skills/update-bun-packages/SKILL.md | workspace | update bun packages, upgrade bun packages, bun update, update dependencies, upgrade dependencies | pm |
-| zod-contract-gate | 1.0.2 | active | skills/zod-contract-gate/SKILL.md | workspace | zod-contract-gate, /zod-contract-gate, zod contract validation, schema contract gate, runtime schema validation | architect |
+| zod-contract-gate | 1.0.3 | active | skills/zod-contract-gate/SKILL.md | workspace | zod-contract-gate, /zod-contract-gate, zod contract validation, schema contract gate, runtime schema validation | contract-gate-engineer |
 
 <!-- validate-md-language:allowlist-end -->
 
@@ -107,135 +111,136 @@
 
 | Name | Version | Location | Dependencies |
 |------|---------|----------|--------------|
-| agent-create.ts | 1.0.1 | scripts/agent-create.ts | N/A |
-| agent-delete.ts | 1.0.1 | scripts/agent-delete.ts | N/A |
-| agent-lifecycle-audit.ts | 1.9.0 | scripts/agent-lifecycle-audit.ts | N/A |
-| agent-list.ts | 1.1.0 | scripts/agent-list.ts | N/A |
-| agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | N/A |
+| agent-create.ts | 1.0.1 | scripts/agent-create.ts | fs, path |
+| agent-delete.ts | 1.0.1 | scripts/agent-delete.ts | fs, path |
+| agent-lifecycle-audit.ts | 1.9.1 | scripts/agent-lifecycle-audit.ts | child_process, fs, path, process |
+| agent-list.ts | 1.1.0 | scripts/agent-list.ts | fs, path |
+| agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | fs, path |
 | analyze-git-history.ts | 1.0.2 | scripts/analyze-git-history.ts | child_process |
-| apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test |
-| apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | N/A |
-| archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | N/A |
-| audit.ts | 2.64.0 | scripts/audit.ts | bun |
+| apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test, child_process, fs, os, path |
+| apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | fs, path |
+| archive-memory.ts | 1.1.0 | scripts/archive-memory.ts | fs, path |
+| audit.ts | 2.66.1 | scripts/audit.ts | bun, child_process, crypto, fs, os, path, url |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
-| build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | N/A |
-| changelog-normalize.ts | 1.0.0 | scripts/changelog-normalize.ts | N/A |
-| check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | N/A |
-| check-authoring.ts | 1.3.0 | scripts/handbook/check-authoring.ts | N/A |
-| check-external-links.ts | 1.2.0 | scripts/handbook/check-external-links.ts | N/A |
-| check-i18n-parity.ts | 1.0.0 | scripts/handbook/check-i18n-parity.ts | N/A |
-| check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | N/A |
-| check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | N/A |
-| check-lint.ts | 1.0.0 | scripts/handbook/check-lint.ts | N/A |
+| build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | fs, path |
+| changelog-normalize.ts | 1.0.0 | scripts/changelog-normalize.ts | fs |
+| check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | path |
+| check-authoring.ts | 1.3.0 | scripts/handbook/check-authoring.ts | fs, path |
+| check-external-links.ts | 1.2.0 | scripts/handbook/check-external-links.ts | http, https, path, url |
+| check-i18n-parity.ts | 1.0.0 | scripts/handbook/check-i18n-parity.ts | fs, path |
+| check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | path |
+| check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | path |
+| check-lint.ts | 1.0.0 | scripts/handbook/check-lint.ts | path |
 | check-project-meta.test.ts | 1.1.0 | scripts/tests/check-project-meta.test.ts | bun:test |
-| check-project-meta.ts | 1.1.0 | scripts/check-project-meta.ts | N/A |
-| check-search.ts | 2.0.0 | scripts/handbook/check-search.ts | N/A |
-| check-spell.ts | 1.0.0 | scripts/handbook/check-spell.ts | N/A |
-| check-structure.test.ts | 1.0.0 | scripts/tests/check-structure.test.ts | bun:test |
-| check-structure.ts | 1.0.0 | scripts/handbook/check-structure.ts | N/A |
-| check-symmetry.ts | 1.0.0 | scripts/handbook/check-symmetry.ts | N/A |
-| check-tables.ts | 1.0.0 | scripts/handbook/check-tables.ts | N/A |
-| cleanup-completed-md.ts | 1.1.0 | scripts/cleanup-completed-md.ts | N/A |
-| clear-pm-approval.ts | 1.0.0 | scripts/clear-pm-approval.ts | N/A |
-| compile-tokens.ts | 1.3.0 | scripts/compile-tokens.ts | N/A |
-| dependency-audit.ts | 1.1.0 | scripts/dependency-audit.ts | N/A |
-| deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | N/A |
-| deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test |
-| design-lint.ts | 2.5.0 | scripts/design-lint.ts | js-yaml |
-| dev-sync.ts | 1.43.0 | scripts/dev-sync.ts | bun |
-| dispatch-parallel.test.ts | 1.5.2 | scripts/tests/dispatch-parallel.test.ts | bun:test |
+| check-project-meta.ts | 1.1.0 | scripts/check-project-meta.ts | child_process, fs, path |
+| check-search.ts | 2.0.0 | scripts/handbook/check-search.ts | fs, path |
+| check-spell.ts | 1.0.0 | scripts/handbook/check-spell.ts | path |
+| check-structure.test.ts | 1.0.0 | scripts/tests/check-structure.test.ts | bun:test, fs, os, path |
+| check-structure.ts | 1.0.0 | scripts/handbook/check-structure.ts | fs, path |
+| check-symmetry.ts | 1.0.0 | scripts/handbook/check-symmetry.ts | path |
+| check-tables.ts | 1.0.0 | scripts/handbook/check-tables.ts | fs, path |
+| cleanup-completed-md.ts | 1.1.0 | scripts/cleanup-completed-md.ts | fs, path |
+| clear-pm-approval.ts | 1.0.0 | scripts/clear-pm-approval.ts | fs |
+| compile-tokens.ts | 1.3.0 | scripts/compile-tokens.ts | fs, path |
+| dependency-audit.ts | 1.1.0 | scripts/dependency-audit.ts | fs, path |
+| deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | child_process, fs, path |
+| deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test, fs, os, path |
+| design-lint.ts | 2.5.0 | scripts/design-lint.ts | fs, js-yaml, path |
+| dev-sync.ts | 1.47.0 | scripts/dev-sync.ts | bun, crypto, fs, path |
+| dispatch-parallel.test.ts | 1.5.2 | scripts/tests/dispatch-parallel.test.ts | bun:test, fs, os, path |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
-| dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | N/A |
+| dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | fs, path |
 | dispatch-serial.ts | 1.1.0 | scripts/co-abap/dispatch-serial.ts | N/A |
-| dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | N/A |
+| dispatch-serial.ts | 1.1.2 | scripts/dispatch-serial.ts | url |
 | dispatch.ts | 1.1.0 | scripts/co-abap/dispatch.ts | N/A |
-| dispatch.ts | 1.2.0 | scripts/dispatch.ts | N/A |
-| evidence-backport-scan.ts | 1.3.0 | scripts/evidence-backport-scan.ts | N/A |
-| external-deps.ts | 1.0.0 | scripts/external-deps.ts | N/A |
-| extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | N/A |
-| gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun |
-| generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | N/A |
-| generate-raci.ts | 1.2.0 | scripts/generate-raci.ts | js-yaml |
-| generate-skill-graph.ts | 2.0.1 | scripts/generate-skill-graph.ts | js-yaml |
-| generate-version-manifest.ts | 1.11.0 | scripts/generate-version-manifest.ts | bun, js-yaml |
-| graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | N/A |
-| handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | N/A |
-| handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | N/A |
-| harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test |
-| harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | N/A |
+| dispatch.ts | 1.2.0 | scripts/dispatch.ts | path |
+| evidence-backport-scan.ts | 1.4.0 | scripts/evidence-backport-scan.ts | child_process, fs, path |
+| external-deps.ts | 1.0.0 | scripts/external-deps.ts | fs, path |
+| extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | fs, path |
+| gen-pr-body.ts | 1.2.0 | scripts/gen-pr-body.ts | bun, fs |
+| generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | fs, path |
+| generate-raci.ts | 1.2.0 | scripts/generate-raci.ts | fs, js-yaml, path |
+| generate-skill-graph.ts | 2.0.1 | scripts/generate-skill-graph.ts | child_process, fs, js-yaml, path, url |
+| generate-skill-lifecycle-records.ts | 1.3.0 | scripts/generate-skill-lifecycle-records.ts | fs, js-yaml, path, url |
+| generate-version-manifest.ts | 1.12.1 | scripts/generate-version-manifest.ts | bun, child_process, fs, js-yaml, module, path |
+| graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | child_process, fs, path, url |
+| handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | fs, path |
+| handbook-sync-audit.ts | 1.0.0 | scripts/handbook/handbook-sync-audit.ts | fs, path |
+| harness-metrics.test.ts | 1.0.0 | scripts/tests/harness-metrics.test.ts | bun:test, fs, os, path |
+| harness-metrics.ts | 1.0.0 | scripts/harness-metrics.ts | child_process, fs, path |
 | install-bun.ts | 1.0.1 | scripts/co-abap/install-bun.ts | bun |
-| install-vsp.ts | 1.2.0 | scripts/co-abap/install-vsp.ts | bun |
-| lifecycle-sync-audit.ts | 1.21.0 | scripts/lifecycle-sync-audit.ts | js-yaml |
-| lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | N/A |
+| install-vsp.ts | 1.2.0 | scripts/co-abap/install-vsp.ts | bun, crypto, fs, path |
+| lifecycle-sync-audit.ts | 1.21.0 | scripts/lifecycle-sync-audit.ts | crypto, fs, js-yaml, path, process |
+| lint-instructions.ts | 1.0.0 | scripts/lint-instructions.ts | fs, path |
 | md-to-ooxml.ts | 1.2.0 | scripts/md-to-ooxml.ts | fs, path |
 | migrate-quality-gates.ts | 1.1.0 | scripts/migrate-quality-gates.ts | fs, js-yaml, path |
-| nav-utils.ts | 1.0.0 | scripts/handbook/nav-utils.ts | N/A |
-| new-requirement.ts | 1.2.0 | scripts/co-abap/new-requirement.ts | N/A |
+| nav-utils.ts | 1.0.0 | scripts/handbook/nav-utils.ts | fs, path |
+| new-requirement.ts | 1.2.0 | scripts/co-abap/new-requirement.ts | fs, path |
 | normalize-registry-provenance.ts | 1.1.0 | scripts/normalize-registry-provenance.ts | fs, path |
-| qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun |
-| readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | N/A |
-| regenerate-agents-md.ts | 1.4.0 | scripts/regenerate-agents-md.ts | fs, path |
-| render-commands.test.ts | 1.1.0 | scripts/tests/render-commands.test.ts | bun:test |
-| render-commands.ts | 1.1.0 | scripts/render-commands.ts | N/A |
-| render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | N/A |
+| qa-gate.ts | 1.3.0 | scripts/qa-gate.ts | bun, crypto |
+| readme-lifecycle-audit.ts | 1.1.0 | scripts/readme-lifecycle-audit.ts | fs, path, process |
+| regenerate-agents-md.ts | 1.5.0 | scripts/regenerate-agents-md.ts | fs, path |
+| render-commands.test.ts | 1.1.0 | scripts/tests/render-commands.test.ts | bun:test, fs, os, path |
+| render-commands.ts | 1.1.0 | scripts/render-commands.ts | fs, path |
+| render-pdf-deck.ts | 1.0.1 | scripts/render-pdf-deck.ts | fs, path, url |
 | resolve-variants.ts | 1.0.3 | scripts/resolve-variants.ts | fs, js-yaml, path |
 | retry-handler.ts | 1.1.0 | scripts/co-abap/retry-handler.ts | N/A |
-| retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | N/A |
-| route-audit-scan.ts | 1.0.1 | scripts/route-audit-scan.ts | N/A |
-| sap-action-gate.test.ts | 2.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test |
-| sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test |
-| sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | N/A |
-| sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | N/A |
-| sap-mcp-proxy.test.ts | 2.1.1 | scripts/tests/sap-mcp-proxy.test.ts | bun:test |
-| sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | N/A |
-| sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | N/A |
-| scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | N/A |
-| scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | N/A |
-| setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun |
-| setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun |
-| skill-lifecycle-audit.ts | 1.11.0 | scripts/skill-lifecycle-audit.ts | N/A |
-| skill-session-review.ts | 1.3.0 | scripts/skill-session-review.ts | bun |
-| spec-register.ts | 1.6.0 | scripts/spec-register.ts | N/A |
-| stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | N/A |
-| sync-agent-mirrors.ts | 1.3.0 | scripts/sync-agent-mirrors.ts | js-yaml |
+| retry-handler.ts | 1.1.0 | scripts/retry-handler.ts | path |
+| route-audit-scan.ts | 1.0.1 | scripts/route-audit-scan.ts | fs, path |
+| sap-action-gate.test.ts | 2.0.0 | scripts/tests/sap-action-gate.test.ts | bun:test, fs, os, path |
+| sap-approve.test.ts | 2.1.0 | scripts/tests/sap-approve.test.ts | bun:test, fs, os, path |
+| sap-approve.ts | 2.1.0 | scripts/sap-approve.ts | fs, os, path, url |
+| sap-integrity.ts | 1.0.0 | scripts/sap-integrity.ts | fs, path |
+| sap-mcp-proxy.test.ts | 2.1.1 | scripts/tests/sap-mcp-proxy.test.ts | bun:test, fs, os, path |
+| sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | child_process, fs, path, string_decoder |
+| sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | fs, os, path |
+| scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | fs, path |
+| scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | fs, path |
+| setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun, fs, os, path |
+| setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun, fs, path |
+| skill-lifecycle-audit.ts | 1.13.0 | scripts/skill-lifecycle-audit.ts | fs, path, process |
+| skill-session-review.ts | 1.3.0 | scripts/skill-session-review.ts | bun, fs, path |
+| spec-register.ts | 1.6.0 | scripts/spec-register.ts | fs, path |
+| stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | fs |
+| sync-agent-mirrors.ts | 1.3.0 | scripts/sync-agent-mirrors.ts | fs, js-yaml, path, url |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
-| sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | N/A |
-| sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | N/A |
-| team-builder.ts | 1.5.0 | scripts/team-builder.ts | N/A |
-| test-runner.ts | 1.10.0 | scripts/test-runner.ts | fs, os, path |
-| translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, fs, path |
-| typecheck.ts | 1.2.0 | scripts/typecheck.ts | N/A |
-| update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | N/A |
-| validate-abap-platform-parity.ts | 1.1.0 | scripts/validate-abap-platform-parity.ts | N/A |
-| validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | N/A |
-| validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | js-yaml |
-| validate-doc-folder.ts | 1.3.0 | scripts/validate-doc-folder.ts | fs, path |
-| validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test |
+| sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | child_process, fs, path, process |
+| sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | fs, path |
+| team-builder.ts | 1.5.0 | scripts/team-builder.ts | fs, path |
+| test-runner.ts | 1.15.0 | scripts/test-runner.ts | fs, os, path |
+| translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, crypto, fs, path, url |
+| typecheck.ts | 1.2.0 | scripts/typecheck.ts | fs, path |
+| update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | fs, path |
+| validate-abap-platform-parity.ts | 1.2.0 | scripts/validate-abap-platform-parity.ts | crypto, fs, path, url |
+| validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | fs, path, process |
+| validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | fs, js-yaml, path, process |
+| validate-doc-folder.ts | 1.5.0 | scripts/validate-doc-folder.ts | fs, path |
+| validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test, fs, os, path |
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
-| validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | N/A |
-| validate-md-language.ts | 1.16.1 | scripts/validate-md-language.ts | fs |
-| validate-model-registry.ts | 2.3.0 | scripts/validate-model-registry.ts | N/A |
+| validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | child_process, path |
+| validate-md-language.ts | 1.16.1 | scripts/validate-md-language.ts | child_process, fs, path |
+| validate-model-registry.ts | 2.3.0 | scripts/validate-model-registry.ts | fs, path, url |
 | validate-nav.ts | 1.0.0 | scripts/handbook/validate-nav.ts | N/A |
-| validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test |
-| validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | N/A |
-| validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | N/A |
-| validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | js-yaml |
-| validate-process.ts | 1.0.0 | scripts/validate-process.ts | js-yaml |
-| validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | js-yaml |
-| validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | N/A |
-| validate-surface-registry.ts | 1.1.1 | scripts/validate-surface-registry.ts | N/A |
-| validate-templates.ts | 1.75.0 | scripts/validate-templates.ts | js-yaml |
-| validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | N/A |
+| validate-platform-parity.test.ts | 1.0.0 | scripts/tests/validate-platform-parity.test.ts | bun:test, fs, os, path |
+| validate-platform-parity.ts | 1.0.0 | scripts/validate-platform-parity.ts | crypto, fs, path |
+| validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | child_process, fs, path |
+| validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | fs, js-yaml, path |
+| validate-process.ts | 1.0.0 | scripts/validate-process.ts | fs, js-yaml, path |
+| validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | fs, js-yaml, path |
+| validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | fs, path, process |
+| validate-surface-registry.ts | 1.1.2 | scripts/validate-surface-registry.ts | fs, path |
+| validate-templates.ts | 1.81.0 | scripts/validate-templates.ts | child_process, fs, js-yaml, path, url |
+| validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | fs, path |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
-| verify-memory.ts | 1.2.0 | scripts/verify-memory.ts | fs, path |
-| verify-platform-lifecycle.ts | 1.6.1 | scripts/verify-platform-lifecycle.ts | N/A |
-| verify-readme-sync.ts | 1.5.0 | scripts/verify-readme-sync.ts | bun, fs, path |
-| verify-scripts.ts | 1.14.0 | scripts/verify-scripts.ts | fs, path |
-| verify-skill-graph.ts | 2.0.0 | scripts/verify-skill-graph.ts | N/A |
-| verify-skills.ts | 1.5.2 | scripts/verify-skills.ts | N/A |
-| vsp-audit.ts | 1.2.0 | scripts/co-abap/vsp-audit.ts | N/A |
-| vsp-publish.ts | 1.1.0 | scripts/co-abap/vsp-publish.ts | bun |
-| vsp-task.ts | 1.0.1 | scripts/co-abap/vsp-task.ts | N/A |
+| verify-memory.ts | 1.3.0 | scripts/verify-memory.ts | fs, path |
+| verify-platform-lifecycle.ts | 1.6.1 | scripts/verify-platform-lifecycle.ts | fs, path |
+| verify-readme-sync.ts | 1.5.0 | scripts/verify-readme-sync.ts | bun, crypto, fs, path |
+| verify-scripts.ts | 1.15.0 | scripts/verify-scripts.ts | crypto, fs, path |
+| verify-skill-graph.ts | 2.0.0 | scripts/verify-skill-graph.ts | fs, path, url |
+| verify-skills.ts | 1.5.2 | scripts/verify-skills.ts | fs, path |
+| vsp-audit.ts | 1.2.0 | scripts/co-abap/vsp-audit.ts | fs, path |
+| vsp-publish.ts | 1.1.0 | scripts/co-abap/vsp-publish.ts | bun, crypto, fs, path |
+| vsp-task.ts | 1.0.1 | scripts/co-abap/vsp-task.ts | fs, path |
 
 ---
 

@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-15](2026-11-15.md) | chore(upgrade): template 0.30.0 refresh delivery + absorption cures |
 | [2026-11-13](2026-11-13.md) | docs(review): consolidate upstream ledger, migrate ticket ids, document opencode surface |
 | [2026-11-12](2026-11-12.md) | chore(review): 2026-11-12 remediation — trail doc completion, lifecycle records, content restores |
 | [2026-11-10](2026-11-10.md) | chore(skills): remove stale /meeting command stubs (retired 2026-09-26; workspace-root T-20261109-003) |

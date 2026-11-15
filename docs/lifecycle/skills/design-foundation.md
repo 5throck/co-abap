@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: design-foundation
 - **Status**: active
-- **Version**: 1.1.0
+- **Version**: 1.1.1
 - **Owner**: architect
 - **Created**: 2026-08-30
 - **Last Updated**: 2026-11-12
@@ -48,7 +48,7 @@ validation contract. Extracted from the proven methods of upstream reference pro
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.1.0
+- **Version**: 1.1.1
 - **Owner**: architect
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

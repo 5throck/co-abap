@@ -150,7 +150,9 @@
           }
         ]
       }
-    ]
+    ],
+    "UserPromptSubmit": [],
+    "Stop": []
   },
   "enableAllProjectMcpServers": true,
   "effortLevel": "high",
@@ -162,7 +164,9 @@
       "Bash(curl -sI *)",
       "Bash(bun scripts/validate-templates.ts *)",
       "WebSearch(*)",
-      "WebFetch(*)"
+      "WebFetch(*)",
+      "Bash(trail:*)",
+      "Bash(node dist/cli.js:*)"
     ],
     "deny": [
       "Bash(git push --force*)",
@@ -287,5 +291,16 @@
   "teammateMode": "auto",
   "worktree": {
     "bgIsolation": "none"
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-statusline.cjs\""
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-statusline.cjs\""
+  },
+  "footerLinksRegexes": [
+    "graft/[\\w./-]+\\.md"
+  ]
 }
