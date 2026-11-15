@@ -60,8 +60,8 @@ live content markers only. **51 occurrences / 50 files.**
 
 | Marker location | Upstream id | Occurrences | Status |
 |---|---|---|---|
-| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `HERMES.md`, `CODEX.md` (CODEX ×2) | U-20261113-002 | 6 | U-20261113-002 (re-file of the vanished U-20261112-010) — waiting/ready |
-| `docs/lifecycle/skills/*.md` (35 records) | U-20261113-003 | 35 | U-20261113-003 (re-file of the vanished U-20261112-011) — backlog/inbox (path_not_template_managed flag) |
+| `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `HERMES.md`, `CODEX.md` (CODEX ×2) | U-20261113-002 | 6 | U-20261113-002 (re-file of the vanished U-20261112-010) — **done/fixed at source** (PR #1994, merged 2026-11-13 03:08 +0900 — ~4h before the re-file; store-verified 2026-11-16). All three asks implemented: (1) trail blocks in all 16 variant template doc sets incl. HERMES/CODEX (templates/co-abap AGENTS.md trail:start verified); (2) TB-01 widened to HERMES/CODEX parity + graft-era error (L0 `validate-templates.ts` checkTrailBlockParity); (3) durable delivery-side cure — upgrade-project v1.104.0 `swapGraftForTrail` TOOL_ERA_SWAP (L0 `scripts/upgrade-project.ts:4011-4022`) replaces delivered graft blocks with the template trail block at the next upgrade visit and **respects project LOCAL-PATCH trail blocks** (verified in this project: AGENTS.md/CLAUDE.md/HERMES.md/CODEX.md/GEMINI.md). Project hand-adoption confirmed by triage. Next upgrade visit: TOOL_ERA_SWAP may rewrite trail blocks — project LOCAL-PATCH(U-20261113-002) markers are respected by design |
+| `docs/lifecycle/skills/*.md` (35 records) | U-20261113-003 | 35 | U-20261113-003 (re-file of the vanished U-20261112-011) — **done/fixed, two-part adjudication** (PR #1986 + #1994; store-verified 2026-11-16). (a) "templates ship no docs/lifecycle/skills/" — fixed by PR #1986 (fb77af367, 2026-11-12 16:19): 13 GENERATED in-checkout-path records delivered to `templates/co-abap/docs/lifecycle/skills/` (verified on disk); they replace the 7 stale v0.6.0 L0-perspective records at the next upgrade visit. (b) dual-Metadata ask (so Check MV validates delivered records) — **ruled out by design**: the U-005 design D1 defines delivered records as a sanitized VERSION-FREE projection, so Check MV silence on delivery-form records is the designed consequence, recorded in `docs/designs/2026-11-12-abap-delivery-docs-batch-design.md` §U-011 (PR #1994) rather than re-opening the U-005 decision; project-authored records remain the version-bearing form. Fleet verification: `bun scripts/generate-skill-lifecycle-records.ts --check` → 0 problems |
 | `docs/co-abap.context.md` (top-of-file sub-fix list) | U-20261112-016 | 1 | review (store-verified 2026-11-13) |
 | `AGENTS.md` §3.7.5 (workspace-root design citation) | U-20261112-017 | 1 | review (store-verified 2026-11-13) |
 | `CHANGELOG.md` (0.20.1/#221 and 0.22.0/#224 retrospective backfill entries) | U-20261028-005 | 2 | done (archived; adjudicated local-only) |
@@ -125,8 +125,10 @@ and **U-20261113-003** (skill lifecycle records); all live LOCAL-PATCH
 markers migrated to the new ids (see §2). Current statuses:
 U-20261112-012 is done/fixed upstream (encoding-utils 1.3.0, PR #1991 —
 rides the next delivery); U-20261112-013…-019 are in review;
-U-20261113-002 is waiting/ready; U-20261113-003 is backlog/inbox
-(path_not_template_managed flag).
+U-20261113-002 is done/fixed at source (PR #1994, merged 2026-11-13
+03:08 +0900 — ~4h before the re-file); U-20261113-003 is done/fixed,
+two-part adjudication (PR #1986 + #1994). Final adjudications for both
+re-filed tickets store-verified 2026-11-16 (see the table below).
 
 | Ticket | Status (2026-11-13) | Resolution / subject |
 |---|---|---|
@@ -138,8 +140,8 @@ U-20261113-002 is waiting/ready; U-20261113-003 is backlog/inbox
 | U-20261112-017 | review | L0-design reference qualification convention |
 | U-20261112-018 | review | Codex hooks stub doctrine |
 | U-20261112-019 | review | CHANGELOG same-entry-duplicate lint blind spot |
-| (U-20261112-010) | vanished → re-filed as **U-20261113-002** (2026-11-13) | Trail fleet-standard delivery gap + delivered-side detector — marker live on 6 instruction-doc blocks; U-20261113-002 (re-file of the vanished U-20261112-010) — waiting/ready |
-| (U-20261112-011) | vanished → re-filed as **U-20261113-003** (2026-11-13) | Skill lifecycle-records delivery gap + MV-invisible delivered records — marker live on 35 lifecycle records; U-20261113-003 (re-file of the vanished U-20261112-011) — backlog/inbox (path_not_template_managed flag) |
+| (U-20261112-010) | vanished → re-filed as **U-20261113-002** (2026-11-13) → **done/fixed at source** (PR #1994, merged 2026-11-13 03:08 +0900 — ~4h before the re-file; store-verified 2026-11-16) | Trail fleet-standard delivery gap + delivered-side detector — marker live on 6 instruction-doc blocks. All three asks implemented in PR #1994: (1) trail blocks delivered into all 16 variant template doc sets incl. HERMES/CODEX; (2) TB-01 widened to HERMES/CODEX parity + graft-era error (L0 `validate-templates.ts` checkTrailBlockParity); (3) durable cure — upgrade-project v1.104.0 `swapGraftForTrail` TOOL_ERA_SWAP (L0 `scripts/upgrade-project.ts:4011-4022`) replaces delivered graft blocks with the template trail block at the next upgrade visit and respects project LOCAL-PATCH trail blocks (verified in this project's AGENTS.md/CLAUDE.md/HERMES.md/CODEX.md/GEMINI.md). Project hand-adoption confirmed as verified by the triage. Next upgrade visit: TOOL_ERA_SWAP may rewrite trail blocks — project LOCAL-PATCH(U-20261113-002) markers are respected by design |
+| (U-20261112-011) | vanished → re-filed as **U-20261113-003** (2026-11-13) → **done/fixed, two-part adjudication** (PR #1986 + #1994; store-verified 2026-11-16) | Skill lifecycle-records delivery gap + MV-invisible delivered records — marker live on 35 lifecycle records. (a) "templates ship no docs/lifecycle/skills/" — fixed by PR #1986 (fb77af367, 2026-11-12 16:19): 13 GENERATED in-checkout-path records delivered to `templates/co-abap/docs/lifecycle/skills/` (verified on disk); they replace the 7 stale v0.6.0 L0-perspective records at the next upgrade visit. (b) dual-Metadata ask (so Check MV validates delivered records) — ruled out by design: the U-005 design D1 defines delivered records as a sanitized VERSION-FREE projection, so Check MV silence on delivery-form records is the designed consequence, recorded in `docs/designs/2026-11-12-abap-delivery-docs-batch-design.md` §U-011 (PR #1994) rather than re-opening the U-005 decision; project-authored records remain the version-bearing form. Fleet verification: `bun scripts/generate-skill-lifecycle-records.ts --check` → 0 problems |
 
 ## 4. Reconciliation duty
 
@@ -165,6 +167,8 @@ After **every** `upgrade-project` delivery (and at project-review time):
 2026-11-13: 0.30.0-refresh delivery shipped lifecycle records for country-skills (k-*) not delivered to country=none projects — records pruned locally; upstream: lifecycle-record delivery must filter to delivered skills (U-20261113-003 family)
 
 2026-11-13: vsp-publish.ts equal-version drift — project copy canonical (docs/platform-setup path), template comment path stale; port-to-template pending upstream; delivery preserves project copy
+
+2026-11-16: final adjudications for U-20261113-002/-003 recorded (see §3.3). Next upgrade visit (expected): TOOL_ERA_SWAP trail-block swap (LOCAL-PATCH-respecting); 13 generated lifecycle records replace the 7 stale v0.6.0 records; re-run local-patch-scan and reconcile.
 
 *Consolidated from: the pre-2026-11-13 §-series of this file (2026-08-23/24 and
 2026-09-26 review cycles), the 2026-10-10 UR-series
