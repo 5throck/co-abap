@@ -96,6 +96,39 @@
             "timeout": 10,
             "statusMessage": "Checking PM dispatch policy..."
           }
+        ],
+        "matcher": "Agent"
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/delete-guard.ts",
+            "timeout": 10,
+            "statusMessage": "Checking recursive-delete guard..."
+          }
+        ],
+        "matcher": "Bash"
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/agent-model-gate.ts",
+            "timeout": 10,
+            "statusMessage": "Checking Agent dispatch model tier..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun scripts/hooks/pm-dispatch-gate.ts",
+            "timeout": 10,
+            "statusMessage": "Checking PM dispatch policy..."
+          }
         ]
       },
       {
@@ -161,11 +194,11 @@
       "Bash(bun scripts/audit.ts *)",
       "Bash(bun scripts/lifecycle-sync-audit.ts *)",
       "Bash(bun run agent:verify *)",
-      "Bash(curl -sI *)",
       "Bash(bun scripts/validate-templates.ts *)",
       "WebSearch(*)",
-      "WebFetch(*)",
       "Bash(trail:*)",
+      "Bash(curl -sI *)",
+      "WebFetch(*)",
       "Bash(node dist/cli.js:*)"
     ],
     "deny": [
@@ -301,6 +334,7 @@
     "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-statusline.cjs\""
   },
   "footerLinksRegexes": [
+    ".trail/[\\w./-]+\\.md",
     "graft/[\\w./-]+\\.md"
   ]
 }

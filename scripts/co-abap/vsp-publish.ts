@@ -1,10 +1,13 @@
 #!/usr/bin/env bun
-// @version 1.1.0
+// @version 1.1.1
 // vsp-publish.ts - Harness Packaging & Publishing Hook
 // Standardized packaging script to sanitize and copy core framework assets to the plugin repository.
 // Usage: bun scripts/co-abap/vsp-publish.ts "feat: align with main reference implementation"
 //   (requires CLAUDE_PLUGIN_ROOT env var pointing at the target co-abap_plugin checkout)
 //
+// v1.1.1 (2026-11-19 upgrade-wave CONFLICT adjudication, project-side canonical):
+//   - stale comment path docs/plugin-setup.md corrected to docs/platform-setup/plugin-setup.md
+//     (port of project copy per sync-overwrite-policy §6; content otherwise identical to v1.1.0)
 // v1.1.0 (spec docs/designs/2026-10-05-consult-abap-develop-review-remediation-design.md, AH6):
 //   - sourceDir is the PROJECT ROOT (two levels up from scripts/co-abap/), not scripts/ —
 //     agents/, skills/, docs/ paths resolve correctly now

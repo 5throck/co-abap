@@ -1,4 +1,47 @@
-// @version 2.66.1
+// @version 2.70.0
+// v2.70.0 (2026-11-18, design docs/designs/2026-11-18-subfile-mirror-drift-gate-design.md,
+//          T-20261118-002): new check arm — L0↔L1 mirror parity EARLY SIGNAL
+//          (workspace root only, placed after the VERSION_MANIFEST gate). Calls the
+//          already-exported pure collector qa-gate.ts collectMirrorParityFailures
+//          (T-20260912-021) and reports each failure as an audit [FAIL] row — the
+//          comparison semantics are unchanged (recursive content compare + one-sided
+//          detection over scripts/ and L0+L1 skill dirs, CRLF/CONSTITUTION-scrub
+//          tolerant). Motivation (T-20261117-011 chain): skill SUBFILES have no
+//          propagation path (propagation-map.json include_pattern "*/SKILL.md" never
+//          crosses a slash) and qa-gate step 4 was the only detector, short-circuited
+//          behind audit step 1 — drift surfaced only at full qa-gate runs. Import
+//          safety: qa-gate.ts is mirrored to L1 alongside audit.ts, so the edge
+//          survives delivery in both layers (no layer-filter.ts dangle).
+// v2.69.0 (2026-11-18, DEC-20261118-01 direct fix — no ticket): Fail-then-increment
+//          double-count sweep across 5 check sites (same class as the v2.68.0 §3.5
+//          accounting fix): §3.7 homoglyph, §3.8 zero-width, agent-state sync,
+//          variant-skill-sections, agent Required Tools. Each kept an
+//          `errors += <counter>` epilogue after reporting via Fail() — which already
+//          increments — so N failures were counted 2N in the summary. The epilogues
+//          are deleted; Fail() is the sole increment everywhere. §3.7/§3.8 overflow
+//          lines (`... and N more`) are one Fail() call each, so their gate counters
+//          now count calls, not occurrences; the counters keep their Pass-gate role
+//          (=== 0) only. No detection semantics changed. Pinned by
+//          tests/unit/audit-fail-count-accounting.test.ts.
+// v2.68.0 (2026-11-17, spec docs/designs/2026-11-17-audit-external-scan-fix-design.md):
+//          §3.5 UTF-8 BOM check — two fixes. (1) Scan scope: in a scaffolded project
+//          (docs/context.md present → searchDirs=["."]) the whole tree was walked with
+//          no external/ skip, so BOM-bearing .md files inside a gitignored
+//          external-dependency clone (install_dir external/<id>, external-deps
+//          machinery D5 — never workspace content) failed the workspace UTF-8 gate
+//          (QuickDL: 5 upstream BOM files). The census now lives in
+//          lib/encoding-utils.ts v1.4.0 scanMarkdownBomFiles() (extracted verbatim for
+//          unit-testability, audit-hook-sweep precedent) with `external` in its skip
+//          set. (2) Accounting: the `errors += bomErrors` epilogue double-counted —
+//          Fail() already increments, so N BOM files reported as 2N failed checks;
+//          the epilogue is deleted and Fail() is the sole increment (pinned by
+//          tests/unit/encoding-utils-bom-scan.test.ts).
+// v2.67.0 (2026-11-14, spec docs/designs/2026-11-14-consult-output-destination-and-constitution-refs-ruling.md
+//          §5-item4, U-20261113-010): L0 Leakage scan-scope extension — .ts and .json under templates/
+//          join the sweep at WARN severity (soak-before-FAIL). .ts lines carrying the l0-functional:
+//          marker are exempt (functional root-detection guards); .json files in the functional-registry
+//          exemption set (workspace-schema.json, propagation-map.json) are skipped. The .md arm keeps
+//          ERROR severity unchanged.
 // v2.66.1 (2026-11-12, U-20261112-007): the --spec-exempt comment and the invalid-code error message
 //          cited "AGENTS.md §5.1.1"; the Design Gate exemption categories now live in
 //          docs/governance/agents/execution-plan-templates.md §5.1.1. Strings only, no behavior change.
@@ -343,8 +386,19 @@ import { classifySpecHeader } from "./helpers/spec-header-consistency.ts";
 import * as url from "node:url";
 import { safeFetch } from "./lib/ssrf.ts";
 import { listFleetProjects } from "./lib/fleet.ts";
+// v2.70.0 (T-20261118-002): the L0↔L1 mirror parity early signal reuses qa-gate's
+// exported pure collector — audit-time and qa-gate-time verdicts share one
+// implementation and can never disagree. qa-gate.ts is itself mirrored to L1
+// alongside audit.ts, so this import survives delivery in both layers.
+import { collectMirrorParityFailures } from "./qa-gate.ts";
 import { findCwdRootAssignments, isContractTestPath } from "./lib/hermetic-test-roots.ts";
-import { detectEncoding, detectHomoglyphs, detectZeroWidthChars, readUTF8File } from "./lib/encoding-utils.ts";
+import {
+  detectEncoding,
+  detectHomoglyphs,
+  detectZeroWidthChars,
+  readUTF8File,
+  scanMarkdownBomFiles,
+} from "./lib/encoding-utils.ts";
 import { variantContextPlacement } from "./helpers/variant-context.ts";
 import {
   resolveDesignLintRoots,
@@ -617,25 +671,28 @@ if (fs.existsSync("docs/decisions") && fs.statSync("docs/decisions").isDirectory
 
 // 3.5. UTF-8 BOM check for Markdown files
 if (!LIFECYCLE_ONLY) {
-  let bomErrors = 0;
   let searchDirs = ["."];
+  let rootMdScan = false;
   if (!fs.existsSync(projectCtxPath) && fs.existsSync("templates")) {
-    // Zero-width/homoglyph scan covers the .agents and .codex platform trees
+    // Zero-width/homoglyph scan dirs gain the .agents and .codex platform trees
     // too — whole-tree by design: .codex/prompts/*.md is as much an injection
     // surface as a skill mirror (spec 2026-09-25-verifier-platform-expansion-design
     // site 2c; .json/.toml files are outside the Markdown/YAML scan filter).
     searchDirs = ["agents", "docs", "memory", "scripts", "skills", "templates", ".claude", ".agents", ".codex"];
-    if (fs.existsSync(".")) {
-      for (const file of fs.readdirSync(".")) {
-        if (file.endsWith(".md")) {
-          const buf = fs.readFileSync(file);
-          if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) {
-            Fail(`UTF-8 BOM found in ${file} - files must be UTF-8 without BOM`);
-            bomErrors++;
-          }
-        }
-      }
-    }
+    rootMdScan = true;
+  }
+  // Census extracted to lib/encoding-utils.ts v1.4.0 (spec
+  // 2026-11-17-audit-external-scan-fix): unit-testable, skips gitignored
+  // external-dependency install trees (D5 — external/<id> is never workspace
+  // content), and counts each BOM file exactly once — Fail() is the sole
+  // increment; the old `errors += bomErrors` epilogue double-counted.
+  const { bomFiles, skipped: bomSkipped } = scanMarkdownBomFiles({ searchDirs, rootMdScan });
+  for (const s of bomSkipped) recordSkippedFile(s.path, s.reason);
+  for (const file of bomFiles) {
+    Fail(`UTF-8 BOM found in ${file} - files must be UTF-8 without BOM`);
+  }
+  if (bomFiles.length === 0) {
+    Pass("UTF-8 BOM check: all markdown files are clean");
   }
 
   function walkDir(dir: string, callback: (fPath: string) => void, depth = 0) {
@@ -662,26 +719,6 @@ if (!LIFECYCLE_ONLY) {
         recordSkippedFile(dirPath, e?.code || e?.message || "stat/read error");
       }
     }
-  }
-
-  for (const dir of searchDirs) {
-    if (fs.existsSync(dir)) {
-      walkDir(dir, (filePath) => {
-        if (filePath.replace(/\\/g, "/").includes("memory/archive/")) return;
-        if (filePath.endsWith(".md") && !filePath.includes("node_modules") && !filePath.includes(".git")) {
-          const buf = fs.readFileSync(filePath);
-          if (buf.length >= 3 && buf[0] === 0xef && buf[1] === 0xbb && buf[2] === 0xbf) {
-            Fail(`UTF-8 BOM found in ${filePath} - files must be UTF-8 without BOM`);
-            bomErrors++;
-          }
-        }
-      });
-    }
-  }
-  if (bomErrors === 0) {
-    Pass("UTF-8 BOM check: all markdown files are clean");
-  } else {
-    errors += bomErrors;
   }
 
   // 3.6. CRLF line ending check for source files
@@ -763,7 +800,10 @@ if (!LIFECYCLE_ONLY) {
             if (matches.length > 5) {
               Fail(`... and ${matches.length - 5} more homoglyph(s) in ${filePath}`);
             }
-            homoglyphErrors += matches.length;
+            // Gate counter only (Pass iff every file was clean) — Fail() is the
+            // sole increment for the error summary (v2.69.0 double-count sweep);
+            // the overflow line above is one Fail() call, not N.
+            homoglyphErrors++;
           }
         } catch {
           /* skip unreadable files */
@@ -774,7 +814,6 @@ if (!LIFECYCLE_ONLY) {
     if (homoglyphErrors === 0) {
       Pass("Homoglyph check: no confusable Unicode characters found");
     }
-    errors += homoglyphErrors;
   }
 
   // 3.8. Zero-width character detection
@@ -815,7 +854,7 @@ if (!LIFECYCLE_ONLY) {
             }
             if (matches.length > 5) {
               Fail(`... and ${matches.length - 5} more zero-width char(s) in ${filePath}`);
-              zwErrors += matches.length - 5;
+              zwErrors++;
             }
           }
         } catch {
@@ -827,7 +866,8 @@ if (!LIFECYCLE_ONLY) {
     if (zwErrors === 0) {
       Pass("Zero-width character check: no invisible Unicode characters found");
     }
-    errors += zwErrors;
+    // Fail() is the sole increment for the error summary (v2.69.0 double-count
+    // sweep); zwErrors stays a Pass-gate counter only.
   }
 }
 
@@ -1331,9 +1371,9 @@ if (!LIFECYCLE_ONLY && fs.existsSync("AGENTS.md") && fs.existsSync("agents")) {
 
   if (syncErrors === 0) {
     Pass("Agent state synchronization: all agents in sync");
-  } else {
-    errors += syncErrors;
   }
+  // Fail() is the sole increment for the error summary (v2.69.0 double-count
+  // sweep); the old `errors += syncErrors` epilogue double-counted.
 }
 
 // Cross-Platform Command Parity Check
@@ -1638,8 +1678,9 @@ function checkVariantSkillSections() {
   if (allFailures.length === 0) {
     Pass("Variant skill sections: all skills have required sections and frontmatter");
   } else {
+    // Fail() is the sole increment for the error summary (v2.69.0 double-count
+    // sweep); the old `errors += allFailures.length` epilogue double-counted.
     allFailures.forEach((f) => Fail(`Variant skill sections: ${f}`));
-    errors += allFailures.length;
   }
 }
 
@@ -2890,7 +2931,8 @@ if (IS_WORKSPACE_ROOT && fs.existsSync("agents")) {
   if (missingSection === 0 && emptySection === 0) {
     Pass("Agent Required Tools sections: all present");
   }
-  errors += missingSection;
+  // Fail() is the sole increment for the error summary (v2.69.0 double-count
+  // sweep); the old `errors += missingSection` epilogue double-counted.
 }
 
 // Check: AGENTS.md PM Direct Execution Scope synced to templates/co-*/AGENTS.md (workspace root only)
@@ -3359,6 +3401,49 @@ if (!LIFECYCLE_ONLY && fs.existsSync("templates")) {
   checkLeakage("templates");
   if (leakageErrors === 0) {
     Pass("L0 Leakage check: no unauthorized CONSTITUTION references in templates");
+  }
+
+  // v1.107.0 (2026-11-14, spec docs/designs/2026-11-14-consult-output-destination-and-constitution-refs-ruling.md
+  //          §5-item4, U-20261113-010): scan-scope extension — .ts and .json under templates/ join the
+  //          L0 Leakage sweep (WARN severity first per the ruling's soak-before-FAIL posture). .ts lines
+  //          carrying the l0-functional: marker are exempt (functional root-detection guards);
+  //          .json files in the functional-registry exemption set are skipped (their context.md
+  //          values are read by code). The .md arm above keeps its ERROR severity.
+  const codeLeakWarn = (msg: string) => {
+    Warn(`L0 Leakage (code/json scan): ${msg}`);
+  };
+  const CODE_SKIP_DIRS = new Set(["node_modules", ".git", ".bun"]);
+  const JSON_FILE_EXEMPT = new Set(["workspace-schema.json", "propagation-map.json"]);
+  const functionalMarker = /\/\/ l0-functional:/;
+  let codeLeakWarns = 0;
+  const walkCodeLeak = (dir: string): void => {
+    for (const item of fs.readdirSync(dir)) {
+      const itemPath = path.join(dir, item);
+      const stat = fs.statSync(itemPath);
+      if (stat.isDirectory()) {
+        if (CODE_SKIP_DIRS.has(item)) continue;
+        const dirName = path.basename(itemPath);
+        if (dirName.startsWith("co-") && !isCoVariantTracked(dirName)) continue;
+        walkCodeLeak(itemPath);
+      } else if (stat.isFile() && (itemPath.endsWith(".ts") || itemPath.endsWith(".json"))) {
+        const content = readUTF8File(itemPath);
+        const isJson = itemPath.endsWith(".json");
+        for (const { lineNo, line } of findL0LeakLines(content)) {
+          if (isJson && JSON_FILE_EXEMPT.has(path.basename(itemPath))) continue;
+          if (functionalMarker.test(line)) continue;
+          codeLeakWarn(
+            `${itemPath}:${lineNo} carries an unannotated CONSTITUTION reference (WARN soak — annotate with // l0-functional: if functional, or remove the reference)`,
+          );
+          codeLeakWarns++;
+        }
+      }
+    }
+  };
+  for (const root of ["templates"]) {
+    if (fs.existsSync(root)) walkCodeLeak(root);
+  }
+  if (codeLeakWarns === 0) {
+    Pass("L0 Leakage code/json extension: no unannotated CONSTITUTION references under templates");
   }
 }
 
@@ -4238,6 +4323,45 @@ if (fs.existsSync(path.join("scripts", "generate-version-manifest.ts"))) {
     );
   } else {
     Pass("VERSION_MANIFEST gate: committed manifest matches regenerated output");
+  }
+}
+
+// ── L0↔L1 mirror parity EARLY SIGNAL (v2.70.0, T-20261118-002; design
+//    docs/designs/2026-11-18-subfile-mirror-drift-gate-design.md) ──
+// Same collector as qa-gate step 4 (collectMirrorParityFailures, T-20260912-021):
+// recursive content comparison + one-sided detection over scripts/ vs
+// templates/common/scripts/ and, per L0+L1 skill, skills/<skill>/** vs
+// templates/common/skills/<skill>/** — including the non-SKILL.md SUBFILES that
+// have no automated propagation path (propagation-map.json's skills
+// include_pattern "*/SKILL.md" is segment-bound, never crosses a slash).
+// Surfacing the same verdict at audit time removes the short-circuit mask
+// (qa-gate step 4 never ran when audit step 1 failed — the T-20261117-011
+// masking history). Workspace-root scoping follows the IS_WORKSPACE_ROOT
+// convention; in L2/L3 contexts the gate self-skips and the audit verdict there
+// is unchanged. Comparison semantics are qa-gate's, byte for byte.
+if (IS_WORKSPACE_ROOT) {
+  const l0ScriptsDir = "scripts";
+  const l1ScriptsDir = path.join("templates", "common", "scripts");
+  const l0SkillsDir = "skills";
+  const l1SkillsDir = path.join("templates", "common", "skills");
+  if (
+    fs.existsSync(l0ScriptsDir) &&
+    fs.existsSync(l1ScriptsDir) &&
+    fs.existsSync(l0SkillsDir) &&
+    fs.existsSync(l1SkillsDir)
+  ) {
+    const mirrorFailures = collectMirrorParityFailures(l0ScriptsDir, l1ScriptsDir, l0SkillsDir, l1SkillsDir);
+    for (const failure of mirrorFailures) {
+      // One Fail() call per failure — the sole-increment accounting rule (v2.69.0).
+      Fail(failure);
+    }
+    if (mirrorFailures.length === 0) {
+      Pass(
+        "L0↔L1 mirror parity early signal: scripts tree + L0+L1 skill dirs (incl. subfiles) match templates/common/",
+      );
+    }
+  } else {
+    Skip("L0↔L1 mirror parity early signal skipped (scripts/ or skills/ mirror trees not present in this checkout)");
   }
 }
 

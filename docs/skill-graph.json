@@ -781,8 +781,8 @@
       "name": "finishing-a-development-branch",
       "scope": "root",
       "capability": "finishing-a-development-branch",
-      "content_hash": "61e3ebdcba9b726b",
-      "version": "1.0.1",
+      "content_hash": "7aa95cd39dce01f1",
+      "version": "1.0.2",
       "mirrors": [
         "skills/finishing-a-development-branch/SKILL.md",
         ".claude/skills/finishing-a-development-branch/SKILL.md",
@@ -998,7 +998,7 @@
       "scope": "root",
       "capability": "platform-skill-lifecycle-manager",
       "content_hash": "08e425f43401cabc",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "mirrors": [
         "skills/platform-skill-lifecycle-manager/SKILL.md",
         ".claude/skills/platform-skill-lifecycle-manager/SKILL.md",
@@ -1307,8 +1307,8 @@
       "name": "sync",
       "scope": "root",
       "capability": "sync",
-      "content_hash": "e2acf3d04016e92d",
-      "version": "1.9.1",
+      "content_hash": "80a9c66a71aac4f1",
+      "version": "1.10.0",
       "mirrors": [
         "skills/sync/SKILL.md",
         ".claude/skills/sync/SKILL.md",

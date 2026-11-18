@@ -24,7 +24,7 @@
 | `root/dump-monitor` | L3 | 1.0.1 | root/devops-admin | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/evidence-ledger` | L3 | 1.1.0 | — | — | — | — | — |
 | `root/explain-me` | L3 | 1.0.1 | — | — | — | — | — |
-| `root/finishing-a-development-branch` | L3 | 1.0.1 | — | — | — | — | — |
+| `root/finishing-a-development-branch` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/fiori-rap-dev` | L3 | 1.0.0 | — | — | root/abap-dev (composes_with), root/accessibility-audit (composes_with), root/post-write-chain (follows) | — | — |
 | `root/gateguard` | L3 | 1.0.2 | root/automation-engineer | — | — | — | — |
 | `root/handbook` | L3 | 0.6.0 | — | — | — | — | — |
@@ -36,7 +36,7 @@
 | `root/meeting-facilitation` | L3 | 1.5.0 | — | — | — | — | — |
 | `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
-| `root/platform-skill-lifecycle-manager` | L3 | 1.0.2 | — | — | — | — | — |
+| `root/platform-skill-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/post-write-chain` | L3 | 1.3.2 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/project-review` | L3 | 1.3.3 | — | — | — | — | — |
 | `root/research-analysis` | L3 | 1.0.2 | — | — | root/documentation-writing (enables) | — | — |
@@ -53,7 +53,7 @@
 | `root/source-command-celebrate` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/source-command-commit-push-pr` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/standup-synthesizer` | L3 | 1.1.0 | — | — | — | — | — |
-| `root/sync` | L3 | 1.9.1 | root/automation-engineer | — | — | — | — |
+| `root/sync` | L3 | 1.10.0 | root/automation-engineer | — | — | — | — |
 | `root/team-builder` | L3 | 1.2.0 | — | — | — | — | — |
 | `root/token-usage-lint` | L3 | 1.1.0 | — | — | root/ui-ux-design-intelligence (follows) | — | — |
 | `root/translate` | L3 | 1.0.3 | — | — | root/documentation-writing (composes_with) | — | — |
