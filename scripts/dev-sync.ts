@@ -1,4 +1,110 @@
-// @version 1.47.0
+// @version 1.52.0
+// v1.52.0 (2026-11-18, T-20261118-003, spec
+//          docs/designs/2026-11-18-memory-gate-step2-deadlock-design.md §3.2):
+//          step 2's branch-keyed session-block replace gains the OWED-SET
+//          SPARING — closing the T-20261118-003 FATAL loop where the union gate's
+//          restore guidance and this replace path fought over the same
+//          `branch=main` marker namespace on direct-to-main landings (merge
+//          41d725f9 / 71e87cc9 fused the _bgpool session block; every restore was
+//          re-collapsed by the next run's step 2 before step 3.88 could credit
+//          it; the #2069 PR-branch workaround only dodged the marker match).
+//          Mechanism: in the hasMarkerForBranch path only, compute the gate's
+//          current debt inventory via helpers/memory-union-verify.ts v1.5.0
+//          owedBlocks() (same bounded sweep and droppedBlocks match rules step
+//          3.88 tiers on; tier-agnostic — deliberately NO activationIso, which
+//          is declared after step 2 in this top-level-await script and would
+//          TDZ), classify every same-branch segment with parseBlocks (exact
+//          trimmed text, or heading+firstLine — droppedBlocks.matchesHead's
+//          rules), SPARE owed segments verbatim (one DIM line each), give the
+//          fresh template to the FIRST NON-owed segment, collapse further
+//          non-owed strays (the O-4 one-block-per-branch-per-day dedupe is
+//          untouched for its actual target), key the `## Skills Used`
+//          carry-forward on the replaced (non-owed) segment, and fall through
+//          to the append path when every same-branch segment is owed (nothing
+//          destroyed). Normal path (exactly one non-owed same-branch segment) is
+//          bit-identical. Step 3.88's printed repair guidance is sharpened to
+//          name the merge-touched file, prescribe the block shape (separate
+//          '---'-delimited blocks, verbatim) and say re-run /sync — the
+//          previously prescribed "re-commit" had no staged commit to amend at
+//          FATAL time, and the old wording named no file (restorations into the
+//          wrong log satisfy nothing — repairedAtHead reads the merge-touched
+//          path). Arm B guidance unchanged (structural repairs carry no parent
+//          debt). Doubled bounded git-plumbing cost in step 2 accepted (design
+//          R1); non-verbatim restorations escape sparing = no worse than today
+//          (design R2).
+// v1.51.0 (2026-11-18, T-20261117-015, spec
+//          docs/designs/2026-11-18-dev-sync-hunk-staging-design.md §2-§3): two strictly
+//          additive mechanisms for hunk-level adjudicated landings — the 2026-11-17
+//          evidence chain (three manual hunk-edit stagings in one day, one landing
+//          incident, memory/2026-11-17.md landed via PR #2073). (1) HONOR-STAGED
+//          OPT-IN (design §2) — `--honor-staged <path>` (repeatable) and
+//          `SYNC_HONOR_STAGED` (comma-separated) designate paths whose PRE-STAGED
+//          index blob is authoritative for the commit: the step-6.5 promotion sweep
+//          excludes honored paths from every `git add` batch (the same
+//          "the index already holds the desired state" contract as the staged-deletion
+//          skip), so a hunk-adjudicated partial docs/specs/registry.json survives the
+//          run instead of being silently clobbered by the path-level re-add. The
+//          worktree-landing pattern (apply hunks with `git apply --cached`, then
+//          sync) becomes first-class — no worktree reconstruction, no
+//          shelved-unshelved dance around untracked parallel files. Fail-closed
+//          (no silent fallback, the pre-commit-hook precedent): an honored path with
+//          NO staged delta is a ghost opt-in → FATAL (the pre-staged adjudication was
+//          lost; silently proceeding would replay the clobber in reverse); an honor
+//          set under --warn-staging is FATAL (the `git add -A` soak cannot honor
+//          anything by construction); worktree-vs-index divergence on an honored
+//          path is a visible WARN (that divergence is the normal adjudication shape —
+//          the worktree keeps the sibling batch for a later sync). (2) STEP 6.55
+//          SPEC-REGISTRY DANGLING-REFERENCE GATE (design §3) — when
+//          docs/specs/registry.json is landing in THIS commit, every entry's
+//          one-file-per-spec entry JSON (docs/specs/entries/<id>.json) and its design
+//          `file` target must exist in the resulting commit (a blob in the index, or
+//          a blob in HEAD not removed by this landing); any dangling reference is
+//          FATAL before git commit, and a malformed staged registry fails closed.
+//          The 2026-11-17 incident's actual bite: the forbidden entry rode the commit
+//          as a dangling reference past every pre-commit gate — only push-time review
+//          caught it. Pure detection lives in scripts/lib/spec-landing.ts v1.0.0
+//          (one derivation, two callers: this gate + the unit suite).
+// v1.50.0 (2026-11-17, U-20261116-012, spec
+//          docs/designs/2026-11-17-root-machinery-batch-design.md §2, DEC-20261117-03):
+//          two re-run-hygiene defects. (1) IGNORE-AWARE PROMOTION STAGING — a plain `git
+//          add` refuses an explicitly named ignored path even when tracked (verified on
+//          git 2.56.1, the .zcode/config.json class; .gitignore negations cannot fix it —
+//          a negation cannot re-include a file under an excluded parent), so the step-6.5
+//          promotion sweep's batched add exited 1 and the catch killed the whole sync.
+//          The sweep now classifies with two batched queries (git ls-files -z, git
+//          check-ignore --no-index in line mode: default check-ignore silently
+//          excludes TRACKED paths from its report — exactly the class to find —
+//          and -z is only meaningful with --stdin; exits 0/1/128 all handled)
+//          and partitions: tracked∩ignored →
+//          `git add -f`, one DIM line per path (tracked-status intent wins); untracked∩
+//          ignored → WARN + skip (never force-add scratch); everything else → the plain
+//          batch add, unchanged. The absent-path branch applies the same rule (tracked∩
+//          ignored worktree deletion staged with -f; an absent ignored-untracked path
+//          keeps the ghost-path failure). (2) BRANCH-KEYED SESSION-BLOCK REPLACE — step
+//          2's memory session block gains a leading `<!-- dev-sync:session branch=
+//          <branch> -->` marker and a same-branch same-day re-run REPLACES the
+//          marker-plus-block segment (through the next `\n---\n` boundary or EOF; stray
+//          duplicates of the same-branch marker collapse) instead of appending a
+//          near-duplicate: the v1.32.0 idempotency check keyed on the exact commit
+//          subject, which misses whenever the derived subject differs between attempts
+//          (the normal case — step 6.9 re-derives from the final staged set). Different
+//          branch → separate block, untouched; no marker (legacy blocks, other tools) →
+//          the exact-subject skip + plain append, unchanged. A replaced block carries its
+//          old `## Skills Used` section forward verbatim so session evidence filled
+//          between runs survives. Block-start well-formedness accepts the leading marker
+//          comment (memory-union-verify v1.3.0, design §2.2 item 4).
+// v1.49.0 (2026-11-16, T-20261114-007 + T-20261114-006, spec
+//          docs/designs/2026-11-16-ticket-batch-dev-sync-upgrade-drift-design.md §1-§2, DEC-20261116-01):
+//          (1) empty-index guard at S0 — scoped staging with NOTHING staged at start but tracked
+//          working-tree edits exits 1 BEFORE any pipeline write (a PR can no longer ship without the
+//          intended edits); new `--stage <path|glob>` (repeatable, `git add` before step 1) and
+//          `--allow-generated-only` override; the guard reads the start-of-run index, not the step-6.5
+//          taskStaged (pipeline steps `git add` on their own). Tracked residual is reported under its
+//          own header at step 6.5 and repeated after the PR URL. (2) multi-line commit body preserved:
+//          the message is split into subject + body (helpers/commit-message.ts splitCommitMessage);
+//          the subject feeds memory/slug/PR title as before, the body is committed via a second `-m`
+//          and language-gated. A trailer token joined onto the subject (O-1) exits 1 with a copy-safe
+//          hint. No repo-wide trailer convention is introduced.
 // v1.47.0 (2026-11-12, U-20261112-005 PR-3, design docs/designs/2026-11-12-skill-lifecycle-record-delivery-design.md
 //          section 9 T4): new step 4.505 runs `generate-skill-lifecycle-records.ts --write` right after the 4.5 publish
 //          (L0 only), so a skill added or changed under templates/ gets its generated lifecycle record in the same
@@ -454,18 +560,31 @@ import * as path from "node:path";
 import * as crypto from "node:crypto";
 import { withRetry, DEFAULT_CONFIG } from "./retry-handler.ts";
 import { hasNonEnglish } from "./lib/language-guard.ts";
-import { parseCachedNameStatus, parseStatusPorcelain } from "./lib/git-status.ts";
+import { parseCachedNameStatus, parseStatusPorcelain, parseTrackedWorktreeChanges } from "./lib/git-status.ts";
+import {
+  SPEC_REGISTRY_PATH,
+  danglingSpecRefs,
+  parseRegistryEntries,
+  requiredPathsForEntry,
+} from "./lib/spec-landing.ts";
+
 import { gitCleanEnvForShell } from "./lib/git-env.ts";
 import { sharedPipelineFilesChanged, parseUnresolvedConflicts } from "./helpers/merge-state.ts";
 import { isDeliveredDiff, manifestHasUnresolvedErrors } from "./lib/upgrade-policy.ts";
 import { detectVersionBumps, hasTestUnitScript } from "./helpers/version-bump.ts";
 import { changelogGateFindings } from "./helpers/changelog-duplicates.ts";
 import { runDeclaredGenerators } from "./lib/generator-manifest.ts";
-import { composeCommitMessage, deriveCommitMessage, isWeakCommitMessage } from "./helpers/commit-message.ts";
+import {
+  composeCommitMessage,
+  deriveCommitMessage,
+  findTrailerInSubject,
+  isWeakCommitMessage,
+  splitCommitMessage,
+} from "./helpers/commit-message.ts";
 import { localDateISO } from "./lib/local-date.ts";
 import { isAgentMdPath, bumpMechanicalLastUpdated } from "./helpers/agent-mechanical-date-bump.ts";
 import { driftCheck } from "./helpers/ticket-drift.ts";
-import { unionScan, wellFormedScan } from "./helpers/memory-union-verify.ts";
+import { owedBlocks, parseBlocks, unionScan, wellFormedScan } from "./helpers/memory-union-verify.ts";
 import { classifyWorkspaceHygieneResidue, formatHygieneResidueReport } from "./lib/workspace-hygiene.ts";
 import {
   assertWorkTreeHealthy,
@@ -555,6 +674,12 @@ let scopedStaging = process.env.SYNC_SCOPED_STAGING !== "0";
 //   stays fail-closed exactly as before.
 let requireCurrentMain = false;
 let concludeMerge = false;
+let allowGeneratedOnly = false;
+const stagePathspecs: string[] = [];
+// T-20261117-015 (v1.51.0): --honor-staged argv values; unioned with SYNC_HONOR_STAGED
+// below into the honor set (design §2 — the pre-staged index blob is authoritative for
+// designated paths; step 6.5 never path-level re-adds them).
+const honorStagedArgs: string[] = [];
 const msgArgs: string[] = [];
 for (let i = 0; i < rawArgs.length; i++) {
   const arg = rawArgs[i];
@@ -573,16 +698,61 @@ for (let i = 0; i < rawArgs.length; i++) {
     requireCurrentMain = true;
   } else if (arg === "--conclude-merge") {
     concludeMerge = true;
+  } else if (arg === "--allow-generated-only") {
+    allowGeneratedOnly = true;
+  } else if (arg === "--stage") {
+    stagePathspecs.push(rawArgs[++i] ?? "");
+  } else if (arg.startsWith("--stage=")) {
+    stagePathspecs.push(arg.slice("--stage=".length));
+  } else if (arg === "--honor-staged") {
+    // T-20261117-015 (v1.51.0): hunk-adjudicated staging opt-in — see the honor-set
+    // derivation below and design §2. Repeatable; also settable via SYNC_HONOR_STAGED.
+    honorStagedArgs.push(rawArgs[++i] ?? "");
+  } else if (arg.startsWith("--honor-staged=")) {
+    honorStagedArgs.push(arg.slice("--honor-staged=".length));
   } else {
     msgArgs.push(arg);
   }
 }
-let msg =
-  (msgArgs.join(" ") || "chore: update")
-    // Collapse newlines/control chars — safe for git -m and gh --title arguments
-    .replace(/[\r\n\t]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim() || "chore: update";
+
+// T-20261117-015 (v1.51.0, design docs/designs/2026-11-18-dev-sync-hunk-staging-design.md
+// §2): the honor set — paths whose PRE-STAGED index blob is authoritative for this
+// commit. Flag form is repeatable (`--honor-staged <path>`); env form is a
+// comma-separated list (`SYNC_HONOR_STAGED=a,b`). Validation (ghost opt-in, soak
+// contradiction) happens at step 6.5 where the cached diff is available; the set
+// itself is consumed by the promotion sweep's exclusion below.
+const honorSet = new Set<string>();
+for (const raw of [process.env.SYNC_HONOR_STAGED ?? "", ...honorStagedArgs]) {
+  for (const p of raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean))
+    honorSet.add(p);
+}
+if (honorSet.size > 0) {
+  console.log(
+    `${CYAN}ℹ️  honor-staged: ${honorSet.size} path(s) with pre-staged index authority (step 6.5 preserves the staged blob; T-20261117-015)${RESET}`,
+  );
+  for (const p of [...honorSet].sort()) console.log(`${DIM}   ${p}${RESET}`);
+}
+// T-20261114-006: split into subject + preserved body. `msg` stays the one-line subject
+// (safe for git -m / gh --title; feeds memory header, slug, step 6.9, PR title); the body
+// is committed as a second -m paragraph.
+const { subject: msgSubject, body: msgBody } = splitCommitMessage(msgArgs.join(" ") || "chore: update");
+let msg = msgSubject;
+
+// O-1 (design 2026-11-16): a Co-Authored-By / Signed-off-by token joined onto the subject
+// (trailer passed as a separate argument) would ship a mangled subject — hard-fail with
+// the copy-safe form. This is NOT a trailer convention, only a malformed-subject guard.
+{
+  const trailerKey = findTrailerInSubject(msg);
+  if (trailerKey && import.meta.main) {
+    console.error(`\x1b[31m✗ dev-sync: a ${trailerKey} trailer was joined onto the commit subject.\x1b[0m`);
+    console.error(`  Pass the message as ONE argument with an embedded blank line before the trailer:`);
+    console.error(`    bun scripts/dev-sync.ts $'feat: your subject\\n\\n${trailerKey}: Name <email>'`);
+    process.exit(1);
+  }
+}
 
 // T-20261024-001: a flag leaked into the message position (swapped argument
 // order, e.g. `dev-sync "--body-file <path>" <message>`) silently becomes the
@@ -613,6 +783,21 @@ if (import.meta.main && !concludeMerge) {
   }
 }
 
+// T-20261114-007: `--stage <path|glob>` — stage the intended edits before anything reads the
+// index, so they count as operator-staged in step 1, S0 and step 6.5. A pathspec that matches
+// nothing is a hard error (same shape as the ghost-path rule at step 6.5).
+if (import.meta.main && stagePathspecs.length > 0) {
+  for (const spec of stagePathspecs) {
+    const addRes = spec ? await $`git add -- ${spec}`.quiet().nothrow() : { exitCode: 1 };
+    if (addRes.exitCode !== 0) {
+      console.error(
+        `\x1b[31m✗ dev-sync: --stage "${spec}" matched nothing (or git add failed) — nothing staged.\x1b[0m`,
+      );
+      process.exit(1);
+    }
+  }
+}
+
 // Step 1 (U-20261008-001): weak messages — the no-arg fallback "chore: update" and
 // the bare "chore: upgrade template to X" shape — are replaced by a descriptive
 // conventional-commit summary derived from the task-staged change set. Snapshot the
@@ -626,11 +811,15 @@ if (import.meta.main && !concludeMerge) {
 // (helpers/commit-message.ts) and its output is English by construction, so the
 // language gate below still applies unchanged to caller-supplied text.
 const originalMsg = msg; // T-20261028-012: caller message retained for the step-6.9 re-derivation.
+// T-20261114-007: the start-of-run index (null = unreadable). The empty-index guard at S0 keys
+// on THIS, not on step 6.5's taskStaged, which includes pipeline-made `git add` (CHANGELOG, agent bump).
+let agentStagedAtStart: string[] | null = null;
 if (import.meta.main) {
   try {
     const earlyStagedRes = await $`git diff --cached --name-only -z`.quiet().nothrow();
     if (earlyStagedRes.exitCode === 0) {
       const stagedPaths = earlyStagedRes.stdout.toString().split("\0").filter(Boolean);
+      agentStagedAtStart = stagedPaths;
       msg = composeCommitMessage(msg, stagedPaths);
     }
   } catch (e) {
@@ -643,8 +832,10 @@ if (import.meta.main) {
 // (previously this was only checked late, inside gen-pr-body.ts, and its failure was
 // silently swallowed by the PR-creation fallback below). Shared detector also catches
 // Japanese/Chinese, not just Korean — see scripts/lib/language-guard.ts.
-if (hasNonEnglish(msg)) {
-  console.log(`${RED}❌ Commit message / PR title must be written in English (CONSTITUTION.md §3).${RESET}`);
+if (hasNonEnglish(msg) || hasNonEnglish(msgBody)) {
+  console.log(
+    `${RED}❌ Commit message / PR title must be written in English (${fs.existsSync("CONSTITUTION.md") ? "CONSTITUTION.md §3" : "docs/context.md §3"}).${RESET}`,
+  );
   console.log(`${YELLOW}   Translate the message and re-run: /sync "<english message>"${RESET}`);
   if (import.meta.main) {
     process.exit(1);
@@ -721,6 +912,37 @@ try {
   snapshotFailed = true;
 }
 
+// ── Empty-index guard (T-20261114-007, design 2026-11-16 §1.2) ───────────────
+// Scoped staging with NOTHING staged at start but tracked edits in the tree is the
+// "forgot git add" failure (PRs #2009/#2010/#2025): the run would otherwise ship a plausible
+// "workspace sync" PR WITHOUT the intended edits. Fires here — before any pipeline write —
+// so a re-run starts from the same tree. Exempt: sweep mode, --conclude-merge,
+// --allow-generated-only; untracked-only trees pass (WARN at step 6.5).
+if (
+  import.meta.main &&
+  scopedStaging &&
+  !concludeMerge &&
+  !allowGeneratedOnly &&
+  !snapshotFailed &&
+  agentStagedAtStart !== null &&
+  agentStagedAtStart.length === 0
+) {
+  const s0Raw = await $`git status --porcelain=v1 -z -uall`.quiet().nothrow();
+  const trackedDirty = s0Raw.exitCode === 0 ? parseTrackedWorktreeChanges(s0Raw.stdout.toString()) : [];
+  if (trackedDirty.length > 0) {
+    console.error(
+      `${RED}❌ dev-sync: nothing is staged, but ${trackedDirty.length} tracked file(s) have working-tree changes — scoped staging would ship a PR WITHOUT them:${RESET}`,
+    );
+    trackedDirty.slice(0, 20).forEach((f) => console.error(`   ${f}`));
+    if (trackedDirty.length > 20) console.error(`   ... and ${trackedDirty.length - 20} more`);
+    console.error(`${YELLOW}   Nothing was written. Re-run after one of:${RESET}`);
+    console.error(`${YELLOW}     git add <paths>                       (stage the intended edits)${RESET}`);
+    console.error(`${YELLOW}     dev-sync --stage <path|glob> ...      (stage them via dev-sync)${RESET}`);
+    console.error(`${YELLOW}     dev-sync --allow-generated-only ...   (intended generated-only run)${RESET}`);
+    process.exit(1);
+  }
+}
+
 // U-20261107-003 (v1.43.0): per-path content capture for the dirty set —
 // step 6.5's classifier needs the S0 bytes to detect that a dirty-at-S0
 // file was MUTATED by the pipeline this run (a path-only diff reads such a
@@ -789,29 +1011,9 @@ if (fs.existsSync(memoryFile)) {
   separator = "\n---\n\n";
 }
 
-// Idempotency check: skip append if a Session Summary with the same
-// commit message already exists for today (prevents duplicates when
-// /sync is re-run on the same day).
-let alreadyLogged = false;
-if (fs.existsSync(memoryFile)) {
-  const existing = fs.readFileSync(memoryFile, "utf-8");
-  // Match a Session Summary header followed by the same message
-  const duplicatePattern = new RegExp(`^## Session Summary\\s*\\n${msg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "m");
-  alreadyLogged = duplicatePattern.test(existing);
-}
-
-if (alreadyLogged) {
-  console.log(`${YELLOW}⚙ Session summary already logged for today — skipping append (idempotent).${RESET}`);
-} else {
-  // Session-evidence section (skill review loop): only append the skeleton
-  // when the log doesn't already carry a `## Skills Used` section — the
-  // agent is expected to fill it while the session is still open, BEFORE
-  // /sync runs (skills/sync/SKILL.md).
-  const skillsUsedSection = /^## Skills Used\s*$/m.test(
-    fs.existsSync(memoryFile) ? fs.readFileSync(memoryFile, "utf-8") : "",
-  )
-    ? ""
-    : `
+// Session-evidence skeleton (skill review loop) — shared by the append and the B2
+// replace paths (docs/designs/2026-09-06-skill-session-review-design.md).
+const SKILLS_USED_SKELETON = `
 ## Skills Used
 <!-- Optional session evidence for the skill review loop
      (docs/designs/2026-09-06-skill-session-review-design.md). Edit this entry
@@ -826,7 +1028,167 @@ Remove this comment when filled. Unfilled sections are skipped by
 skill-session-review.ts (WARN only on malformed entries).
 -->
 `;
-  const template = `${separator}## Session Summary
+
+// B2 (dev-sync 1.50.0, design docs/designs/2026-11-17-root-machinery-batch-design.md §2.2,
+// owner default O-4): session-block identity = ONE block per branch per day, carried by an
+// explicit marker comment. The branch is resolved here (same symbolic-ref → rev-parse
+// fallback as step 5) because the marker keys the replace-vs-append decision at step 2,
+// before step 5 resolves its own copy. An empty branch (git failure / unborn HEAD edge)
+// falls back to the legacy append path (no marker).
+let sessionBranch = "";
+try {
+  const symbolicRes = await $`git symbolic-ref --short -q HEAD`.quiet().nothrow();
+  if (symbolicRes.exitCode === 0) {
+    sessionBranch = symbolicRes.stdout.toString().trim();
+  } else {
+    const { stdout } = await $`git rev-parse --abbrev-ref HEAD`.quiet().nothrow();
+    sessionBranch = stdout.toString().trim();
+  }
+} catch (err) {
+  console.error(`[dev-sync] Error: ${err}`);
+}
+const sessionMarkerLine = sessionBranch ? `<!-- dev-sync:session branch=${sessionBranch} -->` : "";
+
+// Idempotency / replace decision (B2): a marker for THIS branch makes the block
+// replaceable per branch per day — a same-branch re-run REPLACES the marker-plus-block
+// segment instead of appending a near-duplicate (the v1.32.0 check keyed on the exact
+// commit subject, which misses whenever the derived subject differs between attempts —
+// the normal case, since step 6.9 re-derives from the final staged set). A different
+// branch's block is untouched. No marker (legacy blocks, other tools) → the legacy
+// exact-subject skip + plain append, unchanged.
+let alreadyLogged = false;
+let existingMemory = "";
+let hasMarkerForBranch = false;
+if (fs.existsSync(memoryFile)) {
+  existingMemory = fs.readFileSync(memoryFile, "utf-8");
+  if (sessionMarkerLine && existingMemory.includes(sessionMarkerLine)) {
+    hasMarkerForBranch = true;
+  } else {
+    // Legacy exact-subject skip (prevents duplicates when /sync is re-run on the
+    // same day with an identical derived subject).
+    const duplicatePattern = new RegExp(`^## Session Summary\\s*\\n${msg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "m");
+    alreadyLogged = duplicatePattern.test(existingMemory);
+  }
+}
+
+let sessionBlockReplaced = false;
+if (hasMarkerForBranch) {
+  // T-20261118-003 owed-set sparing (dev-sync 1.52.0 — design
+  // docs/designs/2026-11-18-memory-gate-step2-deadlock-design.md §3.2): a
+  // restored gate-owed block carries the SAME branch marker as this session's
+  // stale draft, so the replace below used to re-collapse it before step 3.88
+  // could credit the repair — the restore-then-re-collapse FATAL loop on
+  // branch=main sessions. The replace path therefore consults the gate's
+  // current debt inventory (owedBlocks — the same bounded sweep and
+  // parent-labeled droppedBlocks rules step 3.88 tiers on; computed ONLY here,
+  // the append path never destroys content) and spares owed segments
+  // verbatim; only NON-owed segments are replaced or collapsed. Tier-agnostic
+  // by design (fail-safe failure direction: content preserved), which also
+  // keeps this step free of GATE_3_88_ACTIVATED_AT — declared after step 2 in
+  // this top-level-await script and would TDZ if referenced earlier.
+  const owed = owedBlocks({ sinceDays: 7, maxCommits: 20 });
+  const segmentSource = `<!-- dev-sync:session branch=${sessionBranch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} -->[\\s\\S]*?(?=\\n---\\n|$)`;
+  // A same-branch segment parses to exactly one block (no internal '\n---\n';
+  // the leading marker comment is not a '## ' line). A segment is owed iff it
+  // satisfies droppedBlocks.matchesHead's rules against any owed block:
+  // exact trimmed text, or heading+firstLine for headed blocks.
+  const isOwedSegment = (segment: string): boolean => {
+    const parsed = parseBlocks(segment);
+    if (parsed.length !== 1) return false;
+    const seg = parsed[0]!;
+    return owed.some(
+      (o) =>
+        o.block.text === seg.text ||
+        (o.block.heading !== "" && o.block.heading === seg.heading && o.block.firstLine === seg.firstLine),
+    );
+  };
+  const segments = existingMemory.match(new RegExp(segmentSource, "g")) ?? [];
+  const replaceTarget = segments.find((s) => !isOwedSegment(s));
+  if (replaceTarget !== undefined) {
+    // Session-evidence section (`## Skills Used`, skill review loop): the section
+    // belongs to the branch/day session, not to a single run — when replacing this
+    // branch's block, carry the old block's section forward VERBATIM (filled or
+    // skeleton) so session evidence filled between runs survives the replace.
+    // Keyed on the segment actually being replaced (the first NON-owed segment) —
+    // a spared owed segment's section must not leak into the fresh block. Only
+    // when the replaced block has none does the skeleton gate below decide (other
+    // tools' sections elsewhere in the file are left alone).
+    const oldSkillsMatch = replaceTarget.match(/\n## Skills Used[\s\S]*$/);
+    const skillsUsedSection = oldSkillsMatch
+      ? oldSkillsMatch[0]
+      : /^## Skills Used\s*$/m.test(existingMemory)
+        ? ""
+        : SKILLS_USED_SKELETON;
+    const blockTemplate = `${sessionMarkerLine}
+## Session Summary
+${msg}
+
+## Changes
+${fileLines}
+
+## Decisions
+- None
+
+## Open Issues
+- None
+${skillsUsedSection}`;
+    // Replace every marker-plus-block segment for this branch: OWED segments
+    // return verbatim (spared — the gate still owes them), the FIRST non-owed
+    // segment gets the fresh block, any further non-owed strays collapse — one
+    // fresh block per branch per day (the O-4 dedupe is untouched for its
+    // actual target, stale drafts). The segment runs from the marker through
+    // the next `\n---\n` separator boundary or EOF; the separator itself stays
+    // in the file, so the replacement carries no leading separator.
+    const markerBlockRe = new RegExp(segmentSource, "g");
+    let replaced = 0;
+    let collapsed = 0;
+    let spared = 0;
+    let freshGiven = false;
+    const rewritten = existingMemory.replace(markerBlockRe, (match) => {
+      if (isOwedSegment(match)) {
+        spared++;
+        console.log(
+          `${DIM}   session summary: spared union-gate-owed block for branch '${sessionBranch}' (step 3.88 debt — left verbatim)${RESET}`,
+        );
+        return match;
+      }
+      if (!freshGiven) {
+        freshGiven = true;
+        replaced++;
+        return blockTemplate;
+      }
+      collapsed++;
+      return "";
+    });
+    fs.writeFileSync(memoryFile, rewritten, "utf8");
+    console.log(
+      `${DIM}   session summary: replaced the dev-sync block for branch '${sessionBranch}' (replaced ${replaced} / collapsed ${collapsed} stray(s) / spared ${spared} union-owed)${RESET}`,
+    );
+    sessionBlockReplaced = true;
+  } else {
+    // Every same-branch segment is gate-owed: no replacement target — fall
+    // through to the append path below (fresh block appended; the append
+    // path's `## Skills Used` rule applies). Nothing is destroyed.
+    console.log(
+      `${DIM}   session summary: every same-branch block for '${sessionBranch}' is union-gate-owed — appending a fresh block (nothing replaced)${RESET}`,
+    );
+  }
+}
+if (sessionBlockReplaced) {
+  // The replace path above wrote the rewritten day log — nothing further.
+} else if (alreadyLogged) {
+  console.log(`${YELLOW}⚙ Session summary already logged for today — skipping append (idempotent).${RESET}`);
+} else {
+  // Session-evidence section (skill review loop): only append the skeleton
+  // when the log doesn't already carry a `## Skills Used` section — the
+  // agent is expected to fill it while the session is still open, BEFORE
+  // /sync runs (skills/sync/SKILL.md).
+  const skillsUsedSection = /^## Skills Used\s*$/m.test(
+    fs.existsSync(memoryFile) ? fs.readFileSync(memoryFile, "utf-8") : "",
+  )
+    ? ""
+    : SKILLS_USED_SKELETON;
+  const template = `${separator}${sessionMarkerLine ? `${sessionMarkerLine}\n` : ""}## Session Summary
 ${msg}
 
 ## Changes
@@ -1129,7 +1491,7 @@ if (fs.existsSync(path.join("memory"))) {
       console.error(`   ${r.file} @ merge ${r.commit.slice(0, 12)}:`);
       for (const f of r.findings) console.error(`     [${f.kind}] ${f.detail}`);
       console.error(
-        `   Fix: compare git show ${r.commit}:${r.file} against git show ${r.commit}^1:${r.file} and git show ${r.commit}^2:${r.file}; restore the named block(s) in the working tree and re-commit (history is immutable — the repair lands forward).`,
+        `   Fix: compare git show ${r.commit}:${r.file} against git show ${r.commit}^1:${r.file} and git show ${r.commit}^2:${r.file}; restore the named block(s) INTO ${r.file} in the working tree as separate '---'-delimited block(s), verbatim, then re-run /sync — the repair is committed forward (the session-block replace spares union-owed blocks).`,
       );
     }
     if (import.meta.main) process.exit(1);
@@ -2260,6 +2622,63 @@ try {
   snapshotFailed = true;
 }
 
+// T-20261117-015 (v1.51.0, design §2): honor-set validation — fail-closed, no silent
+// fallback (the pre-commit-hook precedent). (a) SOAK CONTRADICTION: under the
+// `git add -A` WARN soak no path can be honored by construction — the sweep below
+// re-stages the whole worktree; abort rather than pretend. (b) GHOST OPT-IN: an
+// honored path with NO staged delta means the pre-staged adjudication was lost
+// (re-run, wrong worktree, wrong order) — silently proceeding would replay the
+// clobber in reverse. (c) WORKTREE DIVERGENCE on an honored path is a visible WARN,
+// not an error: the worktree carrying the sibling batch's content is the normal
+// adjudication shape (it stays out of the commit for a later sync).
+if (honorSet.size > 0) {
+  if (!scopedStaging) {
+    console.log(
+      `${RED}❌ honor-staged cannot be honored under --warn-staging (the git add -A soak re-stages every path from the worktree).${RESET}`,
+    );
+    console.log(`${YELLOW}   Drop --warn-staging / SYNC_SCOPED_STAGING=0, or remove the honor list.${RESET}`);
+    if (import.meta.main) {
+      process.exit(1);
+    }
+  }
+  const ghostHonor = [...honorSet].filter((p) => !taskStaged.has(p)).sort();
+  if (ghostHonor.length > 0) {
+    console.log(
+      `${RED}❌ honor-staged ghost opt-in — ${ghostHonor.length} path(s) have NOTHING staged in the index, so there is no adjudicated blob to honor:${RESET}`,
+    );
+    for (const p of ghostHonor) console.log(`   ${p}`);
+    console.log(
+      `${YELLOW}   The pre-staged hunk state was lost (re-run in the wrong tree? staging overwritten?).${RESET}`,
+    );
+    console.log(
+      `${YELLOW}   Repair: re-apply the adjudicated hunks (git apply --cached <patch>), then re-run dev-sync.${RESET}`,
+    );
+    if (import.meta.main) {
+      process.exit(1);
+    }
+  }
+  for (const p of [...honorSet].sort()) {
+    try {
+      const blobRes = await $`git show :${p}`.quiet().nothrow();
+      if (blobRes.exitCode !== 0) continue; // ghost rule above already fired
+      const stagedBytes = blobRes.stdout.toString();
+      let worktreeBytes: string | undefined;
+      try {
+        worktreeBytes = fs.readFileSync(p, "utf-8");
+      } catch {
+        /* absent in worktree — staged blob still lands verbatim; no divergence to warn */
+      }
+      if (worktreeBytes !== undefined && worktreeBytes !== stagedBytes) {
+        console.log(
+          `${YELLOW}⚠️  honor-staged: worktree diverges from the staged blob for '${p}' — the STAGED blob lands; the worktree content stays out of this commit (adjudication shape)${RESET}`,
+        );
+      }
+    } catch (err) {
+      console.error(`[dev-sync] Error: ${err}`);
+    }
+  }
+}
+
 // U-20261107-003 (v1.43.0): content comparison for the S0∩S1 overlap — a
 // dirty-at-S0 file whose bytes changed by S1 was mutated by THIS run's
 // pipeline (the regenerated docs/VERSION_MANIFEST.md leftover case) and is
@@ -2279,6 +2698,7 @@ const pipelineOutputs = new Set([
 ]);
 const committable = new Set([...taskStaged, ...pipelineOutputs]);
 const residual = [...s1Paths].filter((p) => !committable.has(p)).sort();
+let trackedResidual: string[] = [];
 
 if (residual.length > 0) {
   const disposition = scopedStaging
@@ -2287,7 +2707,23 @@ if (residual.length > 0) {
   console.log(
     `${YELLOW}⚠️  Scoped-staging check: ${residual.length} working-tree file(s) were neither staged for this task nor generated by the pipeline — ${disposition}:${RESET}`,
   );
-  residual.forEach((f) => console.log(`   ${f}`));
+  // T-20261114-007: tracked edits (M/D/R) are the high-risk residual — a forgotten `git add`
+  // of real work — so list them under their own header; untracked scratch stays a plain WARN.
+  try {
+    const trackedRes = await $`git status --porcelain=v1 -z -uall`.quiet().nothrow();
+    if (trackedRes.exitCode === 0) {
+      const trackedSet = new Set(parseTrackedWorktreeChanges(trackedRes.stdout.toString()));
+      trackedResidual = residual.filter((f) => trackedSet.has(f));
+    }
+  } catch {
+    /* visibility only — never block on it */
+  }
+  const untrackedResidual = residual.filter((f) => !trackedResidual.includes(f));
+  if (trackedResidual.length > 0) {
+    console.log(`${RED}   TRACKED edits left out of this commit (verify this is intended):${RESET}`);
+    trackedResidual.forEach((f) => console.log(`   ${f}`));
+  }
+  untrackedResidual.forEach((f) => console.log(`   ${f}`));
   console.log(
     `${YELLOW}   Stage task files explicitly with 'git add <file>' before /sync, or gitignore scratch paths.${RESET}`,
   );
@@ -2332,14 +2768,93 @@ if (scopedStaging) {
           `${DIM}   scoped staging: skipping ${skip.length} path(s) already removed in the index (staged deletion / rename source) — index state preserved${RESET}`,
         );
       }
-      const toStage = [...committable].filter((p) => !indexRemoved.has(p)).sort();
+      // T-20261117-015 (v1.51.0, design §2): honored paths are excluded from EVERY
+      // add batch below — the pre-staged index blob is authoritative for them (the
+      // same contract as the indexRemoved skip: the index already holds the desired
+      // state). This is the mechanism that keeps a hunk-adjudicated partial
+      // registry.json alive through the pipeline instead of being clobbered by the
+      // path-level re-add (the 2026-11-17 silent-clobber incident).
+      const honored = [...committable].filter((p) => honorSet.has(p)).sort();
+      if (honored.length > 0) {
+        console.log(
+          `${DIM}   scoped staging: honoring the pre-staged index blob for ${honored.length} adjudicated path(s) — no path-level re-add${RESET}`,
+        );
+        for (const p of honored) console.log(`${DIM}   ${p}${RESET}`);
+      }
+      const toStage = [...committable]
+        .filter((p) => !indexRemoved.has(p))
+        .filter((p) => !honorSet.has(p))
+        .sort();
       const present = toStage.filter((p) => fs.existsSync(p));
       const absent = toStage.filter((p) => !fs.existsSync(p));
-      if (present.length > 0) {
-        const addRes = await $`git add -- ${present}`.nothrow();
+      // B1 (dev-sync 1.50.0, design docs/designs/2026-11-17-root-machinery-batch-design.md
+      // §2.2, U-20261116-012 defect 1): a plain `git add` REFUSES an explicitly named
+      // ignored path even when the path is tracked (verified on git 2.56.1 — the
+      // .zcode/config.json class; `git add -u` stages tracked-but-ignored edits, and the
+      // S0∩S1 content-overlap classifier can route one into pipelineOutputs, so such
+      // paths DO reach this sweep) — the batch add exited 1 and the catch below killed
+      // the whole sync. `.gitignore` negations cannot fix it: a negation cannot
+      // re-include a file whose parent directory is excluded (documented gitignore rule,
+      // probed). Classify once with two batched queries, then partition:
+      //   tracked ∩ ignored → `git add -f`, one DIM log line per path (tracked-status
+      //     intent wins; -f is the only accepted pathspec form; every such path is in
+      //     the index, so even the absent ones are index-resolvable);
+      //   untracked ∩ ignored → WARN + skip, never force-added (scratch stays out; the
+      //     WARN makes an unexpected pipeline output in an ignored dir observable);
+      //   everything else → the plain batch add, unchanged.
+      const trackedSet = new Set<string>();
+      const ignoredSet = new Set<string>();
+      if (toStage.length > 0) {
+        const lsRes = await $`git ls-files -z -- ${toStage}`.quiet().nothrow();
+        if (lsRes.exitCode === 0) {
+          for (const p of lsRes.stdout.toString().split("\0").filter(Boolean)) trackedSet.add(p);
+        }
+        // check-ignore exits 0 when at least one path is ignored (stdout names them),
+        // 1 when none is, 128 on error — treat non-zero as "no classification" and
+        // keep the legacy plain add (fail-closed: an actually-ignored path then hits
+        // the add refusal below instead of being silently skipped). Two flags the
+        // design's sketch missed (both verified on git 2.56.1): `--no-index` is
+        // REQUIRED because default check-ignore silently excludes TRACKED paths
+        // from its report — precisely the tracked∩ignored class this partition
+        // must find — and `-z` cannot be used in the argv form at all (`-z` is
+        // only meaningful with `--stdin`, exit 128 otherwise), so the output is
+        // parsed line-wise.
+        const ciRes = await $`git check-ignore --no-index -- ${toStage}`.nothrow();
+        if (ciRes.exitCode === 0) {
+          for (const p of ciRes.stdout.toString().split("\n").filter(Boolean)) ignoredSet.add(p);
+        } else if (ciRes.exitCode === 128) {
+          console.log(`${YELLOW}   scoped staging: git check-ignore failed — falling back to the plain add${RESET}`);
+        }
+      }
+      const forceStage = toStage.filter((p) => trackedSet.has(p) && ignoredSet.has(p));
+      const neverForce = toStage.filter((p) => !trackedSet.has(p) && ignoredSet.has(p));
+      if (forceStage.length > 0) {
+        for (const p of forceStage) {
+          console.log(`${DIM}   scoped staging: tracked-but-ignored: staged with -f (${p})${RESET}`);
+        }
+        const forceAddRes = await $`git add -f -- ${forceStage}`.nothrow();
+        if (forceAddRes.exitCode !== 0) throw new Error(forceAddRes.stderr.toString());
+      }
+      for (const p of neverForce) {
+        // Only PRESENT untracked-ignored paths are skipped here; an ABSENT one has no
+        // worktree file to protect — the ghost-path loop below fails closed on it.
+        if (fs.existsSync(p)) {
+          console.log(
+            `${YELLOW}⚠️  ignored path not staged: ${p} — gitignored and untracked; never force-added${RESET}`,
+          );
+        }
+      }
+      const normalPresent = present.filter((p) => !forceStage.includes(p) && !neverForce.includes(p));
+      if (normalPresent.length > 0) {
+        const addRes = await $`git add -- ${normalPresent}`.nothrow();
         if (addRes.exitCode !== 0) throw new Error(addRes.stderr.toString());
       }
       for (const p of absent) {
+        // Absent tracked∩ignored paths were already handled by the -f batch above
+        // (the worktree deletion is staged; re-attempting the pathspec fatals 128
+        // because the staged deletion removed the index entry — verified on git
+        // 2.56.1).
+        if (forceStage.includes(p)) continue;
         const addRes = await $`git add -- ${p}`.nothrow();
         if (addRes.exitCode !== 0) {
           console.log(
@@ -2370,6 +2885,75 @@ if (scopedStaging) {
     if (import.meta.main) {
       process.exit(1);
     }
+  }
+}
+
+// ── Step 6.55 — spec-registry dangling-reference gate (T-20261117-015, spec
+// docs/designs/2026-11-18-dev-sync-hunk-staging-design.md §3) ──────────────────
+// The 2026-11-17 audit-fix landing shipped a registry hunk whose
+// sync-auto-detection entry had NO entry JSON in the commit — every pre-commit
+// gate passed and only push-time review caught it (memory/2026-11-17.md, PR
+// #2073). Cheap commit-time gate: when the registry is landing in THIS commit,
+// every entry's one-file-per-spec entry JSON (docs/specs/entries/<id>.json) and
+// its design `file` target must exist in the resulting commit. Existence =
+// a blob in the index, or a blob in HEAD not removed by this landing (staged
+// deletion / rename source). Nothing stages between step 6.5 and the commit
+// (the step-6.9 invariant), so the index read here IS the commit.
+// Pure detection: scripts/lib/spec-landing.ts (one derivation, two callers).
+try {
+  const regDiffRes = await $`git diff --cached --name-only -z -- ${SPEC_REGISTRY_PATH}`.quiet().nothrow();
+  if (regDiffRes.exitCode !== 0) throw new Error(regDiffRes.stderr.toString());
+  const registryLanding = regDiffRes.stdout.toString().split("\0").filter(Boolean).length > 0;
+  if (!registryLanding) {
+    console.log(
+      `${DIM}✓ Step 6.55: spec registry not landing in this commit — dangling-reference gate skipped${RESET}`,
+    );
+  } else {
+    const stagedRegRes = await $`git show :${SPEC_REGISTRY_PATH}`.quiet().nothrow();
+    if (stagedRegRes.exitCode !== 0) {
+      throw new Error(`cannot read the staged registry blob: ${stagedRegRes.stderr.toString().trim()}`);
+    }
+    const entries = parseRegistryEntries(stagedRegRes.stdout.toString());
+    // Three batched spawns, then a sync predicate over sets (design §5 test plan
+    // keeps the predicate pure; this step only materializes it).
+    const required = [...new Set(entries.flatMap((entry) => requiredPathsForEntry(entry)))];
+    const idxSet = new Set<string>();
+    if (required.length > 0) {
+      const lsRes = await $`git ls-files -z -- ${required}`.quiet().nothrow();
+      if (lsRes.exitCode !== 0) throw new Error(lsRes.stderr.toString());
+      for (const p of lsRes.stdout.toString().split("\0").filter(Boolean)) idxSet.add(p);
+    }
+    const headTreeRes = await $`git ls-tree -r --name-only -z HEAD`.quiet().nothrow();
+    if (headTreeRes.exitCode !== 0) throw new Error(headTreeRes.stderr.toString());
+    const headSet = new Set(headTreeRes.stdout.toString().split("\0").filter(Boolean));
+    const rmRes = await $`git diff --cached --name-status -z`.quiet().nothrow();
+    if (rmRes.exitCode !== 0) throw new Error(rmRes.stderr.toString());
+    const removedInIndex = parseCachedNameStatus(rmRes.stdout.toString());
+    const existsInCommit = (p: string): boolean => idxSet.has(p) || (headSet.has(p) && !removedInIndex.has(p));
+    const dangling = danglingSpecRefs(entries, existsInCommit);
+    if (dangling.length > 0) {
+      console.log(
+        `${RED}❌ Step 6.55: spec-registry dangling-reference gate FAILED — ${dangling.length} required path(s) will NOT exist in this commit:${RESET}`,
+      );
+      for (const d of dangling) console.log(`   ${d}`);
+      console.log(
+        `${YELLOW}   Repair: stage the entry JSON (git add docs/specs/entries/<id>.json) or strip the entry${RESET}`,
+      );
+      console.log(
+        `${YELLOW}   from the staged registry hunk (git apply --cached / --honor-staged), then re-run dev-sync.${RESET}`,
+      );
+      if (import.meta.main) {
+        process.exit(1);
+      }
+    }
+    console.log(
+      `${GREEN}✓ Step 6.55: spec registry landing — ${entries.length} entr(ies), no dangling references${RESET}`,
+    );
+  }
+} catch (e) {
+  console.log(`${RED}❌ Step 6.55 (spec-registry dangling-reference gate) failed: ${e}${RESET}`);
+  if (import.meta.main) {
+    process.exit(1);
   }
 }
 
@@ -2478,7 +3062,7 @@ const cleanupTmp = () => {
 process.on("exit", cleanupTmp);
 
 try {
-  const commitRes = await $`git commit -m ${msg}`.nothrow();
+  const commitRes = await (msgBody ? $`git commit -m ${msg} -m ${msgBody}` : $`git commit -m ${msg}`).nothrow();
   cleanupTmp();
   if (commitRes.exitCode !== 0) throw new Error(commitRes.stderr.toString());
 } catch (e) {
@@ -2658,7 +3242,9 @@ if (existingPrUrl) {
       } else {
         // Same English gate as the commit message above.
         if (hasNonEnglish(agentBody)) {
-          console.log(`${RED}❌ Agent-written PR body must be written in English (CONSTITUTION.md §3).${RESET}`);
+          console.log(
+            `${RED}❌ Agent-written PR body must be written in English (${fs.existsSync("CONSTITUTION.md") ? "CONSTITUTION.md §3" : "docs/context.md §3"}).${RESET}`,
+          );
           console.log(`${YELLOW}   Regenerate the body in English and re-run /sync.${RESET}`);
           if (import.meta.main) {
             process.exit(1);
@@ -2763,4 +3349,11 @@ if (existingPrUrl) {
       process.exit(1);
     }
   }
+}
+
+// T-20261114-007: repeat tracked residual in one line AFTER the PR step so it cannot scroll away.
+if (import.meta.main && trackedResidual.length > 0) {
+  console.log(
+    `${YELLOW}⚠️  ${trackedResidual.length} tracked file(s) were left OUT of this PR: ${trackedResidual.slice(0, 10).join(", ")}${trackedResidual.length > 10 ? ", ..." : ""}${RESET}`,
+  );
 }

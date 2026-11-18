@@ -1,4 +1,28 @@
-// @version 1.44.0
+// @version 1.47.0
+// v1.47.0 (2026-11-19, T-20261118-005 — design
+//          docs/designs/2026-11-18-pin-divergence-symmetry-design.md §6):
+//          DecisionVerdict gains SEED_LAG (WARN) — the report-only row for a
+//          project pin ahead of / diverged from the template-seed pin in the
+//          EXTERNAL DEPS pass. Structurally not a backport-gate kind:
+//          pendingKindForDecision's default → null (a pin row can never block
+//          an upgrade via the pendingBackport machinery).
+// v1.46.0 (2026-11-16, T-20261114-005 — spec
+//          docs/designs/2026-11-16-ticket-batch-dev-sync-upgrade-drift-design.md §3):
+//          globToRegExp supports one-level {a,b} alternation (non-capturing group;
+//          nested/unbalanced braces throw); new exported expandGrantGlobs() splits a
+//          top-level comma list (`\,` is a literal comma); DispositionFlag gains
+//          optional grants/grantFor so ADOPT decision details name the matched grant.
+// v1.45.0 (2026-11-16, T-20261114-004 arm (b) — spec
+//          docs/designs/2026-11-16-governance-batch-design.md): permission-widening
+//          classification — classifyPermissionWidenings() names template allow
+//          entries that widen a stricter project posture: a bare wildcard
+//          (Tool(*)) over a tool the project scopes with non-wildcard entries.
+//          Non-wildcard template additions always merge (acceptance:
+//          Bash(bun scripts/foo.ts:*) still merges), and template default
+//          allows merge into projects that do not list the tool yet (the
+//          engine contract pinned by upgrade-tree-sync's apply test). The
+//          upgrade caller strips classified entries from the merged allow
+//          array by default and records a WARN decision naming them.
 // v1.44.0 (2026-11-12, U-20261112-003): `rewriteTemplateProvenanceVersion(content, version)` — pure helper that
 //          rewrites the `- **Template-Version**: X` line inside the `## Template Provenance` footer of
 //          docs/<variant>.context.md to the delivered template version. The footer was written once at scaffold
@@ -1506,7 +1530,12 @@ export type DecisionVerdict =
   | "MARKER_LOSS"
   // Overwrite-protection design E3 (PR-B): the project file's version is GREATER
   // than the template's — never delivered, recorded for backport (pendingBackport).
-  | "PROJECT_AHEAD";
+  | "PROJECT_AHEAD"
+  // Pin-divergence symmetry design (T-20261118-005 §4/§5.1): a project pin ahead
+  // of / diverged from the template-seed pin — report-only WARN in the EXTERNAL
+  // DEPS pass. Dedicated verdict (option b): structurally cannot block —
+  // pendingKindForDecision's default → null, so no gate kind ever attaches.
+  | "SEED_LAG";
 
 export const DECISION_SEVERITY_CONTRACT: Record<DecisionVerdict, DecisionSeverity> = {
   NEW: "INFO",
@@ -1540,6 +1569,7 @@ export const DECISION_SEVERITY_CONTRACT: Record<DecisionVerdict, DecisionSeverit
   EVOLVED_PRESERVE: "WARN",
   MARKER_LOSS: "ERROR",
   PROJECT_AHEAD: "WARN",
+  SEED_LAG: "WARN",
 };
 
 /** One decision entry of the unified decision log (design §7 schema). */
@@ -1741,7 +1771,23 @@ export function classifyProjectState(
 
 /** The CLI disposition flag state (design D2): default (CONFLICT → SKIP) or an
  *  explicit adopt-template grant, optionally narrowed by a glob. */
-export type DispositionFlag = { mode: "default" } | { mode: "adopt-template"; matches: (rel: string) => boolean };
+export type DispositionFlag =
+  | { mode: "default" }
+  | {
+      mode: "adopt-template";
+      matches: (rel: string) => boolean;
+      /** Every grant value given on the command line (repeatable flag, OR semantics). */
+      grants?: string[];
+      /** The grant that covers `rel` (named in the ADOPT decision detail). */
+      grantFor?: (rel: string) => string | undefined;
+    };
+
+/** Suffix naming the matched grant in an ADOPT decision detail (empty when the flag carries none). */
+function grantSuffix(disposition: DispositionFlag, rel: string): string {
+  if (disposition.mode !== "adopt-template" || !disposition.grantFor) return "";
+  const g = disposition.grantFor(rel);
+  return g ? ` [grant: ${g}]` : "";
+}
 
 export interface DispositionOutcome {
   /** True when the pass may deliver (per the disposition matrix). */
@@ -1782,8 +1828,8 @@ export function resolveDisposition(
       verdict: "ADOPT",
       severity: "INFO",
       detail: classification.templateChanged
-        ? "project-evolved + template changed — delivered via explicit --disposition adopt-template (decision recorded)"
-        : "project-evolved + template unchanged — delivered via explicit --disposition adopt-template (decision recorded)",
+        ? `project-evolved + template changed — delivered via explicit --disposition adopt-template (decision recorded)${grantSuffix(disposition, rel)}`
+        : `project-evolved + template unchanged — delivered via explicit --disposition adopt-template (decision recorded)${grantSuffix(disposition, rel)}`,
     };
   }
   if (!classification.templateChanged) {
@@ -1978,8 +2024,7 @@ export function resolveUnbaselinedDisposition(
       deliver: true,
       verdict: "ADOPT",
       severity: "INFO",
-      detail:
-        "no delivery baseline + project content differs — delivered via explicit --disposition adopt-template (baseline recorded at manifest write)",
+      detail: `no delivery baseline + project content differs — delivered via explicit --disposition adopt-template (baseline recorded at manifest write)${grantSuffix(disposition, rel)}`,
     };
   }
   if (hasLocalPatchMarker) {
@@ -2000,20 +2045,77 @@ export function resolveUnbaselinedDisposition(
   };
 }
 
-// Translate a glob (`**`, `*`, `?`) into an anchored RegExp for
-// --disposition adopt-template=<glob> path narrowing. An interior doublestar
-// between slashes also matches zero intermediate segments (a/**/b matches
-// a/b) and a leading doublestar slash matches top level (**/b matches b).
+// Translate a glob (`**`, `*`, `?`, one-level `{a,b}`) into an anchored RegExp
+// for --disposition adopt-template=<glob> path narrowing. An interior
+// doublestar between slashes also matches zero intermediate segments (a/**/b
+// matches a/b) and a leading doublestar slash matches top level (**/b matches
+// b). `{x,y}` is alternation (does not nest); nested or unbalanced braces throw.
 export function globToRegExp(glob: string): RegExp {
-  const src = glob
-    .replace(/[.+^${}()|[\]\\]/g, "\\$&")
+  // Sentinels keep brace syntax out of the regex-escape pass below.
+  let marked = "";
+  let inBrace = false;
+  for (const ch of glob) {
+    if (ch === "{") {
+      if (inBrace) throw new Error(`nested '{' in glob '${glob}' (brace alternation does not nest)`);
+      inBrace = true;
+      marked += "\u0001";
+    } else if (ch === "}") {
+      if (!inBrace) throw new Error(`unbalanced '}' in glob '${glob}'`);
+      inBrace = false;
+      marked += "\u0003";
+    } else if (ch === "," && inBrace) {
+      marked += "\u0002";
+    } else {
+      marked += ch;
+    }
+  }
+  if (inBrace) throw new Error(`unbalanced '{' in glob '${glob}'`);
+  const src = marked
+    .replace(/[.+^$()|[\]\\]/g, "\\$&")
     .replace(/\*\*/g, "\u0000")
     .replace(/\*/g, "[^/]*")
     .replace(/\?/g, "[^/]")
     .replace(/\/\u0000\//g, "(?:/.*)?/")
     .replace(/^\u0000\//, "(?:.*/)?")
-    .replace(/\u0000/g, ".*");
+    .replace(/\u0000/g, ".*")
+    .replace(/\u0001/g, "(?:")
+    .replace(/\u0002/g, "|")
+    .replace(/\u0003/g, ")");
   return new RegExp(`^${src}$`);
+}
+
+/**
+ * Split one --disposition adopt-template=<value> into its globs: a top-level
+ * comma list (`a,b`) becomes separate globs; commas inside `{...}` stay with
+ * their brace group (globToRegExp expands them); `\,` is a literal comma.
+ * Empty items are dropped. Unbalanced/nested braces throw.
+ */
+export function expandGrantGlobs(value: string): string[] {
+  const out: string[] = [];
+  let cur = "";
+  let depth = 0;
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+    if (ch === "\\" && value[i + 1] === ",") {
+      cur += ",";
+      i++;
+    } else if (ch === "{") {
+      depth++;
+      cur += ch;
+    } else if (ch === "}") {
+      depth--;
+      cur += ch;
+    } else if (ch === "," && depth === 0) {
+      out.push(cur);
+      cur = "";
+    } else {
+      cur += ch;
+    }
+  }
+  out.push(cur);
+  const globs = out.map((g) => g.trim()).filter(Boolean);
+  for (const g of globs) globToRegExp(g); // validates brace balance
+  return globs;
 }
 
 /** ERROR-severity decisions of a run (design D3.1 — these block silent landing). */
@@ -2494,4 +2596,63 @@ export interface InstructionCensusGate {
   /** True when --disposition adopt-template[=glob] covers the path (the
    *  replace proceeds and re-baselines, ADOPT row recorded by the engine). */
   dispositionGranted: boolean;
+}
+
+export interface PermissionWidening {
+  /** The tool the entry grants, e.g. `WebFetch`. */
+  tool: string;
+  /** The raw template allow entry, e.g. `WebFetch(*)`. */
+  entry: string;
+  /** bare-wildcard: template Tool(*) over a tool the project scopes with non-wildcard entries. */
+  kind: "bare-wildcard";
+}
+
+function toolOfAllowEntry(entry: string): string | null {
+  const m = /^([A-Za-z][A-Za-z0-9_]*)\(/.exec(entry);
+  return m ? m[1] : (/^([A-Za-z][A-Za-z0-9_]*)$/.exec(entry.trim())?.[1] ?? null);
+}
+
+function isWildcardAllowEntry(entry: string): boolean {
+  return /^[A-Za-z][A-Za-z0-9_]*\(\*\)$/.test(entry.trim()) || /^[A-Za-z][A-Za-z0-9_]*$/.test(entry.trim());
+}
+
+/**
+ * Permission-widening classification for the upgrade JSON_MERGE pass (pure;
+ * fixture-testable; T-20261114-004 arm (b)). Compares the TEMPLATE
+ * permissions.allow entries against the PROJECT's and returns the template
+ * entries that widen a stricter project posture. Non-wildcard template
+ * entries are never classified — they merge as before. Never mutates input.
+ */
+export function classifyPermissionWidenings(template: unknown, project: unknown): PermissionWidening[] {
+  const tRoot = isPlainObject(template) ? template : {};
+  const pRoot = isPlainObject(project) ? project : {};
+  const tPerms = isPlainObject(tRoot.permissions) ? tRoot.permissions : {};
+  const pPerms = isPlainObject(pRoot.permissions) ? pRoot.permissions : {};
+  const tAllow = Array.isArray(tPerms.allow) ? tPerms.allow.filter((x): x is string => typeof x === "string") : [];
+  const pAllow = Array.isArray(pPerms.allow) ? pPerms.allow.filter((x): x is string => typeof x === "string") : [];
+  if (tAllow.length === 0) return [];
+  const pByTool = new Map<string, { scoped: boolean; wildcard: boolean }>();
+  for (const entry of pAllow) {
+    const tool = toolOfAllowEntry(entry);
+    if (!tool) continue;
+    const cur = pByTool.get(tool) ?? { scoped: false, wildcard: false };
+    if (isWildcardAllowEntry(entry)) cur.wildcard = true;
+    else cur.scoped = true;
+    pByTool.set(tool, cur);
+  }
+  const out = new Map<string, PermissionWidening>();
+  for (const entry of tAllow) {
+    const tool = toolOfAllowEntry(entry);
+    if (!tool || !isWildcardAllowEntry(entry)) continue;
+    // bare-wildcard only (T-20261114-004 review fix): a template wildcard over a
+    // tool the project scopes with non-wildcard entries. The unlisted-tool arm was
+    // dropped — the engine contract (upgrade-tree-sync apply test) requires template
+    // default allows to merge into projects that do not list the tool yet, and the
+    // dangerous template wildcards were swept from the templates (arm (c)).
+    const cur = pByTool.get(tool);
+    if (cur && cur.scoped && !cur.wildcard) {
+      out.set(entry, { tool, entry, kind: "bare-wildcard" });
+    }
+  }
+  return [...out.values()];
 }

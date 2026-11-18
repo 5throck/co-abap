@@ -1,5 +1,71 @@
 #!/usr/bin/env bun
-// @version 1.2.0
+// @version 1.5.0
+// v1.5.0 (2026-11-18, T-20261118-003 — design
+//          docs/designs/2026-11-18-memory-gate-step2-deadlock-design.md §3.1):
+//          new exported aggregate owedBlocks() — the gate's debt inventory as a
+//          pure composition of listMemoryMerges + showBlob + droppedBlocks.
+//          Step 2's branch-keyed session-block replace (dev-sync 1.52.0)
+//          consults it to SPARE same-branch segments the union gate still owes,
+//          closing the restore-then-re-collapse FATAL loop on branch=main
+//          sessions. Head-side clarification vs §3.1's prose (verified during
+//          implementation, DL-T1 red/green): the debt that matters is the
+//          MERGE-TIME inventory the gate's Arm A findings flag — droppedBlocks
+//          computed against the MERGED BLOB (the same call verifyUnion/§0's
+//          "a parent-owed block per droppedBlocks" tiers on) — because debt
+//          against the CURRENT WORKTREE zeroes out exactly when a restoration
+//          is present (the restored block satisfies the debt before step 2
+//          runs), making the sparing unfireable in the very deadlock it exists
+//          to close. The worktree still gates the inventory per merge-touched
+//          file: absent file → contribute nothing (the tier arms at the
+//          unionScan absent/archive/tombstone shapes own that state; there is
+//          no actionable worktree restoration to spare for). Consequence
+//          (accepted, design R4-class): a block whose repair was already
+//          committed stays in the inventory until the merge ages out of the
+//          window — a same-branch verbatim re-match is spared (content
+//          preserved) and the segment becomes replaceable again once the merge
+//          ages out (self-healing). No new git plumbing (the sweep is re-run,
+//          bounded and read-only — design R1 accepts the doubled cost;
+//          memoization deferred until profiled). Deliberately NO activationIso
+//          parameter: sparing is tier-agnostic (a WARN-tier owed block spared
+//          is harmless, fail-safe) and keeps step 2 free of
+//          GATE_3_88_ACTIVATED_AT — declared in dev-sync.ts AFTER step 2 in
+//          that top-level-await script (TDZ hazard). No tier logic — the
+//          caller needs only the inventory.
+// v1.4.0 (2026-11-18, T-20261117-008 — design
+//          docs/designs/2026-11-18-memory-union-archival-tier-design.md §2): the
+//          archival tier now also satisfies block-drop findings for merges whose
+//          dropped-block file was LATER archived. v1.2.0's archive fallback fires
+//          only when the local gitignored memory/archive/<basename> copy exists AND
+//          carries the parent-owed blocks — but a merge whose file existed AT the
+//          merge with a block dropped (the v1.1.1 merged===null tombstone arm never
+//          runs) and whose log a later housekeeping commit archived leaves a fresh
+//          worktree with NO worktree file and NO archive copy: the finding stayed
+//          FATAL until the merge aged out of the 7-day window (3 live /sync FATALs
+//          on 2026-11-17, co-deck PR-2/PR-4/PR-5; the gate's own "restore in the
+//          working tree" guidance fights step 3.8's re-archival — the T-20261106-007
+//          deadlock one level up). Fix: when neither the worktree file nor the
+//          archive copy is readable, consult the MEMORY.md tombstone row for the
+//          file (tracked; same regex as the v1.1.1 arm, now shared as
+//          hasMemoryTombstone) — tombstone present = sanctioned archival provenance
+//          = tier 'historical' (WARN, ages out with the window; the drop content
+//          stays recoverable from git history); no tombstone keeps the original
+//          tier (fail-closed). An archive copy that IS readable but does not carry
+//          the parent-union stays blocking (readable evidence outranks provenance,
+//          locally actionable). Fresh clones get the WARN, not the FATAL — the
+//          documented degradation (machinery design
+//          docs/designs/2026-11-17-root-machinery-batch-design.md §6).
+// v1.3.0 (2026-11-17, U-20261116-012 PR-2 compat — design
+//          docs/designs/2026-11-17-root-machinery-batch-design.md §2.2 item 4): the
+//          block-start well-formedness rule accepts a leading single-line HTML comment
+//          before the first '## ' heading. dev-sync 1.50.0 prefixes its session blocks
+//          with a `<!-- dev-sync:session branch=<branch> -->` identity marker (one block
+//          per branch per day), and this gate's Arm B runs FATAL on every flat memory
+//          log — without the relaxation every post-1.50.0 memory log would fail
+//          "block does not begin with a '## ' heading". Scope is deliberately narrow:
+//          only whole single-line `<!-- ... -->` lines at the top of a block are skipped;
+//          prose, unterminated comments, and multi-line comments still fail the rule,
+//          and the block/separator count invariant plus the fused-heading check are
+//          untouched.
 // v1.2.0 (2026-11-06, T-20261106-007 — the gate-deadlock closure): the
 //          archive↔union-verify fight. Merge e73b51057 deleted
 //          memory/2026-10-29.md (archive-memory 7-day retention, post-
@@ -187,7 +253,14 @@ export function verifyWellFormed(opts: { file: string; content: string }): Union
     });
   }
   for (const block of blocks) {
-    if (!block.text.startsWith("## ")) {
+    // v1.3.0: leading single-line HTML-comment lines (the dev-sync session marker) do
+    // not disqualify a block — evaluate the rule on the text after them.
+    const blockLines = block.text.split("\n");
+    let headingStart = 0;
+    while (headingStart < blockLines.length && /^<!--.*-->$/.test(blockLines[headingStart].trim())) {
+      headingStart++;
+    }
+    if (!blockLines.slice(headingStart).join("\n").startsWith("## ")) {
       findings.push({
         kind: "malformed-result",
         file,
@@ -246,6 +319,67 @@ export function droppedBlocks(
     }
   }
   return dropped;
+}
+
+/** One block the union gate currently OWES: a parent-owed block from a bounded
+ * recent merge that is NOT accounted for in the current working-tree content.
+ * Consumed by dev-sync step 2's session-block replace to spare same-branch
+ * segments the gate would otherwise re-collapse (T-20261118-003). */
+export interface OwedBlock {
+  /** Owning merge commit (full hash). */
+  commit: string;
+  /** Merge-touched flat memory log, repo-relative (e.g. memory/2026-11-04.md). */
+  file: string;
+  /** Which parent owes the block. */
+  parent: "ours" | "theirs";
+  /** The owed block (text / heading / firstLine — droppedBlocks' match keys). */
+  block: MemoryBlock;
+}
+
+/**
+ * The debt inventory behind unionScan's Arm A findings, as a pure composition
+ * of listMemoryMerges + showBlob + droppedBlocks (v1.5.0, T-20261118-003 —
+ * design §3.1). Runs the SAME bounded sweep as unionScan; for each merge-touched
+ * file the debt is droppedBlocks computed against the MERGED BLOB — the same
+ * call the gate's findings tier on (verifyUnion). This is the merge-time
+ * inventory a working-tree restoration must satisfy, NOT the still-missing
+ * remainder against the current worktree: a restoration satisfies the
+ * worktree-side debt before step 2 ever runs, which would zero the inventory
+ * and make sparing unfireable in the exact deadlock it closes (head-side
+ * clarification verified by DL-T1's red/green; see the v1.5.0 header).
+ *
+ * Worktree gating per merge-touched file: an absent worktree file contributes
+ * nothing (the archive/tombstone tier arms own that state — no actionable
+ * worktree restoration exists to spare), and a merge that deleted the file
+ * contributes nothing (unionScan's merged===null arm owns it). No tier logic:
+ * the caller needs only which blocks are owed, parent- and commit-labeled.
+ *
+ * Deliberately NO `activationIso` parameter: sparing is tier-agnostic (a
+ * WARN-tier owed block spared is harmless, fail-safe), and this keeps the
+ * caller free of `GATE_3_88_ACTIVATED_AT` — declared in dev-sync.ts AFTER
+ * step 2 in that top-level-await script, so referencing it earlier would TDZ.
+ */
+export function owedBlocks(opts: { sinceDays: number; maxCommits: number; cwd?: string }): OwedBlock[] {
+  const cwd = opts.cwd ?? process.cwd();
+  const owed: OwedBlock[] = [];
+  for (const target of listMemoryMerges({ sinceDays: opts.sinceDays, maxCommits: opts.maxCommits, cwd })) {
+    const [p1, p2] = target.parents;
+    for (const file of target.files) {
+      const ours = showBlob(p1, file, cwd);
+      const theirs = showBlob(p2, file, cwd);
+      const merged = showBlob(target.commit, file, cwd);
+      if (merged === null) continue; // deleted-file arm — unionScan's tier arms own that shape
+      try {
+        readFileSync(join(cwd, file), "utf8");
+      } catch {
+        continue; // absent worktree file → contributes nothing (tier arms own that shape)
+      }
+      for (const { parent, block } of droppedBlocks(ours ?? "", theirs ?? "", merged)) {
+        owed.push({ commit: target.commit, file, parent, block });
+      }
+    }
+  }
+  return owed;
 }
 
 /**
@@ -401,6 +535,20 @@ export function showBlob(commit: string, file: string, cwd?: string): string | n
   return git(["show", `${commit}:${file}`], cwd ?? process.cwd());
 }
 
+/** MEMORY.md tombstone-row check for one flat memory log — the sanctioned-
+ * archival positive-evidence token (v1.1.1 posture: the tombstone IS the
+ * evidence; positive-evidence-only). False when the index is unreadable, so
+ * every caller is fail-closed by construction. */
+function hasMemoryTombstone(file: string, cwd: string): boolean {
+  try {
+    const memoryIndex = readFileSync(join(cwd, "memory", "MEMORY.md"), "utf8");
+    const base = file.replace(/^memory\//, "").replace(/\.md$/, "");
+    return new RegExp(`^\\| ${base} \\|`, "m").test(memoryIndex);
+  } catch {
+    return false;
+  }
+}
+
 /** Full Arm A: run verifyUnion over the bounded merge sweep. A parent blob
  * missing (file added on the other side) contributes no obligations; a merged
  * blob missing while a parent has one is itself the extreme drop shape and is
@@ -433,14 +581,8 @@ export function unionScan(opts: {
           // positive evidence — the same positive-evidence-only posture as
           // filterTransientCheckouts). No tombstone row = original tier.
           let deletedTier: MergeScanResult["tier"] = tier;
-          try {
-            const memoryIndex = readFileSync(join(cwd, "memory", "MEMORY.md"), "utf8");
-            const base = file.replace(/^memory\//, "").replace(/\.md$/, "");
-            if (new RegExp(`^\\| ${base} \\|`, "m").test(memoryIndex)) {
-              deletedTier = "repaired-at-head"; // sanctioned archival — INFO tier shared
-            }
-          } catch {
-            // MEMORY.md unreadable — keep the original tier (fail-closed)
+          if (hasMemoryTombstone(file, cwd)) {
+            deletedTier = "repaired-at-head"; // sanctioned archival — INFO tier shared
           }
           results.push({
             commit: target.commit,
@@ -491,7 +633,24 @@ export function unionScan(opts: {
               effectiveTier = "repaired-at-head";
             }
           } catch {
-            // neither worktree nor archive readable — keep the original tier
+            // v1.4.0 archival-provenance tier (T-20261117-008 — design
+            // docs/designs/2026-11-18-memory-union-archival-tier-design.md §2):
+            // neither the worktree file nor the archive copy is readable — the
+            // fresh-worktree shape. When the file was later archived by the
+            // documented retention cycle, its MEMORY.md tombstone row (tracked;
+            // same regex as the v1.1.1 merged===null arm, now shared as
+            // hasMemoryTombstone) is the positive evidence of sanctioned
+            // archival: the damaged blob is immutable history, the gate's
+            // "restore in the working tree" guidance fights step 3.8's
+            // re-archival, and the local-only archive fallback has nothing to
+            // read — re-tier to 'historical' (WARN, ages out with the window;
+            // the drop content stays recoverable from git history). No
+            // tombstone = no provenance = the original tier stands
+            // (fail-closed). Fresh clones get the WARN, not the FATAL — the
+            // documented degradation (machinery design §6).
+            if (hasMemoryTombstone(file, cwd)) {
+              effectiveTier = "historical"; // sanctioned archival — WARN tier shared
+            }
           }
         }
         results.push({ commit: target.commit, file, findings, tier: effectiveTier });
