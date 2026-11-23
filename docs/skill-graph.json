@@ -1042,11 +1042,7 @@
         ".agents/skills/project-review/SKILL.md",
         ".codex/skills/project-review/SKILL.md",
         ".hermes/skills/project-review/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 1,
-        "last_used": "2026-11-12"
-      }
+      ]
     },
     {
       "id": "skill:root/research-analysis",
@@ -1316,11 +1312,7 @@
         ".agents/skills/sync/SKILL.md",
         ".codex/skills/sync/SKILL.md",
         ".hermes/skills/sync/SKILL.md"
-      ],
-      "usage": {
-        "sessions": 3,
-        "last_used": "2026-11-15"
-      }
+      ]
     },
     {
       "id": "skill:root/team-builder",
