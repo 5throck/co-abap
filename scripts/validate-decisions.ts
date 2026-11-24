@@ -1,8 +1,24 @@
 #!/usr/bin/env bun
 /**
  * Decision Record Chain Validator (ADR-0061)
- * @version 1.1.0
+ * @version 1.2.1
  */
+// v1.2.1 (2026-11-22, upstream U-20261122-003): cross-check DEC ids CITED in
+//           CHANGELOG.md and memory/*.md prose against docs/decisions/ — a DEC id
+//           referenced in a CHANGELOG entry or memory log but with no
+//           docs/decisions/DEC-YYYYMMDD-NN.md file is a gate failure (the
+//           ADR-0061 "ruled but never filed" class). Scans the prose of both
+//           sources for the DEC-YYYYMMDD-NN pattern and reports unmatched ids.
+// v1.2.0 (2026-11-20, upstream U-20261119-001): knowledge_refs to a memory
+//           file archived by archive-memory.ts (dev-sync step 3.8, 7-day
+//           retention) resolve through the local archive (memory/archive/) —
+//           the archival move deletes the tracked live path, which would
+//           otherwise dangle every DEC reference to the archived log. The
+//           archive stays gitignored by design (local preservation only —
+//           docs/designs/2026-11-13-memory-index-link-validator-design.md);
+//           a fresh clone without the local copy fails visible, the accepted
+//           fresh-clone degradation (docs/designs/2026-11-18-memory-union-archival-tier-design.md
+//           R1/R2).
 // v1.1.0 (2026-10-04, spec docs/designs/2026-10-04-ticket-archive-design.md):
 //           knowledge_refs to an archived governance ticket resolve through the
 //           archive directory (tickets/governance/archive/) — the 2026-10-04
@@ -47,11 +63,15 @@ const LEDGER_PATH = join(ROOT, "docs", "evidence", "ledger.md");
 /** True when `ref` points at a governance ticket that now lives in the archive
  * directory instead of the live store (done tickets move to
  * tickets/governance/archive/ after their dwell — spec
- * docs/designs/2026-10-04-ticket-archive-design.md). Existing archive paths
- * need no help: they resolve through the plain existsSync check. */
+ * docs/designs/2026-10-04-ticket-archive-design.md), or at a memory file that
+ * archive-memory.ts has moved to the local-only archive (memory/archive/ —
+ * dev-sync step 3.8, 7-day retention; upstream U-20261119-001). Existing
+ * archive paths need no help: they resolve through the plain existsSync check. */
 function knowledgeRefArchived(root: string, ref: string): boolean {
-  const match = /^tickets\/governance\/([TU]-\d{8}-\d{3,4}\.yaml)$/.exec(ref);
-  return match !== null && existsSync(join(root, "tickets", "governance", "archive", match[1]));
+  const ticket = /^tickets\/governance\/([TU]-\d{8}-\d{3,4}\.yaml)$/.exec(ref);
+  if (ticket !== null) return existsSync(join(root, "tickets", "governance", "archive", ticket[1]));
+  const memory = /^memory\/([^/]+\.md)$/.exec(ref);
+  return memory !== null && existsSync(join(root, "memory", "archive", memory[1]));
 }
 
 const REQUIRED_FIELDS = ["id", "date", "agent", "decision", "alternatives", "status"];
@@ -284,6 +304,49 @@ function main() {
     console.log(`${colors.cyan}🔍 Validating decision records (ADR-0061)...${colors.reset}`);
     console.log(`${colors.dim}Root: ${ROOT}${colors.reset}`);
   }
+  // Check V (upstream U-20261122-003): DEC ids cited in CHANGELOG.md and
+  // memory/*.md prose must resolve to docs/decisions/DEC-*.md files.
+  // The ADR-0061 "ruled but never filed" class: a DEC id cited in prose with
+  // no backing record passes every existing gate.
+  const proseSources = ["CHANGELOG.md"];
+  try {
+    const memFiles = readdirSync(join(ROOT, "memory")).filter((f) => /^\d{4}-\d{2}-\d{2}\.md$/.test(f));
+    proseSources.push(...memFiles.map((f) => join("memory", f)));
+  } catch {
+    /* memory/ absent = skip memory scan */
+  }
+  const decDir = join(ROOT, "docs", "decisions");
+  const knownDecIds = new Set<string>();
+  if (existsSync(decDir)) {
+    for (const f of readdirSync(decDir)) {
+      const m = f.match(/^(DEC-\d{8}-\d{2,})\.md$/);
+      if (m) knownDecIds.add(m[1]);
+    }
+  }
+  const citedDecIds = new Map<string, string[]>(); // id -> source files
+  const decToken = /DEC-\d{8}-\d{2,}/g;
+  for (const src of proseSources) {
+    const abs = join(ROOT, src);
+    if (!existsSync(abs)) continue;
+    const text = readFileSync(abs, "utf8");
+    for (const m of text.matchAll(decToken)) {
+      const id = m[0];
+      if (!knownDecIds.has(id)) {
+        const files = citedDecIds.get(id) ?? [];
+        files.push(src);
+        citedDecIds.set(id, files);
+      }
+    }
+  }
+  for (const [id, files] of citedDecIds) {
+    fail(
+      files.join(", "),
+      "dec-id-unresolved",
+      `DEC id "${id}" cited in prose but docs/decisions/${id}.md does not exist — the ADR-0061 "ruled but never filed" class`,
+      "Create the decision record or correct the citation",
+    );
+  }
+
   validateDecisions();
 
   const errors = issues.filter((i) => i.level === "error");

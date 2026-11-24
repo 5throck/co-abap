@@ -27,13 +27,13 @@
 | `root/finishing-a-development-branch` | L3 | 1.0.2 | — | — | — | — | — |
 | `root/fiori-rap-dev` | L3 | 1.0.0 | — | — | root/abap-dev (composes_with), root/accessibility-audit (composes_with), root/post-write-chain (follows) | — | — |
 | `root/gateguard` | L3 | 1.0.2 | root/automation-engineer | — | — | — | — |
-| `root/handbook` | L3 | 0.6.0 | — | — | — | — | — |
+| `root/handbook` | L3 | 0.6.2 | — | — | — | — | — |
 | `root/handbook-sync-audit` | L3 | 1.0.5 | — | — | — | — | — |
-| `root/i18n-audit` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
+| `root/i18n-audit` | L3 | 1.0.2 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-formatting` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-layout` | L3 | 1.1.1 | root/i18n-specialist | — | — | — | — |
 | `root/i18n-locale-config` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
-| `root/meeting-facilitation` | L3 | 1.5.0 | — | — | — | — | — |
+| `root/meeting-facilitation` | L3 | 1.6.0 | — | — | — | — | — |
 | `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
 | `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/platform-skill-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
@@ -103,6 +103,7 @@ Catalog table above — not skill references and not yet resolved as graph edges
 | `adr:0006` | adr | — | — | — |
 | `adr:0007` | adr | — | — | — |
 | `dec:DEC-20260926-01` | decision | `root/decision-record`, `root/project-review` | — | — |
+| `dec:DEC-20261028-05` | decision | — | — | — |
 | `dec:DEC-20261028-07` | decision | `root/decision-record` | — | — |
 | `dec:DEC-20261028-08` | decision | `root/decision-record` | — | — |
 | `dec:DEC-20261028-09` | decision | `root/decision-record` | — | — |
@@ -121,6 +122,7 @@ None — every capability has a single content hash.
 | Type | Count | Nodes |
 |------|-------|-------|
 | adr | 7 | (expected until docs `references` edges are mined) |
+| decision | 1 | (expected until docs `references` edges are mined) |
 | skill | 7 | root/api-documentation, root/finishing-a-development-branch, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/source-command-celebrate, root/source-command-commit-push-pr, root/standup-synthesizer |
 
 ## Skills Without `used_by` (G6)
@@ -137,7 +139,7 @@ Inferred from procedure steps that cite the skill and are owned via `step_by_age
 
 ## Skill Usage (E3)
 
-Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-24), window 90 days. Skill nodes with usage: 0.
+Joined from memory `## Skills Used` sections (names resolve via capability); reference date = newest memory log (2026-11-25), window 90 days. Skill nodes with usage: 0.
 
 - **used-but-unlinked** (usage > 0, no `used_by`) (0): —
 - **unused** (0 sessions in 90 days) (50): root/abap-code-review, root/abap-dev, root/accessibility-audit, root/agent-lifecycle-manager, root/api-documentation, root/ci-triage, root/decision-record, root/delegate-to-hub, root/design-foundation, root/desktop-app-fallback, root/documentation-writing, root/dump-monitor, root/evidence-ledger, root/explain-me, root/finishing-a-development-branch, root/fiori-rap-dev, root/gateguard, root/handbook, root/handbook-sync-audit, root/i18n-audit, root/i18n-formatting, root/i18n-layout, root/i18n-locale-config, root/meeting-facilitation, root/performance-tuning, root/platform-command-lifecycle-manager, root/platform-skill-lifecycle-manager, root/post-write-chain, root/project-review, root/research-analysis, root/sap-co, root/sap-fi, root/sap-le, root/sap-mm, root/sap-pp, root/sap-sd, root/script-lifecycle-manager, root/security-scan, root/service-design, root/skill-lifecycle-manager … and 10 more

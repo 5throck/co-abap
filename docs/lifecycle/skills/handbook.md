@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: handbook
 - **Status**: active
-- **Version**: 0.6.0
+- **Version**: 0.6.2
 - **Owner**: pm
 - **Created**: 2026-09-21 (record backfill — the skill predates this record; active since at least 2026-09-20 per frontmatter `last_reviewed`)
 - **Last Updated**: 2026-11-12
@@ -25,7 +25,7 @@
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 0.6.0
+- **Version**: 0.6.2
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

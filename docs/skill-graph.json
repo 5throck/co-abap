@@ -368,6 +368,11 @@
       "layer": "L3"
     },
     {
+      "id": "dec:DEC-20261028-05",
+      "type": "decision",
+      "layer": "L3"
+    },
+    {
       "id": "dec:DEC-20261028-07",
       "type": "decision",
       "layer": "L3"
@@ -835,8 +840,8 @@
       "name": "handbook",
       "scope": "root",
       "capability": "handbook",
-      "content_hash": "a9bd82eded8b1661",
-      "version": "0.6.0",
+      "content_hash": "a4891293c4fc4ba5",
+      "version": "0.6.2",
       "mirrors": [
         "skills/handbook/SKILL.md",
         ".claude/skills/handbook/SKILL.md",
@@ -871,8 +876,8 @@
       "name": "i18n-audit",
       "scope": "root",
       "capability": "i18n-audit",
-      "content_hash": "5485334c47dd7ef0",
-      "version": "1.0.1",
+      "content_hash": "b5259cc88ab22d58",
+      "version": "1.0.2",
       "mirrors": [
         "skills/i18n-audit/SKILL.md",
         ".claude/skills/i18n-audit/SKILL.md",
@@ -943,8 +948,8 @@
       "name": "meeting-facilitation",
       "scope": "root",
       "capability": "meeting-facilitation",
-      "content_hash": "f4da9e5e2a11a853",
-      "version": "1.5.0",
+      "content_hash": "815b03b334137162",
+      "version": "1.6.0",
       "mirrors": [
         "skills/meeting-facilitation/SKILL.md",
         ".claude/skills/meeting-facilitation/SKILL.md",

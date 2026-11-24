@@ -1,7 +1,24 @@
 #!/usr/bin/env bun
 /**
  * Validate docs/ folder structure compliance
- * @version 1.5.0
+ * @version 1.7.0
+ * v1.7.0 (2026-11-23, spec
+ *           docs/designs/2026-11-23-skill-graph-observability-design.md
+ *           §5.5/AC10-AC11): allowlist gains `skill-graph-structure.html` —
+ *           the graph-structure companion page the v2.6.0 fleet-report emits
+ *           in the same run as the history dashboard (generated artifact,
+ *           never hand-edited; docs/README.md §2 row is the contract).
+ * v1.6.0 (2026-11-23, spec
+ *           docs/designs/2026-11-23-skill-graph-history-report-design.md
+ *           §5.2/AC16): allowlist gains `skill-graph-history.html` — the
+ *           auto-emitted history dashboard the v2.5.0 fleet-report
+ *           regenerates after every run (generated artifact, never
+ *           hand-edited; docs/README.md §2 row is the contract).
+ * v1.5.1 (2026-11-20, T-20261120-002 / runner-hardening PR-2): allowlist gains
+ *           `runner-exec-allowlist.json` — the runner execution-surface allowlist
+ *           consumed by verify-prompt-integrity.ts --exec-closure (design
+ *           docs/designs/2026-11-20-runner-hardening-integrity-design.md
+ *           §T-20261120-002; docs/README.md §2 row is the contract).
  * v1.5.0 (2026-11-12, T-20261112-002): allowlist gains
  *           `expected-gate-failures.json` — the unified runner's checked-in
  *           sanctioned-repairs list (ADR-0105 Decision 8; docs/README.md §2 row
@@ -93,6 +110,9 @@ const ALLOWED_ROOT_FILES: ReadonlySet<string> = new Set([
   "fleet-membership.json",
   "protected-paths.json",
   "expected-gate-failures.json",
+  "runner-exec-allowlist.json",
+  "skill-graph-history.html",
+  "skill-graph-structure.html",
 ]);
 
 interface WorkspaceFinding {
