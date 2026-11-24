@@ -1,5 +1,74 @@
 #!/usr/bin/env bun
-// @version 1.5.0
+// @version 1.7.0
+// v1.7.0 (2026-11-23, T-20261123-009 — design
+//          docs/designs/2026-11-23-fleet-graph-machinery-batch-design.md §2): the
+//          step-2 sparing inventory learns the merge-delivered class. The PR #2160
+//          incident: a merge DELIVERED a theirs-side branch=main session block into
+//          the merged blob; a non-merge loss then removed it from the committed
+//          state; the manual restore was re-collapsed by a retry's step-2
+//          same-branch replace, because owedBlocks() keyed on MERGE-TIME debt only
+//          (droppedBlocks: parent-vs-merged) and a block present in `merged`
+//          produces no entry — the restored segment had nothing to
+//          fingerprint-match. Fix (the v1.5.0 principle applied one level over):
+//          after the existing parent loop, owedBlocks() emits one `merged-present`
+//          entry per block of the merged blob — git-side MEMBERSHIP, no run-time
+//          worktree delta (at the fateful run the restored block IS present in the
+//          worktree, so a "merged blob minus current worktree" inventory would be
+//          empty exactly when sparing must fire — the same unfireability v1.5.0
+//          already diagnosed for merge-time debt). New OwedBlock.source
+//          discriminator: "merge-drop" (the existing class — entries otherwise
+//          unchanged) / "merged-present" (new). `parent` on merged-present entries
+//          is INFORMATIONAL-ONLY: "ours" when the ours parent carries the block
+//          under droppedBlocks.matchesHead's fingerprint rules, "theirs" otherwise
+//          (a resolution-authored block in neither parent gets "theirs"); sparing
+//          and tests key on block + source. No dedup against merge-drop entries
+//          (the classes are disjoint by construction — a block cannot be both
+//          absent from and present in the merged blob; sparing is a boolean
+//          some()). Worktree gating unchanged: an absent worktree file still
+//          contributes nothing and a merged===null (deleted-file) merge still
+//          contributes nothing (the tier arms own those shapes). No new git
+//          plumbing — the merged blob is already fetched and was discarded after
+//          droppedBlocks; it is now parsed instead. dev-sync step 2's
+//          isOwedSegment consumes the extended inventory UNCHANGED (generic
+//          fingerprint matching) — dev-sync stays 1.53.0. Consequence for the
+//          incident: restoring a merge-delivered block WITH its `branch=` marker
+//          now survives step-2 replace/collapse; the marker-less workaround is no
+//          longer required (landed marker-less legacy blocks append/never-match,
+//          behavior unchanged). Accepted over-breadth (fail-safe, self-healing —
+//          the v1.5.0 consequence class): a same-branch segment matching a
+//          merged-present block is spared even when the block is also in HEAD and
+//          the worktree (the ordinary post-merge state) until the merge ages out
+//          of the 7-day/20-merge window — content preservation outranks
+//          block-count hygiene. Pinned by tests/unit/memory-union-verify.test.ts
+//          MP-T1..T4 (MP-T1 demonstrated RED at 1.6.0 / GREEN at 1.7.0).
+// v1.6.0 (2026-11-20, U-20261120-001 — design
+//          docs/designs/2026-11-20-runner-hardening-integrity-design.md §3.5):
+//          the exit-128 noise closure. `git()` gains an `absentOk` option: when
+//          set and the exit code is 128 — the DOCUMENTED absent-path signal of
+//          `git show <commit>:<path>` ("null when the path is absent in that
+//          commit — file added or deleted relative to that side") — the failing
+//          ref is pushed onto a module-level collector and null is returned
+//          SILENTLY, instead of the anonymous incomplete-sweep WARN that made
+//          every merge-touched one-side-taken file emit up to 3 WARN rows per
+//          sweep (20+ per 14-day scan in Projects/co-security). showBlob is the
+//          ONLY absentOk caller; every other git() call (log, diff-tree,
+//          show -s) keeps the strict WARN — which now also NAMES its failing
+//          ref (`git <cmd> failed (exit <code>) on <args[1] ?? args.join(" ")>`)
+//          so genuine failures stop being anonymous. Justification for treating
+//          ALL showBlob 128s as absent-path (design item 2): the commit SHAs
+//          come from the same repo's `git log --merges` moments earlier, so an
+//          unknown-SHA 128 is not a real shape here; corrupt-object pathologies
+//          surface through the remaining strict calls. `unionScan` and
+//          `owedBlocks` each end with ONE INFO line naming the collected refs
+//          (`N absent-side blob reads (documented no-data — file added/deleted
+//          between sides): ref1, ref2, ref3 [+k more]`), then drain — two INFO
+//          lines per dev-sync pipeline worst case, each naming refs, vs 20+
+//          anonymous WARNs. The earlier same-id report (restore-then-re-collapse
+//          loop, v1.5.0 spare semantics) is regression-pinned by the loop test
+//          in tests/unit/memory-union-verify.test.ts (one-side-taken merge +
+//          worktree repair converges: owedBlocks keeps the merge-time debt for
+//          step-2 sparing while unionScan tiers the group repaired-at-head —
+//          one 3.88 pass, no FATAL loop).
 // v1.5.0 (2026-11-18, T-20261118-003 — design
 //          docs/designs/2026-11-18-memory-gate-step2-deadlock-design.md §3.1):
 //          new exported aggregate owedBlocks() — the gate's debt inventory as a
@@ -322,37 +391,61 @@ export function droppedBlocks(
 }
 
 /** One block the union gate currently OWES: a parent-owed block from a bounded
- * recent merge that is NOT accounted for in the current working-tree content.
- * Consumed by dev-sync step 2's session-block replace to spare same-branch
- * segments the gate would otherwise re-collapse (T-20261118-003). */
+ * recent merge that is NOT accounted for in the current working-tree content,
+ * or (v1.7.0) a block the merge DELIVERED into the merged blob. Consumed by
+ * dev-sync step 2's session-block replace to spare same-branch segments the
+ * gate would otherwise re-collapse (T-20261118-003; T-20261123-009). */
 export interface OwedBlock {
   /** Owning merge commit (full hash). */
   commit: string;
   /** Merge-touched flat memory log, repo-relative (e.g. memory/2026-11-04.md). */
   file: string;
-  /** Which parent owes the block. */
+  /** Which parent owes the block. For "merge-drop" entries this is the parent
+   * whose block is missing from the merged blob. For "merged-present" entries
+   * it is INFORMATIONAL-ONLY: "ours" when the ours parent carries the block
+   * verbatim (droppedBlocks.matchesHead fingerprint rules), "theirs"
+   * otherwise (a resolution-authored block in neither parent gets "theirs"). */
   parent: "ours" | "theirs";
   /** The owed block (text / heading / firstLine — droppedBlocks' match keys). */
   block: MemoryBlock;
+  /** v1.7.0 debt-class discriminator. "merge-drop" = merge-time debt (parent
+   * block missing from the merged blob). "merged-present" = the merge
+   * delivered the block INTO the merged blob (T-20261123-009) — a block a
+   * non-merge loss or same-branch replace must not destroy, because the gate's
+   * own merged blob carries it (no merge-time debt exists for it). */
+  source: "merge-drop" | "merged-present";
 }
 
 /**
  * The debt inventory behind unionScan's Arm A findings, as a pure composition
  * of listMemoryMerges + showBlob + droppedBlocks (v1.5.0, T-20261118-003 —
- * design §3.1). Runs the SAME bounded sweep as unionScan; for each merge-touched
- * file the debt is droppedBlocks computed against the MERGED BLOB — the same
- * call the gate's findings tier on (verifyUnion). This is the merge-time
- * inventory a working-tree restoration must satisfy, NOT the still-missing
- * remainder against the current worktree: a restoration satisfies the
- * worktree-side debt before step 2 ever runs, which would zero the inventory
- * and make sparing unfireable in the exact deadlock it closes (head-side
- * clarification verified by DL-T1's red/green; see the v1.5.0 header).
+ * design §3.1; v1.7.0 adds the merged-present class — T-20261123-009, design
+ * docs/designs/2026-11-23-fleet-graph-machinery-batch-design.md §2). Runs the
+ * SAME bounded sweep as unionScan; for each merge-touched file the inventory is
+ * two disjoint classes:
+ *
+ *   "merge-drop" — droppedBlocks computed against the MERGED BLOB (the same
+ *     call the gate's findings tier on, verifyUnion): the merge-time debt a
+ *     working-tree restoration must satisfy. NOT the still-missing remainder
+ *     against the current worktree: a restoration satisfies the worktree-side
+ *     debt before step 2 ever runs, which would zero the inventory and make
+ *     sparing unfireable in the exact deadlock it closes (head-side
+ *     clarification verified by DL-T1's red/green; see the v1.5.0 header).
+ *   "merged-present" (v1.7.0) — one entry per block of the merged blob itself
+ *     (git-side membership; the blob was already fetched for droppedBlocks and
+ *     previously discarded). The PR #2160 class: a merge DELIVERS a block into
+ *     the committed state, a non-merge loss removes it, and step-2 sparing had
+ *     no entry to fingerprint-match — the restore got re-collapsed. Deliberately
+ *     NO worktree subtraction: at the fateful run the restored block IS in the
+ *     worktree, so "merged minus worktree" is empty exactly when sparing must
+ *     fire (the same paradox v1.5.0 solved one level over).
  *
  * Worktree gating per merge-touched file: an absent worktree file contributes
  * nothing (the archive/tombstone tier arms own that state — no actionable
  * worktree restoration exists to spare), and a merge that deleted the file
  * contributes nothing (unionScan's merged===null arm owns it). No tier logic:
- * the caller needs only which blocks are owed, parent- and commit-labeled.
+ * the caller needs only which blocks are owed, class-, parent- and
+ * commit-labeled.
  *
  * Deliberately NO `activationIso` parameter: sparing is tier-agnostic (a
  * WARN-tier owed block spared is harmless, fail-safe), and this keeps the
@@ -375,10 +468,28 @@ export function owedBlocks(opts: { sinceDays: number; maxCommits: number; cwd?: 
         continue; // absent worktree file → contributes nothing (tier arms own that shape)
       }
       for (const { parent, block } of droppedBlocks(ours ?? "", theirs ?? "", merged)) {
-        owed.push({ commit: target.commit, file, parent, block });
+        owed.push({ commit: target.commit, file, parent, block, source: "merge-drop" });
+      }
+      // v1.7.0 merged-present: the blocks the merge DELIVERED into the
+      // committed state. `parent` is informational-only — ours when the ours
+      // parent carries the block under matchesHead's fingerprint rules (exact
+      // text, or heading+firstLine for headed blocks), "theirs" otherwise.
+      const oursBlocks = parseBlocks(ours ?? "");
+      const oursCarries = (block: MemoryBlock): boolean =>
+        oursBlocks.some((m) => m.text === block.text) ||
+        oursBlocks.some((m) => m.heading === block.heading && m.heading !== "" && m.firstLine === block.firstLine);
+      for (const block of parseBlocks(merged)) {
+        owed.push({
+          commit: target.commit,
+          file,
+          parent: oursCarries(block) ? "ours" : "theirs",
+          block,
+          source: "merged-present",
+        });
       }
     }
   }
+  reportAbsentRefs(); // v1.6.0: ONE INFO naming the absent-side reads, then drain
   return owed;
 }
 
@@ -460,15 +571,44 @@ export interface MergeScanResult {
   tier: "blocking" | "historical" | "repaired-at-head";
 }
 
+/** Module-level collector for absent-path (exit-128) refs gathered under
+ * `absentOk` (v1.6.0, U-20261120-001). Sweeps report + drain at their end
+ * (one INFO line each via reportAbsentRefs), so the collector is empty between
+ * sweeps; a direct showBlob call outside a sweep stays silent until the next
+ * sweep end — the documented trade of the pure exit-code classification. */
+const absentRefs: string[] = [];
+
+/** Emit ONE INFO line when the collector holds absent-side refs, then drain.
+ * Design §3.5 item 3: `N absent-side blob reads (documented no-data — file
+ * added/deleted between sides): ref1, ref2, ref3 [+k more]`. */
+function reportAbsentRefs(): void {
+  if (absentRefs.length === 0) return;
+  const refs = absentRefs.splice(0, absentRefs.length);
+  const head = refs.slice(0, 3).join(", ");
+  const more = refs.length > 3 ? ` [+${refs.length - 3} more]` : "";
+  console.info(
+    `memory-union-verify: ${refs.length} absent-side blob reads (documented no-data — file added/deleted between sides): ${head}${more}`,
+  );
+}
+
 /** Git plumbing failures are no longer silent (T-20261106-005 item 2): a
  *  failed call WARNs to stderr so an incomplete sweep is observable instead
  *  of indistinguishable from an empty window. Return contract unchanged:
- *  null = "no data" (fail-open at the caller). */
-function git(args: string[], cwd: string): string | null {
+ *  null = "no data" (fail-open at the caller).
+ *  v1.6.0 (U-20261120-001): `opts.absentOk` + exit 128 is the DOCUMENTED
+ *  absent-path signal of `git show <commit>:<path>` — the ref goes to the
+ *  collector and null returns SILENTLY (the sweep's closing INFO line names
+ *  it); the strict WARN below keeps every non-showBlob call observable, and
+ *  now names its failing ref instead of staying anonymous. */
+function git(args: string[], cwd: string, opts?: { absentOk?: boolean }): string | null {
   const res = Bun.spawnSync(["git", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
   if (res.exitCode !== 0) {
+    if (opts?.absentOk && res.exitCode === 128) {
+      absentRefs.push(args[1] ?? args.join(" "));
+      return null;
+    }
     console.warn(
-      `⚠️  memory-union-verify: git ${args[0]} failed (exit ${res.exitCode}) — sweep results may be incomplete`,
+      `⚠️  memory-union-verify: git ${args[0]} failed (exit ${res.exitCode}) on ${args[1] ?? args.join(" ")} — sweep results may be incomplete`,
     );
     return null;
   }
@@ -530,9 +670,11 @@ export function listMemoryMerges(opts: { sinceDays: number; maxCommits: number; 
 }
 
 /** `git show <commit>:<path>` — null when the path is absent in that commit
- * (file added or deleted relative to that side). */
+ * (file added or deleted relative to that side). v1.6.0: the ONLY absentOk
+ * caller — exit 128 (the documented absent-path signal) is collected for the
+ * sweep's closing INFO line instead of WARNing per read (U-20261120-001). */
 export function showBlob(commit: string, file: string, cwd?: string): string | null {
-  return git(["show", `${commit}:${file}`], cwd ?? process.cwd());
+  return git(["show", `${commit}:${file}`], cwd ?? process.cwd(), { absentOk: true });
 }
 
 /** MEMORY.md tombstone-row check for one flat memory log — the sanctioned-
@@ -657,6 +799,7 @@ export function unionScan(opts: {
       }
     }
   }
+  reportAbsentRefs(); // v1.6.0: ONE INFO naming the absent-side reads, then drain
   return results;
 }
 

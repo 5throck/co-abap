@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-23T18:16:52.218Z
+**Generated**: 2026-11-24T18:18:13.211Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -10,7 +10,7 @@
 
 - **Agents**: 25
 - **Skills**: 50
-- **Scripts**: 131 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
+- **Scripts**: 132 *(top-level CLI scripts; library/helper modules under `scripts/lib/`, `scripts/helpers/`, `scripts/hooks/`, and `scripts/validators/` plus experiment files under `scripts/experiments/` are excluded here — `scripts/SCRIPTS.md` is the full registry)*
 - **Commands**: 19
 
 ---
@@ -69,13 +69,13 @@
 | finishing-a-development-branch | 1.0.2 | active | skills/finishing-a-development-branch/SKILL.md | workspace | finish branch, complete work, wrap up, finishing a development branch, merge branch, create PR, push and PR | pm |
 | fiori-rap-dev | 1.0.0 | active | skills/fiori-rap-dev/SKILL.md | workspace | fiori-rap-dev, Fiori, UI5, RAP, BDEF, SRVD, SRVB, Fiori Elements, OData V4 | fiori-developer |
 | gateguard | 1.0.2 | active | skills/gateguard/SKILL.md | workspace | gateguard, /gateguard, investigate file, check before edit, pre-edit check | pm |
-| handbook | 0.6.0 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
+| handbook | 0.6.2 | active | skills/handbook/SKILL.md | workspace | make handbook, create handbook, build course site, companion handbook, update handbook, handbook sync, handbook maintenance | pm |
 | handbook-sync-audit | 1.0.5 | active | skills/handbook-sync-audit/SKILL.md | workspace | audit handbook, handbook parity check, handbook sync audit, textbook drift check | pm |
-| i18n-audit | 1.0.1 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | i18n-specialist |
+| i18n-audit | 1.0.2 | active | skills/i18n-audit/SKILL.md | workspace | i18n audit, locale parity, translation parity, glossary audit, L10N parity | i18n-specialist |
 | i18n-formatting | 1.0.1 | active | skills/i18n-formatting/SKILL.md | workspace | date format, number format, currency format, unit conversion, paper size, korean numerals | i18n-specialist |
 | i18n-layout | 1.1.1 | active | skills/i18n-layout/SKILL.md | workspace | character encoding, RTL, bidi, font selection, CRLF, BOM | i18n-specialist |
 | i18n-locale-config | 1.0.1 | active | skills/i18n-locale-config/SKILL.md | workspace | locale config, locale code, BCP 47, collation, collation order, timezone | i18n-specialist |
-| meeting-facilitation | 1.5.0 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
+| meeting-facilitation | 1.6.0 | active | skills/meeting-facilitation/SKILL.md | workspace | meeting, agent discussion, collaborative decision, multi-agent coordination, facilitate meeting | pm |
 | performance-tuning | 1.0.1 | active | skills/performance-tuning/SKILL.md | workspace | performance-tuning, TraceExecution, ListSQLTraces, GetCallGraph, slow program | dba |
 | platform-command-lifecycle-manager | 1.0.3 | active | skills/platform-command-lifecycle-manager/SKILL.md | workspace | create platform command, new .claude command, new .gemini command, platform command lifecycle, command parity, propagate command | pm |
 | platform-skill-lifecycle-manager | 1.0.3 | active | skills/platform-skill-lifecycle-manager/SKILL.md | workspace | create platform skill, new .claude skill, new .gemini skill, platform skill version, platform skill lifecycle, update platform skill | pm |
@@ -113,20 +113,21 @@
 |------|---------|----------|--------------|
 | agent-create.ts | 1.0.2 | scripts/agent-create.ts | fs, path |
 | agent-delete.ts | 1.0.2 | scripts/agent-delete.ts | fs, path |
-| agent-lifecycle-audit.ts | 1.9.1 | scripts/agent-lifecycle-audit.ts | child_process, fs, path, process |
+| agent-lifecycle-audit.ts | 1.9.2 | scripts/agent-lifecycle-audit.ts | child_process, fs, path, process |
 | agent-list.ts | 1.1.0 | scripts/agent-list.ts | fs, path |
 | agent-verify.ts | 1.0.2 | scripts/agent-verify.ts | fs, path |
 | analyze-git-history.ts | 1.0.2 | scripts/analyze-git-history.ts | child_process |
 | apply-handbook-theme.test.ts | 1.0.1 | scripts/tests/apply-handbook-theme.test.ts | bun:test, child_process, fs, os, path |
-| apply-handbook-theme.ts | 1.0.0 | scripts/handbook/apply-handbook-theme.ts | fs, path |
+| apply-handbook-theme.ts | 1.2.0 | scripts/handbook/apply-handbook-theme.ts | fs, path |
 | archive-memory.ts | 1.2.0 | scripts/archive-memory.ts | fs, path |
-| audit.ts | 2.70.0 | scripts/audit.ts | bun, child_process, crypto, fs, os, path, url |
+| audit.ts | 2.71.0 | scripts/audit.ts | bun, child_process, crypto, fs, os, path, url |
 | bootstrap-stages.ts | 1.1.0 | scripts/bootstrap-stages.ts | fs, js-yaml, path |
 | build-search-index.ts | 1.0.0 | scripts/handbook/build-search-index.ts | fs, path |
 | changelog-normalize.ts | 1.0.0 | scripts/changelog-normalize.ts | fs |
 | check-a11y.ts | 1.0.0 | scripts/handbook/check-a11y.ts | path |
-| check-authoring.ts | 1.3.0 | scripts/handbook/check-authoring.ts | fs, path |
-| check-external-links.ts | 1.2.0 | scripts/handbook/check-external-links.ts | http, https, path, url |
+| check-authoring.ts | 1.4.0 | scripts/handbook/check-authoring.ts | fs, path |
+| check-external-links.ts | 1.3.0 | scripts/handbook/check-external-links.ts | http, https, path, url |
+| check-generated-content.ts | 1.0.0 | scripts/handbook/check-generated-content.ts | path |
 | check-i18n-parity.ts | 1.0.0 | scripts/handbook/check-i18n-parity.ts | fs, path |
 | check-labels.ts | 1.0.0 | scripts/handbook/check-labels.ts | path |
 | check-links.ts | 1.0.0 | scripts/handbook/check-links.ts | path |
@@ -145,9 +146,9 @@
 | dependency-audit.ts | 1.1.0 | scripts/dependency-audit.ts | fs, path |
 | deploy-handbook.ts | 1.1.0 | scripts/handbook/deploy-handbook.ts | child_process, fs, path |
 | deploy-readme-patch.test.ts | 1.0.0 | scripts/tests/deploy-readme-patch.test.ts | bun:test, fs, os, path |
-| design-lint.ts | 2.5.0 | scripts/design-lint.ts | fs, js-yaml, path |
+| design-lint.ts | 2.6.0 | scripts/design-lint.ts | fs, js-yaml, path |
 | detect-backport.ts | 1.0.0 | scripts/detect-backport.ts | child_process, crypto, fs, path |
-| dev-sync.ts | 1.52.0 | scripts/dev-sync.ts | bun, crypto, fs, path |
+| dev-sync.ts | 1.53.0 | scripts/dev-sync.ts | bun, crypto, fs, path |
 | dispatch-parallel.test.ts | 1.5.2 | scripts/tests/dispatch-parallel.test.ts | bun:test, fs, os, path |
 | dispatch-parallel.ts | 1.1.0 | scripts/co-abap/dispatch-parallel.ts | N/A |
 | dispatch-parallel.ts | 2.4.1 | scripts/dispatch-parallel.ts | fs, path |
@@ -160,9 +161,9 @@
 | extract-copycode.ts | 1.0.0 | scripts/handbook/extract-copycode.ts | fs, path |
 | gen-pr-body.ts | 1.2.1 | scripts/gen-pr-body.ts | bun, fs |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | fs, path |
-| generate-raci.ts | 1.2.0 | scripts/generate-raci.ts | fs, js-yaml, path |
+| generate-raci.ts | 1.2.1 | scripts/generate-raci.ts | fs, js-yaml, path |
 | generate-skill-graph.ts | 2.0.1 | scripts/generate-skill-graph.ts | child_process, fs, js-yaml, path, url |
-| generate-skill-lifecycle-records.ts | 1.3.1 | scripts/generate-skill-lifecycle-records.ts | fs, js-yaml, path, url |
+| generate-skill-lifecycle-records.ts | 1.4.0 | scripts/generate-skill-lifecycle-records.ts | fs, js-yaml, path, url |
 | generate-version-manifest.ts | 1.12.1 | scripts/generate-version-manifest.ts | bun, child_process, fs, js-yaml, module, path |
 | graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | child_process, fs, path, url |
 | handbook-doctor.ts | 1.0.0 | scripts/handbook/handbook-doctor.ts | fs, path |
@@ -195,27 +196,27 @@
 | sap-mcp-proxy.test.ts | 2.1.1 | scripts/tests/sap-mcp-proxy.test.ts | bun:test, fs, os, path |
 | sap-mcp-proxy.ts | 2.1.0 | scripts/sap-mcp-proxy.ts | child_process, fs, path, string_decoder |
 | sap-secure-home.ts | 1.0.0 | scripts/tests/fixtures/sap-secure-home.ts | fs, os, path |
-| scaffold-handbook.ts | 1.2.0 | scripts/handbook/scaffold-handbook.ts | fs, path |
+| scaffold-handbook.ts | 1.3.1 | scripts/handbook/scaffold-handbook.ts | fs, path |
 | scratch-cleanup.ts | 1.1.0 | scripts/co-abap/scratch-cleanup.ts | fs, path |
 | setup-github-branch-protection.ts | 1.0.1 | scripts/setup-github-branch-protection.ts | bun, fs, os, path |
 | setup.ts | 1.1.0 | scripts/co-abap/setup.ts | bun, fs, path |
 | skill-lifecycle-audit.ts | 1.15.0 | scripts/skill-lifecycle-audit.ts | fs, path, process |
 | skill-session-review.ts | 1.3.0 | scripts/skill-session-review.ts | bun, fs, path |
-| spec-register.ts | 1.6.0 | scripts/spec-register.ts | fs, path |
+| spec-register.ts | 1.6.1 | scripts/spec-register.ts | fs, path |
 | stub-vsp.ts | 1.1.0 | scripts/tests/fixtures/stub-vsp.ts | fs |
-| sync-agent-mirrors.ts | 1.3.0 | scripts/sync-agent-mirrors.ts | fs, js-yaml, path, url |
+| sync-agent-mirrors.ts | 1.3.1 | scripts/sync-agent-mirrors.ts | fs, js-yaml, path, url |
 | sync-md.ts | 1.4.0 | scripts/sync-md.ts | N/A |
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | child_process, fs, path, process |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | fs, path |
 | team-builder.ts | 1.5.0 | scripts/team-builder.ts | fs, path |
-| test-runner.ts | 1.17.2 | scripts/test-runner.ts | fs, os, path |
+| test-runner.ts | 1.18.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, crypto, fs, path, url |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | fs, path |
-| update-footers.ts | 1.0.0 | scripts/handbook/update-footers.ts | fs, path |
+| update-footers.ts | 1.1.0 | scripts/handbook/update-footers.ts | fs, path |
 | validate-abap-platform-parity.ts | 1.2.0 | scripts/validate-abap-platform-parity.ts | crypto, fs, path, url |
 | validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | fs, path, process |
-| validate-decisions.ts | 1.1.0 | scripts/validate-decisions.ts | fs, js-yaml, path, process |
-| validate-doc-folder.ts | 1.5.0 | scripts/validate-doc-folder.ts | fs, path |
+| validate-decisions.ts | 1.2.1 | scripts/validate-decisions.ts | fs, js-yaml, path, process |
+| validate-doc-folder.ts | 1.7.0 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test, fs, os, path |
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
 | validate-handbook.ts | 1.1.0 | scripts/handbook/validate-handbook.ts | child_process, path |
@@ -227,11 +228,11 @@
 | validate-pm-extends.ts | 0.3.1 | scripts/validate-pm-extends.ts | child_process, fs, path |
 | validate-procedures.ts | 1.1.0 | scripts/validate-procedures.ts | fs, js-yaml, path |
 | validate-process.ts | 1.0.0 | scripts/validate-process.ts | fs, js-yaml, path |
-| validate-raci.ts | 1.2.0 | scripts/validate-raci.ts | fs, js-yaml, path |
+| validate-raci.ts | 1.2.1 | scripts/validate-raci.ts | fs, js-yaml, path |
 | validate-skills.ts | 1.5.2 | scripts/validate-skills.ts | fs, path, process |
 | validate-surface-registry.ts | 1.1.2 | scripts/validate-surface-registry.ts | fs, path |
-| validate-templates.ts | 1.86.0 | scripts/validate-templates.ts | child_process, crypto, fs, js-yaml, path, url |
-| validate-variant-readiness.ts | 1.1.0 | scripts/validate-variant-readiness.ts | fs, path |
+| validate-templates.ts | 1.87.0 | scripts/validate-templates.ts | child_process, crypto, fs, js-yaml, path, url |
+| validate-variant-readiness.ts | 1.2.0 | scripts/validate-variant-readiness.ts | fs, path |
 | verify-agent-deliverables.ts | 1.0.1 | scripts/verify-agent-deliverables.ts | fs |
 | verify-memory.ts | 1.3.0 | scripts/verify-memory.ts | fs, path |
 | verify-platform-lifecycle.ts | 1.6.1 | scripts/verify-platform-lifecycle.ts | fs, path |

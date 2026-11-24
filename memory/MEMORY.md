@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-25](2026-11-25.md) | chore(upgrade): template 0.30.0 wave delivery (delivery lane completed per T-20261124-013 family) |
 | [2026-11-24](2026-11-24.md) | fix(agents): regenerate .claude/agents/pm.md mirror to registry-resolved projection v1.3.0 (T-20261124-002) |
 | 2026-11-16 | docs(review): record final upstream adjudications for U-20261113-002/-003 |
 | 2026-11-15 | chore(upgrade): template 0.30.0 refresh delivery + absorption cures |
