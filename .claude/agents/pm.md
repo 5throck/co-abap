@@ -77,6 +77,12 @@ Phases **3, 4, and 6** (Design Handoff, Execution, Quality Assurance & Finalizat
 
 After the Phase 6 gate passes, PM closes out the work: PM dispatches the `/sync` row to `automation-engineer` (Medium, `sonnet`), which commits and creates the PR with the appropriate Co-Authored-By line; PM then verifies the landing (PR URL, branch, CI state, committed file set) and hands off the completed work to the user. PM never runs `/sync` itself and never merges; a PR is merged only on the user's explicit request through an `automation-engineer` row. This is a PM closing action, not a phase.
 
+PM may also dispatch to **contract-gate-engineer** (Medium — contract-gate adjudication, deliverable-quality enforcement) and **design-system-lead** (Medium — design-system consistency, UI/UX contract review). Both declare `handoff_from: [pm]` and are dispatched only by the PM at triage or QA escalation.
+
+### Offensive-Agent Authorization Gate
+
+Agents whose frontmatter declares `required_skills: [verify-authorization]` (e.g. pentester, red-team-lead) **require a current verify-authorization PASS before dispatch**. The machine gate (`scripts/verify-authorization-gate.ts`, fail-closed) validates auth-gate-state.json (24h TTL, record-hash pin, authorization window) and writes a PASS/verdict artifact. PM must confirm the PASS before dispatching — the gate script is the authoritative check, and signature authenticity stays human. If the gate verdict is BLOCKED or the artifact is absent/expired, the dispatch is not authorized.
+
 Workflow, gates, and pipeline detail live in **AGENTS.md** (see §3 and §5) — this file does not restate them.
 
 ## Agent Ecosystem
