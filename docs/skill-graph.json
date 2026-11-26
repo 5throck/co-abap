@@ -291,7 +291,7 @@
       "name": "read-only-analyst",
       "scope": "root",
       "capability": "read-only-analyst",
-      "content_hash": "98b6efeae654dd42",
+      "content_hash": "0bb20354cb1ab456",
       "version": "1.1.1",
       "mirrors": [
         "agents/read-only-analyst.md"
@@ -534,7 +534,7 @@
       "name": "abap-code-review",
       "scope": "root",
       "capability": "abap-code-review",
-      "content_hash": "631b7c9f0806d165",
+      "content_hash": "83ff2b7ec294d2ac",
       "version": "1.0.2",
       "mirrors": [
         "skills/abap-code-review/SKILL.md",
@@ -552,7 +552,7 @@
       "name": "abap-dev",
       "scope": "root",
       "capability": "abap-dev",
-      "content_hash": "420801b6435f3bc8",
+      "content_hash": "27c78e5012dde3d1",
       "version": "1.3.0",
       "mirrors": [
         "skills/abap-dev/SKILL.md",
@@ -570,8 +570,8 @@
       "name": "accessibility-audit",
       "scope": "root",
       "capability": "accessibility-audit",
-      "content_hash": "aa244933ce706aa7",
-      "version": "1.1.0",
+      "content_hash": "9e6da04e275eb51c",
+      "version": "1.1.1",
       "mirrors": [
         "skills/accessibility-audit/SKILL.md",
         ".claude/skills/accessibility-audit/SKILL.md",
@@ -624,8 +624,8 @@
       "name": "ci-triage",
       "scope": "root",
       "capability": "ci-triage",
-      "content_hash": "c10cba25e7560168",
-      "version": "0.2.0",
+      "content_hash": "cbe9a9ebb62132b3",
+      "version": "0.2.1",
       "mirrors": [
         "skills/ci-triage/SKILL.md",
         ".claude/skills/ci-triage/SKILL.md",
@@ -642,8 +642,8 @@
       "name": "decision-record",
       "scope": "root",
       "capability": "decision-record",
-      "content_hash": "af9dd89ccdeec7b2",
-      "version": "1.1.0",
+      "content_hash": "9ab86a0df2bafd06",
+      "version": "1.1.1",
       "mirrors": [
         "skills/decision-record/SKILL.md",
         ".claude/skills/decision-record/SKILL.md",
@@ -750,8 +750,8 @@
       "name": "evidence-ledger",
       "scope": "root",
       "capability": "evidence-ledger",
-      "content_hash": "7c15e880b454b203",
-      "version": "1.1.0",
+      "content_hash": "36811a0d5b7d9757",
+      "version": "1.1.1",
       "mirrors": [
         "skills/evidence-ledger/SKILL.md",
         ".claude/skills/evidence-ledger/SKILL.md",
@@ -787,7 +787,7 @@
       "scope": "root",
       "capability": "finishing-a-development-branch",
       "content_hash": "7aa95cd39dce01f1",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "mirrors": [
         "skills/finishing-a-development-branch/SKILL.md",
         ".claude/skills/finishing-a-development-branch/SKILL.md",
@@ -1182,8 +1182,8 @@
       "name": "script-lifecycle-manager",
       "scope": "root",
       "capability": "script-lifecycle-manager",
-      "content_hash": "ff4bf06dcbc99aac",
-      "version": "1.2.2",
+      "content_hash": "219618bff7c66983",
+      "version": "1.2.3",
       "mirrors": [
         "skills/script-lifecycle-manager/SKILL.md",
         ".claude/skills/script-lifecycle-manager/SKILL.md",
@@ -1236,8 +1236,8 @@
       "name": "skill-lifecycle-manager",
       "scope": "root",
       "capability": "skill-lifecycle-manager",
-      "content_hash": "883308f6fa2d77b7",
-      "version": "1.5.0",
+      "content_hash": "0cadfa104f83e706",
+      "version": "1.5.1",
       "mirrors": [
         "skills/skill-lifecycle-manager/SKILL.md",
         ".claude/skills/skill-lifecycle-manager/SKILL.md",
@@ -2377,6 +2377,30 @@
       "source": "prose"
     },
     {
+      "type": "composes_with",
+      "from": "skill:root/decision-record",
+      "to": "skill:root/documentation-writing",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/decision-record/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
+    },
+    {
+      "type": "composes_with",
+      "from": "skill:root/decision-record",
+      "to": "skill:root/evidence-ledger",
+      "source": "relates_to",
+      "symmetric": true,
+      "provenance": {
+        "file": "skills/decision-record/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
       "type": "references",
       "from": "skill:root/decision-record",
       "to": "skill:root/evidence-ledger",
@@ -2591,6 +2615,28 @@
       "from": "skill:root/evidence-ledger",
       "to": "skill:root/decision-record",
       "source": "prose"
+    },
+    {
+      "type": "follows",
+      "from": "skill:root/evidence-ledger",
+      "to": "skill:root/documentation-writing",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/evidence-ledger/SKILL.md",
+        "field": "relates_to",
+        "index": 0
+      }
+    },
+    {
+      "type": "follows",
+      "from": "skill:root/evidence-ledger",
+      "to": "skill:root/research-analysis",
+      "source": "relates_to",
+      "provenance": {
+        "file": "skills/evidence-ledger/SKILL.md",
+        "field": "relates_to",
+        "index": 1
+      }
     },
     {
       "type": "composes_with",

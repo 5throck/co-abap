@@ -12,19 +12,19 @@
 |--------------------|-------|---------|-------------------|--------|------------|--------|---------|
 | `root/abap-code-review` | L3 | 1.0.2 | root/code-writer, root/test-runner | — | root/abap-dev (composes_with), root/abap-dev (follows) | — | — |
 | `root/abap-dev` | L3 | 1.3.0 | root/architect, root/code-writer, root/sap-investigator, root/test-runner | — | root/dump-monitor (composes_with), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (follows), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-pp (composes_with), root/sap-sd (composes_with) | — | — |
-| `root/accessibility-audit` | L3 | 1.1.0 | — | — | — | — | — |
+| `root/accessibility-audit` | L3 | 1.1.1 | — | — | — | — | — |
 | `root/agent-lifecycle-manager` | L3 | 1.4.0 | — | — | root/skill-lifecycle-manager (composes_with) | — | — |
 | `root/api-documentation` | L3 | 1.0.2 | — | — | — | — | — |
-| `root/ci-triage` | L3 | 0.2.0 | root/automation-engineer | — | — | — | — |
-| `root/decision-record` | L3 | 1.1.0 | — | — | — | — | — |
+| `root/ci-triage` | L3 | 0.2.1 | root/automation-engineer | — | — | — | — |
+| `root/decision-record` | L3 | 1.1.1 | — | — | root/documentation-writing (composes_with), root/evidence-ledger (composes_with) | — | — |
 | `root/delegate-to-hub` | L3 | 1.0.1 | — | — | — | — | — |
 | `root/design-foundation` | L3 | 1.1.1 | root/design-system-lead | — | root/accessibility-audit (composes_with), root/token-usage-lint (composes_with), root/ui-ux-design-intelligence (enables) | — | — |
 | `root/desktop-app-fallback` | L3 | 1.0.1 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/documentation-writing` | L3 | 1.0.3 | — | — | root/team-builder (composes_with) | — | — |
 | `root/dump-monitor` | L3 | 1.0.1 | root/devops-admin | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
-| `root/evidence-ledger` | L3 | 1.1.0 | — | — | — | — | — |
+| `root/evidence-ledger` | L3 | 1.1.1 | — | — | root/documentation-writing (follows), root/research-analysis (follows) | — | — |
 | `root/explain-me` | L3 | 1.0.1 | — | — | — | — | — |
-| `root/finishing-a-development-branch` | L3 | 1.0.2 | — | — | — | — | — |
+| `root/finishing-a-development-branch` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/fiori-rap-dev` | L3 | 1.0.0 | — | — | root/abap-dev (composes_with), root/accessibility-audit (composes_with), root/post-write-chain (follows) | — | — |
 | `root/gateguard` | L3 | 1.0.2 | root/automation-engineer | — | — | — | — |
 | `root/handbook` | L3 | 0.6.2 | — | — | — | — | — |
@@ -46,10 +46,10 @@
 | `root/sap-mm` | L3 | 1.0.0 | root/architect, root/dba, root/mm-analyst | — | root/sap-le (follows), root/sap-pp (composes_with) | — | — |
 | `root/sap-pp` | L3 | 1.0.0 | root/architect, root/dba, root/pp-analyst | — | root/dump-monitor (follows), root/sap-sd (composes_with) | — | — |
 | `root/sap-sd` | L3 | 1.0.0 | root/architect, root/dba, root/sd-analyst | — | root/sap-mm (follows) | — | — |
-| `root/script-lifecycle-manager` | L3 | 1.2.2 | root/automation-engineer | — | — | — | — |
+| `root/script-lifecycle-manager` | L3 | 1.2.3 | root/automation-engineer | — | — | — | — |
 | `root/security-scan` | L3 | 1.3.0 | — | — | — | — | — |
 | `root/service-design` | L3 | 1.1.0 | — | — | root/accessibility-audit (follows), root/token-usage-lint (follows), root/ui-ux-design-intelligence (follows) | — | — |
-| `root/skill-lifecycle-manager` | L3 | 1.5.0 | — | — | root/script-lifecycle-manager (composes_with) | — | — |
+| `root/skill-lifecycle-manager` | L3 | 1.5.1 | — | — | root/script-lifecycle-manager (composes_with) | — | — |
 | `root/source-command-celebrate` | L3 | 1.0.0 | — | — | — | — | — |
 | `root/source-command-commit-push-pr` | L3 | 1.0.3 | — | — | — | — | — |
 | `root/standup-synthesizer` | L3 | 1.1.0 | — | — | — | — | — |

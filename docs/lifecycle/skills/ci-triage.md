@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: ci-triage
 - **Status**: active
-- **Version**: 0.2.0
+- **Version**: 0.2.1
 - **Created**: 2026-09-08
 - **Last Updated**: 2026-11-12
 
@@ -41,7 +41,7 @@ gap analysis (upstream design: workspace-root `docs/designs/2026-09-08-ci-triage
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 0.2.0
+- **Version**: 0.2.1
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

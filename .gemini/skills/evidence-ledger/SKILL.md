@@ -5,11 +5,16 @@ description: >
   to a source, a reference, and a verification state. Use when: building or
   updating an evidence or citation ledger, verifying claims ahead of a gate
   ruling, or linking evidence into a decision record (ADR-0061).
-version: 1.1.0
+version: 1.1.1
 owner: pm
 status: active
-last_reviewed: 2026-08-25
+last_reviewed: 2026-11-26
 scope: common
+relates_to:
+  - skill: documentation-writing
+    type: follows
+  - skill: research-analysis
+    type: follows
 metadata:
   type: process
   triggers:
@@ -52,6 +57,8 @@ Rows are never rewritten to change history — see Append vs Supersede below.
 The five columns are the common base. Variants MAY add requirements on top — stricter sourcing, extra columns, jurisdiction-specific citation rules — in the variant's own assets, never by editing this skill.
 
 Canonical overlay example: co-news requires **2+ independent sources per material claim** (`NEWS-R1`, registered inline in its context file) and instantiates the base format with claim / source 1 / source 2 / receipt number / status columns in its `source-verification-ledger` skill. The two source columns and the receipt-number column are the overlay; the row-per-claim, fixed-column, status-tracked discipline is the base.
+
+Document-form overlay (co-consult, T-20261007-014): the `industry-research-pack` skill satisfies the same 2+ independent sources requirement in document shape — one document per source with a five-section per-source skeleton and figure-by-figure cross-validation against a named second source; a figure that lacks its second source carries the `⚠ SINGLE-SOURCE` warning mark instead of a ledger row. The pack is also a **citable substrate**: consumer deliverables cite its per-source documents per section rather than restating claims (the co-deck PR #135 contract — 114 slides citing per-slide source docs). Variants reaching the same discipline independently should teach one of these overlay forms rather than inventing a third convention.
 
 ### Registry-backed overlays (formal-var form)
 
