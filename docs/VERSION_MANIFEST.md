@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-24T18:18:13.211Z
+**Generated**: 2026-11-26T04:48:38.774Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -209,13 +209,13 @@
 | sync-skill-status.ts | 1.1.0 | scripts/sync-skill-status.ts | child_process, fs, path, process |
 | sync-skills.ts | 1.11.0 | scripts/sync-skills.ts | fs, path |
 | team-builder.ts | 1.5.0 | scripts/team-builder.ts | fs, path |
-| test-runner.ts | 1.18.0 | scripts/test-runner.ts | fs, os, path |
+| test-runner.ts | 1.19.0 | scripts/test-runner.ts | fs, os, path |
 | translate-readme.ts | 1.0.0 | scripts/translate-readme.ts | bun, crypto, fs, path, url |
 | typecheck.ts | 1.2.0 | scripts/typecheck.ts | fs, path |
 | update-footers.ts | 1.1.0 | scripts/handbook/update-footers.ts | fs, path |
 | validate-abap-platform-parity.ts | 1.2.0 | scripts/validate-abap-platform-parity.ts | crypto, fs, path, url |
-| validate-agents.ts | 1.4.1 | scripts/validate-agents.ts | fs, path, process |
-| validate-decisions.ts | 1.2.1 | scripts/validate-decisions.ts | fs, js-yaml, path, process |
+| validate-agents.ts | 1.4.2 | scripts/validate-agents.ts | fs, path, process |
+| validate-decisions.ts | 1.3.0 | scripts/validate-decisions.ts | fs, js-yaml, path, process |
 | validate-doc-folder.ts | 1.7.0 | scripts/validate-doc-folder.ts | fs, path |
 | validate-docs-links.test.ts | 1.0.0 | scripts/tests/validate-docs-links.test.ts | bun:test, fs, os, path |
 | validate-docs-links.ts | 1.6.0 | scripts/validate-docs-links.ts | fs, path |
