@@ -7,8 +7,9 @@
  *           its OWN variant.json (which travels with the checkout) before the
  *           nested-membership probe. The probe alone (isFleetProjectPath
  *           against the workspace root inferred two levels up) silently
- *           returns false in a standalone checkout — a CI clone at
- *           /home/runner/work/<name>/<name> has no <root>/Projects layout and
+ *           returns false in a standalone checkout — a hosted-runner clone
+ *           checked out two levels deep (work/name/name under the runner
+ *           workspace) has no <root>/Projects layout and
  *           no docs/fleet-membership.json up-tree — so a committed
  *           docs/skill-graph.json generated inside a workspace checkout (hashes
  *           WITH compensation) failed verify-skill-graph on CI for every file
@@ -203,7 +204,8 @@ const ROOT_TWO_UP = resolve(ROOT, "..", "..");
  * correct when the SAME variantName is derived in EVERY checkout of the same
  * project. The nested-membership probe alone (isFleetProjectPath against the
  * workspace root inferred two levels up) silently returns false in a
- * standalone checkout — a CI clone at /home/runner/work/<name>/<name> has no
+ * standalone checkout — a hosted-runner clone checked out two levels deep
+ * (work/name/name under the runner workspace) has no
  * <root>/Projects layout and no docs/fleet-membership.json up-tree — so a
  * committed docs/skill-graph.json generated inside a workspace checkout (hashes
  * WITH compensation) failed verify-skill-graph on CI for exactly the

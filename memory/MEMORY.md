@@ -8,6 +8,7 @@
 | [2026-11-26](2026-11-26.md) | chore(scripts): workspace sync (14 files) |
 | [2026-11-25](2026-11-25.md) | chore(upgrade): template 0.30.0 wave delivery (delivery lane completed per T-20261124-013 family) |
 | [2026-11-24](2026-11-24.md) | fix(agents): regenerate .claude/agents/pm.md mirror to registry-resolved projection v1.3.0 (T-20261124-002) |
+| 2026-11-19 | fix(sync): restore 6 phantom-deleted common skill docs (upgrade-wave tombstone gate resolution) *(archived — local only)* |
 | 2026-11-16 | docs(review): record final upstream adjudications for U-20261113-002/-003 |
 | 2026-11-15 | chore(upgrade): template 0.30.0 refresh delivery + absorption cures |
 | 2026-11-13 | docs(review): consolidate upstream ledger, migrate ticket ids, document opencode surface |

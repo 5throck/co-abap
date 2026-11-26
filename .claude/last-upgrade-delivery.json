@@ -1,13 +1,34 @@
 {
   "schemaVersion": 2,
-  "timestamp": "2026-11-26T15:05:29.415Z",
+  "timestamp": "2026-11-26T18:10:07.543Z",
   "project": "co-abap",
   "templateVersion": "0.30.0",
-  "templateSha": "8c7c500926705fedfb16fcce2d3285555eddba9a",
-  "baseSha": "ad6e28646c9582dfb37b7933204a6b526219d4be",
+  "templateSha": "c24a8402042d73a0ac82d768f53c26b091f9533f",
+  "baseSha": "9562d8c568d02dacdad695ac717ed6ee40e3ce41",
   "files": [
-    "scripts/SCRIPTS.md",
+    ".agents/skills/finishing-a-development-branch/SKILL.md",
+    ".agents/skills/platform-command-lifecycle-manager/SKILL.md",
+    ".agents/skills/platform-skill-lifecycle-manager/SKILL.md",
+    ".claude/skills/finishing-a-development-branch/SKILL.md",
+    ".claude/skills/platform-command-lifecycle-manager/SKILL.md",
+    ".claude/skills/platform-skill-lifecycle-manager/SKILL.md",
+    ".codex/skills/finishing-a-development-branch/SKILL.md",
+    ".codex/skills/platform-command-lifecycle-manager/SKILL.md",
+    ".codex/skills/platform-skill-lifecycle-manager/SKILL.md",
+    ".gemini/skills/finishing-a-development-branch/SKILL.md",
+    ".gemini/skills/platform-command-lifecycle-manager/SKILL.md",
+    ".gemini/skills/platform-skill-lifecycle-manager/SKILL.md",
+    ".gitignore",
+    ".hermes/skills/finishing-a-development-branch/SKILL.md",
+    ".hermes/skills/platform-command-lifecycle-manager/SKILL.md",
+    ".hermes/skills/platform-skill-lifecycle-manager/SKILL.md",
+    "docs/lifecycle/skills/finishing-a-development-branch.md",
+    "docs/lifecycle/skills/platform-command-lifecycle-manager.md",
+    "docs/lifecycle/skills/platform-skill-lifecycle-manager.md",
     "scripts/generate-skill-graph.ts",
+    "skills/finishing-a-development-branch/SKILL.md",
+    "skills/platform-command-lifecycle-manager/SKILL.md",
+    "skills/platform-skill-lifecycle-manager/SKILL.md",
     "template-version.txt"
   ],
   "baselines": {
@@ -42,9 +63,9 @@
       "blob": "2867262aca9a54f9468f8efc25430931960e32b6"
     },
     ".gitignore": {
-      "hash": "b4ea6d8b5df246b232a1cf5a872a0173d831b11952d924af547d2683caef098f",
+      "hash": "49a47143068b99b0b685f72991a056ea807d20e935250a53e37f74046f30ecd0",
       "templateVersion": "0.30.0",
-      "blob": "48cb9b5986ce4545631125f990f53a5c6db85e88"
+      "blob": "2a7bebb335cb81d0af0604f56a2f447a8022bfd6"
     },
     "AGENTS.md": {
       "hash": "2b094454b1cacb0941afb30e6c0e8c5fd2eb88d58aa851c8d1be04e265506ab4",
@@ -92,9 +113,25 @@
       "blob": "dc6dd2e84dd1ad63b77bbdde06e6ff63eeb2151e"
     },
     "scripts/generate-skill-graph.ts": {
-      "hash": "cf69ccb2f785497d44b4366e95bb09bed8a8bc85ce6e322189f36ae8be07787c",
+      "hash": "d8411495159ad6d07607a514573bf9fa3ac807c36c480c050a9f06f85f3773b9",
       "templateVersion": "0.30.0",
-      "blob": "76c9d51dbf5cb0c794a4f0dcfe977841a8392b52"
+      "blob": "933178753f69ac049f7eb3007045d9185f5ef68c"
+    },
+    "skills/finishing-a-development-branch/SKILL.md": {
+      "hash": "91d9f710f608a49172ffd0e2b8209aa3baa2b7b724638d73317d60fc6450c689",
+      "templateVersion": "0.30.0",
+      "blob": "9b60b75c8c8135b4de10de14f3d47d4fc2c68c06"
+    },
+    "skills/platform-command-lifecycle-manager/SKILL.md": {
+      "hash": "918ff0adaeb538ec83ddc30e0866c4a2571aff9ea5e23a3a00118c9c7aa4ae60",
+      "templateVersion": "0.30.0",
+      "provenance": "vintage",
+      "blob": "87aa4aa6e6f27abb079abb225c25a2175a7d07d4"
+    },
+    "skills/platform-skill-lifecycle-manager/SKILL.md": {
+      "hash": "c6cee252304307b6484edd45718c51141f4683836aaad8c10dc178f5a5eb3456",
+      "templateVersion": "0.30.0",
+      "blob": "b63b7a9aa5cc82bf1237b44b55bd2c01b5502942"
     },
     "scripts/dependency-audit.ts": {
       "hash": "932ff3e9c875dacfcd1555a2bfe0bf0c7b925d66ad017c193f2fb0b37c174e1a",
@@ -149,11 +186,6 @@
       "hash": "e6135a1d7e314743b9f4501a46ee41655f8a14a5de5b47eeb5b0cdbc53d2fbba",
       "templateVersion": "0.30.0",
       "blob": "514f0480399be1ebf1b00d0a1c3eb25be438705a"
-    },
-    "skills/finishing-a-development-branch/SKILL.md": {
-      "hash": "a9dce11ea6e6ac99181a368cbd7f4dd878424b8d16836dfefe35348a607681d5",
-      "templateVersion": "0.30.0",
-      "blob": "ec018e32267f1be21dec36d0ae9554e7c120e2e7"
     },
     "skills/script-lifecycle-manager/SKILL.md": {
       "hash": "85a483daf4c2ae920d6a4af46603f8a4339021cdcd81eddc81092bba9e4d310a",
@@ -637,12 +669,6 @@
       "hash": "6e7cf6d14ab1b327838c843dd95ca873b97a271dd43750ac0f98e240a3da3eac",
       "templateVersion": "0.30.0",
       "blob": "6ea62eb264e42d0d4408ab8c1311c72fd26e8b8e"
-    },
-    "skills/platform-skill-lifecycle-manager/SKILL.md": {
-      "hash": "21a658e70055cf4337929a2b14b1e15badcd032be914e5514e8226e2a33cc3b7",
-      "templateVersion": "0.30.0",
-      "provenance": "vintage",
-      "blob": "6bf8fef6270c0403a8c4fe654306a84bc6683a61"
     },
     "skills/sync/SKILL.md": {
       "hash": "01b9901834d71d0b98f2fbc968da4b3ea994c73368f8bf60e76d7c875f0d0d92",
@@ -2794,6 +2820,14 @@
       "path": ".gitignore",
       "policy": "MERGE_MANAGED",
       "pass": "MERGE",
+      "verdict": "TEMPLATE_DELTA",
+      "detail": "template-authoritative managed block restamped (template wins): WORKSPACE-MANAGED:Git ignore patterns. Content outside this block is preserved during project upgrades. — project block diverged from the template and was restamped (94 line(s) → 98 line(s))",
+      "severity": "INFO"
+    },
+    {
+      "path": ".gitignore",
+      "policy": "MERGE_MANAGED",
+      "pass": "MERGE",
       "verdict": "MERGE",
       "detail": "managed-zone merge delivered (non-destructive union/insert)",
       "severity": "INFO"
@@ -3183,12 +3217,12 @@
       "path": "scripts/generate-skill-graph.ts",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "2.1.0 → 2.2.0 — version-gated delivery over the delivered baseline",
+      "verdict": "DRIFT_RESTORED",
+      "detail": "2.2.0 equal-version content drift on a baseline-untouched file — restored to the template copy (no project-authored content)",
       "baseline": {
-        "hash": "2c9741fa77a424e089b3ef1a1f4c877050f9558d67d2bd1b12b370229c49ac02",
+        "hash": "cf69ccb2f785497d44b4366e95bb09bed8a8bc85ce6e322189f36ae8be07787c",
         "templateVersion": "0.30.0",
-        "blob": "f2ee66164514e61ef17840f59746f61b3b238f83"
+        "blob": "76c9d51dbf5cb0c794a4f0dcfe977841a8392b52"
       },
       "severity": "INFO"
     },
@@ -3305,12 +3339,57 @@
       "severity": "INFO"
     },
     {
+      "path": "skills/platform-command-lifecycle-manager/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "ADOPT",
+      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/platform-command-lifecycle-manager/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "ADOPT",
+      "detail": "1.0.3 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/platform-command-lifecycle-manager.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "RECORD_BUMP",
+      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.0.3 → 1.1.1; Version 1.0.3 → 1.1.1",
+      "severity": "INFO"
+    },
+    {
       "path": "skills/gateguard/SKILL.md",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: skills/",
       "verdict": "DRIFT_PRESERVE",
       "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
       "severity": "WARN"
+    },
+    {
+      "path": "skills/finishing-a-development-branch/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "ADOPT",
+      "detail": "1.0.3 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
+      "baseline": {
+        "hash": "a9dce11ea6e6ac99181a368cbd7f4dd878424b8d16836dfefe35348a607681d5",
+        "templateVersion": "0.30.0",
+        "blob": "ec018e32267f1be21dec36d0ae9554e7c120e2e7"
+      },
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/finishing-a-development-branch.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "RECORD_BUMP",
+      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.0.3 → 1.1.1; Version 1.0.3 → 1.1.1",
+      "severity": "INFO"
     },
     {
       "path": "skills/api-documentation/SKILL.md",
@@ -3334,6 +3413,28 @@
       "pass": "SYNC_IF_NEWER: skills/",
       "verdict": "NEW",
       "detail": "whole skill directory delivered (none) → 2.1.3",
+      "severity": "INFO"
+    },
+    {
+      "path": "skills/platform-skill-lifecycle-manager/SKILL.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "ADOPT",
+      "detail": "1.0.3 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
+      "baseline": {
+        "hash": "21a658e70055cf4337929a2b14b1e15badcd032be914e5514e8226e2a33cc3b7",
+        "templateVersion": "0.30.0",
+        "provenance": "vintage",
+        "blob": "6bf8fef6270c0403a8c4fe654306a84bc6683a61"
+      },
+      "severity": "INFO"
+    },
+    {
+      "path": "docs/lifecycle/skills/platform-skill-lifecycle-manager.md",
+      "policy": "SYNC",
+      "pass": "SYNC_IF_NEWER: skills/",
+      "verdict": "RECORD_BUMP",
+      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.0.3 → 1.1.1; Version 1.0.3 → 1.1.1",
       "severity": "INFO"
     },
     {
@@ -4537,6 +4638,6 @@
       "firstSeenTemplateVersion": "0.30.0"
     }
   ],
-  "templateDirty": true,
+  "templateDirty": false,
   "engineVersion": "1.124.0"
 }
