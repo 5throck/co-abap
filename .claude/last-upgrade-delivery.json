@@ -1,73 +1,13 @@
 {
   "schemaVersion": 2,
-  "timestamp": "2026-11-26T14:49:46.689Z",
+  "timestamp": "2026-11-26T15:05:29.415Z",
   "project": "co-abap",
   "templateVersion": "0.30.0",
   "templateSha": "8c7c500926705fedfb16fcce2d3285555eddba9a",
-  "baseSha": "816c08aeee6e5f4de7a02292e585046a72c0d0a2",
+  "baseSha": "ad6e28646c9582dfb37b7933204a6b526219d4be",
   "files": [
-    ".agents/skills/accessibility-audit/SKILL.md",
-    ".agents/skills/ci-triage/SKILL.md",
-    ".agents/skills/decision-record/SKILL.md",
-    ".agents/skills/evidence-ledger/SKILL.md",
-    ".agents/skills/explain-me/references/PLATFORM_HARNESS.md",
-    ".agents/skills/finishing-a-development-branch/SKILL.md",
-    ".agents/skills/script-lifecycle-manager/SKILL.md",
-    ".agents/skills/skill-lifecycle-manager/SKILL.md",
-    ".claude/skills/accessibility-audit/SKILL.md",
-    ".claude/skills/ci-triage/SKILL.md",
-    ".claude/skills/decision-record/SKILL.md",
-    ".claude/skills/evidence-ledger/SKILL.md",
-    ".claude/skills/explain-me/references/PLATFORM_HARNESS.md",
-    ".claude/skills/finishing-a-development-branch/SKILL.md",
-    ".claude/skills/script-lifecycle-manager/SKILL.md",
-    ".claude/skills/skill-lifecycle-manager/SKILL.md",
-    ".codex/skills/accessibility-audit/SKILL.md",
-    ".codex/skills/ci-triage/SKILL.md",
-    ".codex/skills/decision-record/SKILL.md",
-    ".codex/skills/evidence-ledger/SKILL.md",
-    ".codex/skills/explain-me/references/PLATFORM_HARNESS.md",
-    ".codex/skills/finishing-a-development-branch/SKILL.md",
-    ".codex/skills/script-lifecycle-manager/SKILL.md",
-    ".codex/skills/skill-lifecycle-manager/SKILL.md",
-    ".gemini/skills/accessibility-audit/SKILL.md",
-    ".gemini/skills/ci-triage/SKILL.md",
-    ".gemini/skills/decision-record/SKILL.md",
-    ".gemini/skills/evidence-ledger/SKILL.md",
-    ".gemini/skills/explain-me/references/PLATFORM_HARNESS.md",
-    ".gemini/skills/finishing-a-development-branch/SKILL.md",
-    ".gemini/skills/script-lifecycle-manager/SKILL.md",
-    ".gemini/skills/skill-lifecycle-manager/SKILL.md",
-    ".hermes/skills/accessibility-audit/SKILL.md",
-    ".hermes/skills/ci-triage/SKILL.md",
-    ".hermes/skills/decision-record/SKILL.md",
-    ".hermes/skills/evidence-ledger/SKILL.md",
-    ".hermes/skills/explain-me/references/PLATFORM_HARNESS.md",
-    ".hermes/skills/finishing-a-development-branch/SKILL.md",
-    ".hermes/skills/script-lifecycle-manager/SKILL.md",
-    ".hermes/skills/skill-lifecycle-manager/SKILL.md",
-    "docs/lifecycle/skills/accessibility-audit.md",
-    "docs/lifecycle/skills/ci-triage.md",
-    "docs/lifecycle/skills/decision-record.md",
-    "docs/lifecycle/skills/evidence-ledger.md",
-    "docs/lifecycle/skills/finishing-a-development-branch.md",
-    "docs/lifecycle/skills/script-lifecycle-manager.md",
-    "docs/lifecycle/skills/skill-lifecycle-manager.md",
     "scripts/SCRIPTS.md",
-    "scripts/dependency-audit.ts",
     "scripts/generate-skill-graph.ts",
-    "scripts/lib/git-aware-scan.ts",
-    "scripts/lib/skill-graph-compat.ts",
-    "scripts/lib/upgrade-policy.ts",
-    "scripts/validate-doc-folder.ts",
-    "skills/accessibility-audit/SKILL.md",
-    "skills/ci-triage/SKILL.md",
-    "skills/decision-record/SKILL.md",
-    "skills/evidence-ledger/SKILL.md",
-    "skills/explain-me/references/PLATFORM_HARNESS.md",
-    "skills/finishing-a-development-branch/SKILL.md",
-    "skills/script-lifecycle-manager/SKILL.md",
-    "skills/skill-lifecycle-manager/SKILL.md",
     "template-version.txt"
   ],
   "baselines": {
@@ -151,15 +91,15 @@
       "templateVersion": "0.30.0",
       "blob": "dc6dd2e84dd1ad63b77bbdde06e6ff63eeb2151e"
     },
+    "scripts/generate-skill-graph.ts": {
+      "hash": "cf69ccb2f785497d44b4366e95bb09bed8a8bc85ce6e322189f36ae8be07787c",
+      "templateVersion": "0.30.0",
+      "blob": "76c9d51dbf5cb0c794a4f0dcfe977841a8392b52"
+    },
     "scripts/dependency-audit.ts": {
       "hash": "932ff3e9c875dacfcd1555a2bfe0bf0c7b925d66ad017c193f2fb0b37c174e1a",
       "templateVersion": "0.30.0",
       "blob": "eca15c471f30a1aab79f6aface7dab1403c2ba5d"
-    },
-    "scripts/generate-skill-graph.ts": {
-      "hash": "2c9741fa77a424e089b3ef1a1f4c877050f9558d67d2bd1b12b370229c49ac02",
-      "templateVersion": "0.30.0",
-      "blob": "f2ee66164514e61ef17840f59746f61b3b238f83"
     },
     "scripts/lib/git-aware-scan.ts": {
       "hash": "7672397211679bf7dd05a6dca754791d3633a50072de479998ff4f4239961000",
@@ -3224,20 +3164,6 @@
       "severity": "WARN"
     },
     {
-      "path": "scripts/dependency-audit.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.1.0 → 1.2.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "6190579cbb36acc844fbcababcfdf917badb7878e3d26c536d27551ce2a09341",
-        "templateVersion": "0.30.0",
-        "provenance": "vintage",
-        "blob": "f2add55c49adb01d4d57988923600e23d2c65f2a"
-      },
-      "severity": "INFO"
-    },
-    {
       "path": "scripts/dispatch-parallel.ts",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: scripts/",
@@ -3258,64 +3184,11 @@
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: scripts/",
       "verdict": "ADOPT",
-      "detail": "2.0.1 → 2.1.0 — version-gated delivery over the delivered baseline",
+      "detail": "2.1.0 → 2.2.0 — version-gated delivery over the delivered baseline",
       "baseline": {
-        "hash": "d8f7ee30cf43b4bad40f400243a1cf78bc3c3c56c3ea7f48b346b287bdb4096a",
+        "hash": "2c9741fa77a424e089b3ef1a1f4c877050f9558d67d2bd1b12b370229c49ac02",
         "templateVersion": "0.30.0",
-        "blob": "02ab79b343dbe25646768f1d2a0b53c19517a13f"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/lib/git-aware-scan.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.0.1 → 1.1.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "3e8d922c30b0498853409efc0b5d8defb43667701120230bc2c35d72d6ba9083",
-        "templateVersion": "0.30.0",
-        "blob": "5e058f3af9982febad35411e07899d25f6726e43"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/lib/skill-graph-compat.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.1.0 → 1.2.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "fae88b6d4cf8b3a3b84776818f1af351611e4873610754e85db718db69b15eb6",
-        "templateVersion": "0.30.0",
-        "provenance": "vintage",
-        "blob": "43e4418132e048a01ef8c344f03f4ed286b3ad0f"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/lib/upgrade-policy.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.54.0 → 1.56.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "35a0447563f3c964c94da57aaee7e79d9a8de748c8d114072f91f8f1bc6cfb89",
-        "templateVersion": "0.30.0",
-        "blob": "a72b1cc0f4673fc2ece630e4089aec5f61999230"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "scripts/validate-doc-folder.ts",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: scripts/",
-      "verdict": "ADOPT",
-      "detail": "1.7.0 → 1.8.0 — version-gated delivery over the delivered baseline",
-      "baseline": {
-        "hash": "c20f90f865cfa267795172349a65070cb94c57bf948dea40c796345f748a95c2",
-        "templateVersion": "0.30.0",
-        "blob": "ee9a08fe4061c8042f6db947e2f525e12cbaa057"
+        "blob": "f2ee66164514e61ef17840f59746f61b3b238f83"
       },
       "severity": "INFO"
     },
@@ -3376,43 +3249,6 @@
       "severity": "INFO"
     },
     {
-      "path": "skills/script-lifecycle-manager/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/script-lifecycle-manager/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.2.2 → 1.2.3 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/script-lifecycle-manager.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.2.2 → 1.2.3; Version 1.2.2 → 1.2.3",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/explain-me/references/PLATFORM_HARNESS.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "SYNC_TEMPLATE_ADVANCE",
-      "detail": "same-version content drift attributed TEMPLATE-side — the project file still equals its delivered baseline (hash match), so the un-bumped template edit delivers verbatim; noteDelivered refreshes the manifest baseline row (the equal-version re-stamp)",
-      "baseline": {
-        "hash": "af43c2020b398f8cdc6293a2e47153c26134dc93a4f7ced0b7db5b368af815a1",
-        "templateVersion": "0.30.0",
-        "blob": "5caae37fc68acc5aadf156c32c47c1a9c6691b8f"
-      },
-      "severity": "INFO"
-    },
-    {
       "path": "skills/k-opendata/SKILL.md",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: skills/",
@@ -3427,54 +3263,6 @@
       "verdict": "DRIFT_PRESERVE",
       "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
       "severity": "WARN"
-    },
-    {
-      "path": "skills/skill-lifecycle-manager/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/skill-lifecycle-manager/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.5.0 → 1.5.1 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/skill-lifecycle-manager.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.5.0 → 1.5.1; Version 1.5.0 → 1.5.1",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/ci-triage/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/ci-triage/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "0.2.0 → 0.2.1 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/ci-triage.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 0.2.0 → 0.2.1; Version 0.2.0 → 0.2.1",
-      "severity": "INFO"
     },
     {
       "path": "skills/project-review/SKILL.md",
@@ -3525,27 +3313,6 @@
       "severity": "WARN"
     },
     {
-      "path": "skills/finishing-a-development-branch/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.0.2 → 1.0.3 — version-gated whole-directory delivery over the delivered baseline",
-      "baseline": {
-        "hash": "d12e2be7adcd46dbee73d9f71506fd0131b26e9df3db097466910d5d7a09e8bb",
-        "templateVersion": "0.30.0",
-        "blob": "bb147e403044c66d4f7195532470d88864002beb"
-      },
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/finishing-a-development-branch.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.0.2 → 1.0.3; Version 1.0.2 → 1.0.3",
-      "severity": "INFO"
-    },
-    {
       "path": "skills/api-documentation/SKILL.md",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: skills/",
@@ -3570,60 +3337,12 @@
       "severity": "INFO"
     },
     {
-      "path": "skills/decision-record/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/decision-record/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.1.0 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/decision-record.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.1.0 → 1.1.1; Version 1.1.0 → 1.1.1",
-      "severity": "INFO"
-    },
-    {
       "path": "skills/research-analysis/SKILL.md",
       "policy": "SYNC",
       "pass": "SYNC_IF_NEWER: skills/",
       "verdict": "DRIFT_PRESERVE",
       "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
       "severity": "WARN"
-    },
-    {
-      "path": "skills/accessibility-audit/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/accessibility-audit/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.1.0 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/accessibility-audit.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.1.0 → 1.1.1; Version 1.1.0 → 1.1.1",
-      "severity": "INFO"
     },
     {
       "path": "skills/k-law/SKILL.md",
@@ -3640,30 +3359,6 @@
       "verdict": "DRIFT_PRESERVE",
       "detail": "same-version content drift — project copy PRESERVED (ADR-0085 D3)",
       "severity": "WARN"
-    },
-    {
-      "path": "skills/evidence-ledger/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "no delivery baseline; project bytes equal a historical revision of the template (vintage-proven — no project-authored content) — delivered",
-      "severity": "INFO"
-    },
-    {
-      "path": "skills/evidence-ledger/SKILL.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "ADOPT",
-      "detail": "1.1.0 → 1.1.1 — version-gated whole-directory delivery over the delivered baseline",
-      "severity": "INFO"
-    },
-    {
-      "path": "docs/lifecycle/skills/evidence-ledger.md",
-      "policy": "SYNC",
-      "pass": "SYNC_IF_NEWER: skills/",
-      "verdict": "RECORD_BUMP",
-      "detail": "hand-authored record metadata aligned to the delivered SKILL.md: Version 1.1.0 → 1.1.1; Version 1.1.0 → 1.1.1",
-      "severity": "INFO"
     },
     {
       "path": "skills/fiori-rap-dev/",
@@ -4842,6 +4537,6 @@
       "firstSeenTemplateVersion": "0.30.0"
     }
   ],
-  "templateDirty": false,
+  "templateDirty": true,
   "engineVersion": "1.124.0"
 }

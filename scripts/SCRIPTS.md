@@ -89,7 +89,7 @@ bun run <alias>                     # via package.json alias (preferred for CI)
 | `dispatch.ts` | L0 | 1.2.0 | active | v1.2.0: parallel mode forwards --platform/--plan to dispatch-parallel.ts | —| L0+L1 | —|
 | `gen-pr-body.ts` | L0 | 1.2.1 | active | —| —| L0+L1 | —|
 | `generate-ide-rules.ts` | L0 | 1.0.0 | active | —| —| L0+L1 | —|
-| `generate-skill-graph.ts` | L0 | 2.1.0 | active | —| —| L0+L1 | —|
+| `generate-skill-graph.ts` | L0 | 2.2.0 | active | —| —| L0+L1 | —|
 | `handbook/apply-handbook-theme.ts` | L0 | 1.2.0 | active | — | — | common | — |
 | `handbook/build-search-index.ts` | L0 | 1.0.0 | active | — | — | common | — |
 | `handbook/check-a11y.ts` | L0 | 1.0.0 | active | — | — | common | — |

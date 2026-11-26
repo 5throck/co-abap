@@ -1,6 +1,6 @@
 # VERSION_MANIFEST.md
 
-**Generated**: 2026-11-26T14:51:00.824Z
+**Generated**: 2026-11-26T15:06:01.534Z
 **Manifest Version**: 1.0
 **Location**: docs/VERSION_MANIFEST.md
 
@@ -162,7 +162,7 @@
 | gen-pr-body.ts | 1.2.1 | scripts/gen-pr-body.ts | bun, fs |
 | generate-ide-rules.ts | 1.0.0 | scripts/generate-ide-rules.ts | fs, path |
 | generate-raci.ts | 1.2.1 | scripts/generate-raci.ts | fs, js-yaml, path |
-| generate-skill-graph.ts | 2.1.0 | scripts/generate-skill-graph.ts | child_process, fs, js-yaml, path, url |
+| generate-skill-graph.ts | 2.2.0 | scripts/generate-skill-graph.ts | child_process, fs, js-yaml, path, url |
 | generate-skill-lifecycle-records.ts | 1.4.0 | scripts/generate-skill-lifecycle-records.ts | fs, js-yaml, path, url |
 | generate-version-manifest.ts | 1.12.1 | scripts/generate-version-manifest.ts | bun, child_process, fs, js-yaml, module, path |
 | graph-delta-log.ts | 1.1.0 | scripts/graph-delta-log.ts | child_process, fs, path, url |
