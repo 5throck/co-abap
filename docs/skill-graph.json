@@ -787,7 +787,7 @@
       "scope": "root",
       "capability": "finishing-a-development-branch",
       "content_hash": "7aa95cd39dce01f1",
-      "version": "1.0.3",
+      "version": "1.1.1",
       "mirrors": [
         "skills/finishing-a-development-branch/SKILL.md",
         ".claude/skills/finishing-a-development-branch/SKILL.md",
@@ -985,7 +985,7 @@
       "scope": "root",
       "capability": "platform-command-lifecycle-manager",
       "content_hash": "392bf490b9ef6b44",
-      "version": "1.0.3",
+      "version": "1.1.1",
       "mirrors": [
         "skills/platform-command-lifecycle-manager/SKILL.md",
         ".claude/skills/platform-command-lifecycle-manager/SKILL.md",
@@ -1003,7 +1003,7 @@
       "scope": "root",
       "capability": "platform-skill-lifecycle-manager",
       "content_hash": "08e425f43401cabc",
-      "version": "1.0.3",
+      "version": "1.1.1",
       "mirrors": [
         "skills/platform-skill-lifecycle-manager/SKILL.md",
         ".claude/skills/platform-skill-lifecycle-manager/SKILL.md",

@@ -24,7 +24,7 @@
 | `root/dump-monitor` | L3 | 1.0.1 | root/devops-admin | — | root/abap-dev (follows), root/research-analysis (composes_with), root/sap-co (composes_with), root/sap-fi (composes_with), root/sap-le (composes_with), root/sap-mm (composes_with), root/sap-sd (composes_with) | — | — |
 | `root/evidence-ledger` | L3 | 1.1.1 | — | — | root/documentation-writing (follows), root/research-analysis (follows) | — | — |
 | `root/explain-me` | L3 | 1.0.1 | — | — | — | — | — |
-| `root/finishing-a-development-branch` | L3 | 1.0.3 | — | — | — | — | — |
+| `root/finishing-a-development-branch` | L3 | 1.1.1 | — | — | — | — | — |
 | `root/fiori-rap-dev` | L3 | 1.0.0 | — | — | root/abap-dev (composes_with), root/accessibility-audit (composes_with), root/post-write-chain (follows) | — | — |
 | `root/gateguard` | L3 | 1.0.2 | root/automation-engineer | — | — | — | — |
 | `root/handbook` | L3 | 0.6.2 | — | — | — | — | — |
@@ -35,8 +35,8 @@
 | `root/i18n-locale-config` | L3 | 1.0.1 | root/i18n-specialist | — | — | — | — |
 | `root/meeting-facilitation` | L3 | 1.6.0 | — | — | — | — | — |
 | `root/performance-tuning` | L3 | 1.0.1 | root/architect, root/dba, root/sap-investigator | — | — | — | — |
-| `root/platform-command-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
-| `root/platform-skill-lifecycle-manager` | L3 | 1.0.3 | — | — | — | — | — |
+| `root/platform-command-lifecycle-manager` | L3 | 1.1.1 | — | — | — | — | — |
+| `root/platform-skill-lifecycle-manager` | L3 | 1.1.1 | — | — | — | — | — |
 | `root/post-write-chain` | L3 | 1.3.2 | root/code-writer, root/test-runner | — | — | — | — |
 | `root/project-review` | L3 | 1.3.3 | — | — | — | — | — |
 | `root/research-analysis` | L3 | 1.0.2 | — | — | root/documentation-writing (enables) | — | — |

@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: platform-skill-lifecycle-manager
 - **Status**: active
-- **Version**: 1.0.3
+- **Version**: 1.1.1
 - **Owner**: pm
 - **Created**: 2026-09-04
 - **Last Updated**: 2026-11-12
@@ -40,7 +40,7 @@ back-sync rules, version pinning, and lifecycle triggers.
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.0.3
+- **Version**: 1.1.1
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm
