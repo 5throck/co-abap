@@ -1,6 +1,32 @@
 #!/usr/bin/env bun
 /**
  * Skill Relationship Graph Generator
+ * @version 2.2.0 (2026-11-27, defect fix to §4.2 S2 — standalone-checkout hash
+ *           stability): VARIANT_NAME derivation moved into exported
+ *           resolveVariantName(): a fleet-project checkout is now identified by
+ *           its OWN variant.json (which travels with the checkout) before the
+ *           nested-membership probe. The probe alone (isFleetProjectPath
+ *           against the workspace root inferred two levels up) silently
+ *           returns false in a standalone checkout — a CI clone at
+ *           /home/runner/work/<name>/<name> has no <root>/Projects layout and
+ *           no docs/fleet-membership.json up-tree — so a committed
+ *           docs/skill-graph.json generated inside a workspace checkout (hashes
+ *           WITH compensation) failed verify-skill-graph on CI for every file
+ *           whose body carries a rendered backtick slug (observed: co-abap PR
+ *           #256, exactly the 3 slug-bearing nodes agent read-only-analyst,
+ *           skills abap-code-review / abap-dev). Pinned by
+ *           tests/unit/variant-name-cwd-stability.test.ts.
+ * @version 2.1.0 (2026-11-26, spec docs/designs/2026-11-26-skill-drift-structural-fixes-design.md
+ *           §4.2 S2): variant-token hash compensation — VARIANT_NAME is derived once
+ *           (`basename(ROOT)` when ROOT is a fleet project path, via lib/fleet.ts
+ *           isFleetProjectPath with the workspace root inferred two levels up —
+ *           a Projects/<name> checkout sits exactly there, so root/template-scope runs
+ *           and fixtures derive undefined and stay no-ops) and readCopy forwards it to
+ *           contentHash. A scaffold-rendered skill now hashes equal to its template
+ *           source; the five cosmetic script-lifecycle-manager hash groups collapse
+ *           without touching any SKILL.md. Graphs regenerate through the existing
+ *           dev-sync step; hash values shift once fleet-wide (convergence keys on
+ *           capabilities and NEW/VANISHED on ids — opaque comparisons, no page change).
  * @version 2.0.1 (2026-11-03, T-20261103-004): git-aware decisions/ADR scan —
  * only git-TRACKED files under docs/decisions/ and docs/adr/ become dec:/adr:
  * nodes. docs/decisions/ is a tracked directory, but a local untracked
@@ -135,7 +161,7 @@
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, existsSync, readdirSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, resolve, dirname, relative } from "node:path";
+import { join, resolve, dirname, relative, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { load as yamlLoad } from "js-yaml";
 import {
@@ -153,12 +179,46 @@ import type { SkillGraphV2 } from "./lib/skill-graph-compat.ts";
 import { PLATFORM_MIRROR_DIRS } from "./lib/platforms.ts";
 import { parseSkillsUsed } from "./lib/skills-used.ts";
 import { isTrackedRel, trackedFilesUnder } from "./lib/git-aware-scan.ts";
+import { isFleetProjectPath } from "./lib/fleet.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // SKILL_GRAPH_ROOT overrides the derived workspace root (test fixtures only; never set in pipelines).
 const ROOT = process.env.SKILL_GRAPH_ROOT ? resolve(process.env.SKILL_GRAPH_ROOT) : resolve(__dirname, "..");
 const templatesDir = join(ROOT, "templates");
+// S2 (design docs/designs/2026-11-26-skill-drift-structural-fixes-design.md §4.2):
+// the rendered variant slug for hash compensation — basename(ROOT) when ROOT is a
+// fleet project path. isFleetProjectPath resolves its argument against a workspace
+// root; a fleet checkout sits EXACTLY two levels under it (Projects/<name>), so the
+// workspace root is inferred upward (a delivered copy's own defaultRoot() would be
+// the project itself and would never match). Root and template-scope runs — and
+// fixtures outside a Projects/ layout — derive undefined and pass no parameter to
+// contentHash: a no-op, template-side hashes stay unparameterized (design 4.2
+// collision rule iv). The registry exclusions SSOT is honored because
+// isFleetProjectPath reads <inferred-root>/docs/fleet-membership.json.
+const ROOT_TWO_UP = resolve(ROOT, "..", "..");
+
+/**
+ * S2 drift fix (2026-11-27, v2.2.0): variant-token hash compensation is only
+ * correct when the SAME variantName is derived in EVERY checkout of the same
+ * project. The nested-membership probe alone (isFleetProjectPath against the
+ * workspace root inferred two levels up) silently returns false in a
+ * standalone checkout — a CI clone at /home/runner/work/<name>/<name> has no
+ * <root>/Projects layout and no docs/fleet-membership.json up-tree — so a
+ * committed docs/skill-graph.json generated inside a workspace checkout (hashes
+ * WITH compensation) failed verify-skill-graph on CI for exactly the
+ * slug-bearing files. A fleet project (and a variant template dir) is
+ * identified by its OWN variant.json, which travels with the checkout; the
+ * membership probe stays as the fallback for a nested project that somehow
+ * lacks the file. Root scope (no variant.json, no Projects/<name> path)
+ * derives undefined — unchanged no-op behavior.
+ */
+export function resolveVariantName(root: string, rootTwoUp = resolve(root, "..", "..")): string | undefined {
+  if (existsSync(join(root, "variant.json"))) return basename(root);
+  return isFleetProjectPath(root, rootTwoUp) ? basename(root) : undefined;
+}
+
+const VARIANT_NAME = resolveVariantName(ROOT, ROOT_TWO_UP);
 // Run-context detection: the workspace root is the only context that has a
 // templates/common (platform template layer) directory. Scaffolded projects may
 // carry their own content template dirs (e.g. templates/deliverables/) without
@@ -608,7 +668,9 @@ function readCopy(abs: string, scope: string, layer: GraphNode["layer"], name: s
     layer,
     abs,
     rel: relPath(abs),
-    hash: contentHash(content),
+    // S2: forward the run's variant name (undefined at root/template scope) so a
+    // scaffold-rendered copy hashes equal to its template source (design §4.2).
+    hash: contentHash(content, VARIANT_NAME),
     version: frontmatterVersion(content),
     capability: frontmatterCapability(content, name),
   };
@@ -681,7 +743,11 @@ function discoverRegistry(): Registry {
           const f = join(absDir, g.name, "SKILL.md");
           if (!existsSync(f)) continue;
           try {
-            if (contentHash(readFileSync(f, "utf-8")) === primary.hash) mirrors.push(relPath(f));
+            // S2: same compensation on both sides — primary.hash is computed with
+            // VARIANT_NAME, so the platform-mirror candidate must be too (in a
+            // project run both sides are rendered with the same slug; at root
+            // scope VARIANT_NAME is undefined on both — unchanged behavior).
+            if (contentHash(readFileSync(f, "utf-8"), VARIANT_NAME) === primary.hash) mirrors.push(relPath(f));
           } catch {
             /* unreadable mirror: not evidence */
           }

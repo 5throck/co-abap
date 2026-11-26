@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-27](2026-11-27.md) | fix(scripts): S2 variant-hash standalone-checkout stability — resolveVariantName derives from the checkout's own variant.json (CI co-abap PR audit fix) |
 | [2026-11-26](2026-11-26.md) | chore(scripts): workspace sync (14 files) |
 | [2026-11-25](2026-11-25.md) | chore(upgrade): template 0.30.0 wave delivery (delivery lane completed per T-20261124-013 family) |
 | [2026-11-24](2026-11-24.md) | fix(agents): regenerate .claude/agents/pm.md mirror to registry-resolved projection v1.3.0 (T-20261124-002) |

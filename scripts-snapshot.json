@@ -60,7 +60,7 @@
       "status": "active"
     },
     "dependency-audit.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "external-deps.ts": {
@@ -120,7 +120,7 @@
       "status": "active"
     },
     "generate-skill-graph.ts": {
-      "version": "2.0.1",
+      "version": "2.1.0",
       "status": "active"
     },
     "generate-skill-lifecycle-records.ts": {
@@ -360,7 +360,7 @@
       "status": "active"
     },
     "lib/git-aware-scan.ts": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "status": "active"
     },
     "lib/git-env.ts": {
@@ -428,7 +428,7 @@
       "status": "active"
     },
     "lib/upgrade-policy.ts": {
-      "version": "1.54.0",
+      "version": "1.56.0",
       "status": "active"
     },
     "lib/template-vintage.ts": {
@@ -452,7 +452,7 @@
       "status": "active"
     },
     "lib/skill-graph-compat.ts": {
-      "version": "1.1.0",
+      "version": "1.2.0",
       "status": "active"
     },
     "lib/package-merge.ts": {
@@ -692,7 +692,7 @@
       "status": "active"
     },
     "validate-doc-folder.ts": {
-      "version": "1.7.0",
+      "version": "1.8.0",
       "status": "active"
     },
     "validate-docs-links.ts": {

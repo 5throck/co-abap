@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: script-lifecycle-manager
 - **Status**: active
-- **Version**: 1.2.2
+- **Version**: 1.2.3
 - **Owner**: pm
 - **Created**: 2026-05-29
 - **Last Updated**: 2026-11-12
@@ -38,7 +38,7 @@ Script lifecycle management: creation, modification, deprecation, validation, an
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.2.2
+- **Version**: 1.2.3
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

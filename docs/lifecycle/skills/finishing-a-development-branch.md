@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: finishing-a-development-branch
 - **Status**: active
-- **Version**: 1.0.2
+- **Version**: 1.0.3
 - **Owner**: pm
 - **Created**: 2026-09-04
 - **Last Updated**: 2026-11-12
@@ -39,7 +39,7 @@ PR-based flow.
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.0.2
+- **Version**: 1.0.3
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm
