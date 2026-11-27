@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: skill-lifecycle-manager
 - **Status**: active
-- **Version**: 1.5.1
+- **Version**: 1.5.2
 - **Owner**: pm
 - **Created**: 2026-05-29
 - **Last Updated**: 2026-11-12
@@ -40,7 +40,7 @@ and lifecycle-record duties enforced by `scripts/skill-lifecycle-audit.ts`.
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.5.1
+- **Version**: 1.5.2
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

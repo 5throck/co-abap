@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: accessibility-audit
 - **Status**: active
-- **Version**: 1.1.1
+- **Version**: 1.1.2
 - **Owner**: pm
 - **Created**: 2026-08-06 (created in the co-design variant; upstream promotion history in Changelog)
 - **Last Updated**: 2026-11-12
@@ -37,7 +37,7 @@ Delivered to this project through the variant template pipeline.
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.1.1
+- **Version**: 1.1.2
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

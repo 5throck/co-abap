@@ -4,7 +4,7 @@
 ## Metadata
 - **Skill**: evidence-ledger
 - **Status**: active
-- **Version**: 1.1.1
+- **Version**: 1.2.0
 - **Owner**: pm
 - **Created**: 2026-09-21 (record backfill — the skill predates this record; active since at least 2026-08-25 per frontmatter `last_reviewed`)
 - **Last Updated**: 2026-11-12
@@ -24,7 +24,7 @@
 
 ## Metadata
 - **Current Phase**: production
-- **Version**: 1.1.1
+- **Version**: 1.2.0
 - **Owner**: pm
 - **Last Updated**: 2026-11-12
 - **Last Reviewer**: pm

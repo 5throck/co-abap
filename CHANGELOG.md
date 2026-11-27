@@ -1,4 +1,6 @@
 ## [Unreleased]
+- **[2026-11-27]**: chore(upgrade): template sync v0.31.0 (34 file(s) delivered; engine-scaffolded — edit or merge before commit; see templates/CHANGELOG.md v0.31.0)
+
 - **[2026-11-13]**: chore(upgrade): template 0.30.0 refresh delivery — codex hooks wiring, hook-target/CI-ref gates, parity surface coverage, lifecycle-record tooling (#1991/#1993/#1994 family)
 
 - **[2026-11-01]**: chore(upgrade): template sync v0.27.0 (29 file(s) delivered; engine-scaffolded — edit or merge before commit; see templates/CHANGELOG.md v0.27.0)
