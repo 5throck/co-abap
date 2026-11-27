@@ -1,6 +1,58 @@
 /**
  * test-runner.ts — Test Runner for TypeScript Test Suites
- * @version 1.19.0
+ * @version 1.23.0
+ *
+ * v1.23.0 (2026-11-28, T-20261128-001): FILE_TIME_BUDGETS gains
+ *          project-target-guards.test.ts (suite 300s / test 60s, engine-spawn
+ *          family). Measured evidence — windows-latest main run 46003145206
+ *          (2026-11-27T12:58Z): the "new-project.ts resolves bare names under
+ *          Projects/ (existence pre-flight path)" test was killed by its own
+ *          inline 30000ms ceiling at 30018.44ms (the spawned new-project.ts
+ *          full pipeline — bun install + graft index + post-scaffold audit —
+ *          did not finish inside 30s on the loaded 2-core runner); PR #2212's
+ *          windows leg recorded the same kill signature at 30005.04ms, and the
+ *          ticket records a rerun reaching the 120000ms unit file wall. Healthy
+ *          windows file totals: 6773ms (run 46030252124) / 18330ms (run
+ *          46012256221). The companion inline per-test raise in the test file
+ *          (30000 → 60000, v1.2.0) is required because bun gives the inline
+ *          per-test third argument precedence over the runner's --timeout, so
+ *          the budget row's test value alone would not lift this file's
+ *          ceiling. Budgets only; no assertion loosened.
+ * v1.22.0 (2026-11-27, T-20261127-003 — spec
+ *          docs/designs/2026-11-27-fork-sync-blockers-design.md §4):
+ *          FILE_TIME_BUDGETS gains validate-templates-cv02.test.ts (suite 300s /
+ *          test 60s, engine-spawn family) — the CV-02 e2e leg spawns the full
+ *          validate-templates.ts (~55s on a typical Windows laptop, issue #2192
+ *          blocker 4; in-test budget now explicit at 60s). Preventive
+ *          first-time entry per the v1.6.0/v1.20.0 convention; no test loosened.
+ *
+ * v1.21.0 (2026-11-27, T-20261127-006 — spec
+ *          docs/designs/2026-11-27-version-advance-lane-coverage-design.md §13):
+ *          FILE_TIME_BUDGETS gains upgrade-lane-coverage.test.ts (suite 300s /
+ *          test 60s) — the lane-coverage engine suite joins the engine-spawn
+ *          family (two wave-1 fixture spawns + six scene spawns); killed at the
+ *          120000ms default wall on its first windows leg (PR #2202 attempt
+ *          45916952645). First-time entry per the v1.6.0/v1.20.0 convention.
+ *
+ * v1.20.0 (2026-11-27, T-20261127-002 — spec
+ *          docs/designs/2026-11-27-ticket-store-drift-and-nextid-design.md §5):
+ *          windows-latest rebudget from MEASURED per-file durations parsed out of
+ *          the cited runs' CI logs (5 healthy windows legs + the failure logs:
+ *          PRs #2189/#2190/#2194/#2196/#2198 reruns and main post-merge runs
+ *          45864068389 / 45905810289). Five first-time FILE_TIME_BUDGETS rows for
+ *          the engine-spawn family members that keep hitting the 120s default
+ *          wall (upgrade-template-advance-guards — measured healthy max 114.6s =
+ *          96% of the wall, timed out at 120000ms TWICE on main; upgrade-template-
+ *          advance 83.5s max, one 120s timeout; upgrade-stub-shape-conversion
+ *          70.6s max, one 120s timeout; upgrade-stub-shape-guards 70.7s max —
+ *          same max as the flaked sibling; upgrade-prune-removed 79.2s max), each
+ *          at the family budget 300s suite / 60s test with the measured numbers
+ *          pinned in the row comments; plus a TEST-ceiling raise on
+ *          upgrade-overwrite-protection 60s → 120s (an individual engine-spawn
+ *          test overran the 60s ceiling on attempt 45826913410 while the file's
+ *          healthy total is 117-156s — its 300s suite budget was never the
+ *          binding constraint). No test deleted or loosened; budgets only.
+ *          Measured table: spec §5.
  *
  * v1.19.0 (2026-11-25, T-20261124-017 — spec
  *          docs/designs/2026-11-24-fleet-test-baseline-design.md, ADR-0106): the
@@ -337,6 +389,17 @@ const FILE_TIME_BUDGETS: Record<string, { suite: number; test: number }> = {
   // green shape as the rows above.
   "co-workspace-admin-console-r2.test.ts": { suite: 300000, test: 45000 },
   "co-workspace-admin-page.test.ts": { suite: 300000, test: 45000 },
+  // T-20261128-001 (windows-latest main run 46003145206, 2026-11-27T12:58Z):
+  // the file spawns new-project.ts / upgrade-project.ts full pipelines in
+  // subprocesses (each with its own 60s spawnSync kill budget); on a loaded
+  // 2-core windows runner the existence pre-flight test exceeded its inline
+  // 30000ms per-test ceiling at 30018.44ms (PR #2212 recorded the same
+  // signature at 30005.04ms; ticket records a rerun at the 120s unit file
+  // wall). Healthy windows file totals 6.8-18.3s (runs 46030252124 /
+  // 46012256221). Engine-spawn family budget (suite 300s / test 60s, same as
+  // upgrade-overwrite-protection); the in-file per-test budgets were raised
+  // 30000 → 60000 in the same change (bun prefers the inline third argument).
+  "project-target-guards.test.ts": { suite: 300000, test: 60000 },
   "mcp-upstream-server.test.ts": { suite: 300000, test: 30000 },
   "upgrade-tree-sync.test.ts": { suite: 300000, test: 60000 },
   // v1.9.0 (T-20261030-002 stage 2): 600s → 300s on the design's evidence
@@ -376,7 +439,13 @@ const FILE_TIME_BUDGETS: Record<string, { suite: number; test: number }> = {
   "co-workspace-composer-wire-regression.test.ts": { suite: 300000, test: 45000 },
   // PR #1963 (windows-latest run 43074272486): engine-spawn-heavy overwrite-protection suite
   // hit the 120s per-file wall on win32 (macOS ~9s). Family budget 300s; test 60s.
-  "upgrade-overwrite-protection.test.ts": { suite: 300000, test: 60000 },
+  // T-20261127-002 TEST-ceiling raise 60s → 120s (suite unchanged): PR #2189 attempt
+  // 45826913410 killed an individual engine-spawn test at 60000ms on win32 while the
+  // file's healthy totals measured 117542-156280 ms across the five cited runs (spec
+  // §5) — the 300s suite budget was never the binding constraint, the per-test
+  // ceiling was. 120s = ~2x the observed worst single-test shape; no assertion
+  // loosened, ceiling only.
+  "upgrade-overwrite-protection.test.ts": { suite: 300000, test: 120000 },
   // Core-locked fork arm replay: two full engine spawns (one dry-run, one apply) per file run.
   "upgrade-core-locked-fork.test.ts": { suite: 300000, test: 60000 },
   // Overwrite-protection PR-B replay: three engine spawns (dry-run, apply, apply + grant) per file run.
@@ -385,6 +454,53 @@ const FILE_TIME_BUDGETS: Record<string, { suite: number; test: number }> = {
   // grant, scene B, AC-5 rerun + vintage) + three cheap --audit-core-deltas
   // report spawns per file run.
   "upgrade-policy-eviction.test.ts": { suite: 300000, test: 60000 },
+  // T-20261127-002 (windows-latest, MEASURED from the cited runs' CI logs — table in
+  // spec docs/designs/2026-11-27-ticket-store-drift-and-nextid-design.md §5): the four
+  // files below + upgrade-prune-removed are the engine-spawn family members still
+  // running against the 120s default wall. Measured healthy win32 maxima (5 runs:
+  // 45831855690 / 45839104906 / 45858038084 / 45865640842 / 45876997661) vs their
+  // observed 120000ms timeouts:
+  //   upgrade-template-advance-guards: 114568 / 88942 / 83476 / 86280 / 112658 ms
+  //     — healthy max 114.6s = 96% of the 120s wall; killed at 120000ms twice on
+  //     main (runs 45864068389 + 45905810289, "Test timed out after 120000ms").
+  //   upgrade-template-advance: 63455 / 65739 / 64190 / 65064 / 83525 ms — max
+  //     83.5s; killed at 120000ms once (PR #2189 attempt 45817806959) — a ~1.4-1.9x
+  //     FS-pressure spike, the family's characteristic failure shape.
+  //   upgrade-stub-shape-conversion: 57804 / 68839 / 63659 / 64247 / 70573 ms — max
+  //     70.6s; killed at 120000ms once (attempt 45822606148) — a ~1.7x spike.
+  //   upgrade-stub-shape-guards: 59608 / 67193 / 64378 / 66284 / 70733 ms — max
+  //     70.7s, never flaked; same measured max as the flaked sibling above, same
+  //     engine family — pinned before it becomes the next rerun.
+  // Family budget 300s / test 60s (headroom ≥1.9x over healthy max; ≥2.6x for the
+  // twice-flaked guards file).
+  "upgrade-template-advance-guards.test.ts": { suite: 300000, test: 60000 },
+  "upgrade-template-advance.test.ts": { suite: 300000, test: 60000 },
+  "upgrade-stub-shape-conversion.test.ts": { suite: 300000, test: 60000 },
+  "upgrade-stub-shape-guards.test.ts": { suite: 300000, test: 60000 },
+  // T-20261127-002 (same measured table): upgrade-prune-removed healthy max
+  // 79220 ms on run 45865640842 (44-49s on the other four legs) — no timeout
+  // observed yet, but the win32 spike band is ~1.5-2x and 79.2s sits above the
+  // 2/3-of-wall burn-in line; pinned at the family budget preventively.
+  "upgrade-prune-removed.test.ts": { suite: 300000, test: 60000 },
+  // v1.21.0 (T-20261127-006, design docs/designs/2026-11-27-version-advance-lane-coverage-design.md
+  // §13 implementation note): upgrade-lane-coverage joins the engine-spawn family —
+  // TWO full wave-1 engine spawns as fixture bases (co-work + co-consult) plus six
+  // scene spawns (dry-run + apply per scene family). Killed at 120000ms on its
+  // first windows leg (PR #2202 attempt 45916952645, "Test timed out after
+  // 120000ms") — the same first-time-engine-suite shape as the T-20261127-002
+  // cohort; macOS ~21-25s. First-time entry at the family budget 300s/60s per the
+  // v1.6.0/v1.20.0 convention; no assertion loosened.
+  "upgrade-lane-coverage.test.ts": { suite: 300000, test: 60000 },
+  // v1.22.0 (T-20261127-003, design docs/designs/2026-11-27-fork-sync-blockers-design.md §4):
+  // validate-templates-cv02.test.ts joins the engine-spawn family — its e2e leg
+  // spawns the FULL validate-templates.ts (issue #2192 blocker 4: ~55s measured on
+  // a typical Windows laptop, reported by the fork maintainer; the in-test budget
+  // is now explicit at 60s). Preventive pin — no CI kill observed for this file
+  // yet, but the win32 spike band for engine spawns is ~1.5-2x and 55s sits above
+  // the 2/3-of-wall burn-in line against the default 120s suite wall (same shape
+  // as the v1.21.0 preventive upgrade-prune-removed entry). First-time entry;
+  // no test loosened.
+  "validate-templates-cv02.test.ts": { suite: 300000, test: 60000 },
 };
 
 function getTestFiles(suite: TestSuite): string[] {

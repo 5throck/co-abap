@@ -4,6 +4,7 @@
 
 | Date | Summary |
 |------|---------|
+| [2026-11-28](2026-11-28.md) | chore: upgrade template to 0.31.0 - nightly sync wave 2026-11-28 (core scripts + common skills mirrors) |
 | [2026-11-27](2026-11-27.md) | fix(scripts): S2 variant-hash standalone-checkout stability — resolveVariantName derives from the checkout's own variant.json (CI co-abap PR audit fix) |
 | [2026-11-26](2026-11-26.md) | chore(scripts): workspace sync (14 files) |
 | [2026-11-25](2026-11-25.md) | chore(upgrade): template 0.30.0 wave delivery (delivery lane completed per T-20261124-013 family) |
